@@ -69,7 +69,13 @@
             }
         }
 
+        & .highlight {
+            background-color: yellow;
 
+            & > * {
+                background-color: orange;
+            }
+        }
     }
 </style>
 
@@ -88,6 +94,19 @@ const python_input = document.querySelector("#python");
 const python_output = document.querySelector(".python_ouput");
 const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
+
+let prev_highlighted = null;
+ast_output.addEventListener("mouseover", ev => {
+
+    //TODO...
+    if( prev_highlighted === ev.target)
+        return;
+    if( prev_highlighted !== null)
+        prev_highlighted.classList.remove("highlight");
+
+    ev.target.classList.add("highlight");
+    prev_highlighted = ev.target;
+})
 
 function update() {
 	const code = python_input.value;
@@ -111,8 +130,6 @@ class ASTNode {
 	children;
 
 	constructor(line) {
-
-		console.log(line);
 		this.children = [];
 
 		if( "test" in line) {
@@ -207,25 +224,48 @@ function convert_ast2js(ast) {
 function print_node(node, level = 0) {
 	++level;
 
+    const html_bloc = document.createElement("div");
+    html_bloc.textContent = `${node.type}:${node.value}`;
 
-	let ast_tree = "";
-	const indent = "".padEnd(level, "\t");
+	for(let child of node.children) {
+        const html_child = print_node(child, level);
+        html_child.style.setProperty("margin-left", "20px");
+        html_bloc.append( html_child );
+    }
 
-	ast_tree += `${node.type}:${node.value}\n`;
-	for(let child of node.children)
-		ast_tree += `${indent}${print_node(child, level)}`;
-
-	return ast_tree;
+	return html_bloc;
 }
 
 function print_ast(ast) {
 
-	let ast_tree = "";
+    let lineid = 0;
 
-	for(let node of ast)
-		ast_tree += print_node(node);
+    const nodes = ast.map( node => {
 
-	ast_output.textContent = ast_tree;
+        const line = document.createElement("div");
+
+        const lineno = document.createElement('span');
+        lineno.textContent = `${++lineid}:`;
+
+        lineno.style.setProperty("vertical-align", "top");
+        lineno.style.setProperty("font-weight", "bold");
+    
+        /*
+        line.style.setProperty("position", "relative");
+        lineno.style.setProperty("position", "absolute");
+        lineno.style.setProperty("left", "-15px");
+        lineno.style.setProperty("top", "0px");*/
+
+        line.append(lineno);
+
+        const html = print_node(node);
+        html.style.setProperty("display", "inline-block");
+        line.append(html);
+
+
+        return line;
+    });
+	ast_output.replaceChildren( ...nodes )
 
 }
 
