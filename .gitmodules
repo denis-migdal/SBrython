@@ -1,0 +1,3 @@
+[submodule "brython"]
+	path = brython
+	url = git@github.com:brython-dev/brython.git
