@@ -19,17 +19,58 @@
 
 <script src="../../brython/www/src/brython.js"></script>
 
-<textarea id="python">1+1</textarea>
-<pre id="ast"></pre>
-<pre id="js"></pre>
+<div class="editor">
+    <div>
+        <strong>Input</strong>
+        <textarea id="python">1+1</textarea>
+    </div>
+    <div>
+        <strong>Python code</strong>
+        <pre class="python_ouput"></pre>
+    </div>
+    <div>
+        <strong>Generated AST tree</strong>
+        <pre id="ast"></pre>
+    </div>
+    <div>
+        <strong>Generated JS code</strong>
+        <pre id="js"></pre>
+    </div>
+</div>
 
 <style>
-	pre {
-		border : 1px solid black;
-		display: inline-block;
-		vertical-align: top;
-		padding: 15px;
-	}
+    .editor {
+        display: flex;
+        width: 100%;
+        align-items: flex-start;
+        align-content: stretch;
+        gap: 10px;
+
+        & > div {
+
+            flex: 1 1 0px;
+
+            & > strong {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
+            & > pre {
+                border : 1px solid black;
+                display: block;
+                padding: 15px;
+                margin: 0px;
+            }
+
+            & > textarea {
+                width: 100%;
+                padding: 15px;
+            }
+        }
+
+
+    }
 </style>
 
 <script>
@@ -44,6 +85,7 @@ window.onerror = (...args) => {
 //const $B = __BRYTHON__
 
 const python_input = document.querySelector("#python");
+const python_output = document.querySelector(".python_ouput");
 const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
 
@@ -53,8 +95,13 @@ function update() {
 	const _ast = $B._PyPegen.run_parser(parser);
 
 	const ast = convert_ast(_ast); 
+    print_python( code, ast );
 	print_ast( ast );
 	print_js( convert_ast2js(ast) )
+}
+
+function print_python(code, ast) {
+    python_output.textContent = code; //TODO
 }
 
 class ASTNode {
