@@ -96,16 +96,33 @@ const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
 
 let prev_highlighted = null;
-ast_output.addEventListener("mouseover", ev => {
 
-    //TODO...
-    if( prev_highlighted === ev.target)
+function highlight(target) {
+
+    if( prev_highlighted === target)
         return;
-    if( prev_highlighted !== null)
-        prev_highlighted.classList.remove("highlight");
+    if( prev_highlighted !== null) {
 
-    ev.target.classList.add("highlight");
-    prev_highlighted = ev.target;
+        for(let gui_elem of prev_highlighted.$gui_elems)
+            gui_elem.classList.remove("highlight");
+        prev_highlighted = null;
+    }
+
+    const $node = target.$node;
+    if( $node === undefined)
+        return;
+
+    prev_highlighted = $node;
+    for(let gui_elem of $node.$gui_elems)
+        gui_elem.classList.add("highlight");
+}
+
+//TODO...
+ast_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+python_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
 })
 
 function update() {
@@ -116,11 +133,7 @@ function update() {
 	const ast = convert_ast(_ast); 
     print_python( code, ast );
 	print_ast( ast );
-	print_js( convert_ast2js(ast) )
-}
-
-function print_python(code, ast) {
-    python_output.textContent = code; //TODO
+	print_js( convert_ast2js(ast), ast )
 }
 
 class ASTNode {
@@ -131,6 +144,21 @@ class ASTNode {
 
 	constructor(line) {
 		this.children = [];
+
+        this.pycode = {
+            start: {
+                line: line.lineno ?? line.value.lineno,
+                col: line.col_offset ?? line.value.col_offset
+            },
+            end: {
+                line: line.end_lineno ?? line.value.end_lineno,
+                col: line.end_col_offset ?? line.value.end_col_offset
+            }
+        }
+
+        if( this.pycode.start.line === undefined) {
+            console.log("l", line);
+        }
 
 		if( "test" in line) {
 
@@ -195,40 +223,66 @@ function convert_ast(ast) {
 	return ast_tree
 }
 
-function convert_astnode2js(node) {
+function convert_astnode2js(node, start) {
 
-	if(node.type === "Operator")
-		return `${node.value}(${node.children.map(e => convert_astnode2js(e)).join(",")})`;
-	
-	if(node.type === "integer")
-		return `${node.value}n`;
-	if(node.type === "float")
-		return node.value;
-	if(node.type === "if")
-		return `if( ${convert_astnode2js(node.children[0])} ) {
-	${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}
+    let cursor = {...start};
+
+    let js = "";
+	if(node.type === "Operator") {
+
+        js = `${node.value}(`;
+        for(let i = 0; i < node.children.length; ++i) {
+            if( i !== 0)
+                js += ",";
+            cursor.col = start.col + js.length;
+            js += convert_astnode2js(node.children[i], cursor);
+        }
+        js += ")";
+    }
+	else if(node.type === "integer")
+        js = `${node.value}n`;
+	else if(node.type === "float")
+        js = node.value;
+	else if(node.type === "if") //TODO...
+        js = `if( ${convert_astnode2js(node.children[0])} ) {
+	${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}    
 }`;
+    else
+        js = "";
 
-	return "";
+    node.jscode = {
+        start: {...start},
+        end: {
+            line: start.line,
+            col : start.col + js.length
+        }
+    }
+
+    return js;
 }
 
 function convert_ast2js(ast) {
 
 	let js = "";
-	for(let node of ast)
-		js += convert_astnode2js(node) + "\n"
+    let cursor = {line: 1, col: 0};
+	for(let node of ast) {
+		js += convert_astnode2js(node, cursor) + "\n"
+        ++cursor.line;
+    }
 
 	return js;
 }
 
-function print_node(node, level = 0) {
-	++level;
-
+function print_node(node) {
     const html_bloc = document.createElement("div");
+    html_bloc.$node = node;
+    node.$gui_elems ??= [];
+    node.$gui_elems.push( html_bloc );
+
     html_bloc.textContent = `${node.type}:${node.value}`;
 
 	for(let child of node.children) {
-        const html_child = print_node(child, level);
+        const html_child = print_node(child);
         html_child.style.setProperty("margin-left", "20px");
         html_bloc.append( html_child );
     }
@@ -250,12 +304,6 @@ function print_ast(ast) {
         lineno.style.setProperty("vertical-align", "top");
         lineno.style.setProperty("font-weight", "bold");
     
-        /*
-        line.style.setProperty("position", "relative");
-        lineno.style.setProperty("position", "absolute");
-        lineno.style.setProperty("left", "-15px");
-        lineno.style.setProperty("top", "0px");*/
-
         line.append(lineno);
 
         const html = print_node(node);
@@ -269,8 +317,75 @@ function print_ast(ast) {
 
 }
 
-function print_js(jscode) {
-	js_output.textContent = jscode;
+function slice_code(pycode, start_or_pos, end = null) {
+
+    let start = start_or_pos;
+    if(end === null) {
+        ({start, end} = start_or_pos);
+    }
+
+    return pycode[start.line-1].slice( start.col, end.col );
+}
+
+function print_code_node(node, code, type) {
+    
+    const html_bloc = document.createElement("span");
+
+    html_bloc.$node = node;
+    node.$gui_elems ??= [];
+    node.$gui_elems.push( html_bloc );
+
+    let subparts = new Array(node.children.length * 2 + 1);
+    let cursor = node[type].start;
+    let offset = 0;
+    for(let i = 0; i < node.children.length; ++i) {
+        subparts[offset++] = slice_code(code, cursor, node.children[i][type].start);
+        subparts[offset++] = print_code_node(node.children[i], code, type);
+        cursor = node.children[i][type].end;
+    }
+    subparts[offset++] = slice_code(code, cursor, node[type].end);
+
+    html_bloc.append(...subparts);
+
+    return html_bloc;
+}
+
+// pycode or jscode
+function print_code(code, ast, type) {
+
+    let lineid = 0;
+
+    code = code.split("\n");
+
+    const nodes = ast.map( node => {
+
+        const line = document.createElement("div");
+
+        const lineno = document.createElement('span');
+        lineno.textContent = `${++lineid}:`;
+
+        lineno.style.setProperty("vertical-align", "top");
+        lineno.style.setProperty("font-weight", "bold");
+    
+        line.append(lineno);
+
+        //TODO: slice_code_here
+        const html = print_code_node(node, code, type);
+        html.style.setProperty("display", "inline-block");
+        line.append(html);
+
+        return line;
+    });
+
+    return nodes;
+}
+
+function print_python(pycode, ast) {
+	python_output.replaceChildren( ...print_code(pycode, ast, "pycode") )
+}
+
+function print_js(jscode, ast) {
+	js_output.replaceChildren( ...print_code(jscode, ast, "jscode") )
 }
 
 python_input.addEventListener("input",
