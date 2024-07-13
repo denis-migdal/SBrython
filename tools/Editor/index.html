@@ -50,11 +50,16 @@
             }
         }
 
+        & * > *:not(textarea) {
+            border: 1px solid transparent;
+        }
+
         & .highlight {
             background-color: yellow;
 
             & > * {
                 background-color: orange;
+                border: 1px solid black;
             }
         }
     }
