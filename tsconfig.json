@@ -1,0 +1,28 @@
+{
+    "exclude": ["node_modules", "build", "dist", "brython", "tests", "libs/*/tests", "postcss.config.js", "webpack.config.js"],
+    "compilerOptions": {
+      "rootDir": "./src/",
+      "outDir": "./dist/",
+      "baseUrl": "./",
+      "paths": {
+        "*": ["src/*"]
+      },
+      "sourceMap": true,
+      "alwaysStrict": true,
+  
+      "strict": true,
+        "noErrorTruncation": true,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+      "allowImportingTsExtensions": true,
+  
+      "module": "esnext",
+      "target": "esnext",
+      "allowJs": true,
+      "resolveJsonModule": true,
+      "moduleResolution": "node",
+      "incremental": true,
+    }
+  }

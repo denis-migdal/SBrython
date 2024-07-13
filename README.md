@@ -16,4 +16,5 @@ https://denis-migdal.github.io/SimplerBrython/
 - [ ] Present Brython + goals of this issues
 - [ ] Add links
 - [ ] Add documentation
+    - [ ] Build + usage
 - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?

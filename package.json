@@ -1,0 +1,20 @@
+{
+  "name": "simplerbrython",
+  "version": "1.0.0",
+  "description": "https://denis-migdal.github.io/SimplerBrython/",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "clear ; webpack --no-watch --mode=development",
+    "watch": "clear ; webpack --watch    --mode=development"
+  },
+  "author": "",
+  "license": "ISC",
+  "private": "true",
+  "dependencies": {
+    "fork-ts-checker-notifier-webpack-plugin": "^9.0.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "swc-loader": "^0.2.6",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
