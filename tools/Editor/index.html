@@ -1,0 +1,194 @@
+<!--
+
+- git
+- git pages
+- README
+- github pages
+	- doc
+	- tests
+	- AST tree printing (better) - lines number + lines + hover + cols (double py scripts)
+		=> div/spans : on hover => highlight ASTNode + children
+		=> listen to "ASTNode hovered ?" => check all nodes.
+		=> error : highlight code / lineno / offset/end_offset => find nearest node ?
+	- TS webpack
+	- core-module architecture
+	- unit tests (+ perfs)
+
+
+-->
+
+<script src="/brython/www/src/brython.js"></script>
+
+<textarea id="python">1+1</textarea>
+<pre id="ast"></pre>
+<pre id="js"></pre>
+
+<style>
+	pre {
+		border : 1px solid black;
+		display: inline-block;
+		vertical-align: top;
+		padding: 15px;
+	}
+</style>
+
+<script>
+
+window.onerror = (...args) => {
+	console.log(args);
+	// msg
+	// stack
+	// 
+}
+
+//const $B = __BRYTHON__
+
+const python_input = document.querySelector("#python");
+const ast_output = document.querySelector("#ast");
+const js_output = document.querySelector("#js");
+
+function update() {
+	const code = python_input.value;
+	const parser = new $B.Parser(code, "filename", 'file');
+	const _ast = $B._PyPegen.run_parser(parser);
+
+	const ast = convert_ast(_ast); 
+	print_ast( ast );
+	print_js( convert_ast2js(ast) )
+}
+
+class ASTNode {
+
+	type;
+	value;
+	children;
+
+	constructor(line) {
+
+		console.log(line);
+		this.children = [];
+
+		if( "test" in line) {
+
+			this.type = "if"
+			this.value = "";
+			this.children = [new ASTNode({value:line.test}), ...line.body.map( m => new ASTNode(m) )];
+			return;
+		}
+
+
+		const value = line.value;
+
+		if( value === undefined) {
+			this.type = "pass";
+			this.value = "";
+			return;
+		}
+
+		if( "comparators" in value) {
+
+			this.type = "Operator";
+			this.value = "Equals";
+			this.children = [
+				new ASTNode({value: value.left}),
+				new ASTNode({value: value.comparators[0]})
+			];
+
+			return;
+		}
+
+		if( "op" in value ) {
+			this.type = "Operator";
+
+			this.value = value.op.constructor.$name;
+
+			this.children = [
+				new ASTNode({value: value.left}),
+				new ASTNode({value: value.right}),
+			]
+
+			return;
+		}
+
+		this.type = typeof value.value;
+		this.value = value.value;
+		if( this.type === "number")
+			this.type = "integer"
+
+		if( value.value instanceof Object && "value" in value.value) {
+			this.type = "float";
+			this.value = value.value.value;
+		}
+	}
+}
+
+function convert_ast(ast) {
+
+	const ast_tree = ast.body.map( line => {
+		return new ASTNode(line);
+	});
+
+	return ast_tree
+}
+
+function convert_astnode2js(node) {
+
+	if(node.type === "Operator")
+		return `${node.value}(${node.children.map(e => convert_astnode2js(e)).join(",")})`;
+	
+	if(node.type === "integer")
+		return `${node.value}n`;
+	if(node.type === "float")
+		return node.value;
+	if(node.type === "if")
+		return `if( ${convert_astnode2js(node.children[0])} ) {
+	${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}
+}`;
+
+	return "";
+}
+
+function convert_ast2js(ast) {
+
+	let js = "";
+	for(let node of ast)
+		js += convert_astnode2js(node) + "\n"
+
+	return js;
+}
+
+function print_node(node, level = 0) {
+	++level;
+
+
+	let ast_tree = "";
+	const indent = "".padEnd(level, "\t");
+
+	ast_tree += `${node.type}:${node.value}\n`;
+	for(let child of node.children)
+		ast_tree += `${indent}${print_node(child, level)}`;
+
+	return ast_tree;
+}
+
+function print_ast(ast) {
+
+	let ast_tree = "";
+
+	for(let node of ast)
+		ast_tree += print_node(node);
+
+	ast_output.textContent = ast_tree;
+
+}
+
+function print_js(jscode) {
+	js_output.textContent = jscode;
+}
+
+python_input.addEventListener("input",
+							  () => update() )
+
+update();
+
+</script>

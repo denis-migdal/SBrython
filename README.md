@@ -4,7 +4,7 @@ https://denis-migdal.github.io/SimplerBrython/
 
 ## Currently Working on...
 
-- AST viewer
+- Editor
 
 ## TODOLIST
 
