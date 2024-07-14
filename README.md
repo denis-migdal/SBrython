@@ -5,6 +5,8 @@ https://denis-migdal.github.io/SimplerBrython/
 ## Currently Working on...
 
 - Editor
+    - [ ] Highlight on hover generated JS code
+    - [ ] DOC !!!
     - [ ] split files / core module
         - [ ] py2ast
         - [ ] ast2js

@@ -1,9 +1,9 @@
-type CodePos = {
+export type CodePos = {
     line: number,
     col : number
 }
 
-type CodeRange = {
+export type CodeRange = {
     start: CodePos,
     end  : CodePos
 }
@@ -17,7 +17,31 @@ export class ASTNode {
     pycode: CodeRange;
     jscode?: CodeRange;
 
-	constructor(line: any) {
+	toJS?: (this: ASTNode) => string;
+
+	constructor(brython_node: any, type?: string, _value?: any, children: ASTNode[] = []) {
+
+        if(type !== undefined) {
+
+            this.type   = type;
+            this.value  = _value;
+            this.children = children!;
+			this.pycode = {
+				start: {
+					line: brython_node.lineno,
+					col: brython_node.col_offset
+				},
+				end: {
+					line: brython_node.end_lineno,
+					col: brython_node.end_col_offset
+				}
+			}
+
+            return;
+        }
+
+		let line = brython_node;
+
 
         this.pycode = {
             start: {
@@ -55,19 +79,6 @@ export class ASTNode {
 				new ASTNode({value: value.left}),
 				new ASTNode({value: value.comparators[0]})
 			];
-
-			return;
-		}
-
-		if( "op" in value ) {
-			this.type = "Operator";
-
-			this.value = value.op.constructor.$name;
-
-			this.children = [
-				new ASTNode({value: value.left}),
-				new ASTNode({value: value.right}),
-			]
 
 			return;
 		}

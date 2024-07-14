@@ -66,7 +66,7 @@
 </style>
 
 <script type="module">
-    import {py2ast} from "../../dist/dev/index.js";
+    import {py2ast, ast2js} from "../../dist/dev/index.js";
 
 window.onerror = (...args) => {
 	console.log(args);
@@ -119,19 +119,7 @@ function update() {
 
     print_python( code, ast );
 	print_ast( ast );
-	print_js( convert_ast2js(ast), ast )
-}
-
-function convert_ast2js(ast) {
-
-	let js = "";
-    let cursor = {line: 1, col: 0};
-	for(let node of ast) {
-		js += convert_astnode2js(node, cursor) + "\n"
-        ++cursor.line;
-    }
-
-	return js;
+	print_js( ast2js(ast), ast )
 }
 
 function print_node(node) {
@@ -176,44 +164,6 @@ function print_ast(ast) {
     });
 	ast_output.replaceChildren( ...nodes )
 
-}
-
-function convert_astnode2js(node, start) {
-
-let cursor = {...start};
-
-let js = "";
-if(node.type === "Operator") {
-
-    js = `${node.value}(`;
-    for(let i = 0; i < node.children.length; ++i) {
-        if( i !== 0)
-            js += ",";
-        cursor.col = start.col + js.length;
-        js += convert_astnode2js(node.children[i], cursor);
-    }
-    js += ")";
-}
-else if(node.type === "integer")
-    js = `${node.value}n`;
-else if(node.type === "float")
-    js = node.value;
-else if(node.type === "if") //TODO...
-    js = `if( ${convert_astnode2js(node.children[0])} ) {
-${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}    
-}`;
-else
-    js = "";
-
-node.jscode = {
-    start: {...start},
-    end: {
-        line: start.line,
-        col : start.col + js.length
-    }
-}
-
-return js;
 }
 
 function slice_code(pycode, start_or_pos, end = null) {
