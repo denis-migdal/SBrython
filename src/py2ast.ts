@@ -6,18 +6,26 @@ import {ASTNode} from "./structs/ASTNode";
 //TODO: use genlist
 import C1 from "./core_modules/operators/astconvert";
 import C2 from "./core_modules/integer/astconvert";
+import C3 from "./core_modules/fctcall/astconvert";
+import C4 from "./core_modules/symbol/astconvert";
 
 const AST_CONVERT = [
     C1,
-    C2
+    C2,
+    C3,
+    C4
 ]
 //TODO: use genlist
 import A1 from "./core_modules/operators/ast2js";
 import A2 from "./core_modules/integer/ast2js";
+import A3 from "./core_modules/fctcall/ast2js";
+import A4 from "./core_modules/symbol/ast2js";
 
 const AST2JS = [
     A1,
-    A2
+    A2,
+    A3,
+    A4
 ]
 
 export function py2ast(code: string) {

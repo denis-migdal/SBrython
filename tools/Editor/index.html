@@ -3,7 +3,15 @@
 <div class="editor">
     <div>
         <strong>Input</strong>
-        <textarea id="python">1+1</textarea>
+        <textarea id="python">log(1+1)</textarea>
+    </div>
+    <div>
+        <strong>Output (SBryton)</strong>
+        <pre class="output_sbrython"></pre>
+    </div>
+    <div>
+        <strong>Output (Brython)</strong>
+        <pre class="output_brython"></pre>
     </div>
     <div>
         <strong>Python code</strong>
@@ -21,15 +29,19 @@
 
 <style>
     .editor {
-        display: flex;
         width: 100%;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        /*
+        display: flex;
         align-items: flex-start;
-        align-content: stretch;
+        align-content: stretch;*/
         gap: 10px;
 
         & > div {
 
-            flex: 1 1 0px;
+            /*flex: 1 1 0px;*/
 
             & > strong {
                 display: block;
@@ -42,6 +54,13 @@
                 display: block;
                 padding: 15px;
                 margin: 0px;
+
+                &.output_sbrython.success {
+                    background-color: LightGreen;
+                }
+                &.output_sbrython.error {
+                    background-color: OrangeRed;
+                }
             }
 
             & > textarea {
@@ -82,6 +101,9 @@ const python_output = document.querySelector(".python_ouput");
 const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
 
+const sbrython_output = document.querySelector(".output_sbrython");
+const  brython_output = document.querySelector(".output_brython");
+
 let prev_highlighted = null;
 
 function highlight(target) {
@@ -116,12 +138,55 @@ js_output.addEventListener("mouseover", ev => {
 
 function update() {
 	const code = python_input.value;
+    sbrython_output.textContent = "";
+     brython_output.textContent = "";
 
-    const ast = py2ast( code ); 
+    sbrython_output.classList.remove("success");
+    sbrython_output.classList.remove("error");
+
+    window.log = function(txt) { output += txt + "\n" };
+
+    let output = "";
+    let ast;
+    let js_code;
+    let beg = Date.now();
+    try {
+        ast = py2ast( code );
+        js_code = ast2js(ast);
+        const fct = new Function(js_code); //TODO args
+        fct();
+    } catch(e) {
+        console.error(e); //TODO
+    }
+    let time = Date.now() - beg;
+    let sbrython_result = output;
+    let size = (100 * js_code.length / code.length - 100).toFixed(2);
+    sbrython_output.textContent = `${output}\n**Executed in ${time}ms (code size +${size}%)**`;
+
+    const code2 = `from window import log\n{code}`;
+    let js_code2;
+    beg = Date.now();
+    try {
+        js_code2 = $B.pythonToJS(code2);
+        console.log(js_code2);
+        const fct = new Function(js_code2); //TODO args
+        fct();
+    } catch(e) {
+        console.error(e); //TODO
+    }
+    time = Date.now() - beg;
+    let brython_result = output;
+    size = (100 * js_code2.length / code.length - 100).toFixed(2);
+    brython_output.textContent = `${output}\n**Executed in ${time}ms (code size +${size}%)**`;
+
+    if( brython_result === sbrython_result )
+        sbrython_output.classList.add("success");
+    else
+        sbrython_output.classList.add("error");
 
     print_python( code, ast );
 	print_ast( ast );
-	print_js( ast2js(ast), ast )
+	print_js( js_code, ast );
 }
 
 function print_node(node) {

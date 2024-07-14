@@ -2,6 +2,7 @@
 
 https://denis-migdal.github.io/SimplerBrython/
 https://denis-migdal.github.io/SimplerBrython/doc
+https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
@@ -20,12 +21,15 @@ https://denis-migdal.github.io/SimplerBrython/doc
 
         - [ ] Runtime (TODO)
         - [ ] Build + usage
+        - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc.
 
     - [ ] split files / core module
         - [ ] runtime
     - [ ] unit tests
         - [ ] SBrython vs Brython exec (+exec time)
     - [ ] Write doc
+    - [ ] Check nodes operator priority (add parenthesis)
+    - [ ] Check operators result_type
     - [ ] Add features
         - [ ] JS variables
         - [ ] Call fct
@@ -42,9 +46,14 @@ https://denis-migdal.github.io/SimplerBrython/doc
         - [ ] f-string
         - [ ] None
     - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
+    - genlist
 
 ## Student projects
 
 - [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
-- [ ] Features (complete SBrython)
+- [ ] Add features (complete SBrython)
+- [ ] CPython/PEP compliant
+    - [ ] debug = true
+    - [ ] async as coroutines = true
+    - [ ] enforce python type = false
