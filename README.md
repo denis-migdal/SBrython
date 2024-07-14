@@ -5,14 +5,9 @@ https://denis-migdal.github.io/SimplerBrython/
 ## Currently Working on...
 
 - Editor
-    - [ ] Highlight on hover generated JS code
     - [ ] DOC !!!
     - [ ] split files / core module
-        - [ ] py2ast
-        - [ ] ast2js
         - [ ] runtime
-        - [ ] core_modules (ast2js & runtime)
-        - [ ] ?
     - [ ] unit tests
         - [ ] SBrython vs Brython exec (+exec time)
     - [ ] Write doc

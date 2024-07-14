@@ -104,11 +104,13 @@ function highlight(target) {
         gui_elem.classList.add("highlight");
 }
 
-//TODO...
 ast_output.addEventListener("mouseover", ev => {
     highlight(ev.target);
 })
 python_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+js_output.addEventListener("mouseover", ev => {
     highlight(ev.target);
 })
 
