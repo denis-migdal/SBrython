@@ -27,6 +27,7 @@ module.exports = function (src, dst, rules = [], options = {}) {
 			},
 			compareBeforeEmit: true
 		},
+		target: "web",
         plugins: [],
 		//watch: WATCH, no needs (--watch / --no-watch)
 		watchOptions: {

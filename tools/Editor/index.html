@@ -65,7 +65,8 @@
     }
 </style>
 
-<script>
+<script type="module">
+    import {py2ast} from "../../dist/dev/index.js";
 
 window.onerror = (...args) => {
 	console.log(args);
@@ -113,138 +114,12 @@ python_output.addEventListener("mouseover", ev => {
 
 function update() {
 	const code = python_input.value;
-	const parser = new $B.Parser(code, "filename", 'file');
-	const _ast = $B._PyPegen.run_parser(parser);
 
-	const ast = convert_ast(_ast); 
+    const ast = py2ast( code ); 
+
     print_python( code, ast );
 	print_ast( ast );
 	print_js( convert_ast2js(ast), ast )
-}
-
-class ASTNode {
-
-	type;
-	value;
-	children;
-
-	constructor(line) {
-		this.children = [];
-
-        this.pycode = {
-            start: {
-                line: line.lineno ?? line.value.lineno,
-                col: line.col_offset ?? line.value.col_offset
-            },
-            end: {
-                line: line.end_lineno ?? line.value.end_lineno,
-                col: line.end_col_offset ?? line.value.end_col_offset
-            }
-        }
-
-        if( this.pycode.start.line === undefined) {
-            console.log("l", line);
-        }
-
-		if( "test" in line) {
-
-			this.type = "if"
-			this.value = "";
-			this.children = [new ASTNode({value:line.test}), ...line.body.map( m => new ASTNode(m) )];
-			return;
-		}
-
-
-		const value = line.value;
-
-		if( value === undefined) {
-			this.type = "pass";
-			this.value = "";
-			return;
-		}
-
-		if( "comparators" in value) {
-
-			this.type = "Operator";
-			this.value = "Equals";
-			this.children = [
-				new ASTNode({value: value.left}),
-				new ASTNode({value: value.comparators[0]})
-			];
-
-			return;
-		}
-
-		if( "op" in value ) {
-			this.type = "Operator";
-
-			this.value = value.op.constructor.$name;
-
-			this.children = [
-				new ASTNode({value: value.left}),
-				new ASTNode({value: value.right}),
-			]
-
-			return;
-		}
-
-		this.type = typeof value.value;
-		this.value = value.value;
-		if( this.type === "number")
-			this.type = "integer"
-
-		if( value.value instanceof Object && "value" in value.value) {
-			this.type = "float";
-			this.value = value.value.value;
-		}
-	}
-}
-
-function convert_ast(ast) {
-
-	const ast_tree = ast.body.map( line => {
-		return new ASTNode(line);
-	});
-
-	return ast_tree
-}
-
-function convert_astnode2js(node, start) {
-
-    let cursor = {...start};
-
-    let js = "";
-	if(node.type === "Operator") {
-
-        js = `${node.value}(`;
-        for(let i = 0; i < node.children.length; ++i) {
-            if( i !== 0)
-                js += ",";
-            cursor.col = start.col + js.length;
-            js += convert_astnode2js(node.children[i], cursor);
-        }
-        js += ")";
-    }
-	else if(node.type === "integer")
-        js = `${node.value}n`;
-	else if(node.type === "float")
-        js = node.value;
-	else if(node.type === "if") //TODO...
-        js = `if( ${convert_astnode2js(node.children[0])} ) {
-	${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}    
-}`;
-    else
-        js = "";
-
-    node.jscode = {
-        start: {...start},
-        end: {
-            line: start.line,
-            col : start.col + js.length
-        }
-    }
-
-    return js;
 }
 
 function convert_ast2js(ast) {
@@ -301,6 +176,44 @@ function print_ast(ast) {
     });
 	ast_output.replaceChildren( ...nodes )
 
+}
+
+function convert_astnode2js(node, start) {
+
+let cursor = {...start};
+
+let js = "";
+if(node.type === "Operator") {
+
+    js = `${node.value}(`;
+    for(let i = 0; i < node.children.length; ++i) {
+        if( i !== 0)
+            js += ",";
+        cursor.col = start.col + js.length;
+        js += convert_astnode2js(node.children[i], cursor);
+    }
+    js += ")";
+}
+else if(node.type === "integer")
+    js = `${node.value}n`;
+else if(node.type === "float")
+    js = node.value;
+else if(node.type === "if") //TODO...
+    js = `if( ${convert_astnode2js(node.children[0])} ) {
+${node.children.slice(1).map( e => convert_astnode2js(e)).join("\n")}    
+}`;
+else
+    js = "";
+
+node.jscode = {
+    start: {...start},
+    end: {
+        line: start.line,
+        col : start.col + js.length
+    }
+}
+
+return js;
 }
 
 function slice_code(pycode, start_or_pos, end = null) {

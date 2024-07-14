@@ -11,6 +11,9 @@ module.exports = function(config, src, {workers} = {}) {
 				loader: 'swc-loader',
 				//loader: 'ts-loader',
 				options: {
+					jsc: {
+						"target": "esnext",
+					}
 					//transpileOnly: true, // Build time : 20sec to 10sec...
 					//experimentalWatchApi: true,
 				},
@@ -48,6 +51,13 @@ module.exports = function(config, src, {workers} = {}) {
 
 	for(let worker_name in workers) {
 		config.entry[`${WORKER_PREFIX}${worker_name}`] = workers[worker_name][0];
+	}
+
+	config.output.library = {
+		type: "module" // TODO
+	}
+	config.experiments = {
+		outputModule: true
 	}
 
 	config.output.filename = (chunk) => {
