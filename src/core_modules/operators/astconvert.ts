@@ -6,7 +6,11 @@ export default function convert(node: any) {
     if( ! ("op" in node) )
         return false;
 
-    return new ASTNode(node, "Operator", node.op.constructor.$name,
+    let op = node.op.constructor.$name;
+    if( op === "Add")
+        op = "+";
+
+    return new ASTNode(node, "Operator", op,
         [
             convert_node(node.left ),
             convert_node(node.right),

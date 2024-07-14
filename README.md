@@ -45,5 +45,6 @@ https://denis-migdal.github.io/SimplerBrython/doc
 
 ## Student projects
 
+- [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
 - [ ] Features (complete SBrython)
