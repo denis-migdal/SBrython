@@ -301,14 +301,38 @@ function print_ast(ast) {
 
 }
 
-function slice_code(pycode, start_or_pos, end = null) {
+function code_idx(code, {line, col}) {
+
+    if(line === 1)
+        return col;
+
+    let cur = 0;
+    let cur_line = 1;
+    while( cur < code.length) {
+        if( code[cur] === '\n' ) {
+            ++cur_line;
+            if( line === cur_line ) {
+                ++cur;
+                break;
+            }
+        }
+        ++cur;
+    }
+
+    return cur + col;
+}
+
+function slice_code(code, start_or_pos, end = null) {
 
     let start = start_or_pos;
     if(end === null) {
         ({start, end} = start_or_pos);
     }
 
-    return pycode[start.line-1].slice( start.col, end.col );
+    let beg_idx = code_idx(code, start);
+    let end_idx = code_idx(code,  end);
+
+    return code.slice( beg_idx, end_idx );
 }
 
 function print_code_node(node, code, type) {
@@ -340,8 +364,6 @@ function print_code_node(node, code, type) {
 function print_code(code, ast, type) {
 
     let lineid = 0;
-
-    code = code.split("\n");
 
     const nodes = ast.map( node => {
 
