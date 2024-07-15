@@ -13,6 +13,9 @@ export default function convert(node: any) {
         is_if = false;
 
         const cond = convert_node(node.test);
+
+        if( node.orelse.length !== 0)
+            throw new Error("else/elif not yet supported");
         
         if(cond.result_type !== "bool")
             throw new Error(`Type ${cond.result_type} not yet supported as if condition`);
