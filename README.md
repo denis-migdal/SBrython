@@ -24,29 +24,32 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
     - [ ] split files / core module
         - [ ] runtime
-    - [ ] Check nodes operator priority (add parenthesis)
-    - [ ] Check operators result_type
+
     - [ ] Add features
-        => /!\ limit children to what I can handle.
         - [ ] if/else/elif
             - [ ] booleans
-        - [ ] is / ===
+            => /!\ limit children to what I can handle.
+        - [ ] is / ==
         - [ ] define variable
-        - [ ] pass
         - [ ] Indentation
 
         - [ ] Types : float/str/None
         - [ ] Basic operators : + / * - + neg numbers
+            - [ ] Check nodes operator priority (add parenthesis)
+            - [ ] Check operators result_type
         - [ ] f-string
 
         - [ ] while
         - [ ] for in
             - [ ] range
         
-
         - [ ] define fct
             - [ ] Async/await
 
+        - [ ] py code => pre-transpile
+        - [ ] JS code insert
+
+        - [ ] pass
         - [ ] List/Tuple
         - [ ] dict
         - [ ] get/set attr
@@ -54,10 +57,22 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
         - [ ] import/export (?)
         - [ ] define class+method
+        - [ ] comments
     - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
     - genlist
     - brython perfs : split Py2JS into Py2AST and AST2JS
     cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
+
+## Implemented features
+
+- Control flow
+    - if(?)
+- Functions call
+    - call()
+- Literals
+    - integer
+- Symbols
+    - JS global symbols.
 
 ## Student projects
 

@@ -3,10 +3,16 @@
 <div class="editor">
     <div>
         <!-- log(1+1) -->
-         <!-- if 1:
-    2+3 -->
+<!--
+
+-->
         <strong>Input</strong>
-        <textarea id="python">log(1+1)</textarea>
+        <textarea id="python">
+# if boolean:
+if 0:
+    write(0)
+if 1:
+    write(1)</textarea>
     </div>
     <div>
         <strong>Output (SBryton)</strong>
@@ -68,6 +74,7 @@
 
             & > textarea {
                 width: 100%;
+                height: calc(100% - 1.5rem);
                 padding: 15px;
             }
         }
@@ -147,7 +154,7 @@ function update() {
     sbrython_output.classList.remove("success");
     sbrython_output.classList.remove("error");
 
-    window.log = function(txt) { output += txt + "\n" };
+    window.write = function(txt) { output += txt + "\n" };
 
     let output = "";
     let ast;
@@ -156,12 +163,13 @@ function update() {
     let step1;
     let step2;
     let step0;
+    let _ast;
     try {
-        const parser = new $B.Parser(code, "filename", 'file');
-        const _ast = $B._PyPegen.run_parser(parser);
-        step0 = globalThis.performance.now();
-	    ast = convert_ast(_ast);
         //ast = py2ast( code );
+            const parser = new $B.Parser(code, "filename", 'file');
+            _ast = $B._PyPegen.run_parser(parser);
+            step0 = globalThis.performance.now();
+	        ast = convert_ast(_ast);
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
@@ -173,6 +181,7 @@ function update() {
 
     let sbrython_result = output;
     try {
+        console.log("AST", _ast);
         let end = globalThis.performance.now();
         let size = (100 * js_code.length / code.length - 100).toFixed(2);
         sbrython_output.textContent = `${output}
@@ -186,7 +195,7 @@ function update() {
     } catch(e) {}
 
     output = "";
-    const code2 = `from browser import window\nlog = window.log\n${code}`;
+    const code2 = `from browser import window\nwrite = window.write\n${code}`;
     //console.log("c2", code2);
     let js_code2;
     beg = globalThis.performance.now();
@@ -252,7 +261,9 @@ function print_node(node) {
     node.$gui_elems ??= [];
     node.$gui_elems.push( html_bloc );
 
-    html_bloc.textContent = `${node.type}:${node.value}`;
+    html_bloc.textContent = node.type;
+    if( node.value != null)
+        html_bloc.textContent += `:${node.value}`;
 
 	for(let child of node.children) {
         const html_child = print_node(child);
@@ -302,6 +313,8 @@ function slice_code(pycode, start_or_pos, end = null) {
 
 function print_code_node(node, code, type) {
     
+    console.log("N", node);
+
     const html_bloc = document.createElement("span");
 
     html_bloc.$node = node;
