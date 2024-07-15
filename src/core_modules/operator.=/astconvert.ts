@@ -22,11 +22,13 @@ export default function convert(node: any, context: Context) {
 
     let right_type: string|null = right.result_type;
     if( "annotation" in node) {
-        right_type = node.annotation.id;
+        right_type = node.annotation.id ?? "None";
         if( right.result_type !== null && right.result_type !== right_type)
             throw new Error("Wrong result_type");
     }
     astnode.result_type = right_type;
+
+    console.warn(node, right_type)
 
     if( left.type === "symbol") {
 

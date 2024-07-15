@@ -43,9 +43,9 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] JS code insert
 
         - [ ] pass
+        - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
-        - [ ] get/set attr
         - [ ] some APIs (e.g. str methods)
 
         - [ ] import/export (?)
@@ -68,7 +68,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Literals
     - bool
     - int
-    - None (explicit = JS null)
+    - None (explicit = JS null / implicit = JS undefined)
 - Operators
     - =  (bool/int/None) + with annotations
     - == (bool/int/None)

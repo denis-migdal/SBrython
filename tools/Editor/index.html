@@ -8,7 +8,15 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
-#None
+#None (implicit)
+g: None = write(0)
+# write(g     == None) expected to be true, not the case in Brython
+write(   0  == g)
+write(False == g)
+write(   1  == g)
+write(True  == g)
+
+#None (explicit)
 
 f = None
 write(None  == None)
