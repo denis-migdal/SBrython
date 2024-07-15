@@ -2,6 +2,9 @@
 
 <div class="editor">
     <div>
+        <!-- log(1+1) -->
+         <!-- if 1:
+    2+3 -->
         <strong>Input</strong>
         <textarea id="python">log(1+1)</textarea>
     </div>
@@ -18,7 +21,7 @@
         <pre class="python_ouput"></pre>
     </div>
     <div>
-        <strong>Generated AST tree</strong>
+        <strong>Generated AST</strong>
         <pre id="ast"></pre>
     </div>
     <div>
@@ -85,7 +88,7 @@
 </style>
 
 <script type="module">
-    import {py2ast, ast2js} from "../../dist/dev/index.js";
+    import {py2ast, ast2js, convert_ast} from "../../dist/dev/index.js";
 
 window.onerror = (...args) => {
 	console.log(args);
@@ -148,36 +151,90 @@ function update() {
 
     let output = "";
     let ast;
-    let js_code;
-    let beg = Date.now();
+    let js_code = "";
+    let beg = globalThis.performance.now();
+    let step1;
+    let step2;
+    let step0;
     try {
-        ast = py2ast( code );
+        const parser = new $B.Parser(code, "filename", 'file');
+        const _ast = $B._PyPegen.run_parser(parser);
+        step0 = globalThis.performance.now();
+	    ast = convert_ast(_ast);
+        //ast = py2ast( code );
+        step1 = globalThis.performance.now();
         js_code = ast2js(ast);
+        step2 = globalThis.performance.now();
         const fct = new Function(js_code); //TODO args
         fct();
     } catch(e) {
         console.error(e); //TODO
     }
-    let time = Date.now() - beg;
-    let sbrython_result = output;
-    let size = (100 * js_code.length / code.length - 100).toFixed(2);
-    sbrython_output.textContent = `${output}\n**Executed in ${time}ms (code size +${size}%)**`;
 
-    const code2 = `from window import log\n{code}`;
+    let sbrython_result = output;
+    try {
+        let end = globalThis.performance.now();
+        let size = (100 * js_code.length / code.length - 100).toFixed(2);
+        sbrython_output.textContent = `${output}
+**code size +${size}%**
+**Executed in ${end-beg}ms**
+    **Py2AST:  ${step0-beg}ms
+    **ASTConv: ${step1-step0}ms
+    **AST2JS:  ${step2-step1}ms
+    **Runtime: ${end-step2}ms`;
+// **Py2AST:  ${step1-beg}ms
+    } catch(e) {}
+
+    output = "";
+    const code2 = `from browser import window\nlog = window.log\n${code}`;
+    //console.log("c2", code2);
     let js_code2;
-    beg = Date.now();
+    beg = globalThis.performance.now();
     try {
         js_code2 = $B.pythonToJS(code2);
-        console.log(js_code2);
+        /*
+        const filename = "filename";
+        const parser = new $B.Parser(code, filename, 'file');
+	    const _ast = $B._PyPegen.run_parser(parser);
+        step1 = globalThis.performance.now();
+
+        var imported;
+        var future = $B.future_features(_ast, filename)
+        var symtable = $B._PySymtable_Build(_ast, filename, future)
+        var js_obj = $B.js_from_root({ast: _ast,
+                                    symtable,
+                                    filename,
+                                    src: code,
+                                    imported})
+        js_code2 = js_obj.js
+        */
+
+        //console.log(js_code2);
+        step2 = globalThis.performance.now();
         const fct = new Function(js_code2); //TODO args
         fct();
     } catch(e) {
         console.error(e); //TODO
     }
-    time = Date.now() - beg;
+
+    console.log(output);
+
     let brython_result = output;
-    size = (100 * js_code2.length / code.length - 100).toFixed(2);
-    brython_output.textContent = `${output}\n**Executed in ${time}ms (code size +${size}%)**`;
+    try {
+        let end = globalThis.performance.now();
+        let size = (100 * js_code2.length / code.length - 100).toFixed(2);
+        brython_output.textContent = `${output}
+**code size +${size}%**
+**Executed in ${end-beg}ms**
+    **Py2JS:   ${step2-beg}ms
+    **Runtime: ${end-step2}ms`;
+
+    /*
+    **Py2AST:  ${step1-beg}ms
+    **AST2JS:  ${step2-step1}ms*/
+    } catch(e) {
+        console.error(e);
+    }
 
     if( brython_result === sbrython_result )
         sbrython_output.classList.add("success");

@@ -19,34 +19,45 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - I will publish some PoC, for AST tree structure, AST tree printing, unit tests, documentations, etc. that I hope could be interesting and potentially adapted for Brython.
 - I think some design choices I'll make could be interesting for Brython, so it could serve as a PoC on the way some features can be implemented/architectured.
 
-        - [ ] Runtime (TODO)
         - [ ] Build + usage
-        - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc.
+        - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc // types hint
 
     - [ ] split files / core module
         - [ ] runtime
-    - [ ] unit tests
-        - [ ] SBrython vs Brython exec (+exec time)
-    - [ ] Write doc
     - [ ] Check nodes operator priority (add parenthesis)
     - [ ] Check operators result_type
     - [ ] Add features
-        - [ ] JS variables
-        - [ ] Call fct
+        => /!\ limit children to what I can handle.
         - [ ] if/else/elif
-        - [ ] while
-        - [ ] for
-        - [ ] range
-        - [ ] List
-        - [ ] dict
-        - [ ] Equals/Add/Sub/etc.
-        - [ ] define fct
-        - [ ] define variable
-        - [ ] define class+method
+            - [ ] booleans
+        - [ ] is / ===
+        - [ ] define variable
+        - [ ] pass
+        - [ ] Indentation
+
+        - [ ] Types : float/str/None
+        - [ ] Basic operators : + / * - + neg numbers
         - [ ] f-string
-        - [ ] None
+
+        - [ ] while
+        - [ ] for in
+            - [ ] range
+        
+
+        - [ ] define fct
+            - [ ] Async/await
+
+        - [ ] List/Tuple
+        - [ ] dict
+        - [ ] get/set attr
+        - [ ] some APIs (e.g. str methods)
+
+        - [ ] import/export (?)
+        - [ ] define class+method
     - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
     - genlist
+    - brython perfs : split Py2JS into Py2AST and AST2JS
+    cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
 
 ## Student projects
 

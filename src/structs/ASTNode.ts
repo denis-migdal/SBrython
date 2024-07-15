@@ -19,50 +19,22 @@ export class ASTNode {
 
 	toJS?: (this: ASTNode) => string;
 
-	constructor(brython_node: any, type?: string, _value?: any, children: ASTNode[] = []) {
+	constructor(brython_node: any, type: string, _value?: any, children: ASTNode[] = []) {
 
-        if(type !== undefined) {
-
-            this.type   = type;
-            this.value  = _value;
-            this.children = children!;
-			this.pycode = {
-				start: {
-					line: brython_node.lineno,
-					col: brython_node.col_offset
-				},
-				end: {
-					line: brython_node.end_lineno,
-					col: brython_node.end_col_offset
-				}
+		this.type   = type;
+		this.value  = _value;
+		this.children = children!;
+		this.pycode = {
+			start: {
+				line: brython_node.lineno,
+				col: brython_node.col_offset
+			},
+			end: {
+				line: brython_node.end_lineno,
+				col: brython_node.end_col_offset
 			}
-
-            return;
-        }
-
-		let line = brython_node;
-
-
-        this.pycode = {
-            start: {
-                line: line.lineno ?? line.value.lineno, //TODO fix
-                col: line.col_offset ?? line.value.col_offset
-            },
-            end: {
-                line: line.end_lineno ?? line.value.end_lineno,
-                col: line.end_col_offset ?? line.value.end_col_offset
-            }
-        }
-
-        //TODO move...
-		if( "test" in line) {
-
-			this.type = "if"
-			this.value = "";
-			this.children = [new ASTNode({value:line.test}), ...line.body.map( (m:any) => new ASTNode(m) )];
-			return;
 		}
-
+/*
 		const value = line.value;
 
 		if( value === undefined) {
@@ -83,14 +55,9 @@ export class ASTNode {
 			return;
 		}
 
-		this.type = typeof value.value;
-		this.value = value.value;
-		if( this.type === "number")
-			this.type = "integer"
-
 		if( value.value instanceof Object && "value" in value.value) {
 			this.type = "float";
 			this.value = value.value.value;
-		}
+		}*/
 	}
 }
