@@ -12,6 +12,7 @@ import C5 from "./core_modules/ifblock/astconvert";
 import C6 from "./core_modules/bool/astconvert";
 import C7 from "./core_modules/operator.==/astconvert";
 import C8 from "./core_modules/operator.=/astconvert";
+import C9 from "./core_modules/None/astconvert";
 
 const AST_CONVERT = [
     C1,
@@ -21,7 +22,8 @@ const AST_CONVERT = [
     C5,
     C6,
     C7,
-    C8
+    C8,
+    C9
 ]
 //TODO: use genlist
 import A1 from "./core_modules/operators/ast2js";
@@ -32,6 +34,7 @@ import A5 from "./core_modules/ifblock/ast2js";
 import A6 from "./core_modules/bool/ast2js";
 import A7 from "./core_modules/operator.==/ast2js";
 import A8 from "./core_modules/operator.=/ast2js";
+import A9 from "./core_modules/None/ast2js";
 
 const AST2JS = [
     A1,
@@ -41,7 +44,8 @@ const AST2JS = [
     A5,
     A6,
     A7,
-    A8
+    A8,
+    A9
 ]
 
 export function py2ast(code: string) {

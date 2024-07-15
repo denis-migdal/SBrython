@@ -68,9 +68,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Literals
     - bool
     - int
+    - None (explicit = JS null)
 - Operators
-    - =  (bool/int)
-    - == (bool/int)
+    - =  (bool/int/None) + with annotations
+    - == (bool/int/None)
 - Symbols
     - JS global symbols.
 
