@@ -8,6 +8,12 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+# decl
+a = 2
+write(a)
+b = False
+write(b)
+
 # operator.== (literals)
 write(True == True)
 write(False == False)
@@ -110,6 +116,8 @@ if True:
 
 <script type="module">
     import {py2ast, ast2js, convert_ast} from "../../dist/dev/index.js";
+
+    const SHOW_CODE_NODE_BEFORE_PRINT = false;
 
 window.onerror = (...args) => {
 	console.log(args);
@@ -353,7 +361,8 @@ function slice_code(code, start_or_pos, end = null) {
 
 function print_code_node(node, code, type) {
     
-    console.log("N", node);
+    if( SHOW_CODE_NODE_BEFORE_PRINT)
+        console.log("N", node);
 
     const html_bloc = document.createElement("span");
 

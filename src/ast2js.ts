@@ -28,8 +28,6 @@ function update_end(node: ASTNode, js: string) {
             last_line_idx = i;
         }
 
-    console.log(line_count, js.length);
-
     if(line_count === 0) {
         node.jscode!.end = {
             line: start.line,

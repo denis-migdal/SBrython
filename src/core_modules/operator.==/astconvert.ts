@@ -3,7 +3,7 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any) {
 
-    if( ! ("ops" in node) && node.ops[0].constructor.$name !== "Eq" )
+    if( ! ("ops" in node) || node.ops[0].constructor.$name !== "Eq" )
         return false;
 
     const left  = convert_node(node.left );

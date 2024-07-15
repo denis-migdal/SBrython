@@ -67,14 +67,15 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 ## Implemented features
 
 - Control flow
-    - if(?)
+    - if(bool)
 - Functions call
-    - call()
+    - call(pos_arg)
 - Literals
     - bool
-    - integer
+    - int
 - Operators
-    - ==
+    - =  (bool/int)
+    - == (bool/int)
 - Symbols
     - JS global symbols.
 
@@ -82,7 +83,11 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
-- [ ] Better editor : split unit tests, verify lines by lines + verify type + scroll to
+- [ ] Better editor :
+    - [ ] split unit tests (resume + split output)
+    - [ ] verify output lines by lines + verify type + highlight
+    - [ ] scroll to
+    - [ ] highlight write/result line.
 - [ ] CPython/PEP compliant
     - [ ] debug = true
     - [ ] async as coroutines = true

@@ -11,6 +11,7 @@ import C4 from "./core_modules/symbol/astconvert";
 import C5 from "./core_modules/ifblock/astconvert";
 import C6 from "./core_modules/bool/astconvert";
 import C7 from "./core_modules/operator.==/astconvert";
+import C8 from "./core_modules/operator.=/astconvert";
 
 const AST_CONVERT = [
     C1,
@@ -19,7 +20,8 @@ const AST_CONVERT = [
     C4,
     C5,
     C6,
-    C7
+    C7,
+    C8
 ]
 //TODO: use genlist
 import A1 from "./core_modules/operators/ast2js";
@@ -29,6 +31,7 @@ import A4 from "./core_modules/symbol/ast2js";
 import A5 from "./core_modules/ifblock/ast2js";
 import A6 from "./core_modules/bool/ast2js";
 import A7 from "./core_modules/operator.==/ast2js";
+import A8 from "./core_modules/operator.=/ast2js";
 
 const AST2JS = [
     A1,
@@ -37,7 +40,8 @@ const AST2JS = [
     A4,
     A5,
     A6,
-    A7
+    A7,
+    A8
 ]
 
 export function py2ast(code: string) {
@@ -67,8 +71,10 @@ export function convert_node(brython_node: any): ASTNode {
 
 export function convert_line(line: any): ASTNode {
 
+    //TODO: line ASTNode ???
+
     let node = line;
-    if( "value" in line)
+    if( "value" in line && ! ("targets" in line) )
         node = line.value;
 
     return convert_node( node );

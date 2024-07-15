@@ -1,4 +1,3 @@
-import { convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any) {
