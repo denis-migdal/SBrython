@@ -5,5 +5,7 @@ export default function convert(node: any) {
     if( typeof node.value !== "number" )
         return false;
 
-    return new ASTNode(node, "integer", node.value);
+    const astnode = new ASTNode(node, "literal.int", node.value);
+    astnode.result_type = "int"
+    return astnode;
 }

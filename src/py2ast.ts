@@ -5,7 +5,7 @@ import {ASTNode} from "./structs/ASTNode";
 
 //TODO: use genlist
 import C1 from "./core_modules/operators/astconvert";
-import C2 from "./core_modules/integer/astconvert";
+import C2 from "./core_modules/int/astconvert";
 import C3 from "./core_modules/fctcall/astconvert";
 import C4 from "./core_modules/symbol/astconvert";
 import C5 from "./core_modules/ifblock/astconvert";
@@ -23,7 +23,7 @@ const AST_CONVERT = [
 ]
 //TODO: use genlist
 import A1 from "./core_modules/operators/ast2js";
-import A2 from "./core_modules/integer/ast2js";
+import A2 from "./core_modules/int/ast2js";
 import A3 from "./core_modules/fctcall/ast2js";
 import A4 from "./core_modules/symbol/ast2js";
 import A5 from "./core_modules/ifblock/ast2js";
