@@ -265,6 +265,8 @@ function print_node(node) {
     html_bloc.textContent = node.type;
     if( node.value != null)
         html_bloc.textContent += `:${node.value}`;
+    if( node.result_type !== null)
+    html_bloc.textContent += ` (${node.result_type})`;
 
 	for(let child of node.children) {
         const html_child = print_node(child);
