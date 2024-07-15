@@ -60,7 +60,9 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] comments
     - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
     - genlist
-    - brython perfs : split Py2JS into Py2AST and AST2JS
+    - brython perfs :
+        - split Py2JS into Py2AST and AST2JS
+        - disable cache
     cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
 
 ## Implemented features
