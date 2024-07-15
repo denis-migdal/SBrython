@@ -26,11 +26,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] runtime
 
     - [ ] Add features
-        - [ ] if booleans
-            => /!\ limit children to what I can handle.
-        - [ ] is / ==
-        - [ ] define variable
-
         - [ ] Types : float/str/None
         - [ ] Basic operators : + / * - + neg numbers
             - [ ] Check nodes operator priority (add parenthesis)

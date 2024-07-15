@@ -1,10 +1,10 @@
-import { convert_line, convert_node } from "py2ast";
+import { Context, convert_line, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 //TODO: better system...
 let is_if = false;
 
-export default function convert(node: any) {
+export default function convert(node: any, context: Context) {
 
     if( ! ("test" in node) )
         return false;
@@ -12,7 +12,7 @@ export default function convert(node: any) {
     if( is_if ) {
         is_if = false;
 
-        const cond = convert_node(node.test);
+        const cond = convert_node(node.test, context);
 
         if( node.orelse.length !== 0)
             throw new Error("else/elif not yet supported");
@@ -22,13 +22,13 @@ export default function convert(node: any) {
 
         return new ASTNode(node, "if", null, [
             cond,
-            ...node.body.map( (m:any) => convert_line(m) )
+            ...node.body.map( (m:any) => convert_line(m, context) )
         ]);
     }
 
     is_if = true;
 
     return new ASTNode(node, "ifblock", null, [
-            convert_node(node)
+            convert_node(node, context)
         ]);
 }

@@ -1,7 +1,7 @@
-import { convert_node } from "py2ast";
+import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any) {
+export default function convert(node: any, context: Context) {
 
     if( ! ("op" in node) )
         return false;
@@ -15,8 +15,8 @@ export default function convert(node: any) {
 
     return new ASTNode(node, "Operator", op,
         [
-            convert_node(node.left ),
-            convert_node(node.right),
+            convert_node(node.left , context ),
+            convert_node(node.right, context),
         ]
     );
 }

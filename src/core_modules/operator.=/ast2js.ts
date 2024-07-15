@@ -5,7 +5,13 @@ export default function ast2js(this: ASTNode) {
     
     let cursor = {...this.jscode!.start};
 
-    let js = astnode2js(this.children[0], cursor);
+    let js = "";
+    if( (this as any).is_init ) {
+        js += "var ";
+        cursor.col += 4;
+    }
+
+    js += astnode2js(this.children[0], cursor);
     js += "=";
     cursor.col += 1;
     js += astnode2js(this.children[1], cursor);

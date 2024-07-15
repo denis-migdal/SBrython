@@ -53,12 +53,12 @@ export function py2ast(code: string) {
 	return convert_ast(_ast);   
 }
 
-export function convert_node(brython_node: any): ASTNode {
+export function convert_node(brython_node: any, context: Context): ASTNode {
 
     //console.log("N", brython_node);
 
     for(let i = 0; i < AST_CONVERT.length; ++i) {
-        let result = AST_CONVERT[i](brython_node);
+        let result = AST_CONVERT[i](brython_node, context);
         if(result !== false) {
             result.toJS = AST2JS[i];
             return result;
@@ -69,7 +69,7 @@ export function convert_node(brython_node: any): ASTNode {
     throw new Error("Unsupported node");
 }
 
-export function convert_line(line: any): ASTNode {
+export function convert_line(line: any, context: Context): ASTNode {
 
     //TODO: line ASTNode ???
 
@@ -77,9 +77,18 @@ export function convert_line(line: any): ASTNode {
     if( "value" in line && ! ("targets" in line) )
         node = line.value;
 
-    return convert_node( node );
+    return convert_node( node, context );
+}
+
+export type Context = {
+    local_variables: Record<string, string|null>
 }
 
 export function convert_ast(ast: any): ASTNode[] {
-	return ast.body.map( convert_line );
+
+    const context = {
+        local_variables: Object.create(null)
+    }
+
+	return ast.body.map( (line:any) => convert_line(line,context) );
 }
