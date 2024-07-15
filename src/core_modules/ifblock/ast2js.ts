@@ -9,10 +9,8 @@ export default function ast2js(this: ASTNode) {
         return astnode2js(this.children[0], cursor);
 
     //if
-    const start_col = cursor.col;
-
     let js = "if(";
-    cursor.col = start_col + js.length;
+    cursor.col += js.length;
     js += astnode2js(this.children[0], cursor);
     js += "){";
         cursor.col += 2;

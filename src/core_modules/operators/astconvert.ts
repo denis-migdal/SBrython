@@ -10,6 +10,9 @@ export default function convert(node: any) {
     if( op === "Add")
         op = "+";
 
+    if( op === "Eq")
+        return false;
+
     return new ASTNode(node, "Operator", op,
         [
             convert_node(node.left ),

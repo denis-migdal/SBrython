@@ -71,8 +71,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Functions call
     - call()
 - Literals
-    - integer
     - bool
+    - integer
+- Operators
+    - ==
 - Symbols
     - JS global symbols.
 
