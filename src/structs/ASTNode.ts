@@ -13,6 +13,7 @@ export class ASTNode {
 	type    : string;
 	value   : any;
 	children: ASTNode[] = [];
+	result_type: string|null = null;
 
     pycode: CodeRange;
     jscode?: CodeRange;

@@ -85,6 +85,11 @@ For example:
             type: string;
             value: any;
 
+            // the type of the expression after evaluation.
+            // used to simplifies/optimize generated JS code.
+            // null if unknown at transpilation time.
+        	result_type: string|null = null;
+
             // list of the node children
             children: ASTNode[];
 

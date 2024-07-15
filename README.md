@@ -26,12 +26,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] runtime
 
     - [ ] Add features
-        - [ ] if/else/elif
-            - [ ] booleans
+        - [ ] if booleans
             => /!\ limit children to what I can handle.
         - [ ] is / ==
         - [ ] define variable
-        - [ ] Indentation
 
         - [ ] Types : float/str/None
         - [ ] Basic operators : + / * - + neg numbers
@@ -58,6 +56,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] import/export (?)
         - [ ] define class+method
         - [ ] comments
+    - [ ] list used core_module + extend core_module.
     - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
     - genlist
     - brython perfs :
@@ -73,6 +72,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - call()
 - Literals
     - integer
+    - bool
 - Symbols
     - JS global symbols.
 
@@ -80,8 +80,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
-- [ ] Add features (complete SBrython)
+- [ ] Better editor : split unit tests, verify lines by lines + verify type + scroll to
 - [ ] CPython/PEP compliant
     - [ ] debug = true
     - [ ] async as coroutines = true
     - [ ] enforce python type = false
+    - [ ] Add features (complete SBrython)
+- [ ] Py => JS Regex conversions.

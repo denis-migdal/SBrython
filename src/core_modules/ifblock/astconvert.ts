@@ -11,8 +11,14 @@ export default function convert(node: any) {
 
     if( is_if ) {
         is_if = false;
+
+        const cond = convert_node(node.test);
+        
+        if(cond.result_type !== "bool")
+            throw new Error(`Type ${cond.result_type} not yet supported as if condition`);
+
         return new ASTNode(node, "if", null, [
-            convert_node(node.test),
+            cond,
             ...node.body.map( (m:any) => convert_line(m) )
         ]);
     }
