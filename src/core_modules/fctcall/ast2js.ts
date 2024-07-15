@@ -5,7 +5,8 @@ export default function ast2js(this: ASTNode) {
 
     let cursor = {...this.jscode!.start};
 
-    let js = `${ astnode2js(this.children[0], cursor)}(`;
+    let js = astnode2js(this.children[0], cursor);
+    js += '(';
     cursor.col += 1;
 
     for(let i = 1; i < this.children.length; ++i) {
@@ -15,7 +16,7 @@ export default function ast2js(this: ASTNode) {
             cursor.col += 1;
         }
         
-        js += `${ astnode2js(this.children[i], cursor)}`;
+        js += astnode2js(this.children[i], cursor);
     }
 
     js += ")";
