@@ -74,7 +74,7 @@ export function convert_line(line: any, context: Context): ASTNode {
     //TODO: line ASTNode ???
 
     let node = line;
-    if( "value" in line && ! ("targets" in line) )
+    if( "value" in line && ! ("targets" in line) && ! ("target" in line) )
         node = line.value;
 
     return convert_node( node, context );
