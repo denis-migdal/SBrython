@@ -19,6 +19,7 @@ write(True  == g)
 #None (explicit)
 
 f = None
+write(None)
 write(None  == None)
 write(   0  == None)
 write(False == None)
@@ -80,11 +81,21 @@ if c:
 </div>
 
 <style>
+
+    .success {
+        background-color: LightGreen;
+    }
+    .error {
+        background-color: OrangeRed;
+    }
+
     .editor {
         width: 100%;
+        height: 100%;
 
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
         /*
         display: flex;
         align-items: flex-start;
@@ -93,6 +104,7 @@ if c:
 
         & > div {
 
+            min-height: 0;
             /*flex: 1 1 0px;*/
 
             & > strong {
@@ -107,18 +119,16 @@ if c:
                 padding: 15px;
                 margin: 0px;
 
-                &.output_sbrython.success {
-                    background-color: LightGreen;
-                }
-                &.output_sbrython.error {
-                    background-color: OrangeRed;
-                }
+                height: calc(100% - 1.5rem - 30px);
+                overflow-y: auto;
             }
 
             & > textarea {
                 width: 100%;
-                height: calc(100% - 1.5rem);
                 padding: 15px;
+
+                height: calc(100% - 1.5rem);
+                overflow-y: auto;
             }
         }
 
@@ -181,6 +191,13 @@ function highlight(target) {
         gui_elem.classList.add("highlight");
 }
 
+brython_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+sbrython_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+
 ast_output.addEventListener("mouseover", ev => {
     highlight(ev.target);
 })
@@ -199,9 +216,12 @@ function update() {
     sbrython_output.classList.remove("success");
     sbrython_output.classList.remove("error");
 
-    window.write = function(txt) { output += txt + "\n" };
+    let is_sbrython = true;
+    window.write = function(txt) {
+        output.push([txt, new Error().stack]);
+    };
 
-    let output = "";
+    let output = [];
     let ast;
     let js_code = "";
     let beg = globalThis.performance.now();
@@ -224,22 +244,34 @@ function update() {
         console.error(e); //TODO
     }
 
-    let sbrython_result = output;
+    let sbrython_result = output.map( e => {
+                const div = document.createElement('div')
+                div.textContent = `${e[0]}`;
+                div.raw = e[0];
+                div.stack = e[1];
+                return div;
+            });
     try {
         console.log("AST", _ast);
         let end = globalThis.performance.now();
         let size = (100 * js_code.length / code.length - 100).toFixed(2);
-        sbrython_output.textContent = `${output}
-**code size +${size}%**
+
+        sbrython_output.replaceChildren(
+            ...sbrython_result,
+
+`**code size +${size}%**
 **Executed in ${end-beg}ms**
     **Py2AST:  ${step0-beg}ms
     **ASTConv: ${step1-step0}ms
     **AST2JS:  ${step2-step1}ms
-    **Runtime: ${end-step2}ms`;
+    **Runtime: ${end-step2}ms`
 // **Py2AST:  ${step1-beg}ms
+
+        );
     } catch(e) {}
 
-    output = "";
+    output = [];
+    is_sbrython = false;
     const code2 = `from browser import window\nwrite = window.write\n${code}`;
     //console.log("c2", code2);
     let js_code2;
@@ -271,17 +303,24 @@ function update() {
         console.error(e); //TODO
     }
 
-    console.log(output);
-
-    let brython_result = output;
+    let brython_result = output.map( e => {
+                const div = document.createElement('div')
+                div.textContent = `${e[0]}`;
+                div.raw = e[0];
+                div.stack = e[1]
+                return div;
+            });
     try {
         let end = globalThis.performance.now();
         let size = (100 * js_code2.length / code.length - 100).toFixed(2);
-        brython_output.textContent = `${output}
-**code size +${size}%**
+
+        brython_output.replaceChildren(
+            ...brython_result,
+`**code size +${size}%**
 **Executed in ${end-beg}ms**
     **Py2JS:   ${step2-beg}ms
-    **Runtime: ${end-step2}ms`;
+    **Runtime: ${end-step2}ms`
+    );
 
     /*
     **Py2AST:  ${step1-beg}ms
@@ -290,14 +329,82 @@ function update() {
         console.error(e);
     }
 
-    if( brython_result === sbrython_result )
-        sbrython_output.classList.add("success");
-    else
-        sbrython_output.classList.add("error");
+    function isNone(value) {
+        return (typeof value === "object")
+        && "__class__" in value
+        && value.__class__.__qualname__ === "NoneType";
+    }
+
+    function find_astnode_from_jscode_pos(ast, line, col) {
+
+        for(let i = 0; i < ast.length; ++i) {
+
+            if( ast[i].jscode.start.line > line
+            || ast[i].jscode.start.line === line && ast[i].jscode.start.col > col)
+                return null;
+
+            if(    ast[i].jscode.end.line > line
+                || ast[i].jscode.end.line === line && ast[i].jscode.end.col > col
+            ) {
+                let node = find_astnode_from_jscode_pos(ast[i].children, line, col);
+                if( node !== null)
+                    return node;
+                return ast[i];
+            }
+        }
+
+        return null; //throw new Error("node not found");
+    }
 
     print_python( code, ast );
 	print_ast( ast );
 	print_js( js_code, ast );
+
+    let equals = true;
+    let min_id = Math.min(brython_result.length, sbrython_result.length)
+    for(let i = 0; i < min_id; ++i) {
+
+        // handle stack...
+        const stack = sbrython_result[i].stack.split("\n");
+        const [id, pos] = stack[1].split(" > ");
+        let [_, line, col] = pos.split(":");
+        line -= 2; // 
+        col  -= 1;
+       
+        const node = find_astnode_from_jscode_pos(ast, line, col);
+        node.$gui_elems.push( sbrython_result[i], brython_result[i] );
+        sbrython_result[i].$node = node;
+         brython_result[i].$node = node;
+        //TODO: in the other direction...
+
+        let line_equals = true;
+
+        if( sbrython_result[i].textContent !== brython_result[i].textContent )
+            line_equals = false;
+        if( typeof sbrython_result[i].raw !== typeof brython_result[i].raw ) {
+            line_equals = false;
+
+            if( typeof sbrython_result[i].raw === "bigint" && typeof brython_result[i].raw === "number")
+                line_equals = true;
+        }
+
+        if( (sbrython_result[i].raw === null || sbrython_result[i].raw === undefined)
+            && isNone(brython_result[i].raw) )
+            line_equals = true;
+
+        //if( ! line_equals )
+        //    console.warn( typeof sbrython_result[i].raw, typeof brython_result[i].raw )
+
+        let line_class = line_equals ? "success" : "error";
+        sbrython_result[i].classList.add(line_class);
+         brython_result[i].classList.add(line_class);
+
+        if( ! line_equals )
+            equals = false;
+    }
+
+    sbrython_output.classList.add(equals ? "success" : "error");
+
 }
 
 function print_node(node) {

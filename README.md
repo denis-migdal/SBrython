@@ -21,12 +21,34 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
         - [ ] Build + usage
         - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc // types hint
+        - [ ] Context.options
+        - [ ] How code is validated (several options + Brython)
 
     - [ ] split files / core module
         - [ ] runtime
 
+    - [ ] genlist + change + rename ifblock into controlflow.X
+    - [ ] Editor :
+        - forbid unknown except JS function call return value + JS symbol (check).
+        - execute twice, one with runtime checks (/!\ ifblock)
+
+    - [ ] CURRENT
+        - doc API functions.
+        - Mail : new line => when trace disabled if JS pos inside AST tree when code generated.
+
+        0. gen list
+        1. no unknown
+        2. str/real
+        3. +-/* **, % unary -, //,
+        4. cmp : > >= < <= !=
+        5. or / and / not
+        6. Loops / While / For in range()
+        7. def functions (pos args)
+        8. List/Tuple/Dict => override JS...
+            => exec method/getattr // JS new()
+
     - [ ] Add features
-        - [ ] Types : float/str/None
+        - [ ] Types : float/str
         - [ ] Basic operators : + / * - + neg numbers
             - [ ] Check nodes operator priority (add parenthesis)
             - [ ] Check operators result_type
@@ -43,6 +65,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] JS code insert
 
         - [ ] pass
+        - [ ] Raise Exceptions + try/catch/finally
         - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
@@ -81,12 +104,23 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Documentation (style+markdown+complete)
 - [ ] Better editor :
     - [ ] split unit tests (resume + split output)
+    - [ ] AST result_type assertions
+    - [ ] make some checks not performed in Brython.
     - [ ] verify output lines by lines + verify type + highlight
     - [ ] scroll to
     - [ ] highlight write/result line.
+- [ ] Type
+    - [ ] Better type deduction: if type === => change local type in body.
+    - [ ] Generate TS code mode
+    - [ ] fetch JS API types from TS. (.d.ts ???)
 - [ ] CPython/PEP compliant
     - [ ] debug = true
     - [ ] async as coroutines = true
     - [ ] enforce python type = false
+        - [ ] ignore variable type annotations.
+        - [ ] forbid (or raise a warning) explicit type violation .
+        - [ ] forbid (or raise a warning) on variable deduced type violation.
+        - [ ] forbid (or raise a warning) all non-explicit unknown type.- forbid (or - - - [ ] raise a warning) when using values of unknown type.
+        - [ ] runtime type checking.
     - [ ] Add features (complete SBrython)
 - [ ] Py => JS Regex conversions.
