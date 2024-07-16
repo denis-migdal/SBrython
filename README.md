@@ -37,6 +37,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - Mail : new line => when trace disabled if JS pos inside AST tree when code generated.
 
         0. gen list
+        X. comments ("jump")
         1. no unknown
         2. str/real
         3. +-/* **, % unary -, //,
@@ -65,7 +66,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] JS code insert
 
         - [ ] pass
-        - [ ] Raise Exceptions + try/catch/finally
+        - [ ] Raise Exceptions + try/catch/finally + global try/catch ?
         - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
@@ -103,12 +104,11 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
 - [ ] Better editor :
+    - [ ] make asserts that will be only be performed in SBrython (no Brython)
     - [ ] split unit tests (resume + split output)
-    - [ ] AST result_type assertions
-    - [ ] make some checks not performed in Brython.
-    - [ ] verify output lines by lines + verify type + highlight
+        - [ ] output : accordeon (closed if success, open first error/fail) + highlight first error.
+        - [ ] show AST/Code only for open output.
     - [ ] scroll to
-    - [ ] highlight write/result line.
 - [ ] Type
     - [ ] Better type deduction: if type === => change local type in body.
     - [ ] Generate TS code mode

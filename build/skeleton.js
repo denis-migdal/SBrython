@@ -1,5 +1,6 @@
 //const copyAssets = require('./copyAssets');
 //const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const genCoreModuleList = require('./genCoreModuleList');
 
 module.exports = function (src, dst, rules = [], options = {}) {
 
@@ -28,7 +29,13 @@ module.exports = function (src, dst, rules = [], options = {}) {
 			compareBeforeEmit: true
 		},
 		target: "web",
-        plugins: [],
+        plugins: [{
+            apply: (compiler) => {
+                compiler.hooks.compile.tap("MyPlugin_compile", () => {
+                	genCoreModuleList();
+                });
+            },
+        }],
 		//watch: WATCH, no needs (--watch / --no-watch)
 		watchOptions: {
 			ignored: [	'**/node_modules',
