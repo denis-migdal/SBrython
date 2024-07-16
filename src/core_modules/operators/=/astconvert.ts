@@ -13,7 +13,7 @@ export default function convert(node: any, context: Context) {
     const left  = convert_node(target, context );
     const right = convert_node(node.value,      context);
 
-    const astnode = new ASTNode(node, "Operator.=", null,
+    const astnode = new ASTNode(node, "operators.=", null,
         [
             left,
             right,

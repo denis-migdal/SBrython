@@ -13,7 +13,7 @@ export default function convert(node: any, context: Context) {
     if( op === "Eq")
         return false;
 
-    return new ASTNode(node, "Operator", op,
+    return new ASTNode(node, "operators.+", op,
         [
             convert_node(node.left , context ),
             convert_node(node.right, context),

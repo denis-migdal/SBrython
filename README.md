@@ -27,7 +27,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - [ ] split files / core module
         - [ ] runtime
 
-    - [ ] genlist + change + rename ifblock into controlflow.X
+    - [ ] change core module names + rename ifblock into controlflow.X
     - [ ] Editor :
         - forbid unknown except JS function call return value + JS symbol (check).
         - execute twice, one with runtime checks (/!\ ifblock)

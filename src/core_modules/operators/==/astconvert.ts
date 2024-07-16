@@ -14,7 +14,7 @@ export default function convert(node: any, context: Context) {
         throw new Error("Not implemented");
     }
 
-    const astnode = new ASTNode(node, "Operator.==", null,
+    const astnode = new ASTNode(node, "operators.==", null,
         [
             left,
             right,

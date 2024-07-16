@@ -5,7 +5,7 @@ export default function ast2js(this: ASTNode) {
 
     let cursor = {...this.jscode!.start};
 
-    if( this.type === "ifblock")
+    if( this.type === "controlflows.ifblock")
         return astnode2js(this.children[0], cursor);
 
     //if
