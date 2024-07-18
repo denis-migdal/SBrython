@@ -16,15 +16,22 @@ export default function ast2js(this: ASTNode) {
     let keyword = "if";
     if( this.type === "controlflows.elif")
         keyword = "else if";
+    if( this.type === "controlflows.else")
+        keyword = "else";
 
-    let js = `${keyword}(`;
-    cursor.col += js.length;
-    js += astnode2js(this.children[0], cursor);
-    js += ")";
+    let js = `${keyword}`;
+    let offset = 0;
+    if( keyword !== "else") {
+        js += "(";
+        cursor.col += js.length;
+        js += astnode2js(this.children[0], cursor);
+        ++offset;
+        js += ")";
+    }
     if(keyword !== "if") {  // h4ck
         --this.jscode!.start.col;
     }
-    js += body2js(this, cursor, 1);
+    js += body2js(this, cursor, offset);
     if(keyword !== "if") {  // h4ck
         ++this.jscode!.start.col;
     }

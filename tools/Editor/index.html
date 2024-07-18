@@ -11,16 +11,16 @@
         <strong>Input</strong>
         <textarea id="python">
 # if / elif / else
-#if False:
-#    pass
-#else:
-#    write("ELSE")
-#    write("ELSE")
+if False:
+    pass
+else:
+    write("ELSE")
+    write("ELSE")
 
-#if False:
-#    pass
-#else:
-#    write("ELSE")
+if False:
+    pass
+else:
+    write("ELSE")
 
 
 if False:
@@ -30,8 +30,8 @@ elif False:
     write("False")
 elif True:
     write("True")
-#else:
-#    write("END")
+else:
+    write("END")
 
 #if pass
 if True:
@@ -553,6 +553,7 @@ function print_code_node(node, code, type) {
     let cursor = node[type].start;
     let offset = 0;
     for(let i = 0; i < node.children.length; ++i) {
+        console.warn("CI", node.children[i]);
         subparts[offset++] = slice_code(code, cursor, node.children[i][type].start);
         subparts[offset++] = print_code_node(node.children[i], code, type);
         cursor = node.children[i][type].end;

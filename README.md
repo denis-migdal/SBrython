@@ -29,7 +29,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         b. For in range()
         c. For in str
             + continue+break;
-        d. else
     2. def functions (pos args)
     3. Exceptions.
     4. ops
