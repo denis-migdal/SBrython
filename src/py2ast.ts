@@ -21,12 +21,12 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     for(let module_name in CORE_MODULES) {
         const module = CORE_MODULES[module_name as keyof typeof CORE_MODULES];
         let result = module.AST_CONVERT(brython_node, context);
-        if(result !== false) {
+        if(result !== undefined) {
             result.toJS = module.AST2JS;
             return result;
         }
     }
-    
+
     console.error(brython_node);
     throw new Error("Unsupported node");
 }
@@ -52,5 +52,15 @@ export function convert_ast(ast: any): ASTNode[] {
         local_variables: Object.create(null)
     }
 
-	return ast.body.map( (line:any) => convert_line(line,context) );
+    const result = new Array(ast.body.length);
+    for(let i = 0; i < ast.body.length; ++i) {
+
+        //TODO: detect comments
+
+        result[i] = convert_line(ast.body[i], context);
+    }
+
+    //TODO: detect comments...
+
+    return result;
 }

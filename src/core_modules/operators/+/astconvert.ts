@@ -4,14 +4,14 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     if( ! ("op" in node) )
-        return false;
+        return;
 
     let op = node.op.constructor.$name;
     if( op === "Add")
         op = "+";
 
     if( op === "Eq")
-        return false;
+        return;
 
     return new ASTNode(node, "operators.+", op,
         [

@@ -4,7 +4,7 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     if( ! ("ops" in node) || node.ops[0].constructor.$name !== "Eq" )
-        return false;
+        return;
 
     const left  = convert_node(node.left, context );
     const right = convert_node(node.comparators[0], context);

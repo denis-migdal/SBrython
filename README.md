@@ -6,49 +6,32 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-- Editor
-    - [ ] DOC !!!
-        - [ ] Presentation/goal
-- I want the transpiler to be as simple as possible for educational purposes (I want to put student projects on it, so that they can play with it).
-- I want the generated JS to be as simple as possible to read for educational purposes (I want students to be able to read it).
-- I will not implement all Python features, only some basic ones.
-- I don't care to be fully CPython compliant.
-- I don't care to be able to support Python libraries.
-- I don't care about performances.
-- I only care about stability.
-- I will publish some PoC, for AST tree structure, AST tree printing, unit tests, documentations, etc. that I hope could be interesting and potentially adapted for Brython.
-- I think some design choices I'll make could be interesting for Brython, so it could serve as a PoC on the way some features can be implemented/architectured.
+    1. no unknown
+        - [X] type in ASTNode constructor.
+    2. str/real
+    3. ops
+        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
+        a. +-/* **, % unary -, //,
+        b. cmp : > >= < <= !=
+        c. or / and / not
+    4. Loops / While / For in range() / elif / else
+        1. body node
+    5. def functions (pos args)
+    6. List/Tuple/Dict => override JS...
+        => exec method/getattr // JS new()
+    7. simple classes.
+    8 import/export.
 
-        - [ ] Build + usage
-        - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc // types hint
-        - [ ] Context.options
-        - [ ] How code is validated (several options + Brython)
-
-    - [ ] split files / core module
-        - [ ] runtime
-
-    - [ ] change core module names + rename ifblock into controlflow.X
-    - [ ] Editor :
-        - forbid unknown except JS function call return value + JS symbol (check).
-        - execute twice, one with runtime checks (/!\ ifblock)
-
-    - [ ] CURRENT
-        - doc API functions.
-        - Mail : new line => when trace disabled if JS pos inside AST tree when code generated.
-
-        0. gen list
-        X. comments ("jump")
-        1. no unknown
-        2. str/real
-        3. +-/* **, % unary -, //,
-        4. cmp : > >= < <= !=
-        5. or / and / not
-        6. Loops / While / For in range()
-        7. def functions (pos args)
-        8. List/Tuple/Dict => override JS...
-            => exec method/getattr // JS new()
+    - [ ] Check AST
+        - check assignations AFTER AST is built ?
+        - check result_type=unknown AFTER AST is built.
+            - children of assign can be unknown.
+            - fctcall can be unknown if not used.
+            - if deduced, set unknown ?
+        -> warning on node => show in editor ?
 
     - [ ] Add features
+        - [ ] comments
         - [ ] Types : float/str
         - [ ] Basic operators : + / * - + neg numbers
             - [ ] Check nodes operator priority (add parenthesis)
@@ -74,14 +57,45 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
         - [ ] import/export (?)
         - [ ] define class+method
-        - [ ] comments
     - [ ] list used core_module + extend core_module.
-    - [ ] Error message : highlight code / lineno / offset/end_offset => find nearest node ?
-    - genlist
+    - [ ] Error message : show Python stacktrace
     - brython perfs :
         - split Py2JS into Py2AST and AST2JS
         - disable cache
     cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
+
+## Documentation (TODO)
+
+
+    - [ ] DOC !!!
+        - [ ] Presentation/goal
+- I want the transpiler to be as simple as possible for educational purposes (I want to put student projects on it, so that they can play with it).
+- I want the generated JS to be as simple as possible to read for educational purposes (I want students to be able to read it).
+- I will not implement all Python features, only some basic ones.
+- I don't care to be fully CPython compliant.
+- I don't care to be able to support Python libraries.
+- I don't care about performances.
+- I only care about stability.
+- I will publish some PoC, for AST tree structure, AST tree printing, unit tests, documentations, etc. that I hope could be interesting and potentially adapted for Brython.
+- I think some design choices I'll make could be interesting for Brython, so it could serve as a PoC on the way some features can be implemented/architectured.
+
+        - [ ] Build + usage
+        - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc // types hint
+        - [ ] Context.options
+        - [ ] How code is validated (several options + Brython)
+    - figure for JS API ?
+
+## JS API
+
+    - TODO: make a figure in transpilation doc ?
+    - [Soon:] exec_py(pycode)
+    - [Soon:] exec_js(jscode)
+    - [Soon:] py2js(pycode)
+        - py2ast(pycode) -> AST : convert python code into an AST
+            - [Soon:] Python code to BrythonAST
+            - convert_ast(BAST) -> AST
+        - ast2js(AST) => JS : convert an AST into JS Code
+    - [Soon:] JS stack to Python stack conversion
 
 ## Implemented features
 
@@ -104,6 +118,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
 - [ ] Better editor :
+    - [ ] Twice exec, one with runtime type checks
     - [ ] make asserts that will be only be performed in SBrython (no Brython)
     - [ ] split unit tests (resume + split output)
         - [ ] output : accordeon (closed if success, open first error/fail) + highlight first error.
@@ -124,3 +139,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] runtime type checking.
     - [ ] Add features (complete SBrython)
 - [ ] Py => JS Regex conversions.
+- [ ] Keep python indent (e.g. if fct argument indented, indent it in JS too)
+- [ ] Keep Python comments
+- [ ] Stack trace sourcemap 
+    - [ ] https://github.com/brython-dev/brython/issues/2476

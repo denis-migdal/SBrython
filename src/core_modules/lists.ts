@@ -16,6 +16,8 @@ import AST_CONVERT_7 from "./fctcall/astconvert.ts";
 import      AST2JS_7 from "./fctcall/ast2js.ts";
 import AST_CONVERT_8 from "./controlflows/ifblock/astconvert.ts";
 import      AST2JS_8 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_9 from "./comments/astconvert.ts";
+import      AST2JS_9 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -54,6 +56,10 @@ const MODULES = {
 	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_8,
 		     AST2JS:      AST2JS_8
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_9,
+		     AST2JS:      AST2JS_9
 	},
 }
 

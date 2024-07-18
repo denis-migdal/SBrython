@@ -1,3 +1,5 @@
+<body>
+
 <script src="../../brython/www/src/brython.js"></script>
 
 <div class="editor">
@@ -8,6 +10,14 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+# Comments
+if True: #End of line comment
+    write(0)
+0==0 #test
+write(
+    #test
+    0
+)
 #None (implicit)
 g: None = write(0)
 # write(g     == None) expected to be true, not the case in Brython
@@ -557,3 +567,4 @@ python_input.addEventListener("input",
 update();
 
 </script>
+</body>

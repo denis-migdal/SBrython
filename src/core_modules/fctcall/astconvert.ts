@@ -4,7 +4,7 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     if( ! ("func" in node) )
-        return false;
+        return;
 
     // TODO: node.args // fct call argument.
     // TODO: this ?

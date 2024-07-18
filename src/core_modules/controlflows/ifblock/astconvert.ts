@@ -7,7 +7,7 @@ let is_if = false;
 export default function convert(node: any, context: Context) {
 
     if( ! ("test" in node) )
-        return false;
+        return;
 
     if( is_if ) {
         is_if = false;

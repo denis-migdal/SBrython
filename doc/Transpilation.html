@@ -20,10 +20,10 @@ See next section for a description of SBrython AST nodes.
 
 <h3>astconvert.ts</h3>
 
-Must default export a function <code>convert(node: any): false|ASTNode</code>.
+Must default export a function <code>convert(node: any): undefined|ASTNode</code>.
 
 <p>This function takes into parameters a Brython AST node, and converts it into a <code>ASTNode</code>.
-If the Brython AST node can't be converted by this core module, returns <code>false</code>.</p>
+If the Brython AST node can't be converted by this core module, returns <code>undefined</code>.</p>
 
 For example:
 <code>
@@ -33,7 +33,7 @@ For example:
     export default function convert(node: any) {
     
         if( typeof node.value !== "number" )
-            return false;
+            return;
     
         return new ASTNode(node, "integer", node.value);
     }

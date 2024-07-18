@@ -4,7 +4,7 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     if( ! ("targets" in node) && ! ("target" in node) )
-        return false;
+        return;
 
     let target = node.target;
     if( "targets" in node)
@@ -27,8 +27,6 @@ export default function convert(node: any, context: Context) {
             throw new Error("Wrong result_type");
     }
     astnode.result_type = right_type;
-
-    console.warn(node, right_type)
 
     if( left.type === "symbol") {
 

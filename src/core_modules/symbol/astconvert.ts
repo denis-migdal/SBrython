@@ -4,7 +4,7 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     if( ! ("id" in node) )
-        return false;
+        return;
 
     const astnode = new ASTNode(node, "symbol", node.id);
 
