@@ -12,6 +12,23 @@ export function ast2js(ast: ASTNode[]) {
 	return js;
 }
 
+export function body2js(node: ASTNode, cursor: CodePos, offset = 0) {
+    
+    let js = "{";
+    const body = node.children;//body: ASTNode[];
+
+    for(let i = offset; i < body.length; ++i) {
+        js += newline(node, cursor, 1);
+        js += astnode2js(body[i], cursor)
+    }
+
+    js += newline(node, cursor);
+    js += "}";
+    cursor.col += 1;
+
+    return js;
+}
+
 function update_end(node: ASTNode, js: string) {
 
     if( node.jscode!.end !== null)

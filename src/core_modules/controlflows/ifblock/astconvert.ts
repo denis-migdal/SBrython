@@ -1,4 +1,4 @@
-import { Context, convert_line, convert_node } from "py2ast";
+import { Context, convert_body, convert_line, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 //TODO: better system...
@@ -22,7 +22,7 @@ export default function convert(node: any, context: Context) {
 
         return new ASTNode(node, "controlflows.if", null, null, [
             cond,
-            ...node.body.map( (m:any) => convert_line(m, context) )
+            ...convert_body(node, context)
         ]);
     }
 

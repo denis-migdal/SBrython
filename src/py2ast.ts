@@ -31,6 +31,10 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     throw new Error("Unsupported node");
 }
 
+export function convert_body(node: any, context: Context) {
+    return node.body.map( (m:any) => convert_line(m, context) )
+}
+
 export function convert_line(line: any, context: Context): ASTNode {
 
     //TODO: line ASTNode ???

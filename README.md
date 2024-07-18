@@ -4,20 +4,44 @@ https://denis-migdal.github.io/SimplerBrython/
 https://denis-migdal.github.io/SimplerBrython/doc
 https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
+## Implemented features
+
+- Control flow
+    - if(bool)
+- Functions call
+    - call(pos_arg)
+- Literals
+    - bool
+    - int
+    - float (ops not tested)
+    - str   (ops not tested)
+    - None (explicit = JS null / implicit = JS undefined)
+- Operators
+    - =  (bool/int/None) + with annotations
+    - == (bool/int/None)
+- Symbols
+    - JS global symbols.
+
 ## Currently Working on...
 
-    3. ops
+    1. controlflows
+        a. While
+        b. For in range()
+        c. For in str
+            + continue+break;
+        d. elif / else
+    2. def functions (pos args)
+    3. Exceptions.
+    4. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
         b. cmp : > >= < <= !=
         c. or / and / not
-    4. Loops / While / For in range() / elif / else
-        1. body node
-    5. def functions (pos args)
-    6. List/Tuple/Dict => override JS...
+
+    5. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
-    7. simple classes.
-    8 import/export.
+    6. simple classes.
+    7. import/export.
 
     - [ ] Check AST
         - check assignations AFTER AST is built ?
@@ -29,7 +53,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
     - [ ] Add features
         - [ ] comments
-        - [ ] Types : float/str
         - [ ] Basic operators : + / * - + neg numbers
             - [ ] Check nodes operator priority (add parenthesis)
             - [ ] Check operators result_type
@@ -47,6 +70,8 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
         - [ ] pass
         - [ ] Raise Exceptions + try/catch/finally + global try/catch ?
+            - [ ] Error message : show Python stacktrace
+            - /!\ Chromium stackstrace
         - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
@@ -55,7 +80,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] import/export (?)
         - [ ] define class+method
     - [ ] list used core_module + extend core_module.
-    - [ ] Error message : show Python stacktrace
     - brython perfs :
         - split Py2JS into Py2AST and AST2JS
         - disable cache
@@ -94,23 +118,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - ast2js(AST) => JS : convert an AST into JS Code
     - [Soon:] JS stack to Python stack conversion
 
-## Implemented features
-
-- Control flow
-    - if(bool)
-- Functions call
-    - call(pos_arg)
-- Literals
-    - bool
-    - int
-    - float (ops not tested)
-    - str   (ops not tested)
-    - None (explicit = JS null / implicit = JS undefined)
-- Operators
-    - =  (bool/int/None) + with annotations
-    - == (bool/int/None)
-- Symbols
-    - JS global symbols.
 
 ## Student projects
 

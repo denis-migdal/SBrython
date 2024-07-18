@@ -1,4 +1,4 @@
-import { astnode2js, newline } from "ast2js";
+import { astnode2js, body2js, newline } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode) {
@@ -12,19 +12,10 @@ export default function ast2js(this: ASTNode) {
     let js = "if(";
     cursor.col += js.length;
     js += astnode2js(this.children[0], cursor);
-    js += "){";
-        cursor.col += 2;
-        for(let i = 1; i < this.children.length; ++i) {
-            js += newline(this, cursor, 1);
-            js += astnode2js(this.children[i], cursor)
-        }
-    js += newline(this, cursor);
-    js += "}";
+    js += ")";
+    js += body2js(this, cursor, 1);
 
-    this.jscode!.end = {
-        line: cursor.line,
-        col: 2,
-    }
+    this.jscode!.end = {...cursor};
 
     return js;
 }

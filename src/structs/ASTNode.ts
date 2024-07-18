@@ -20,7 +20,7 @@ export class ASTNode {
 
 	toJS?: (this: ASTNode) => string;
 
-	constructor(brython_node: any, type: string, result_type: string|null, _value?: any, children: ASTNode[] = []) {
+	constructor(brython_node: any, type: string, result_type: string|null, _value: any = null, children: ASTNode[] = []) {
 
 		this.type   = type;
 		this.result_type = result_type;
@@ -36,14 +36,5 @@ export class ASTNode {
 				col: brython_node.end_col_offset
 			}
 		}
-/*
-		const value = line.value;
-
-		if( value === undefined) {
-			this.type = "pass";
-			this.value = "";
-			return;
-		}
-*/
 	}
 }
