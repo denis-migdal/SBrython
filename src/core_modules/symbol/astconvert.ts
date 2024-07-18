@@ -6,10 +6,9 @@ export default function convert(node: any, context: Context) {
     if( ! ("id" in node) )
         return;
 
-    const astnode = new ASTNode(node, "symbol", node.id);
-
+    let result_type = null;
     if( node.id in context.local_variables)
-        astnode.result_type = context.local_variables[node.id];
+        result_type = context.local_variables[node.id];
 
-    return astnode;
+   return new ASTNode(node, "symbol", result_type, node.id);
 }

@@ -20,9 +20,10 @@ export class ASTNode {
 
 	toJS?: (this: ASTNode) => string;
 
-	constructor(brython_node: any, type: string, _value?: any, children: ASTNode[] = []) {
+	constructor(brython_node: any, type: string, result_type: string|null, _value?: any, children: ASTNode[] = []) {
 
 		this.type   = type;
+		this.result_type = result_type;
 		this.value  = _value;
 		this.children = children!;
 		this.pycode = {

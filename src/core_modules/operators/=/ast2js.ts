@@ -6,7 +6,7 @@ export default function ast2js(this: ASTNode) {
     let cursor = {...this.jscode!.start};
 
     let js = "";
-    if( (this as any).is_init ) {
+    if( this.type.endsWith("(init)") ) {
         js += "var ";
         cursor.col += 4;
     }

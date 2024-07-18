@@ -6,8 +6,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-    1. no unknown
-        - [X] type in ASTNode constructor.
     2. str/real
     3. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table

@@ -6,7 +6,5 @@ export default function convert(node: any, _context: Context) {
     if( typeof node.value !== "boolean" )
         return;
 
-    const astnode = new ASTNode(node, "literals.bool", node.value);
-    astnode.result_type = "bool";
-    return astnode;
+    return new ASTNode(node, "literals.bool", "bool", node.value);
 }

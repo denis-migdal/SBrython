@@ -8,7 +8,5 @@ export default function convert(node: any, _context: Context) {
             || node.value.__class__.__qualname__ !== "NoneType" )
         return;
 
-    const astnode = new ASTNode(node, "literals.None", null);
-    astnode.result_type = "None"
-    return astnode;
+    return new ASTNode(node, "literals.None", "None", null);
 }

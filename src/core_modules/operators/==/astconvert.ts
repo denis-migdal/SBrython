@@ -14,13 +14,10 @@ export default function convert(node: any, context: Context) {
         throw new Error("Not implemented");
     }
 
-    const astnode = new ASTNode(node, "operators.==", null,
+    return new ASTNode(node, "operators.==", "bool", null,
         [
             left,
             right,
         ]
     );
-    
-    astnode.result_type = "bool";
-    return astnode;
 }

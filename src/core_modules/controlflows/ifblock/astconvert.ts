@@ -20,7 +20,7 @@ export default function convert(node: any, context: Context) {
         if(cond.result_type !== "bool")
             throw new Error(`Type ${cond.result_type} not yet supported as if condition`);
 
-        return new ASTNode(node, "controlflows.if", null, [
+        return new ASTNode(node, "controlflows.if", null, null, [
             cond,
             ...node.body.map( (m:any) => convert_line(m, context) )
         ]);
@@ -28,7 +28,7 @@ export default function convert(node: any, context: Context) {
 
     is_if = true;
 
-    return new ASTNode(node, "controlflows.ifblock", null, [
+    return new ASTNode(node, "controlflows.ifblock", null, null, [
             convert_node(node, context)
         ]);
 }

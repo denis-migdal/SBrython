@@ -13,20 +13,14 @@ export default function convert(node: any, context: Context) {
     const left  = convert_node(target, context );
     const right = convert_node(node.value,      context);
 
-    const astnode = new ASTNode(node, "operators.=", null,
-        [
-            left,
-            right,
-        ]
-    );
-
     let right_type: string|null = right.result_type;
     if( "annotation" in node) {
         right_type = node.annotation.id ?? "None";
         if( right.result_type !== null && right.result_type !== right_type)
             throw new Error("Wrong result_type");
     }
-    astnode.result_type = right_type;
+
+    let type = "operators.=";
 
     if( left.type === "symbol") {
 
@@ -39,9 +33,14 @@ export default function convert(node: any, context: Context) {
             // annotation_type
         } else {
             context.local_variables[left.value] = right_type;
-            (astnode as any).is_init = true;
+            type += "(init)";
         }
     }
     
-    return astnode;
+    return new ASTNode(node, type, right_type, null,
+        [
+            left,
+            right,
+        ]
+    );
 }
