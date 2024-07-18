@@ -10,3 +10,5 @@ export default function convert(node: any, _context: Context) {
 
     return new ASTNode(node, "literals.None", "None", null);
 }
+
+convert.brython_name = "Constant";

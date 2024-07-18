@@ -7,7 +7,7 @@ export default function convert(node: any, context: Context) {
 
         if( node.ifblock === "else") {
             return new ASTNode(node, `controlflows.${node.ifblock}`, null, null, [
-                ...convert_body(node, context)
+                convert_body(node, context)
             ]);
         }
 
@@ -18,13 +18,11 @@ export default function convert(node: any, context: Context) {
 
         return new ASTNode(node, `controlflows.${node.ifblock}`, null, null, [
             cond,
-            ...convert_body(node, context)
+            convert_body(node, context)
         ]);
     }
 
-    if( ! ("test" in node) )
-        return;
-
+    node.sbrython_type = "If";
     node.ifblock = "if";
 
     const children = [
@@ -34,6 +32,7 @@ export default function convert(node: any, context: Context) {
     let cur = node;
     while( "orelse" in cur && cur.orelse.length === 1 && "test" in cur.orelse[0]) {
         cur = cur.orelse[0];
+        cur.sbrython_type = "If";
         cur.ifblock = "elif";
         children.push(cur);
     }
@@ -43,6 +42,7 @@ export default function convert(node: any, context: Context) {
         let end = cur.orelse[cur.orelse.length-1];
 
         children.push({
+            sbrython_type: "If",
             ifblock: "else",
             body   : cur.orelse,
             lineno : beg.lineno - 1,
@@ -63,3 +63,5 @@ export default function convert(node: any, context: Context) {
 
     return astnode;
 }
+
+convert.brython_name = "If";

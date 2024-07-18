@@ -8,3 +8,5 @@ export default function convert(node: any, _context: Context) {
 
     return new ASTNode(node, "literals.float", "float", node.value.value);
 }
+
+convert.brython_name = "Constant";

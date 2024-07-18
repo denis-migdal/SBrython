@@ -3,9 +3,6 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    if( ! ("func" in node) )
-        return;
-
     // TODO: node.args // fct call argument.
     // TODO: this ?
     return new ASTNode(node, "fctcall", null, null, [
@@ -13,3 +10,5 @@ export default function convert(node: any, context: Context) {
         ...node.args.map( (e:any) => convert_node(e, context) )
     ]);
 }
+
+convert.brython_name = "Call";

@@ -3,9 +3,6 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    if( ! ("targets" in node) && ! ("target" in node) )
-        return;
-
     let target = node.target;
     if( "targets" in node)
         target = node.targets[0];
@@ -44,3 +41,5 @@ export default function convert(node: any, context: Context) {
         ]
     );
 }
+
+convert.brython_name = ["Assign", "AnnAssign"];

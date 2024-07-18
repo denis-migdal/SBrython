@@ -12,19 +12,35 @@ export function ast2js(ast: ASTNode[]) {
 	return js;
 }
 
-export function body2js(node: ASTNode, cursor: CodePos, offset = 0) {
+//TODO: move2core_modules ?
+export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     
-    let js = "{";
-    const body = node.children;//body: ASTNode[];
+    const start = {...cursor};
 
-    for(let i = offset; i < body.length; ++i) {
+    let js = "{";
+    const body = node.children[idx];//body: ASTNode[];
+
+    // h4ck due to } else/elif {
+    if(node.type === "controlflows.else" || node.type === "controlflows.elif")
+        --node.jscode!.start.col;
+
+    for(let i = 0; i < body.children.length; ++i) {
         js += newline(node, cursor, 1);
-        js += astnode2js(body[i], cursor)
+        js += astnode2js(body.children[i], cursor)
     }
+
+    // h4ck due to } else/elif {
+    if(node.type === "controlflows.else" || node.type === "controlflows.elif")
+        ++node.jscode!.start.col;
 
     js += newline(node, cursor);
     js += "}";
     cursor.col += 1;
+
+    body.jscode = {
+        start: start,
+        end  : {...cursor}
+    }
 
     return js;
 }

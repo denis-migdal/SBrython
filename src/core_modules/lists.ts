@@ -20,10 +20,12 @@ import AST_CONVERT_9 from "./literals/None/astconvert.ts";
 import      AST2JS_9 from "./literals/None/ast2js.ts";
 import AST_CONVERT_10 from "./fctcall/astconvert.ts";
 import      AST2JS_10 from "./fctcall/ast2js.ts";
-import AST_CONVERT_11 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_11 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_12 from "./comments/astconvert.ts";
-import      AST2JS_12 from "./comments/ast2js.ts";
+import AST_CONVERT_11 from "./controlflows/while/astconvert.ts";
+import      AST2JS_11 from "./controlflows/while/ast2js.ts";
+import AST_CONVERT_12 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_12 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_13 from "./comments/astconvert.ts";
+import      AST2JS_13 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -71,13 +73,17 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_10,
 		     AST2JS:      AST2JS_10
 	},
-	"controlflows.ifblock": {
+	"controlflows.while": {
 		AST_CONVERT: AST_CONVERT_11,
 		     AST2JS:      AST2JS_11
 	},
-	"comments": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_12,
 		     AST2JS:      AST2JS_12
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_13,
+		     AST2JS:      AST2JS_13
 	},
 }
 

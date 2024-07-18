@@ -10,6 +10,19 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+##fct
+#def foo(a,b):
+#    write(a+b)
+#foo(1,2)
+
+#TODO: with 2 args...
+
+# while
+h = True
+while h:
+    write("LOOP")
+    h = False
+
 # if / elif / else
 if False:
     pass
@@ -553,7 +566,6 @@ function print_code_node(node, code, type) {
     let cursor = node[type].start;
     let offset = 0;
     for(let i = 0; i < node.children.length; ++i) {
-        console.warn("CI", node.children[i]);
         subparts[offset++] = slice_code(code, cursor, node.children[i][type].start);
         subparts[offset++] = print_code_node(node.children[i], code, type);
         cursor = node.children[i][type].end;

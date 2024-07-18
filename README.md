@@ -7,7 +7,8 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 ## Implemented features
 
 - Control flow
-    - if(bool)
+    - if(bool) / elif(bool) / else
+    - while(true)
 - Functions call
     - call(pos_arg)
 - Literals
@@ -21,16 +22,18 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - == (bool/int/None)
 - Symbols
     - JS global symbols.
+- Keywords
+    - pass
 
 ## Currently Working on...
 
-    1. controlflows
-        a. While
+    1. def functions (pos args)
+    2. Exceptions.
+    
+    3. controlflows
         b. For in range()
         c. For in str
             + continue+break;
-    2. def functions (pos args)
-    3. Exceptions.
     4. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
@@ -40,6 +43,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     5. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
     6. simple classes.
+
     7. import/export.
 
     - [ ] Check AST
@@ -57,7 +61,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
             - [ ] Check operators result_type
         - [ ] f-string
 
-        - [ ] while
         - [ ] for in
             - [ ] range
         
@@ -67,7 +70,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] py code => pre-transpile
         - [ ] JS code insert
 
-        - [ ] pass
         - [ ] Raise Exceptions + try/catch/finally + global try/catch ?
             - [ ] Error message : show Python stacktrace
             - /!\ Chromium stackstrace
@@ -148,3 +150,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Keep Python comments
 - [ ] Stack trace sourcemap 
     - [ ] https://github.com/brython-dev/brython/issues/2476
+
+- [ ] convert body into full core_module ? idem for fct args ?
+- [ ] convert_node (~=recursive?)

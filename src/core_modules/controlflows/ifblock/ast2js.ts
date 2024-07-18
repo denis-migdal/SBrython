@@ -27,14 +27,9 @@ export default function ast2js(this: ASTNode) {
         js += astnode2js(this.children[0], cursor);
         ++offset;
         js += ")";
-    }
-    if(keyword !== "if") {  // h4ck
-        --this.jscode!.start.col;
+        ++cursor.col;
     }
     js += body2js(this, cursor, offset);
-    if(keyword !== "if") {  // h4ck
-        ++this.jscode!.start.col;
-    }
 
     this.jscode!.end = {...cursor};
 
