@@ -10,6 +10,10 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+# str
+write("")
+write("ok")
+
 # float
 write(1.0)
 write(1.2)
@@ -135,6 +139,10 @@ if c:
 
                 height: calc(100% - 1.5rem - 30px);
                 overflow-y: auto;
+
+                & > div {
+                    min-height: 1rem;
+                }
             }
 
             & > textarea {
