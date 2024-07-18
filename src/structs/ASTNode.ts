@@ -44,22 +44,6 @@ export class ASTNode {
 			this.value = "";
 			return;
 		}
-
-		if( "comparators" in value) {
-
-			this.type = "Operator";
-			this.value = "Equals";
-			this.children = [
-				new ASTNode({value: value.left}),
-				new ASTNode({value: value.comparators[0]})
-			];
-
-			return;
-		}
-
-		if( value.value instanceof Object && "value" in value.value) {
-			this.type = "float";
-			this.value = value.value.value;
-		}*/
+*/
 	}
 }

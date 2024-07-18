@@ -104,6 +104,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Literals
     - bool
     - int
+    - float (ops not tested)
     - None (explicit = JS null / implicit = JS undefined)
 - Operators
     - =  (bool/int/None) + with annotations

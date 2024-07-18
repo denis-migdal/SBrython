@@ -8,16 +8,18 @@ import AST_CONVERT_3 from "./operators/+/astconvert.ts";
 import      AST2JS_3 from "./operators/+/ast2js.ts";
 import AST_CONVERT_4 from "./literals/int/astconvert.ts";
 import      AST2JS_4 from "./literals/int/ast2js.ts";
-import AST_CONVERT_5 from "./literals/bool/astconvert.ts";
-import      AST2JS_5 from "./literals/bool/ast2js.ts";
-import AST_CONVERT_6 from "./literals/None/astconvert.ts";
-import      AST2JS_6 from "./literals/None/ast2js.ts";
-import AST_CONVERT_7 from "./fctcall/astconvert.ts";
-import      AST2JS_7 from "./fctcall/ast2js.ts";
-import AST_CONVERT_8 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_8 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_9 from "./comments/astconvert.ts";
-import      AST2JS_9 from "./comments/ast2js.ts";
+import AST_CONVERT_5 from "./literals/float/astconvert.ts";
+import      AST2JS_5 from "./literals/float/ast2js.ts";
+import AST_CONVERT_6 from "./literals/bool/astconvert.ts";
+import      AST2JS_6 from "./literals/bool/ast2js.ts";
+import AST_CONVERT_7 from "./literals/None/astconvert.ts";
+import      AST2JS_7 from "./literals/None/ast2js.ts";
+import AST_CONVERT_8 from "./fctcall/astconvert.ts";
+import      AST2JS_8 from "./fctcall/ast2js.ts";
+import AST_CONVERT_9 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_9 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_10 from "./comments/astconvert.ts";
+import      AST2JS_10 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -41,25 +43,29 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_4,
 		     AST2JS:      AST2JS_4
 	},
-	"literals.bool": {
+	"literals.float": {
 		AST_CONVERT: AST_CONVERT_5,
 		     AST2JS:      AST2JS_5
 	},
-	"literals.None": {
+	"literals.bool": {
 		AST_CONVERT: AST_CONVERT_6,
 		     AST2JS:      AST2JS_6
 	},
-	"fctcall": {
+	"literals.None": {
 		AST_CONVERT: AST_CONVERT_7,
 		     AST2JS:      AST2JS_7
 	},
-	"controlflows.ifblock": {
+	"fctcall": {
 		AST_CONVERT: AST_CONVERT_8,
 		     AST2JS:      AST2JS_8
 	},
-	"comments": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_9,
 		     AST2JS:      AST2JS_9
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_10,
+		     AST2JS:      AST2JS_10
 	},
 }
 
