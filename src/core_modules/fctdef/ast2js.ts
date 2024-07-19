@@ -1,12 +1,9 @@
-import { args2js, body2js } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { args2js, body2js, r, toJS } from "ast2js";
+import { ASTNode, CodePos } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let cursor = {...this.jscode!.start};
-
-    let js = `function ${this.value}`;
-    cursor.col += js.length;
+    let js = toJS(r`function ${this.value}`, cursor);
 
     js += args2js(this, cursor);
     js += body2js(this, cursor, 1);

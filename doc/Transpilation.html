@@ -51,13 +51,17 @@ For example:
     <pre>
     import { ASTNode } from "structs/ASTNode";
 
-    export default function ast2js(this: ASTNode) {
-        return `${this.value}n`;
+    export default function ast2js(this: ASTNode, cursor: CodePos) {
+        return toJS(r`${this.value}n`, cursor);
     }
     </pre>
 </code>
 
-
+Helpers:
+<ul>
+    <li>toJS(r`...`, cursor)</li>
+    <li>astnode2js(astnode, cursor)</li>
+</ul>
 
 <h2>AST</h2>
 
@@ -99,7 +103,7 @@ For example:
             jscode?: CodeRange;
 
             // converts the node into JS code
-            toJS?: (this: ASTNode) => string;
+            toJS?: (this: ASTNode, cursor: CodePos) => string;
         }
         </pre>
     </code>

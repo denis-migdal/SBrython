@@ -1,17 +1,7 @@
-import { astnode2js } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { r, toJS } from "ast2js";
+import { ASTNode, CodePos } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let cursor = {...this.jscode!.start};
-
-    let js = `return `;
-    cursor.col += 7;
-
-    js += astnode2js(this.children[0], cursor);
-
-
-    this.jscode!.end = {...cursor};
-
-    return js;
+    return toJS(r`return ${this.children[0]}`, cursor);
 }

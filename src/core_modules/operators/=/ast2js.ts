@@ -1,22 +1,13 @@
-import { astnode2js } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { r, toJS } from "ast2js";
+import { ASTNode, CodePos } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(this: ASTNode, cursor: CodePos) {
     
-    let cursor = {...this.jscode!.start};
-
     let js = "";
-    if( this.type.endsWith("(init)") ) {
-        js += "var ";
-        cursor.col += 4;
-    }
+    if( this.type.endsWith("(init)") )
+        js += toJS("var ", cursor);
 
-    js += astnode2js(this.children[0], cursor);
-    js += "=";
-    cursor.col += 1;
-    js += astnode2js(this.children[1], cursor);
-
-    this.jscode!.end = {...cursor};
+    js += toJS(r`${this.children[0]} = ${this.children[1]}`, cursor);
 
     return js;
 }

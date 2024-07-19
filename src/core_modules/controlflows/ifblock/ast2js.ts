@@ -1,9 +1,7 @@
-import { astnode2js, body2js, newline } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { astnode2js, body2js, newline, r, toJS } from "ast2js";
+import { ASTNode, CodePos } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
-
-    let cursor = {...this.jscode!.start};
+export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     if( this.type === "controlflows.ifblock") {
         let js = "";
@@ -19,19 +17,14 @@ export default function ast2js(this: ASTNode) {
     if( this.type === "controlflows.else")
         keyword = "else";
 
-    let js = `${keyword}`;
+    let js = toJS(keyword, cursor);
     let offset = 0;
     if( keyword !== "else") {
-        js += "(";
-        cursor.col += js.length;
-        js += astnode2js(this.children[0], cursor);
-        ++offset;
-        js += ")";
-        ++cursor.col;
+        offset = 1;
+        js += toJS(r`(${this.children[0]})`, cursor);
     }
-    js += body2js(this, cursor, offset);
 
-    this.jscode!.end = {...cursor};
+    js += body2js(this, cursor, offset);
 
     return js;
 }

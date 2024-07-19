@@ -31,23 +31,30 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
+    0. body2js => full node...
+    + astnode2js => toJS ?
+
     1. controlflows
         + continue+break;
-    2. ops
-        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
-        a. +-/* **, % unary -, //,
-        b. cmp : > >= < <= !=
-        c. or / and / not
+    1. fct no args + return nothing.
 
-    3. simple classes.
-    4. List/Tuple/Dict => override JS...
+    2. simple classes + JS classes.
+    3. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
-    5. Exceptions.
-        => raise BaseException => requires classes + inject_js (requires non-brython asserts)
+        => symbol system++.
+        => substitution system [type, methodname] => fct().
+    4. Exceptions.
+        => raise BaseException [+JSException extends BaseException] => requires classes + inject_js (requires non-brython asserts)
         => try
         => except BaseException as e // all exceptions.
         => finally
         => else
+
+    5. ops
+        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
+        a. +-/* **, % unary -, //,
+        b. cmp : > >= < <= !=
+        c. or / and / not
 
     6. import/export.
 
@@ -156,6 +163,9 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Keep Python comments
 - [ ] Stack trace sourcemap 
     - [ ] https://github.com/brython-dev/brython/issues/2476
+
+- [ ] Opti
+    - [ ] in some cases convert int into float (cste) [AST checks ?]
 
 - [ ] convert body into full core_module ? idem for fct args ?
 - [ ] convert_node (~=recursive?)

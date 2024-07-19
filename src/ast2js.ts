@@ -12,6 +12,46 @@ export function ast2js(ast: ASTNode[]) {
 	return js;
 }
 
+
+export function r(str: TemplateStringsArray, ...args:any[]) {
+    return [str, args];
+}
+
+export function toJS( str: ReturnType<typeof r>|string, cursor: CodePos ) {
+
+    if( typeof str === "string") {
+        cursor.col += str.length;
+        return str;
+    }
+
+    let js = "";
+
+    let e: any;
+    let s: string = "";
+
+    for(let i = 0; i < str[1].length; ++i) {
+
+        s = str[0][i];
+        js += s;
+        cursor.col += s.length;
+
+        e = str[1][i];
+        if( e instanceof ASTNode) {
+            js += astnode2js(e, cursor);
+        } else {
+            s = `${e}`;
+            js += s;
+            cursor.col += s.length;
+        }
+    }
+
+    s = str[0][str[1].length];
+    js += s;
+    cursor.col += s.length;
+
+    return js;
+}
+
 //TODO: move2core_modules ?
 export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     
@@ -136,12 +176,15 @@ export function astnode2js(node: ASTNode, cursor: CodePos) {
         end  : null as any
     }
 
-    let js = node.toJS!();
+    let js = node.toJS!(cursor);
 
+    node.jscode.end = {...cursor}
+
+    /*
     update_end(node, js);
 
     cursor.line = node.jscode!.end.line;
-    cursor.col  = node.jscode!.end.col;
+    cursor.col  = node.jscode!.end.col;*/
     
     return js;
 }

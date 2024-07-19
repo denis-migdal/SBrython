@@ -18,7 +18,7 @@ export class ASTNode {
     pycode: CodeRange;
     jscode?: CodeRange;
 
-	toJS?: (this: ASTNode) => string;
+	toJS?: (this: ASTNode, cursor: CodePos) => string;
 
 	constructor(brython_node: any, type: string, result_type: string|null, _value: any = null, children: ASTNode[] = []) {
 
