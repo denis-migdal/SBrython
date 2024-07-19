@@ -20,10 +20,10 @@ import AST_CONVERT_9 from "./literals/bool/astconvert.ts";
 import      AST2JS_9 from "./literals/bool/ast2js.ts";
 import AST_CONVERT_10 from "./literals/None/astconvert.ts";
 import      AST2JS_10 from "./literals/None/ast2js.ts";
-import AST_CONVERT_11 from "./fctdef/astconvert.ts";
-import      AST2JS_11 from "./fctdef/ast2js.ts";
-import AST_CONVERT_12 from "./fctcall/astconvert.ts";
-import      AST2JS_12 from "./fctcall/ast2js.ts";
+import AST_CONVERT_11 from "./functions/def/astconvert.ts";
+import      AST2JS_11 from "./functions/def/ast2js.ts";
+import AST_CONVERT_12 from "./functions/call/astconvert.ts";
+import      AST2JS_12 from "./functions/call/ast2js.ts";
 import AST_CONVERT_13 from "./controlflows/while/astconvert.ts";
 import      AST2JS_13 from "./controlflows/while/ast2js.ts";
 import AST_CONVERT_14 from "./controlflows/ifblock/astconvert.ts";
@@ -79,11 +79,11 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_10,
 		     AST2JS:      AST2JS_10
 	},
-	"fctdef": {
+	"functions.def": {
 		AST_CONVERT: AST_CONVERT_11,
 		     AST2JS:      AST2JS_11
 	},
-	"fctcall": {
+	"functions.call": {
 		AST_CONVERT: AST_CONVERT_12,
 		     AST2JS:      AST2JS_12
 	},

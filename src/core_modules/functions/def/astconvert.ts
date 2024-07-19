@@ -15,7 +15,7 @@ export default function convert(node: any, context: Context) {
 
     // return type... node.returns.id
 
-    return new ASTNode(node, "fctdev", null, node.name, [
+    return new ASTNode(node, "functions.def", null, node.name, [
         args,
         convert_body(node, context)
     ]);
