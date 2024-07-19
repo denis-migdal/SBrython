@@ -9,7 +9,9 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Control flow
     - if(bool) / elif(bool) / else
     - while(true)
-- Functions call
+    - for in range()
+- Functions
+    - def (pos_params) [requires annotations and at least 1 params]
     - call(pos_arg)
 - Literals
     - bool
@@ -24,29 +26,34 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - JS global symbols.
 - Keywords
     - pass
+    - return (expr)
 
 ## Currently Working on...
 
-    1. def functions (pos args)
-    2. Exceptions.
-    
-    3. controlflows
-        b. For in range()
-        c. For in str
+    1. controlflows
+        a. For in str
             + continue+break;
-    4. ops
+    2. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
         b. cmp : > >= < <= !=
         c. or / and / not
 
-    5. List/Tuple/Dict => override JS...
+    3. simple classes.
+    4. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
-    6. simple classes.
 
-    7. import/export.
+    5. Exceptions.
+        => raise BaseException => requires classes + inject_js (requires non-brython asserts)
+        => try
+        => except BaseException as e // all exceptions.
+        => finally
+        => else
+
+    6. import/export.
 
     - [ ] Check AST
+        - check function call arguments type... + return type.
         - check assignations AFTER AST is built ?
         - check result_type=unknown AFTER AST is built.
             - children of assign can be unknown.
@@ -64,8 +71,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] for in
             - [ ] range
         
-        - [ ] define fct
-            - [ ] Async/await
+        - [ ] Async/await
 
         - [ ] py code => pre-transpile
         - [ ] JS code insert
@@ -153,3 +159,4 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - [ ] convert body into full core_module ? idem for fct args ?
 - [ ] convert_node (~=recursive?)
+- [ ] move pass/return to keywords ?

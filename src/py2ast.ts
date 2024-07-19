@@ -85,14 +85,38 @@ export function convert_body(node: any, context: Context) {
 
     return new ASTNode(virt_node, "body", null, null, lines);
 }
+//TODO: move2core_modules ?
+export function convert_args(node: any, context: Context) {
+
+    const args = node.args.args.map( (m:any) => convert_arg(m, context) ); //TODO...
+    
+    const first= node.args.args[0];
+    const last = node.args.args[node.args.args.length-1];
+
+    const virt_node = {
+        lineno    : first.lineno,
+        col_offset: first.col_offset,
+
+        end_lineno    : last.end_lineno,
+        end_col_offset: last.end_col_offset
+    }
+
+    return new ASTNode(virt_node, "args", null, null, args);
+}
+export function convert_arg(node: any, context: Context) {
+
+    return new ASTNode(node, "arg", node.annotation.id, node.arg);
+}
 
 export function convert_line(line: any, context: Context): ASTNode {
 
-    //TODO: line ASTNode ???
-
     let node = line;
-    if( "value" in line && ! ("targets" in line) && ! ("target" in line) )
+
+    if( line.constructor.$name === "Expr")
         node = line.value;
+    /*
+    if( "value" in line && ! ("targets" in line) && ! ("target" in line) )
+        node = line.value;*/
 
     return convert_node( node, context );
 }

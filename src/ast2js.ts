@@ -45,6 +45,51 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     return js;
 }
 
+//TODO: move2core_modules ?
+export function args2js(node: ASTNode, cursor: CodePos) {
+    
+    const start = {...cursor};
+
+    let js = "(";
+    cursor.col += 1;
+
+    const args = node.children[0];
+    
+    for(let i = 0 ; i < args.children.length; ++i) {
+        if( i !== 0) {
+            js += ",";
+            ++cursor.col;
+        }
+
+        js += arg2js(args.children[i], cursor);
+    }
+
+    js += ")";
+    cursor.col += 1;
+
+    args.jscode = {
+        start: start,
+        end  : {...cursor}
+    }
+
+    return js;
+}
+
+export function arg2js(node: ASTNode, cursor: CodePos) {
+    
+    const start = {...cursor};
+
+    let js = node.value;
+    cursor.col += js.length;
+
+    node.jscode = {
+        start: start,
+        end  : {...cursor}
+    }
+
+    return js;
+}
+
 function update_end(node: ASTNode, js: string) {
 
     if( node.jscode!.end !== null)
