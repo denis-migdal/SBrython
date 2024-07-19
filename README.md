@@ -10,6 +10,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - if(bool) / elif(bool) / else
     - while(true)
     - for in range()
+    - for in str
 - Functions
     - def (pos_params) [requires annotations and at least 1 params]
     - call(pos_arg)
@@ -31,8 +32,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 ## Currently Working on...
 
     1. controlflows
-        a. For in str
-            + continue+break;
+        + continue+break;
     2. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
@@ -42,7 +42,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     3. simple classes.
     4. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
-
     5. Exceptions.
         => raise BaseException => requires classes + inject_js (requires non-brython asserts)
         => try
@@ -139,6 +138,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - [ ] scroll to
 - [ ] Type
     - [ ] Better type deduction: if type === => change local type in body.
+    - [ ] Deduce for in target type...
     - [ ] Generate TS code mode
     - [ ] fetch JS API types from TS. (.d.ts ???)
 - [ ] CPython/PEP compliant

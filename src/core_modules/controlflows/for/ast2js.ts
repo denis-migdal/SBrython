@@ -7,7 +7,7 @@ export default function ast2js(this: ASTNode) {
 
     if( this.type === "controlflows.for(range)") {
 
-        let js = `for(let ${this.value}=`;
+        let js = `for(var ${this.value}=`;
         cursor.col += js.length;
         
         if( this.children.length >= 3)
@@ -44,7 +44,7 @@ export default function ast2js(this: ASTNode) {
         return js;
     }
 
-    let js = `for(let ${this.value} of `;
+    let js = `for(var ${this.value} of `;
     cursor.col += js.length;
     js += astnode2js(this.children[0], cursor);
     js += ')';
