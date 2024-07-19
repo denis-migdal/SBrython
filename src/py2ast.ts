@@ -72,6 +72,8 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
 //TODO: move2core_modules ?
 export function convert_body(node: any, context: Context) {
 
+    console.warn(node);
+
     const lines = node.body.map( (m:any) => convert_line(m, context) );
     const last = node.body[node.body.length-1];
 
@@ -90,8 +92,25 @@ export function convert_args(node: any, context: Context) {
 
     const args = node.args.args.map( (m:any) => convert_arg(m, context) ); //TODO...
     
-    const first= node.args.args[0];
-    const last = node.args.args[node.args.args.length-1];
+    let first: any;
+    let last : any;
+    if( args.length !== 0) {
+
+        first= node.args.args[0];
+        last = node.args.args[node.args.args.length-1];
+
+    } else {
+        // an estimation...
+        const col = node.col_offset + 4 + node.name.length + 1;
+
+        first = last = {
+            lineno: node.lineno,
+            end_lineno: node.lineno,
+            col_offset: col,
+            end_col_offset: col
+        }
+    }
+
 
     const virt_node = {
         lineno    : first.lineno,

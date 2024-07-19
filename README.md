@@ -31,8 +31,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-    0. body2js => full node...
-
     1. fct no args + return nothing.
     1. controlflows
         + continue+break;

@@ -3,8 +3,10 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
     
-    const expr = convert_node(node.value, context);
+    if(node.value === undefined)
+        return new ASTNode(node, "return", "None", null);
 
+    const expr = convert_node(node.value, context);
     return new ASTNode(node, "return", expr.result_type, null, [expr]);
 }
 
