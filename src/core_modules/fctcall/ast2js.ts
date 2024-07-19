@@ -1,4 +1,4 @@
-import { astnode2js, r, toJS } from "ast2js";
+import { r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
@@ -11,7 +11,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         if( i !== 1)
             js += toJS(", ", cursor);
         
-        js += astnode2js(this.children[i], cursor);
+        js += toJS(this.children[i], cursor);
     }
 
     js += toJS(")", cursor);

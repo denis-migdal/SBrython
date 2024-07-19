@@ -17,11 +17,14 @@ export function r(str: TemplateStringsArray, ...args:any[]) {
     return [str, args];
 }
 
-export function toJS( str: ReturnType<typeof r>|string, cursor: CodePos ) {
+export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos ) {
 
     if( typeof str === "string") {
         cursor.col += str.length;
         return str;
+    }
+    if( str instanceof ASTNode) {
+        return astnode2js(str, cursor);
     }
 
     let js = "";
@@ -130,36 +133,6 @@ export function arg2js(node: ASTNode, cursor: CodePos) {
     return js;
 }
 
-function update_end(node: ASTNode, js: string) {
-
-    if( node.jscode!.end !== null)
-        return;
-
-    const start = node.jscode!.start;
-
-    let line_count    = 0;
-    let last_line_idx = 0;
-
-    for(let i = 0; i < js.length; ++i)
-        if(js[i] === '\n') {
-            ++line_count;
-            last_line_idx = i;
-        }
-
-    if(line_count === 0) {
-        node.jscode!.end = {
-            line: start.line,
-            col : start.col + js.length
-        }
-        return;
-    }
-
-    node.jscode!.end = {
-        line: start.line + line_count,
-        col : js.length - last_line_idx
-    }
-}
-
 export function newline(node: ASTNode, cursor: CodePos, indent_level: number = 0) {
 
     const indent = indent_level*4 + node.jscode!.start.col;
@@ -179,12 +152,6 @@ export function astnode2js(node: ASTNode, cursor: CodePos) {
     let js = node.toJS!(cursor);
 
     node.jscode.end = {...cursor}
-
-    /*
-    update_end(node, js);
-
-    cursor.line = node.jscode!.end.line;
-    cursor.col  = node.jscode!.end.col;*/
     
     return js;
 }

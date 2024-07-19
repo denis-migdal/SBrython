@@ -1,4 +1,4 @@
-import { astnode2js, body2js, newline, r, toJS } from "ast2js";
+import { body2js, r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
@@ -6,7 +6,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     if( this.type === "controlflows.ifblock") {
         let js = "";
         for(let i = 0; i < this.children.length; ++i)
-            js += astnode2js(this.children[i], cursor);
+            js += toJS(this.children[i], cursor);
         return js;
     }
 
