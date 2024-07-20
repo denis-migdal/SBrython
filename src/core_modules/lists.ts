@@ -20,18 +20,23 @@ import AST_CONVERT_9 from "./literals/bool/astconvert.ts";
 import      AST2JS_9 from "./literals/bool/ast2js.ts";
 import AST_CONVERT_10 from "./literals/None/astconvert.ts";
 import      AST2JS_10 from "./literals/None/ast2js.ts";
-import AST_CONVERT_11 from "./functions/def/astconvert.ts";
-import      AST2JS_11 from "./functions/def/ast2js.ts";
-import AST_CONVERT_12 from "./functions/call/astconvert.ts";
-import      AST2JS_12 from "./functions/call/ast2js.ts";
-import AST_CONVERT_13 from "./controlflows/while/astconvert.ts";
-import      AST2JS_13 from "./controlflows/while/ast2js.ts";
-import AST_CONVERT_14 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_14 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_15 from "./controlflows/for/astconvert.ts";
-import      AST2JS_15 from "./controlflows/for/ast2js.ts";
-import AST_CONVERT_16 from "./comments/astconvert.ts";
-import      AST2JS_16 from "./comments/ast2js.ts";
+import AST_CONVERT_11 from "./keywords/raise/astconvert.ts";
+import      AST2JS_11 from "./keywords/raise/ast2js.ts";
+import     RUNTIME_11 from "./keywords/raise/runtime.ts";
+import AST_CONVERT_12 from "./functions/def/astconvert.ts";
+import      AST2JS_12 from "./functions/def/ast2js.ts";
+import AST_CONVERT_13 from "./functions/call/astconvert.ts";
+import      AST2JS_13 from "./functions/call/ast2js.ts";
+import AST_CONVERT_14 from "./controlflows/while/astconvert.ts";
+import      AST2JS_14 from "./controlflows/while/ast2js.ts";
+import AST_CONVERT_15 from "./controlflows/tryblock/astconvert.ts";
+import      AST2JS_15 from "./controlflows/tryblock/ast2js.ts";
+import AST_CONVERT_16 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_16 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_17 from "./controlflows/for/astconvert.ts";
+import      AST2JS_17 from "./controlflows/for/ast2js.ts";
+import AST_CONVERT_18 from "./comments/astconvert.ts";
+import      AST2JS_18 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -79,30 +84,45 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_10,
 		     AST2JS:      AST2JS_10
 	},
-	"functions.def": {
+	"keywords.raise": {
 		AST_CONVERT: AST_CONVERT_11,
 		     AST2JS:      AST2JS_11
 	},
-	"functions.call": {
+	"functions.def": {
 		AST_CONVERT: AST_CONVERT_12,
 		     AST2JS:      AST2JS_12
 	},
-	"controlflows.while": {
+	"functions.call": {
 		AST_CONVERT: AST_CONVERT_13,
 		     AST2JS:      AST2JS_13
 	},
-	"controlflows.ifblock": {
+	"controlflows.while": {
 		AST_CONVERT: AST_CONVERT_14,
 		     AST2JS:      AST2JS_14
 	},
-	"controlflows.for": {
+	"controlflows.tryblock": {
 		AST_CONVERT: AST_CONVERT_15,
 		     AST2JS:      AST2JS_15
 	},
-	"comments": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_16,
 		     AST2JS:      AST2JS_16
+	},
+	"controlflows.for": {
+		AST_CONVERT: AST_CONVERT_17,
+		     AST2JS:      AST2JS_17
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_18,
+		     AST2JS:      AST2JS_18
 	},
 }
 
 export default MODULES;
+
+
+const RUNTIME = {};
+Object.assign(RUNTIME, RUNTIME_11);
+
+
+export const _b_ = RUNTIME;

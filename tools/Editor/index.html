@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
 <body>
 
 <script src="../../brython/www/src/brython.js"></script>
@@ -10,6 +15,11 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+try:
+    raise Exception()
+except Exception as e:
+    write("caught")
+
 # fct dummy
 def fii():
     return
@@ -159,6 +169,12 @@ if c:
 
 <style>
 
+    body {
+        width: 100vw;
+        height: 100vh;
+        margin:0px;
+    }
+
     .success {
         background-color: LightGreen;
     }
@@ -208,7 +224,7 @@ if c:
                 width: 100%;
                 padding: 15px;
 
-                height: calc(100% - 1.5rem);
+                height: calc(100% - 3.5rem);
                 overflow-y: auto;
             }
         }
@@ -229,7 +245,7 @@ if c:
 </style>
 
 <script type="module">
-    import {py2ast, ast2js, convert_ast} from "../../dist/dev/index.js";
+    import {py2ast, ast2js, convert_ast, _r_, _b_} from "../../dist/dev/index.js";
 
     const SHOW_CODE_NODE_BEFORE_PRINT = false;
 
@@ -319,8 +335,8 @@ function update() {
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
-        const fct = new Function(js_code); //TODO args
-        fct();
+        const fct = new Function("_r_", "_b_", js_code); //TODO args
+        fct(_r_, _b_);
     } catch(e) {
         console.error(e); //TODO
     }
@@ -640,3 +656,4 @@ update();
 
 </script>
 </body>
+</html>

@@ -64,7 +64,9 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     const body = node.children[idx];//body: ASTNode[];
 
     // h4ck due to } else/elif {
-    if(node.type === "controlflows.else" || node.type === "controlflows.elif")
+    const needs_offset = ["controlflows.else", "controlflows.elif", "controlflows.catchblock"].includes(node.type);
+
+    if(needs_offset)
         --node.jscode!.start.col;
 
     for(let i = 0; i < body.children.length; ++i) {
@@ -72,13 +74,13 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
         js += astnode2js(body.children[i], cursor)
     }
 
-    // h4ck due to } else/elif {
-    if(node.type === "controlflows.else" || node.type === "controlflows.elif")
-        ++node.jscode!.start.col;
-
     js += newline(node, cursor);
     js += "}";
     cursor.col += 1;
+
+    // h4ck due to } else/elif/catch {
+        if(needs_offset)
+            ++node.jscode!.start.col;
 
     body.jscode = {
         start: start,

@@ -72,8 +72,6 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
 //TODO: move2core_modules ?
 export function convert_body(node: any, context: Context) {
 
-    console.warn(node);
-
     const lines = node.body.map( (m:any) => convert_line(m, context) );
     const last = node.body[node.body.length-1];
 

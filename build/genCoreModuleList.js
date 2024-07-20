@@ -6,7 +6,7 @@ const encoder = new TextEncoder();
 
 function getModules(path) {
 
-	let files = glob.sync("**/{astconvert,ast2js}.ts", {cwd: path});
+	let files = glob.sync("**/{astconvert,ast2js,runtime}.ts", {cwd: path});
 
 	const modules = {};
 
@@ -36,6 +36,11 @@ function importModules(modules) {
 		//TODO if not found...
 		result += `import AST_CONVERT_${module_id} from "${module.astconvert}";\n`;
 		result += `import      AST2JS_${module_id} from "${module.ast2js}";\n`;
+		
+		console.log( module );
+		if("runtime" in module)
+			result += `import     RUNTIME_${module_id} from "${module.runtime}";\n`;
+		
 		++module_id;
 	}
 
@@ -55,6 +60,20 @@ function importModules(modules) {
 	result += "}\n\n";
 
 	result += "export default MODULES;\n";
+	result += "\n\n";
+
+	result += "const RUNTIME = {};\n";
+	module_id = 0;
+	for(let module_name in modules) {
+
+		if( ("runtime" in modules[module_name]) ) {
+			result += `Object.assign(RUNTIME, RUNTIME_${module_id});\n`
+		}
+		++module_id;
+	}
+	result += "\n\n";
+
+	result += "export const _b_ = RUNTIME;\n";
 
 	return result;
 }
