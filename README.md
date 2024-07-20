@@ -31,7 +31,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-    0. runtime.ts => run JS + others?
     0. Exception : how to runtime ?
         - _b_.[Symbols] : build...
 
@@ -70,8 +69,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
                 => wrap in the catch ?
             => or a kind of a "virtual class" ?
         => Py exception => requires "Exception" class (at least)
-            => requires runtime... (how to handle ?)
-            => call on class = new class();
 
         => raise BaseException
         => try
@@ -195,6 +192,8 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - [ ] Opti
     - [ ] in some cases convert int into float (cste) [AST checks ?]
+
+- [ ] traceback... (+ need compat mode for locals)
 
 - [ ] convert body into full core_module ? idem for fct args ?
 - [ ] convert_node (~=recursive?)
