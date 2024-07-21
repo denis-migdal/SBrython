@@ -6,6 +6,11 @@ import {ASTNode} from "./structs/ASTNode";
 import CORE_MODULES from "./core_modules/lists";
 
 
+export type AST = {
+    nodes: ASTNode[],
+    filename: string
+}
+
 const modules: Record<string, (typeof CORE_MODULES)[keyof typeof CORE_MODULES][]> = {}
 
 for(let module_name in CORE_MODULES) {
@@ -27,13 +32,15 @@ for(let module_name in CORE_MODULES) {
 }
 
 
-export function py2ast(code: string) {
+export function py2ast(code: string, filename: string): AST {
 
-    const parser = new $B.Parser(code, "filename", 'file');
+    const parser = new $B.Parser(code, filename, 'file');
 	const _ast = $B._PyPegen.run_parser(parser);
     //console.log("AST", _ast);
-
-	return convert_ast(_ast);   
+	return {
+        nodes: convert_ast(_ast),
+        filename
+    }
 }
 
 export function convert_node(brython_node: any, context: Context): ASTNode {

@@ -31,6 +31,7 @@ import AST_CONVERT_14 from "./controlflows/while/astconvert.ts";
 import      AST2JS_14 from "./controlflows/while/ast2js.ts";
 import AST_CONVERT_15 from "./controlflows/tryblock/astconvert.ts";
 import      AST2JS_15 from "./controlflows/tryblock/ast2js.ts";
+import     RUNTIME_15 from "./controlflows/tryblock/runtime.ts";
 import AST_CONVERT_16 from "./controlflows/ifblock/astconvert.ts";
 import      AST2JS_16 from "./controlflows/ifblock/ast2js.ts";
 import AST_CONVERT_17 from "./controlflows/for/astconvert.ts";
@@ -123,6 +124,7 @@ export default MODULES;
 
 const RUNTIME = {};
 Object.assign(RUNTIME, RUNTIME_11);
+Object.assign(RUNTIME, RUNTIME_15);
 
 
 export const _b_ = RUNTIME;

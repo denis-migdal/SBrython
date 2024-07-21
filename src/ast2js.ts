@@ -1,10 +1,11 @@
+import { AST } from "py2ast";
 import { ASTNode, CodePos } from "structs/ASTNode";
 
-export function ast2js(ast: ASTNode[]) {
+export function ast2js(ast: AST) {
 
-	let js = "";
-    let cursor = {line: 1, col: 0};
-	for(let node of ast) {
+	let js = `//# sourceURL=${ast.filename}\n`;
+    let cursor = {line: 2, col: 0};
+	for(let node of ast.nodes) {
 		js += astnode2js(node, cursor);
         js +=    newline(node, cursor);
     }

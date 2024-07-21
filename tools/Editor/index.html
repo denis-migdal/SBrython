@@ -20,6 +20,14 @@ try:
 except Exception as e:
     write("caught")
 
+def fee():
+    raise Exception()
+
+try:
+    fee()
+except Exception as e:
+    write("caught2")
+
 # fct dummy
 def fii():
     return
@@ -245,7 +253,7 @@ if c:
 </style>
 
 <script type="module">
-    import {py2ast, ast2js, convert_ast, _r_, _b_} from "../../dist/dev/index.js";
+    import {py2ast, ast2js, convert_ast, parse_stack, stackline2astnode, _r_, _b_} from "../../dist/dev/index.js";
 
     const SHOW_CODE_NODE_BEFORE_PRINT = false;
 
@@ -326,17 +334,22 @@ function update() {
     let step2;
     let step0;
     let _ast;
+
+    const filename = "sbrython_editor.js";
     try {
         //ast = py2ast( code );
-            const parser = new $B.Parser(code, "filename", 'file');
+            const parser = new $B.Parser(code, filename, 'file');
             _ast = $B._PyPegen.run_parser(parser);
             step0 = globalThis.performance.now();
-	        ast = convert_ast(_ast);
+	        ast = {
+                nodes: convert_ast(_ast),
+                filename
+            }
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
-        const fct = new Function("_r_", "_b_", js_code); //TODO args
-        fct(_r_, _b_);
+        const fct = new Function("_r_", "_b_", "_ast_", js_code); //TODO args
+        fct(_r_, _b_, ast);
     } catch(e) {
         console.error(e); //TODO
     }
@@ -432,27 +445,6 @@ function update() {
         && value.__class__.__qualname__ === "NoneType";
     }
 
-    function find_astnode_from_jscode_pos(ast, line, col) {
-
-        for(let i = 0; i < ast.length; ++i) {
-
-            if( ast[i].jscode.start.line > line
-            || ast[i].jscode.start.line === line && ast[i].jscode.start.col > col)
-                return null;
-
-            if(    ast[i].jscode.end.line > line
-                || ast[i].jscode.end.line === line && ast[i].jscode.end.col > col
-            ) {
-                let node = find_astnode_from_jscode_pos(ast[i].children, line, col);
-                if( node !== null)
-                    return node;
-                return ast[i];
-            }
-        }
-
-        return null; //throw new Error("node not found");
-    }
-
     print_python( code, ast );
 	print_ast( ast );
     console.log(js_code);
@@ -462,14 +454,8 @@ function update() {
     let min_id = Math.min(brython_result.length, sbrython_result.length)
     for(let i = 0; i < min_id; ++i) {
 
-        // handle stack...
-        const stack = sbrython_result[i].stack.split("\n");
-        const [id, pos] = stack[1].split(" > ");
-        let [_, line, col] = pos.split(":");
-        line -= 2; // 
-        col  -= 1;
-       
-        const node = find_astnode_from_jscode_pos(ast, line, col);
+        const stackline = parse_stack(sbrython_result[i].stack)[0];
+        const node = stackline2astnode(stackline, ast);
         node.$gui_elems.push( sbrython_result[i], brython_result[i] );
         sbrython_result[i].$node = node;
          brython_result[i].$node = node;
@@ -526,9 +512,11 @@ function print_node(node) {
 	return html_bloc;
 }
 
-function print_ast(ast) {
+function print_ast(_ast) {
 
     let lineid = 0;
+
+    const ast = _ast.nodes;
 
     const nodes = ast.map( node => {
 
@@ -614,7 +602,9 @@ function print_code_node(node, code, type) {
 }
 
 // pycode or jscode
-function print_code(code, ast, type) {
+function print_code(code, _ast, type) {
+
+    const ast = _ast.nodes;
 
     let lineid = 0;
 

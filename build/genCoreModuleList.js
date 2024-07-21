@@ -37,7 +37,6 @@ function importModules(modules) {
 		result += `import AST_CONVERT_${module_id} from "${module.astconvert}";\n`;
 		result += `import      AST2JS_${module_id} from "${module.ast2js}";\n`;
 		
-		console.log( module );
 		if("runtime" in module)
 			result += `import     RUNTIME_${module_id} from "${module.runtime}";\n`;
 		

@@ -31,52 +31,20 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-    0. Exception : how to runtime ?
-        - _b_.[Symbols] : build...
-
-
     1. controlflows
         + continue+break;
         + move 2 keywords.
 
     2. simple classes + JS classes.
         => no .new()
+        => API build from extracting JS class (exclude some symbols?)
     3. List/Tuple/Dict => override JS...
         => exec method/getattr // JS new()
         => symbol system++.
         => substitution system [type, methodname] => fct().
     4. Exceptions.
-        => rethrow ?
-
-        - raise
-            - Error     => ? forbid ?
-            - Exception => throw new PythonError(the exception)
-        - catch
-            - Error       => wrap into JSException (inherit Exception).
-            - PythonError => unwrap to get the original Exception.
-
-        => Error     = all errors
-        => Exception = only python exceptions ?
-
-        => in the raise, wrap it too.
-        => in the catch, wrap all exception, with a function to get the JS version of the exception ?
-
-        => Any <= [PyObj()] <= X
-
-        => JS exception (inject_js to test) => requires non-Brython asserts...
-            => or a function in window (for now...)
-            => JSError <= "included" in Exception...
-                => wrap in the catch ?
-            => or a kind of a "virtual class" ?
-        => Py exception => requires "Exception" class (at least)
-
-        => raise BaseException
-        => try
-        => except BaseException as e // all exceptions.
-            => exception.args => constructor args
-        => finally
-        => else
-
+        => filter (instanceof)
+        => block
     5. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
@@ -107,8 +75,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] JS code insert
 
         - [ ] Raise Exceptions + try/catch/finally + global try/catch ?
-            - [ ] Error message : show Python stacktrace
-            - /!\ Chromium stackstrace
         - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
@@ -166,7 +132,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - [ ] Twice exec, one with runtime type checks
     - [ ] make asserts that will be only be performed in SBrython (no Brython)
     - [ ] split unit tests (resume + split output)
-        - [ ] output : accordeon (closed if success, open first error/fail) + highlight first error.
+        - [ ] output : accordion (closed if success, open first error/fail) + highlight first error.
         - [ ] show AST/Code only for open output.
     - [ ] scroll to
 - [ ] Type
@@ -197,4 +163,5 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - [ ] convert body into full core_module ? idem for fct args ?
 - [ ] convert_node (~=recursive?)
-- [ ] move pass/return to keywords ?
+
+- [ ] put some AST in global space... (required to properly parse stack traces).
