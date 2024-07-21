@@ -165,3 +165,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] convert_node (~=recursive?)
 
 - [ ] put some AST in global space... (required to properly parse stack traces).
+
+
+https://github.com/brython-dev/brython/issues/2478

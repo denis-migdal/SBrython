@@ -40,7 +40,7 @@ export function stack2astnodes(stack: StackLine[], ast: AST): ASTNode[] {
 }
 
 //TODO: add file...
-export function parse_stack(stack: any): StackLine[] {
+export function parse_stack(stack: any, ast: AST): StackLine[] {
 
     stack = stack.split("\n");
 
@@ -54,7 +54,9 @@ export function parse_stack(stack: any): StackLine[] {
         _col = _col.slice(0,-1);
   
       let line = +_line - 2;
-      let col  = +_col  - 1;
+      let col  = +_col;
+
+      --col; //starts at 1.
 
       let fct_name!: string;
       if( isV8 ) {
@@ -62,6 +64,11 @@ export function parse_stack(stack: any): StackLine[] {
         fct_name = _.slice(7, pos);
         if( fct_name === "eval") //TODO: better
           fct_name = "<module>";
+
+        const node = find_astnode_from_jscode_pos(ast.nodes, line, col)!;
+        if(node.type === "symbol")
+          col += node.value.length; // V8 gives first character of the symbol name when FF gives "("...
+
       } else {
         let pos = _.indexOf('@');
         fct_name = _.slice(0, pos);
@@ -69,7 +76,7 @@ export function parse_stack(stack: any): StackLine[] {
           fct_name = "<module>";
       }
 
-      return [fct_name, line, col];
+      return [fct_name, line, col] as const;
     });
 }
 
@@ -79,7 +86,7 @@ function debug_print_exception(err: Py_Exception, ast: AST) {
 
     console.warn("Exception", err);
 
-    const stack = parse_stack( (err as any)._raw_err_.stack);
+    const stack = parse_stack( (err as any)._raw_err_.stack, ast);
     const nodes = stack2astnodes(stack, ast);
     //TODO: convert stack...
     const stack_str = stack.map( (l,i) => `File "[file]", line ${nodes[i].pycode.start.line}, in ${stack[i][0]}`);

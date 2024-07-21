@@ -334,6 +334,7 @@ function update() {
     let step2;
     let step0;
     let _ast;
+    let js_fct;
 
     const filename = "sbrython_editor.js";
     try {
@@ -348,8 +349,8 @@ function update() {
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
-        const fct = new Function("_r_", "_b_", "_ast_", js_code); //TODO args
-        fct(_r_, _b_, ast);
+        js_fct = new Function("_r_", "_b_", "_ast_", js_code); //TODO args
+        js_fct(_r_, _b_, ast);
     } catch(e) {
         console.error(e); //TODO
     }
@@ -447,14 +448,16 @@ function update() {
 
     print_python( code, ast );
 	print_ast( ast );
-    console.log(js_code);
+    console.log(js_fct.toString());
+    //console.log(js_code);
+    console.log(ast);
 	print_js( js_code, ast );
 
     let equals = true;
     let min_id = Math.min(brython_result.length, sbrython_result.length)
     for(let i = 0; i < min_id; ++i) {
 
-        const stackline = parse_stack(sbrython_result[i].stack)[0];
+        const stackline = parse_stack(sbrython_result[i].stack, ast)[0];
         const node = stackline2astnode(stackline, ast);
         node.$gui_elems.push( sbrython_result[i], brython_result[i] );
         sbrython_result[i].$node = node;
