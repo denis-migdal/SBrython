@@ -3,8 +3,8 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    //TODO: condition...
-    return new ASTNode(node, `controlflows.catch`, null, null, [
+    return new ASTNode(node, `controlflows.catch`, null, node.name, [
+        convert_node(node.type, context),
         convert_body(node, context)
     ]);
 }

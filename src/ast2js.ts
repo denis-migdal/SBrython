@@ -57,11 +57,13 @@ export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos 
 }
 
 //TODO: move2core_modules ?
-export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
+export function body2js(node: ASTNode, cursor: CodePos, idx = 0, print_bracket = true) {
     
     const start = {...cursor};
 
-    let js = "{";
+    let js = "";
+    if(print_bracket)
+        js+="{";
     const body = node.children[idx];//body: ASTNode[];
 
     for(let i = 0; i < body.children.length; ++i) {
@@ -69,9 +71,11 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
         js += astnode2js(body.children[i], cursor)
     }
 
-    js += newline(node, cursor);
-    js += "}";
-    cursor.col += 1;
+    if(print_bracket) {
+        js += newline(node, cursor);
+        js += "}";
+        cursor.col += 1;
+    }
 
     body.jscode = {
         start: start,

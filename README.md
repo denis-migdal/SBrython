@@ -11,6 +11,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - while(true)
     - for in range()
     - for in str
+    - try / catch E as e // raise Exception()
 - Functions
     - def (pos_params) [requires annotations and at least 1 params]
     - call(pos_arg)
@@ -42,10 +43,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         => exec method/getattr // JS new()
         => symbol system++.
         => substitution system [type, methodname] => fct().
-    4. Exceptions.
-        => filter (instanceof)
-        => block
-    5. ops
+    4. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,
         b. cmp : > >= < <= !=
@@ -74,7 +72,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] py code => pre-transpile
         - [ ] JS code insert
 
-        - [ ] Raise Exceptions + try/catch/finally + global try/catch ?
         - [ ] get/set attr
         - [ ] List/Tuple
         - [ ] dict
