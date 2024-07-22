@@ -3,8 +3,7 @@ import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let js = "";
-    for(let i = 0; i < this.children.length; ++i)
-        js += toJS(this.children[i], cursor);
+    let js = toJS("try", cursor);
+        js+= body2js(this, cursor);
     return js;
 }

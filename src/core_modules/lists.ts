@@ -32,14 +32,16 @@ import      AST2JS_14 from "./controlflows/while/ast2js.ts";
 import AST_CONVERT_15 from "./controlflows/tryblock/astconvert.ts";
 import      AST2JS_15 from "./controlflows/tryblock/ast2js.ts";
 import     RUNTIME_15 from "./controlflows/tryblock/runtime.ts";
-import AST_CONVERT_16 from "./controlflows/tryblock/catchblock/astconvert.ts";
-import      AST2JS_16 from "./controlflows/tryblock/catchblock/ast2js.ts";
-import AST_CONVERT_17 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_17 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_18 from "./controlflows/for/astconvert.ts";
-import      AST2JS_18 from "./controlflows/for/ast2js.ts";
-import AST_CONVERT_19 from "./comments/astconvert.ts";
-import      AST2JS_19 from "./comments/ast2js.ts";
+import AST_CONVERT_16 from "./controlflows/tryblock/try/astconvert.ts";
+import      AST2JS_16 from "./controlflows/tryblock/try/ast2js.ts";
+import AST_CONVERT_17 from "./controlflows/tryblock/catchblock/astconvert.ts";
+import      AST2JS_17 from "./controlflows/tryblock/catchblock/ast2js.ts";
+import AST_CONVERT_18 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_18 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_19 from "./controlflows/for/astconvert.ts";
+import      AST2JS_19 from "./controlflows/for/ast2js.ts";
+import AST_CONVERT_20 from "./comments/astconvert.ts";
+import      AST2JS_20 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -107,21 +109,25 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_15,
 		     AST2JS:      AST2JS_15
 	},
-	"controlflows.tryblock/catchblock": {
+	"controlflows.tryblock/try": {
 		AST_CONVERT: AST_CONVERT_16,
 		     AST2JS:      AST2JS_16
 	},
-	"controlflows.ifblock": {
+	"controlflows.tryblock/catchblock": {
 		AST_CONVERT: AST_CONVERT_17,
 		     AST2JS:      AST2JS_17
 	},
-	"controlflows.for": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_18,
 		     AST2JS:      AST2JS_18
 	},
-	"comments": {
+	"controlflows.for": {
 		AST_CONVERT: AST_CONVERT_19,
 		     AST2JS:      AST2JS_19
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_20,
+		     AST2JS:      AST2JS_20
 	},
 }
 
