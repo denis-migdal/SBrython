@@ -14,7 +14,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     js+= toJS(": new _r_.JSException(_raw_err_);", cursor);
         // debug
         js+= newline(this, cursor, 1);
-        js += toJS("_b_.debug_print_exception(_err_, _ast_)", cursor);
+        js += toJS("_b_.debug_print_exception(_err_, __SBRYTHON__)", cursor);
     js+= newline(this, cursor, 1);
 
     js+= newline(this, cursor, 1);

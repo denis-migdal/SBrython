@@ -23,27 +23,31 @@ import      AST2JS_10 from "./literals/None/ast2js.ts";
 import AST_CONVERT_11 from "./keywords/raise/astconvert.ts";
 import      AST2JS_11 from "./keywords/raise/ast2js.ts";
 import     RUNTIME_11 from "./keywords/raise/runtime.ts";
-import AST_CONVERT_12 from "./functions/def/astconvert.ts";
-import      AST2JS_12 from "./functions/def/ast2js.ts";
-import AST_CONVERT_13 from "./functions/call/astconvert.ts";
-import      AST2JS_13 from "./functions/call/ast2js.ts";
-import AST_CONVERT_14 from "./controlflows/while/astconvert.ts";
-import      AST2JS_14 from "./controlflows/while/ast2js.ts";
-import AST_CONVERT_15 from "./controlflows/tryblock/astconvert.ts";
-import      AST2JS_15 from "./controlflows/tryblock/ast2js.ts";
-import     RUNTIME_15 from "./controlflows/tryblock/runtime.ts";
-import AST_CONVERT_16 from "./controlflows/tryblock/try/astconvert.ts";
-import      AST2JS_16 from "./controlflows/tryblock/try/ast2js.ts";
-import AST_CONVERT_17 from "./controlflows/tryblock/catchblock/astconvert.ts";
-import      AST2JS_17 from "./controlflows/tryblock/catchblock/ast2js.ts";
-import AST_CONVERT_18 from "./controlflows/tryblock/catch/astconvert.ts";
-import      AST2JS_18 from "./controlflows/tryblock/catch/ast2js.ts";
-import AST_CONVERT_19 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_19 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_20 from "./controlflows/for/astconvert.ts";
-import      AST2JS_20 from "./controlflows/for/ast2js.ts";
-import AST_CONVERT_21 from "./comments/astconvert.ts";
-import      AST2JS_21 from "./comments/ast2js.ts";
+import AST_CONVERT_12 from "./keywords/import/astconvert.ts";
+import      AST2JS_12 from "./keywords/import/ast2js.ts";
+import AST_CONVERT_13 from "./keywords/import/alias/astconvert.ts";
+import      AST2JS_13 from "./keywords/import/alias/ast2js.ts";
+import AST_CONVERT_14 from "./functions/def/astconvert.ts";
+import      AST2JS_14 from "./functions/def/ast2js.ts";
+import AST_CONVERT_15 from "./functions/call/astconvert.ts";
+import      AST2JS_15 from "./functions/call/ast2js.ts";
+import AST_CONVERT_16 from "./controlflows/while/astconvert.ts";
+import      AST2JS_16 from "./controlflows/while/ast2js.ts";
+import AST_CONVERT_17 from "./controlflows/tryblock/astconvert.ts";
+import      AST2JS_17 from "./controlflows/tryblock/ast2js.ts";
+import     RUNTIME_17 from "./controlflows/tryblock/runtime.ts";
+import AST_CONVERT_18 from "./controlflows/tryblock/try/astconvert.ts";
+import      AST2JS_18 from "./controlflows/tryblock/try/ast2js.ts";
+import AST_CONVERT_19 from "./controlflows/tryblock/catchblock/astconvert.ts";
+import      AST2JS_19 from "./controlflows/tryblock/catchblock/ast2js.ts";
+import AST_CONVERT_20 from "./controlflows/tryblock/catch/astconvert.ts";
+import      AST2JS_20 from "./controlflows/tryblock/catch/ast2js.ts";
+import AST_CONVERT_21 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_21 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_22 from "./controlflows/for/astconvert.ts";
+import      AST2JS_22 from "./controlflows/for/ast2js.ts";
+import AST_CONVERT_23 from "./comments/astconvert.ts";
+import      AST2JS_23 from "./comments/ast2js.ts";
 
 
 const MODULES = {
@@ -95,45 +99,53 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_11,
 		     AST2JS:      AST2JS_11
 	},
-	"functions.def": {
+	"keywords.import": {
 		AST_CONVERT: AST_CONVERT_12,
 		     AST2JS:      AST2JS_12
 	},
-	"functions.call": {
+	"keywords.import/alias": {
 		AST_CONVERT: AST_CONVERT_13,
 		     AST2JS:      AST2JS_13
 	},
-	"controlflows.while": {
+	"functions.def": {
 		AST_CONVERT: AST_CONVERT_14,
 		     AST2JS:      AST2JS_14
 	},
-	"controlflows.tryblock": {
+	"functions.call": {
 		AST_CONVERT: AST_CONVERT_15,
 		     AST2JS:      AST2JS_15
 	},
-	"controlflows.tryblock/try": {
+	"controlflows.while": {
 		AST_CONVERT: AST_CONVERT_16,
 		     AST2JS:      AST2JS_16
 	},
-	"controlflows.tryblock/catchblock": {
+	"controlflows.tryblock": {
 		AST_CONVERT: AST_CONVERT_17,
 		     AST2JS:      AST2JS_17
 	},
-	"controlflows.tryblock/catch": {
+	"controlflows.tryblock/try": {
 		AST_CONVERT: AST_CONVERT_18,
 		     AST2JS:      AST2JS_18
 	},
-	"controlflows.ifblock": {
+	"controlflows.tryblock/catchblock": {
 		AST_CONVERT: AST_CONVERT_19,
 		     AST2JS:      AST2JS_19
 	},
-	"controlflows.for": {
+	"controlflows.tryblock/catch": {
 		AST_CONVERT: AST_CONVERT_20,
 		     AST2JS:      AST2JS_20
 	},
-	"comments": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_21,
 		     AST2JS:      AST2JS_21
+	},
+	"controlflows.for": {
+		AST_CONVERT: AST_CONVERT_22,
+		     AST2JS:      AST2JS_22
+	},
+	"comments": {
+		AST_CONVERT: AST_CONVERT_23,
+		     AST2JS:      AST2JS_23
 	},
 }
 
@@ -142,7 +154,7 @@ export default MODULES;
 
 const RUNTIME = {};
 Object.assign(RUNTIME, RUNTIME_11);
-Object.assign(RUNTIME, RUNTIME_15);
+Object.assign(RUNTIME, RUNTIME_17);
 
 
 export const _b_ = RUNTIME;

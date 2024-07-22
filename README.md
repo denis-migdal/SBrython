@@ -29,8 +29,12 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Keywords
     - pass
     - return (expr)
+- modules 
+    - export (functions) / import (already loaded) / import browser (=globalThis)
 
 ## Currently Working on...
+
+    - [ ] convert_node (~=recursive?) [if]
 
     1. controlflows
         + continue+break;
@@ -48,8 +52,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         a. +-/* **, % unary -, //,
         b. cmp : > >= < <= !=
         c. or / and / not
-
-    6. import/export.
 
     - [ ] Check AST
         - check function call arguments type... + return type.
@@ -77,7 +79,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] dict
         - [ ] some APIs (e.g. str methods)
 
-        - [ ] import/export (?)
         - [ ] define class+method
     - [ ] list used core_module + extend core_module.
     - brython perfs :
@@ -159,9 +160,9 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] traceback... (+ need compat mode for locals)
 
 - [ ] convert body into full core_module ? idem for fct args ?
-- [ ] convert_node (~=recursive?)
 
-- [ ] put some AST in global space... (required to properly parse stack traces).
-
+- [ ] SBrython
+    - [ ] doc API + complete API
+    - [ ] stack conversion inside it ?
 
 https://github.com/brython-dev/brython/issues/2478

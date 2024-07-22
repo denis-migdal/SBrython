@@ -174,6 +174,9 @@ export function convert_ast(ast: any): ASTNode[] {
     for(let i = 0; i < ast.body.length; ++i) {
         //TODO: detect comments
         result[i] = convert_line(ast.body[i], context);
+
+
+        //console.log(result[i].type);
     }
 
     //TODO: detect comments...

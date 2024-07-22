@@ -1,5 +1,6 @@
 import Py_Exception from "core_runtime/Exceptions/Exception";
 import { AST } from "py2ast";
+import { SBrython } from "runtime";
 import { ASTNode } from "structs/ASTNode";
 
 function filter_stack(stack: string[]) {
@@ -28,20 +29,23 @@ function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: numbe
   return null; //throw new Error("node not found");
 }
 
-export function stackline2astnode(stackline: StackLine, ast: AST): ASTNode {
+export function stackline2astnode(stackline: StackLine, sb: SBrython): ASTNode {
+  const ast = sb.getASTFor("sbrython_editor.js");
   return find_astnode_from_jscode_pos(ast.nodes, stackline[1], stackline[2])!;
 }
 
 export type StackLine = [string, number, number];
 
 //TODO: convert
-export function stack2astnodes(stack: StackLine[], ast: AST): ASTNode[] {
-  return stack.map( e => stackline2astnode(e, ast) );
+export function stack2astnodes(stack: StackLine[], sb: SBrython): ASTNode[] {
+  return stack.map( e => stackline2astnode(e, sb) );
 }
 
 //TODO: add file...
-export function parse_stack(stack: any, ast: AST): StackLine[] {
+export function parse_stack(stack: any, sb: SBrython): StackLine[] {
 
+
+  
     stack = stack.split("\n");
 
     const isV8 = stack[0]=== "Error"; 
@@ -65,6 +69,8 @@ export function parse_stack(stack: any, ast: AST): StackLine[] {
         if( fct_name === "eval") //TODO: better
           fct_name = "<module>";
 
+        //TODO: extract filename.
+        const ast = sb.getASTFor("sbrython_editor.js");
         const node = find_astnode_from_jscode_pos(ast.nodes, line, col)!;
         if(node.type === "symbol")
           col += node.value.length; // V8 gives first character of the symbol name when FF gives "("...
@@ -80,14 +86,12 @@ export function parse_stack(stack: any, ast: AST): StackLine[] {
     });
 }
 
-function debug_print_exception(err: Py_Exception, ast: AST) {
-
-    //TODO: many ast/files.
+function debug_print_exception(err: Py_Exception, sb: SBrython) {
 
     console.warn("Exception", err);
 
-    const stack = parse_stack( (err as any)._raw_err_.stack, ast);
-    const nodes = stack2astnodes(stack, ast);
+    const stack = parse_stack( (err as any)._raw_err_.stack, sb);
+    const nodes = stack2astnodes(stack, sb);
     //TODO: convert stack...
     const stack_str = stack.map( (l,i) => `File "[file]", line ${nodes[i].pycode.start.line}, in ${stack[i][0]}`);
 
