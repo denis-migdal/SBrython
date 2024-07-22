@@ -64,12 +64,6 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     let js = "{";
     const body = node.children[idx];//body: ASTNode[];
 
-    // h4ck due to } else/elif {
-    const needs_offset = ["controlflows.else", "controlflows.elif", "controlflows.catchblock"].includes(node.type);
-
-    if(needs_offset)
-        --node.jscode!.start.col;
-
     for(let i = 0; i < body.children.length; ++i) {
         js += newline(node, cursor, 1);
         js += astnode2js(body.children[i], cursor)
@@ -78,10 +72,6 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0) {
     js += newline(node, cursor);
     js += "}";
     cursor.col += 1;
-
-    // h4ck due to } else/elif/catch {
-        if(needs_offset)
-            ++node.jscode!.start.col;
 
     body.jscode = {
         start: start,
@@ -138,7 +128,12 @@ export function arg2js(node: ASTNode, cursor: CodePos) {
 
 export function newline(node: ASTNode, cursor: CodePos, indent_level: number = 0) {
 
-    const indent = indent_level*4 + node.jscode!.start.col;
+    let base_indent = node.jscode!.start.col;
+    if( ["controlflows.else", "controlflows.elif", "controlflows.catchblock"].includes(node.type) ) {
+       --base_indent;
+    }
+
+    const indent = indent_level*4 + base_indent;
 
     ++cursor.line;
     cursor.col = indent;

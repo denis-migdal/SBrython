@@ -3,6 +3,8 @@ import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
+    console.log("catch", {...cursor});
+
     let js = toJS("catch(_raw_err_){", cursor);
     js+= newline(this, cursor, 1);
     js+= toJS("const _err_ = _raw_err_ instanceof _b_.PythonError", cursor);
@@ -24,7 +26,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     --this.jscode!.start.col; // h4ck
     js+= newline(this, cursor, 0); // make new lines handle it ?
-    --this.jscode!.start.col; // h4ck
+    ++this.jscode!.start.col; // h4ck
     js+= toJS("}", cursor);
     return js;
 }
