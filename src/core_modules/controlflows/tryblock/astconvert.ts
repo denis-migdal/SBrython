@@ -1,4 +1,4 @@
-import { Context, convert_body, convert_line, convert_node } from "py2ast";
+import { Context, convert_body, convert_line, convert_node, listpos } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
@@ -10,7 +10,8 @@ export default function convert(node: any, context: Context) {
         },
         {
             sbrython_type: "Try.catchblock",
-            ...node.handlers[0] //TODO...
+            ...listpos(node.handlers),
+            handlers: node.handlers
         }
     ];
 

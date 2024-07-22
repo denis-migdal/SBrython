@@ -3,9 +3,10 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    return new ASTNode(node, `controlflows.catchblock`, null, null,
-        node.handlers.map( (h:any) => convert_node(h, context))
-    );
+    //TODO: condition...
+    return new ASTNode(node, `controlflows.catch`, null, null, [
+        convert_body(node, context)
+    ]);
 }
 
-convert.brython_name = "Try.catchblock";
+convert.brython_name = "ExceptHandler";

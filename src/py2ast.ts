@@ -132,6 +132,21 @@ export function convert_arg(node: any, context: Context) {
     return new ASTNode(node, "arg", node.annotation.id, node.arg);
 }
 
+export function listpos(node: any[]) {
+
+    let beg = node[0];
+    let end = node[node.length-1];
+
+    return {
+        //lineno : beg.lineno - 1,
+        //col_offset: node.col_offset,
+        lineno : beg.lineno,
+        col_offset: beg.col_offset,
+        end_lineno: end.end_lineno,
+        end_col_offset: end.end_col_offset,
+    };
+}
+
 export function convert_line(line: any, context: Context): ASTNode {
 
     let node = line;

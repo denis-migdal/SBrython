@@ -1,4 +1,4 @@
-import { Context, convert_body, convert_line, convert_node } from "py2ast";
+import { Context, convert_body, convert_line, convert_node, listpos } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
@@ -38,17 +38,14 @@ export default function convert(node: any, context: Context) {
     }
     if( "orelse" in cur && cur.orelse.length !== 0 ) { // else
 
-        let beg = cur.orelse[0];
-        let end = cur.orelse[cur.orelse.length-1];
-
         children.push({
             sbrython_type: "If",
             ifblock: "else",
             body   : cur.orelse,
-            lineno : beg.lineno - 1,
+            ...listpos(cur.orelse),
+            // because reasons...
+            lineno    : cur.orelse[0].lineno - 1,
             col_offset: node.col_offset,
-            end_lineno: end.end_lineno,
-            end_col_offset: end.end_col_offset,
         })
     }
 
