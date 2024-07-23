@@ -39,8 +39,12 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 (new features)
 - import/export
 - f-string
-- list/tuple
+- list/tuple/dict
 
+=> base, when more cases, keep it simple when possible.
+=> better type deduction (to keep detecting simple cases).
+=> if necessary, push 2 PEP compliant mode.
+=> Brython unit tests.
 
     - isClass
         => toString starts with class
@@ -91,9 +95,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
         - [ ] py code => pre-transpile
         - [ ] JS code insert
-
-        - [ ] dict
-        - [ ] some APIs (e.g. str methods)
 
         - [ ] define class+method
     - [ ] list used core_module + extend core_module.
