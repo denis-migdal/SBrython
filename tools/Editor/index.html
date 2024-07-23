@@ -15,6 +15,11 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+# from browser import write
+# For Brython compat:
+from browser import window as _w_
+write = _w_.write
+
 write( f"{2}y" )
 write( f"yy" )
 write( f"{2}y" )
@@ -394,12 +399,11 @@ function update() {
 
     output = [];
     is_sbrython = false;
-    const code2 = `from browser import window\nwrite = window.write\n${code}`;
     //console.log("c2", code2);
     let js_code2;
     beg = globalThis.performance.now();
     try {
-        js_code2 = $B.pythonToJS(code2);
+        js_code2 = $B.pythonToJS(code);
         /*
         const filename = "filename";
         const parser = new $B.Parser(code, filename, 'file');

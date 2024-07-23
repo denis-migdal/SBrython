@@ -40,9 +40,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         => return Object.getOwnPropertyDescriptors(obj)?.prototype?.writable === false ? true : false;
             https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
 
-
-    - f-string  (JoinedStr) [] => value (str) + FormattedValue (${}) => value (symbol)
-
     2. List/Tuple/Dict => override JS...
             => []
             => Object.freeze()
