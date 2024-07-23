@@ -3,6 +3,8 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
+    console.warn("!!", {...node});
+    
     return new ASTNode(node, "literals.f-string", null, null, [
         ...node.values.map( (e:any) => convert_node(e, context) )
     ]);

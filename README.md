@@ -20,6 +20,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - int
     - float (ops not tested)
     - str   (ops not tested)
+        - f-string
     - None (explicit = JS null / implicit = JS undefined)
 - Operators
     - =  (bool/int/None) + with annotations
@@ -182,3 +183,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - [ ] stack conversion inside it ?
 
 https://github.com/brython-dev/brython/issues/2478
+
+
+Bugs (Brython)
+    - [ ] https://github.com/brython-dev/brython/issues/2479

@@ -15,8 +15,9 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
-z=2
-f"{z}y"
+write( f"{2}y" )
+write( f"yy" )
+write( f"{2}y" )
 
 # import
 import browser
@@ -350,6 +351,7 @@ function update() {
         //ast = py2ast( code );
             const parser = new $B.Parser(code, filename, 'file');
             _ast = $B._PyPegen.run_parser(parser);
+
             step0 = globalThis.performance.now();
 	        ast = {
                 nodes: convert_ast(_ast),
