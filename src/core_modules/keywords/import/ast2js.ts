@@ -14,9 +14,9 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     js += toJS("} = ", cursor);
     
     if(this.value === null)
-        js += toJS("__SBRYTHON__.getModules();", cursor);
+        js += toJS("__SBRYTHON__.getModules()", cursor);
     else
-        js += toJS(`__SBRYTHON__.getModule("${this.value}");`, cursor);
+        js += toJS(`__SBRYTHON__.getModule("${this.value}")`, cursor);
 
     return js;
 }

@@ -34,19 +34,35 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
-    - [ ] convert_node (~=recursive?) [if]
+    - isClass
+        => toString starts with class
+        => return Object.getOwnPropertyDescriptors(obj)?.prototype?.writable === false ? true : false;
+            https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
 
-    1. controlflows
-        + continue+break;
-        + move 2 keywords.
 
-    2. simple classes + JS classes.
+    - f-string  (JoinedStr) [] => value (str) + FormattedValue (${}) => value (symbol)
+
+    2. List/Tuple/Dict => override JS...
+            => []
+            => Object.freeze()
+            => {} (object vs class???)
+                // assert if object: ({}).__proto__ === Object.prototype or undefined
+        => exec method
+        => symbol system with substitution system [type, methodname] => fct().
+            (getattr ?)
+
+    - complex fct params.
+        + from JS too...
+    1. simple classes + JS classes.
         => no .new()
         => API build from extracting JS class (exclude some symbols?)
-    3. List/Tuple/Dict => override JS...
-        => exec method/getattr // JS new()
-        => symbol system++.
-        => substitution system [type, methodname] => fct().
+            => include/excludeList (?)
+
+    - [ ] convert_node (~=recursive?) [if]
+    3. keywords
+        - continue+break;
+        - async/await
+        + move some 2 keywords.
     4. ops
         x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
         a. +-/* **, % unary -, //,

@@ -3,7 +3,8 @@ import { Context } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 function isClass(_: unknown) {
-    return true;
+    // from https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
+    return Object.getOwnPropertyDescriptors(_)?.prototype?.writable === false;
 }
 
 export default function convert(node: any, context: Context) {

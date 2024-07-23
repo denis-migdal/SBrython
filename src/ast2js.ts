@@ -10,10 +10,13 @@ export function ast2js(ast: AST) {
     let cursor = {line: 3, col: 0};
 	for(let node of ast.nodes) {
 		js += astnode2js(node, cursor);
-        js +=    newline(node, cursor);
 
         if(node.type === "functions.def")
             exported.push(node.value);
+        else
+            js += toJS(";", cursor)
+
+        js +=    newline(node, cursor);
     }
 
     js += `\nconst __exported__ = {${exported.join(', ')}};\n`;
@@ -77,6 +80,7 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0, print_bracket =
     for(let i = 0; i < body.children.length; ++i) {
         js += newline(node, cursor, 1);
         js += astnode2js(body.children[i], cursor)
+        js += toJS(";", cursor)
     }
 
     if(print_bracket) {

@@ -15,6 +15,9 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+z=2
+f"{z}y"
+
 # import
 import browser
 from browser import window as w
@@ -633,6 +636,9 @@ function print_code(code, _ast, type) {
         const html = print_code_node(node, code, type);
         html.style.setProperty("display", "inline-block");
         line.append(html);
+
+        if(node.type !== "functions.def") //TODO...
+            line.append(";");
 
         return line;
     });
