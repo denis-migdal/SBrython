@@ -35,6 +35,11 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
+(new features)
+- import/export
+- f-string
+
+
     - isClass
         => toString starts with class
         => return Object.getOwnPropertyDescriptors(obj)?.prototype?.writable === false ? true : false;
@@ -49,7 +54,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         => symbol system with substitution system [type, methodname] => fct().
             (getattr ?)
 
-    - complex fct params.
+    0. complex fct params.
         + from JS too...
     1. simple classes + JS classes.
         => no .new()
@@ -81,14 +86,13 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] Basic operators : + / * - + neg numbers
             - [ ] Check nodes operator priority (add parenthesis)
             - [ ] Check operators result_type
-        - [ ] f-string
         
         - [ ] Async/await
 
         - [ ] py code => pre-transpile
         - [ ] JS code insert
 
-        - [ ] get/set attr
+        - [ ] set attr
         - [ ] List/Tuple
         - [ ] dict
         - [ ] some APIs (e.g. str methods)
