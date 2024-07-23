@@ -25,6 +25,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Operators
     - =  (bool/int/None) + with annotations
     - == (bool/int/None)
+    - [] (list/tuple[int])
 - Symbols
     - JS global symbols.
 - Keywords
@@ -38,6 +39,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 (new features)
 - import/export
 - f-string
+- list/tuple
 
 
     - isClass
@@ -46,8 +48,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
             https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
 
     2. List/Tuple/Dict => override JS...
-            => []
-            => Object.freeze()
             => {} (object vs class???)
                 // assert if object: ({}).__proto__ === Object.prototype or undefined
         => exec method
@@ -92,8 +92,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - [ ] py code => pre-transpile
         - [ ] JS code insert
 
-        - [ ] set attr
-        - [ ] List/Tuple
         - [ ] dict
         - [ ] some APIs (e.g. str methods)
 

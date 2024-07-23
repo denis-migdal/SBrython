@@ -21,8 +21,15 @@ from browser import window as _w_
 write = _w_.write
 
 # list/tuple
-write([1,2])
-write((1,2))
+list  = [1,2]
+tuple = (1,2)
+write(list)
+write(tuple)
+
+list[0] = 3
+write(  list[0] )
+write( tuple[0] )
+
 # []
 # [] = 
 # .append() => rewrite => push()
@@ -344,6 +351,10 @@ function update() {
 
     let is_sbrython = true;
     window.write = function(txt) {
+
+        if( Array.isArray(txt) ) // clone to prevent update issues...
+            txt = [...txt];
+
         output.push([txt, new Error().stack]);
     };
 
