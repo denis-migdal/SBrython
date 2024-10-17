@@ -36,45 +36,126 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
+-> classes
+    -> methods / cstr.
+    -> attrs
+    -> extends (1)
+-> operators+priority+other keywords.
+-> fct calls.
+-> list/tuple/dict -> subs symbols
+-> unit tests.
+-> JS API
+
+
 (new features)
-- import/export
-- f-string
-- list/tuple/dict
+    - import/export
+    - f-string
+    - list/tuple/dict
+Principle
+    => base, when more cases, keep it simple when possible.
+    => better type deduction (to keep detecting simple cases).
+    => if necessary, push 2 PEP compliant mode.
+    => Brython unit tests.
 
-=> base, when more cases, keep it simple when possible.
-=> better type deduction (to keep detecting simple cases).
-=> if necessary, push 2 PEP compliant mode.
-=> Brython unit tests.
+    1. Complex functions params...
+    2. Classes (lot of things)
+    3. Symb. substitution system (for List/Tuple/Dict)
+    
+    4. Refactors
+        - ASTNode type refactor
+        - join([Array], ", ") => handle in toJS
+        - nl(indent_src, 1)   => handle in toJS
+        - body()              => handle in toJS
+        - toJS += : only "+".
 
-    - isClass
-        => toString starts with class
-        => return Object.getOwnPropertyDescriptors(obj)?.prototype?.writable === false ? true : false;
-            https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
+    5. clean doc/README...
+    6. Brython unit test
+        - assert keyword
+        - tester module
+        -> editor switch test suite... + store test suite.
+            -> new SBrython().
+    7. AST Tree checks
 
-    2. List/Tuple/Dict => override JS...
-            => {} (object vs class???)
-                // assert if object: ({}).__proto__ === Object.prototype or undefined
-        => exec method
-        => symbol system with substitution system [type, methodname] => fct().
-            (getattr ?)
+    8. ADD other features... (keywords/ops...)
 
-    0. complex fct params.
-        + from JS too...
-    1. simple classes + JS classes.
-        => no .new()
-        => API build from extracting JS class (exclude some symbols?)
-            => include/excludeList (?)
+### ASTNode type refactor
 
-    - [ ] convert_node (~=recursive?) [if]
-    3. keywords
-        - continue+break;
-        - async/await
-        + move some 2 keywords.
-    4. ops
-        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
-        a. +-/* **, % unary -, //,
-        b. cmp : > >= < <= !=
-        c. or / and / not
+    - ifblock => split files.
+    - =(assign) variant (how to remove ?)
+    - remove type from constructor, set it depending on the filename ?
+    - make a typeof for type ? so that it isn't string ?
+
+### SBrython AST
+
+- Webworker to distribute work ?
+    -> WEBASM to control allocations ?
+    -> ?
+- Type checker/setter after AST build.
+-> toJS => lors du convert node...
+
+
+- associer gauche ou droite ?
+
+main_body
+    - parseToken()
+        - if/etc. => parse other token.
+            - indentation
+            - :
+    - a + b => (a+b)...
+        => continuer ? arrêter ?
+        => priorité des opérateurs... association gauche ou droite ?
+    (g) op => parse
+    (g) op (d) op
+        => si g= (g op d)
+        => sinon (g) op (d op x)
+
+### Symb. subs
+
+    - call()
+        => [obj, method_name, args]
+        => if obj_type.method_name in subs
+            => if subs[...].filter()
+                => new Node (Subs) / value = (args_nodes) => JS
+        => subs.ts in modules... (gathers).
+    => test only with append => push (one arg)
+
+### Complex fct params
+
+Cf https://github.com/brython-dev/brython/issues/2478
+
+- Python function
+    - (...pos_only & pos_no_defaults)
+        - [add if only one default].
+        - [add if default is None... (null)]
+    - ({...pos_with_defaults, ...kw_args, kwargs})
+        - if only kwargs => {} directly...
+    - (...vargs)
+- call with kw args.
+
+- fake for JS (later) -> get params names.
+- assert how to use it from JS.toString() [needs to be known at transcript time...]
+    => import => local variable => type + "ref" (if known at transcript time) => operator.??? => now we have the JS fct...
+    +> plug [native code fcts...]
+
+### Classes
+
+- empty class
+    - export class
+    - add class to local variables
+- cstr
+    - get `__new__`
+    - get `__init__`
+    - Py_Obj => cstr : call new then init.
+    -> new fix the Python authorized symbols, but doesn't change JS prototype.
+- methods (self) + attr
+- extends Python class (normal)
+- extends JS class ?
+
+### Missing features
+
+    - [ ] use Brython unit tests...
+        - tester module...
+        - assert keyword... => plug or smthing ?
 
     - [ ] Check AST
         - check function call arguments type... + return type.
@@ -85,23 +166,20 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
             - if deduced, set unknown ?
         -> warning on node => show in editor ?
 
-    - [ ] Add features
-        - [ ] comments
-        - [ ] Basic operators : + / * - + neg numbers
-            - [ ] Check nodes operator priority (add parenthesis)
-            - [ ] Check operators result_type
-        
-        - [ ] Async/await
-
-        - [ ] py code => pre-transpile
+    - [ ] py code in core_modules ? => pre-transpile
         - [ ] JS code insert
 
-        - [ ] define class+method
-    - [ ] list used core_module + extend core_module.
-    - brython perfs :
-        - split Py2JS into Py2AST and AST2JS
-        - disable cache
-    cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
+
+
+    - keywords
+        - continue+break;
+        - async/await
+        + move some 2 keywords.
+    - ops
+        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
+        a. +-/* **, % unary -, //,
+        b. cmp : > >= < <= !=
+        c. or / and / not
 
 ## Documentation (TODO)
 
@@ -174,6 +252,13 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - [ ] Opti
     - [ ] in some cases convert int into float (cste) [AST checks ?]
 
+- [ ] comments
+- [ ] list used core_module + extend core_module.
+- [ ] brython better perfs...:
+    - split Py2JS into Py2AST and AST2JS
+    - disable cache
+    cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
+
 - [ ] traceback... (+ need compat mode for locals)
 
 - [ ] convert body into full core_module ? idem for fct args ?
@@ -182,8 +267,16 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - [ ] doc API + complete API
     - [ ] stack conversion inside it ?
 
-https://github.com/brython-dev/brython/issues/2478
-
+## Misc
 
 Bugs (Brython)
     - [ ] https://github.com/brython-dev/brython/issues/2479
+
+Info (TODO)
+    - [ ] assert if variable is dict: ({}).__proto__ === Object.prototype or undefined
+    - [ ] assert if class :  => toString starts with class
+        => return Object.getOwnPropertyDescriptors(obj)?.prototype?.writable === false;
+            https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
+
+Info
+    - [ ] Arg parsing: https://github.com/brython-dev/brython/issues/2478

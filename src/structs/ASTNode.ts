@@ -8,7 +8,20 @@ export type CodeRange = {
     end  : CodePos
 }
 
-export class ASTNode {
+interface IASTNode  {
+
+	type    : string;
+	value   : any;
+	children: ASTNode[];
+	result_type: string|null;
+
+    pycode: CodeRange;
+    jscode?: CodeRange;
+
+	toJS?: (this: ASTNode, cursor: CodePos) => string;
+}
+
+export class ASTNode implements IASTNode {
 
 	type    : string;
 	value   : any;

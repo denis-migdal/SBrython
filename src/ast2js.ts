@@ -35,7 +35,7 @@ export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos 
         cursor.col += str.length;
         return str;
     }
-    if( str instanceof ASTNode) {
+    if( str instanceof Object && ! Array.isArray(str) ) {
         return astnode2js(str, cursor);
     }
 
@@ -51,7 +51,7 @@ export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos 
         cursor.col += s.length;
 
         e = str[1][i];
-        if( e instanceof ASTNode) {
+        if( e instanceof Object) {
             js += astnode2js(e, cursor);
         } else {
             s = `${e}`;

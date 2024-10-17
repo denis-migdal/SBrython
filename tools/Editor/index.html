@@ -15,10 +15,25 @@
 -->
         <strong>Input</strong>
         <textarea id="python">
+
 # from browser import write
 # For Brython compat:
 from browser import window as _w_
 write = _w_.write
+
+# classes
+#class A:
+
+    # cstr => __new__ then __init__.
+    # __new__ => createObject(proto) + __new__ ?
+
+    # attr = "2" # __new__ (auto create...)
+
+    # def __init__(self):
+    #     write("init")
+    # def foo(self, a):
+    #    write("foo")
+    #    write(self.attr)
 
 # dict
 dict = {"e": 4, "f": 5}
@@ -185,6 +200,15 @@ c = True
 if c:
     write(3)
 </textarea>
+
+<!--
+
+ab = 1
+b = "2"
+
+if a == b:
+    pass
+-->
     </div>
     <div>
         <strong>Output (SBryton)</strong>
@@ -286,7 +310,7 @@ if c:
 </style>
 
 <script type="module">
-    import {py2ast, ast2js, convert_ast, parse_stack, stackline2astnode, SBrython} from "../../dist/dev/index.js";
+    import {py2ast, ast2js, convert_ast, py2ast_fast, parse_stack, stackline2astnode, SBrython} from "../../dist/dev/index.js";
 
     const SHOW_CODE_NODE_BEFORE_PRINT = false;
 
@@ -366,25 +390,45 @@ function update() {
     let output = [];
     let ast;
     let js_code = "";
+
+    const filename = "sbrython_editor.js";
+    let _ast;
+
+    if(false) {
+        const parser = new $B.Parser(code, filename, 'file');
+        _ast = $B._PyPegen.run_parser(parser);
+
+        //step0 = globalThis.performance.now();
+        ast = {
+            nodes: convert_ast(_ast),
+            filename
+        }
+
+        console.warn(ast);
+    }
+
     let beg = globalThis.performance.now();
     let step1;
     let step2;
     let step0;
-    let _ast;
     let js_fct;
     let sb;
 
-    const filename = "sbrython_editor.js";
     try {
         //ast = py2ast( code );
+        //ast = py2ast_fast(code);
+        //step0 = globalThis.performance.now();
+        if( true ) {
             const parser = new $B.Parser(code, filename, 'file');
             _ast = $B._PyPegen.run_parser(parser);
 
-            step0 = globalThis.performance.now();
-	        ast = {
+            //step0 = globalThis.performance.now();
+            ast = {
                 nodes: convert_ast(_ast),
                 filename
             }
+        }
+
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
@@ -488,7 +532,7 @@ function update() {
 	print_ast( ast );
     console.log(js_code);
     //console.log(js_fct.toString());
-    console.log(ast);
+    console.warn("AST", ast);
 	print_js( js_code, ast );
 
     let equals = true;
