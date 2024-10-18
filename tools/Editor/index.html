@@ -36,66 +36,39 @@
         });
     }
     if( test === 'numbers') {
-        code = code.slice();
-        code = code.filter( (line, idx) => {
+        code = code.slice(0, 20);
 
-            if( idx >= 70 && idx <= 82 && idx !== 75)
-                return true;
+        const exclude = [
+            3,
+            6, 27, // __class__
+            7, 28, // isinstance
+            8, 29, // str()
+            //13, // operator
+            14, 31, // unary operator
+            //20, 21, // init doesn't have the good op ?
+            //23, 24, // / not implemented ?
+            75,
+            [32,38] // __op__
+        ];
 
-            if( idx >= 112 && idx <= 166)
-                return true;
+        function filter(code, list) {
 
-            if( idx >= 195 && idx <= 199)
-                return true;
+            let result = code.filter( (_, idx) => {
+                ++idx;
+                return list.find( (v) => {
+                    if( idx === v)
+                        return true;
+                    if( Array.isArray(v) && v[0] <= idx && v[1] >= idx)
+                        return true;
+                }) === undefined;
+            });
 
-            if( idx >= 214 && idx <= 216)
-                return true;
+            console.warn('excluded', code.length - result.length);
 
-            if( idx >= 261 && idx <= 271)
-                return true;
+            return result;
+        }
 
-            if( idx >= 289 && idx <= 295)
-                return true;
-
-            if( idx >= 375 && idx <= 381)
-                return true;
-
-            if( idx >= 391 && idx <= 403)
-                return true;
-
-            if( idx >= 405 && idx <= 444)
-                return true;
-
-            //TODO... [ excl range instead of include... ]
-
-            if( idx >= 70 )
-                return false;
-
-            return ! [
-                3,
-                6, 27, // __class__
-                7, 28, // isinstance
-                8, 29, // str()
-                //13, // operator
-                14, 31, // unary operator
-                //20, 21, // init doesn't have the good op ?
-                //23, 24, // / not implemented ?
-                32, 33, 35, 36, 37, // __op__
-
-            ].includes(idx+1);
-
-            // todo
-                //70+ infinity
-                //112+
-                //119+
-
-            // not do
-                // 40+ : int.from_bytes + 68-69
-                // 51+ : nb complexes
-                // 64-64 : boolean are instances of int...
-                // 83+ complex
-            // --
-        });
+        code = filter(code, exclude);
     }
 
     code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];

@@ -40,11 +40,13 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Unit tests
 
+-> scroll bottom...
+
 Using Brython test suite.
 
 Status : 0/26
-Lines passes : 2+/8,416
-Lines ignored : ?
+Lines passed  : 2+/8,416
+Lines ignored : 5+
 
 - /tools/Editor/index.html?test=numbers
 - /tools/Editor/index.html?test=classes
