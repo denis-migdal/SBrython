@@ -15,6 +15,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Functions
     - def (pos_params) [requires annotations and at least 1 params]
     - call(pos_arg)
+- Classes
+    - methods (self as first arg)
+    - attributes
+    - inheritance (only 1 base).
 - Literals
     - bool
     - int
@@ -34,16 +38,27 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - modules 
     - export (functions) / import (already loaded) / import browser (=globalThis)
 
+## Unit tests
+
+- /tools/Editor/index.html?test=numbers
+- /tools/Editor/index.html?test=classes
+
 ## Currently Working on...
 
+Bugs
+    -> bug : code gen vs print code include ";" aux lignes... 
+        -> une fonction exportée
+Refactor
+    -> body/newline/args (toJS...)
+    -> editor : split into files...
+
 -> classes
-    -> methods / cstr.
-    -> attrs
-    -> extends (1)
+    -> cstr.
+    -> class type in context ?
 -> operators+priority+other keywords.
--> fct calls.
 -> list/tuple/dict -> subs symbols
--> unit tests.
+-> fct calls more complex.
+-> unit tests : 25 core features.
 -> JS API
 
 

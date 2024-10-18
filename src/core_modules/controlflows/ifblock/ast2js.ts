@@ -19,7 +19,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     let js = toJS(keyword, cursor);
     let offset = 0;
-    if( keyword !== "else") {
+    if( keyword !== "else") { // if/elif condition.
         offset = 1;
         js += toJS(r`(${this.children[0]})`, cursor);
     }

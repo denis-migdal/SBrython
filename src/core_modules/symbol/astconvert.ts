@@ -12,12 +12,16 @@ export default function convert(node: any, context: Context) {
     let result_type = null;
     let value = node.id;
 
-    if( node.id in context.local_variables)
-        result_type = context.local_variables[node.id];
-    else if(node.id in _r_) {
-        value = `_r_.${node.id}`;
-        if( isClass(_r_[node.id as keyof typeof _r_]) )
-            result_type = `class.${node.id}`;
+    if( value === 'self')
+        value = 'this';
+
+    else if( value in context.local_variables)
+        result_type = context.local_variables[value];
+    else if(value in _r_) {
+        if( isClass(_r_[value as keyof typeof _r_]) )
+            result_type = `class.${value}`;
+
+        value = `_r_.${value}`;
     }
 
    return new ASTNode(node, "symbol", result_type, value);

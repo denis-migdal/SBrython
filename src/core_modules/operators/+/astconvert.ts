@@ -3,21 +3,18 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    if( ! ("op" in node) )
-        return;
+    const left  = convert_node(node.left , context );
+    const right = convert_node(node.right, context);
 
-    let op = node.op.constructor.$name;
-    if( op === "Add")
-        op = "+";
-
-    if( op === "Eq")
-        return;
+    let type = null;
+    if( left.result_type === right.result_type)
+        type = left.result_type;
 
     //TODO...
-    return new ASTNode(node, "operators.+", null, op,
+    return new ASTNode(node, "operators.+", type, null,
         [
-            convert_node(node.left , context ),
-            convert_node(node.right, context),
+            left,
+            right
         ]
     );
 }

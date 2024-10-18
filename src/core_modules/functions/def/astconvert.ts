@@ -5,6 +5,9 @@ export default function convert(node: any, context: Context) {
 
     const args = convert_args(node, context);
 
+    const isMethod = context.type === "class";  
+
+    context = new Context("fct", context);
     // new context for the function local variables
     context = {
         ...context
@@ -15,7 +18,11 @@ export default function convert(node: any, context: Context) {
 
     // return type... node.returns.id
 
-    return new ASTNode(node, "functions.def", null, node.name, [
+    let type = "functions.def";
+    if(isMethod)
+        type += "(meth)";
+
+    return new ASTNode(node, type, null, node.name, [
         args,
         convert_body(node, context)
     ]);

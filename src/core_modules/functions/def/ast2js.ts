@@ -3,7 +3,10 @@ import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let js = toJS(r`function ${this.value}`, cursor);
+    let js = '';
+    if( ! this.type.endsWith("(meth)") )
+        js += toJS('function ', cursor);
+    js += toJS(r`${this.value}`, cursor);
 
     js += args2js(this, cursor);
     js += toJS("{", cursor);

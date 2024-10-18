@@ -1,5 +1,6 @@
 import { AST } from "py2ast";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { Body } from "structs/Body";
 
 export function ast2js(ast: AST) {
 
@@ -9,6 +10,7 @@ export function ast2js(ast: AST) {
 	    js+= `const {_r_, _b_} = __SBRYTHON__;\n`;
     let cursor = {line: 3, col: 0};
 	for(let node of ast.nodes) {
+
 		js += astnode2js(node, cursor);
 
         if(node.type === "functions.def")
@@ -29,13 +31,20 @@ export function r(str: TemplateStringsArray, ...args:any[]) {
     return [str, args];
 }
 
-export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos ) {
+export function toJS( str: ReturnType<typeof r>|string|ASTNode|Body,
+                      cursor: CodePos ) {
 
     if( typeof str === "string") {
         cursor.col += str.length;
         return str;
     }
-    if( str instanceof Object && ! Array.isArray(str) ) {
+
+    if( str instanceof Body ) {
+        return str.toJS(cursor);
+    }
+
+    if( str instanceof ASTNode
+        || str instanceof Object && ! Array.isArray(str) ) { // for py2ast_fast
         return astnode2js(str, cursor);
     }
 
@@ -52,7 +61,7 @@ export function toJS( str: ReturnType<typeof r>|string|ASTNode, cursor: CodePos 
 
         e = str[1][i];
         if( e instanceof Object) {
-            js += astnode2js(e, cursor);
+            js += toJS(e, cursor);
         } else {
             s = `${e}`;
             js += s;
@@ -80,7 +89,6 @@ export function body2js(node: ASTNode, cursor: CodePos, idx = 0, print_bracket =
     for(let i = 0; i < body.children.length; ++i) {
         js += newline(node, cursor, 1);
         js += astnode2js(body.children[i], cursor)
-        js += toJS(";", cursor)
     }
 
     if(print_bracket) {

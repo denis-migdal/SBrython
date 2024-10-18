@@ -7,8 +7,8 @@ export default function convert(node: any, context: Context) {
     if( "targets" in node)
         target = node.targets[0];
 
-    const left  = convert_node(target, context );
-    const right = convert_node(node.value,      context);
+    const left  = convert_node(target    , context );
+    const right = convert_node(node.value, context);
 
     let right_type: string|null = right.result_type;
     if( "annotation" in node) {
@@ -28,7 +28,7 @@ export default function convert(node: any, context: Context) {
                 throw new Error("Wrong result_type");
 
             // annotation_type
-        } else {
+        } else if (context.type !== "class") {
             context.local_variables[left.value] = right_type;
             type += "(init)";
         }

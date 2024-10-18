@@ -1,10 +1,10 @@
-import { body2js, newline, r, toJS } from "ast2js";
+import { body2js, r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { Body } from "structs/Body";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let js = toJS("try", cursor);
-        js+= body2js(this, cursor);
+    const body = new Body(this);
 
-    return js;
+    return toJS(r`try${body}`, cursor);
 }

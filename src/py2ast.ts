@@ -95,7 +95,11 @@ export function convert_body(node: any, context: Context) {
 //TODO: move2core_modules ?
 export function convert_args(node: any, context: Context) {
 
-    const args = node.args.args.map( (m:any) => convert_arg(m, context) ); //TODO...
+    let _args = node.args.args;
+    if( context.type === "class")
+        _args = _args.slice(1);
+
+    const args = _args.map( (m:any) => convert_arg(m, context) ); //TODO...
     
     let first: any;
     let last : any;
@@ -129,7 +133,7 @@ export function convert_args(node: any, context: Context) {
 }
 export function convert_arg(node: any, context: Context) {
 
-    return new ASTNode(node, "arg", node.annotation.id, node.arg);
+    return new ASTNode(node, "arg", node.annotation?.id, node.arg);
 }
 
 export function listpos(node: any[]) {
@@ -160,15 +164,21 @@ export function convert_line(line: any, context: Context): ASTNode {
     return convert_node( node, context );
 }
 
-export type Context = {
-    local_variables: Record<string, string|null>
+export class Context {
+    constructor(type: "?"|"class"|"fct" = "?", parent_context: Context|null = null) {
+
+        this.type = type;
+
+        this.local_variables = parent_context === null ? Object.create(null) 
+                                                       : {...parent_context.local_variables}
+    }
+    type;
+    local_variables: Record<string, string|null>;
 }
 
 export function convert_ast(ast: any): ASTNode[] {
 
-    const context = {
-        local_variables: Object.create(null)
-    }
+    const context = new Context();
 
     const result = new Array(ast.body.length);
     for(let i = 0; i < ast.body.length; ++i) {

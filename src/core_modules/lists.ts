@@ -62,6 +62,8 @@ import AST_CONVERT_29 from "./controlflows/for/astconvert.ts";
 import      AST2JS_29 from "./controlflows/for/ast2js.ts";
 import AST_CONVERT_30 from "./comments/astconvert.ts";
 import      AST2JS_30 from "./comments/ast2js.ts";
+import AST_CONVERT_31 from "./class/classdef/astconvert.ts";
+import      AST2JS_31 from "./class/classdef/ast2js.ts";
 
 
 const MODULES = {
@@ -188,6 +190,10 @@ const MODULES = {
 	"comments": {
 		AST_CONVERT: AST_CONVERT_30,
 		     AST2JS:      AST2JS_30
+	},
+	"class.classdef": {
+		AST_CONVERT: AST_CONVERT_31,
+		     AST2JS:      AST2JS_31
 	},
 }
 
