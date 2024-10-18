@@ -8,7 +8,7 @@ export default function convert(node: any, context: Context) {
 
     if(left.result_type === null || right.result_type === null) {
         //TODO: object result_type too...
-        throw new Error("Not implemented");
+        //throw new Error("Not implemented");
     }
 
     return new ASTNode(node, "operators.==", "bool", null,

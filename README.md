@@ -40,8 +40,17 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Unit tests
 
+Using Brython test suite.
+
+Status : 0/26
+Lines passes : 2+/8,416
+Lines ignored : ?
+
 - /tools/Editor/index.html?test=numbers
 - /tools/Editor/index.html?test=classes
+
++ Modules/DOM interface (test python interropt).
++ 3 issues.
 
 ## Currently Working on...
 
