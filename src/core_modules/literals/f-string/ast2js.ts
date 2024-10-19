@@ -5,8 +5,6 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     let js = toJS("`", cursor);
 
-    console.warn("??", {...this});
-
     for(let child of this.children) {
 
         if( child.result_type === "str") {

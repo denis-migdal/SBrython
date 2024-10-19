@@ -1,9 +1,3 @@
-
-# from browser import write
-# For Brython compat:
-from browser import window as _w_
-write = _w_.write
-
 # classes
 #class A:
 
@@ -127,16 +121,14 @@ write(1.0)
 write(1.2)
 
 # Comments
-if True: #End of line comment
+if True:
     write(0)
-0==0 #test
+0==0
 write(
-    #test
     0
 )
 #None (implicit)
 g: None = write(0)
-# write(g     == None) expected to be true, not the case in Brython
 write(   0  == g)
 write(False == g)
 write(   1  == g)

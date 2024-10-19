@@ -311,9 +311,9 @@ function areOutputEquals(brython_result, sbrython_result, lines) {
                 lines[i] = false;
         }
 
-        if( ( sbal === null || sbal === undefined)
+        if( ( sbval === null || sbval === undefined)
             && isNone(bval) )
-            lines[i] = false;
+            lines[i] = true;
 
         //if( ! line_equals )
         //    console.warn( typeof sbrython_result[i].raw, typeof brython_result[i].raw )
@@ -718,8 +718,10 @@ if( window.location.search === '')
         let excluded_count = 0;
 
         let tests_names  = [test_name];
-        if( test_name === 'all')
+        if( test_name === 'all' || 'brython')
             tests_names = ['basic test suite', 'numbers'];
+        if( test_name === 'all')
+            tests_names.push(...['test']);
 
         // 'classes' => after some basic types/operators...
 

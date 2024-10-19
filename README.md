@@ -9,6 +9,7 @@ Unit tests :
 Test ignored: 1853/2112
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
+https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
 ### Roadmap
