@@ -239,6 +239,8 @@ function executeSBrython(code) {
 
     let times = new Array(5).fill(NaN);
 
+    let error = null;
+
     try {
         times[0] = globalThis.performance.now();
         if( true ) {
@@ -264,7 +266,8 @@ function executeSBrython(code) {
         sb.runJSCode(jscode, ast);
         times[4] = globalThis.performance.now();
     } catch(e) {
-        console.error(e); //TODO
+        console.error(e);
+        error = e;
     }
 
     return {
@@ -273,8 +276,53 @@ function executeSBrython(code) {
         ast,
         jscode,
         pycode: code,
-        engine: sb
+        engine: sb,
+        error
     };
+}
+function areOutputEquals(brython_result, sbrython_result, lines) {
+
+    let equals = true;
+
+    function isNone(value) {
+        return (typeof value === "object")
+        && "__class__" in value
+        && value.__class__.__qualname__ === "NoneType";
+    }
+
+    let max_id = Math.max(brython_result.length, sbrython_result.length)
+    for(let i = 0; i < max_id; ++i) {
+
+        lines[i] = true;
+        if( i >= brython_result.length || i >= sbrython_result.length ) {
+            lines[i] = false;
+            continue;
+        }
+        
+        const bval  =  brython_result[i][0];
+        const sbval = sbrython_result[i][0];
+
+        if( `${bval}` !== `${sbval}` )
+            lines[i] = false;
+
+        if( typeof sbval !== typeof bval ) {
+
+            if( typeof sbval !== "bigint" || typeof bval !== "number")
+                lines[i] = false;
+        }
+
+        if( ( sbal === null || sbal === undefined)
+            && isNone(bval) )
+            lines[i] = false;
+
+        //if( ! line_equals )
+        //    console.warn( typeof sbrython_result[i].raw, typeof brython_result[i].raw )
+
+        if( ! lines[i] )
+            equals = false;
+    }
+
+    return equals;
 }
 
 function execute(code) {
@@ -282,16 +330,16 @@ function execute(code) {
     const brython = executeBrython(code);
     const sbrython= executeSBrython(code);
 
-    // TODO compare
+    const lines_equals = [];
+    const success = sbrython.error === null && areOutputEquals(brython.output, sbrython.output, lines_equals);
 
     return {
          brython,
         sbrython,
-        success: true
+        success,
+        lines_equals
     };
 }
-
-window.execute = execute;
 
 function tdiff(times, a, b) {
     return (times[a]-times[b]).toFixed(3);
@@ -307,19 +355,23 @@ function updateBrythonFromResults({pycode, output, times, jscode}) {
             return div;
         });
 
-    let size = (100 * jscode.length / pycode.length - 100).toFixed(2);
-
     brython_output.replaceChildren(
             ...brython_result,
-`**code size +${size}%**
-**Executed in ${tdiff(times, 2, 0)}ms**
-    **Py2JS:   ${tdiff(times, 1, 0)}ms**
+`**code size   ${rdiff(pycode.length, jscode.length)}**
+**Executed in:${tdiff(times, 2, 0)}ms**
+    **Py2JS  :${tdiff(times, 1, 0)}ms**
     **Runtime: ${tdiff(times, 2, 1)}ms**`
     );
 
     return brython_result;
 }
-function updateSBrythonFromResults({pycode, output, times, jscode}) {
+
+function rdiff(js, py) {
+    const nb = (100 * py / js - 100).toFixed(2);
+    return `${nb > 0 ? '+' : ''}${nb}%`;
+}
+
+function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
 
     let sbrython_result = output.map( e => {
                 const div = document.createElement('div')
@@ -328,16 +380,18 @@ function updateSBrythonFromResults({pycode, output, times, jscode}) {
                 div.stack = e[1];
                 return div;
             });
-            
-    let size = (100 * jscode.length / pycode.length - 100).toFixed(2);
+
+    let prefix = '';
+    if(error !== null)
+        prefix = error.toString() + '\n';
 
     sbrython_output.replaceChildren(
         ...sbrython_result,
-`**code size +${size}%**
-**Executed in ${tdiff(times, 4, 0)}ms**
-    **Py2AST:  ${tdiff(times, 1, 0)}ms**
+`${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
+**Executed in: ${tdiff(times, 4, 0)}ms**
+    **Py2AST : ${tdiff(times, 1, 0)}ms**
     **ASTConv: ${tdiff(times, 2, 1)}ms**
-    **AST2JS:  ${tdiff(times, 3, 2)}ms**
+    **AST2JS : ${tdiff(times, 3, 2)}ms**
     **Runtime: ${tdiff(times, 4, 3)}ms**`
         );
 
@@ -347,6 +401,9 @@ function updateSBrythonFromResults({pycode, output, times, jscode}) {
 function updateFromResults(results) {
 
     const {sbrython, brython} = results;
+
+    // code...
+    python_input.textContent = sbrython.pycode;
 
     // SBrython
     const sbrython_results = updateSBrythonFromResults(sbrython);
@@ -367,7 +424,7 @@ function updateFromResults(results) {
     } catch(e) { console.warn(e); }
 
     try {
-        print_errors(brython_results, sbrython_results, sbrython.engine);
+        print_errors(results, brython_results, sbrython_results);
     } catch(e) { console.warn(e); }
 }
 
@@ -393,21 +450,17 @@ function update() {
     updateFromResults(result);
 }
 
-window.update = update;
+window.tdiff = tdiff;
+window.rdiff = rdiff;
+window.execute = execute;
+window.clearResults = clearResults;
+window.updateFromResults = updateFromResults;
 
-function print_errors(brython_result, sbrython_result, sb) {
+function print_errors({success, sbrython, lines_equals}, brython_result, sbrython_result) {
 
-    function isNone(value) {
-        return (typeof value === "object")
-        && "__class__" in value
-        && value.__class__.__qualname__ === "NoneType";
-    }
+    const sb = sbrython.engine;
 
-    //console.log(js_fct.toString());
-
-    let equals = true;
-    let max_id = Math.max(brython_result.length, sbrython_result.length)
-    for(let i = 0; i < max_id; ++i) {
+    for(let i = 0; i < lines_equals.length; ++i) {
 
         // stack trace.
         if( i < sbrython_result.length ) {
@@ -420,45 +473,12 @@ function print_errors(brython_result, sbrython_result, sb) {
                 brython_result[i].$node = node;
         }
 
-        if( i >= brython_result.length || i >= sbrython_result.length ) {
-            
-            if( i >= brython_result.length )
-                sbrython_result[i].classList.add("error");
-            if( i >= sbrython_result.length )
-                brython_result[i].classList.add("error");
-
-            equals = false;
-
-            continue;
-        }
-
-        let line_equals = true;
-
-        if( sbrython_result[i].textContent !== brython_result[i].textContent )
-            line_equals = false;
-        if( typeof sbrython_result[i].raw !== typeof brython_result[i].raw ) {
-            line_equals = false;
-
-            if( typeof sbrython_result[i].raw === "bigint" && typeof brython_result[i].raw === "number")
-                line_equals = true;
-        }
-
-        if( (sbrython_result[i].raw === null || sbrython_result[i].raw === undefined)
-            && isNone(brython_result[i].raw) )
-            line_equals = true;
-
-        //if( ! line_equals )
-        //    console.warn( typeof sbrython_result[i].raw, typeof brython_result[i].raw )
-
-        let line_class = line_equals ? "success" : "error";
+        const line_class = lines_equals[i] ? "success" : "error";
         sbrython_result[i].classList.add(line_class);
          brython_result[i].classList.add(line_class);
-
-        if( ! line_equals )
-            equals = false;
     }
 
-    sbrython_output.classList.add(equals ? "success" : "error");
+    sbrython_output.classList.add(success ? "success" : "error");
 }
 
 function print_node(node) {
@@ -618,17 +638,29 @@ function print_js(jscode, ast) {
 python_input.addEventListener("input",
 							  () => update() )
 
-update();
+if( window.location.search === '')
+    update();
 
 </script>
 
 <script type="module">
 
-    async function compute(code) {
+    async function compute(code, stats) {
         
-        //TODO: acc results ?
+        const result = window.execute(code);
+        
+        stats.code_len += code.length;
 
-        return window.execute(code);
+        stats. brython.code_len += result. brython.jscode.length;
+        stats.sbrython.code_len += result.sbrython.jscode.length;
+
+        for(let i = 1; i < stats.brython.times.length; ++i)
+            stats.brython.times[i] = result.brython.times[i] - result.brython.times[0];
+        
+        for(let i = 1; i < stats.sbrython.times.length; ++i)
+            stats.sbrython.times[i] = result.sbrython.times[i] - result.sbrython.times[0];
+
+        return result
     }
 
     function filter(code, list) {
@@ -718,6 +750,19 @@ update();
         // javascript objects
 
         let error = false;
+        let lastResults;
+        let stats = {
+            brython: {
+                code_len: 0,
+                times: [0,0,0]
+            },
+            sbrython: {
+                code_len: 0,
+                times: [0,0,0,0,0]
+            },
+            code_len: 0
+        }
+        window.clearResults();
 
         for(let test_name of tests_names) {
             let code = await (await fetch(`./unittests/${test_name}.py`)).text();
@@ -740,8 +785,8 @@ update();
         
                 code = code.join('\n'); 
 
-                let results = await compute( code );
-                if(results.success) {
+                lastResults = await compute( code, stats );
+                if( ! lastResults.success) {
                     error = true;
                     break;
                 }
@@ -750,18 +795,35 @@ update();
                 break;
         }
 
+        if(error) {
+            window.updateFromResults(lastResults);
+            return;
+        }
         // if( error )
 
         const result_sbrython = document.querySelector('.output_sbrython');
-        result_sbrython.textContent += `\n**Excluded: ${excluded_count}/${total}**`;
-        //TODO: result if success / print stuff if failed
-/*
-        **code size +27.41%**
-**Executed in 0ms**
-    **Py2AST:  0ms
-    **ASTConv: 0ms
-    **AST2JS:  0ms
-    **Runtime: 0ms*/
+        const result_brython  = document.querySelector('.output_brython');
+
+        const btimes = stats.brython.times;
+        const sbtimes = stats.sbrython.times;
+
+        result_sbrython.textContent = 
+`**Status     : ${error ? 'FAILED' : 'SUCCESS'}
+**Excluded   : ${excluded_count}/${total}**
+**Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
+**Executed in: ${tdiff(sbtimes, 4, 0)}ms** (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
+    **Py2JS  : ${tdiff(sbtimes, 3, 0)}ms** (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
+    **Py2AST : ${tdiff(sbtimes, 1, 0)}ms**
+    **ASTConv: ${tdiff(sbtimes, 2, 1)}ms**
+    **AST2JS : ${tdiff(sbtimes, 3, 2)}ms**
+    **Runtime: ${tdiff(sbtimes, 4, 3)}ms** (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})`
+
+    result_brython.textContent = 
+`**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
+**Executed in: ${tdiff(btimes, 2, 0)}ms**
+    **Py2JS  : ${tdiff(btimes, 1, 0)}ms**
+    **Runtime: ${tdiff(btimes, 2, 1)}ms**`
+
     })();
     </script>
 </body>

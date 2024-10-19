@@ -2,24 +2,18 @@
 
 ## Status
 
-Mean speed increase :
-Mean file size increase :
+Mean speed gain : -23.53% (runtime -57.14%, py2js +0% -due to Brython to SBrython AST conversion-).
+Mean file size gain : -84.97%
 Unit tests : 
 
-Test ignored: 1638/2112
+Test ignored: 1853/2112
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
+(disable privacy.reduceTimerPrecision on FF for better precision)
 
 ### Roadmap
 
 #### Unit tests
-
-// privacy.reduceTimerPrecision
-
--> stats
--> optimize execution of tests + measure perfs (speed + total size)
--> no initial computation.
-    -> total in last thingy.
 
 -> scroll bottom...
 
@@ -31,7 +25,6 @@ Bugs
 
 Refactor
     -> body/newline/args (toJS...)
-
 
 #### Operators
 

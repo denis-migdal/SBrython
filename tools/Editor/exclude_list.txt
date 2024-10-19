@@ -504,3 +504,86 @@
 # basic test suite.call function with **kw where kw has keys() and __getitem__
 // removed from test.
 *
+
+# numbers.issue 982
+// except + int()
+*
+
+# numbers.issue 1156
+// except + isinstance()
+*
+
+# numbers.issue 1512
+// maths + isnan + float()
+*
+
+# numbers.issue 1864
+// assertRaises
+*
+
+# numbers.issue 1885
+// assertRaises
+*
+
+# numbers.issue 2023
+// assertRaises
+*
+
+# numbers.issue 2058
+// hash()
+*
+
+# numbers.issue 2363
+// assertRaises
+*
+
+# basic test suite.use imported names : override built-in range
+// 
+*
+
+# basic test suite.check that name "constructor" is valid
+// constructor = 0 ??
+*
+
+# basic test suite.PEP 570 (positional-only parameters)
+*
+
+# basic test suite.issue 1557
+// assert raise
+*
+
+# basic test suite.issue 1642
+// assert raise
+*
+
+# basic test suite.issue 1697
+// assert raise
+*
+
+# basic test suite.issue 1802
+// assert raise
+*
+
+# basic test suite.issue 1803
+// assert raise
+*
+
+# basic test suite.issue 1807
+// assert raise
+*
+
+# basic test suite.symtable syntax errors
+// assert raise
+*
+
+# basic test suite.error in function calls
+// assert raise
+*
+
+# basic test suite.issue 2071
+// assert raise
+*
+
+# basic test suite.object(1) raises TypeError
+// assert raise
+*
