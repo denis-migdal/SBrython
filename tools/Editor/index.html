@@ -233,7 +233,7 @@ function update() {
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
         sb = new SBrython();
-        sb._b_.assert = (cond) => { if( cond ) output.push(["[Assertion failed]", new Error().stack]); };
+        sb._b_.assert = (cond) => { if( ! cond ) output.push(["[Assertion failed]", new Error().stack]); };
         sb.runJSCode(js_code, ast);
     } catch(e) {
         console.error(e); //TODO
@@ -674,12 +674,12 @@ update();
 
                 code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
         
-                code = code.map( (line) => {
+                /*code = code.map( (line) => {
 
                     if( ! line.startsWith('assert ') )
                         return line;
                     return `write(${ line.slice(7) })`;
-                });
+                });*/
                 code = code.join('\n'); 
 
                 await compute( code );
