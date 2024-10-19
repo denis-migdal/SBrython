@@ -11,7 +11,7 @@ export default function convert(node: any, context: Context) {
         type = left.result_type;
 
     //TODO...
-    return new ASTNode(node, "operators.+", type, null,
+    return new ASTNode(node, "operators./", type, null,
         [
             left,
             right
@@ -19,4 +19,4 @@ export default function convert(node: any, context: Context) {
     );
 }
 
-convert.brython_name = ["BinOp.Add"];
+convert.brython_name = ["BinOp.Div"];

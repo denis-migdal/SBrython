@@ -7,7 +7,9 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     if( this.type.endsWith("(init)") )
         js += toJS("var ", cursor);
 
-    js += toJS(r`${this.children[0]} = ${this.children[1]}`, cursor);
+    js += toJS(this.children[0], cursor);
+    for(let i = 1; i < this.children.length; ++i)
+        js += toJS(r` = ${this.children[i]}`, cursor);
 
     return js;
 }

@@ -8,85 +8,6 @@
 <script src="../../brython/www/src/brython.js"></script>
 
 
-<script type="module">
-
-(async () => {
-
-    // numbers
-    const search = new URLSearchParams( location.search );
-    const test = search.get("test");
-
-    if( test === null)
-        return;
-
-    let code = await (await fetch(`./unittests/${test}.py`)).text();
-
-    code = code.split('\n');
-
-    if( test === 'classes') {
-
-        code = code.slice(0,17);
-
-        code = code.filter( (line, idx) => {
-
-            return ! [
-                1,
-            ].includes(idx+1);
-
-        });
-    }
-    if( test === 'numbers') {
-        code = code.slice(0, 20);
-
-        const exclude = [
-            3,
-            6, 27, // __class__
-            7, 28, // isinstance
-            8, 29, // str()
-            //13, // operator
-            14, 31, // unary operator
-            //20, 21, // init doesn't have the good op ?
-            //23, 24, // / not implemented ?
-            75,
-            [32,38] // __op__
-        ];
-
-        function filter(code, list) {
-
-            let result = code.filter( (_, idx) => {
-                ++idx;
-                return list.find( (v) => {
-                    if( idx === v)
-                        return true;
-                    if( Array.isArray(v) && v[0] <= idx && v[1] >= idx)
-                        return true;
-                }) === undefined;
-            });
-
-            console.warn('excluded', code.length - result.length);
-
-            return result;
-        }
-
-        code = filter(code, exclude);
-    }
-
-    code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
-
-    code = code.map( (line) => {
-
-        if( ! line.startsWith('assert ') )
-            return line;
-        return `write(${ line.slice(7) })`;
-    });
-    code = code.join('\n'); 
-
-    const input = document.getElementById('python');
-    input.textContent = code;
-    input.dispatchEvent( new Event("input") );
-})();
-</script>
-
 <div class="editor">
     <div>
         <!-- log(1+1) -->
@@ -653,8 +574,9 @@ function update() {
     }
 
     sbrython_output.classList.add(equals ? "success" : "error");
-
 }
+
+window.update = update;
 
 function print_node(node) {
     const html_bloc = document.createElement("div");
@@ -755,7 +677,10 @@ function print_code_node(node, code, type) {
     let cursor = node[type].start;
     let offset = 0;
     for(let i = 0; i < node.children.length; ++i) {
-        subparts[offset++] = slice_code(code, cursor, node.children[i][type].start);
+        const ctype = node.children[i][type];
+        if( ctype === undefined )
+            continue;
+        subparts[offset++] = slice_code(code, cursor, ctype.start);
         subparts[offset++] = print_code_node(node.children[i], code, type);
         cursor = node.children[i][type].end;
     }
@@ -813,5 +738,147 @@ python_input.addEventListener("input",
 update();
 
 </script>
+
+<script type="module">
+
+    async function compute(code) {
+
+        const input = document.getElementById('python');
+        input.textContent = code;
+
+        window.update();
+    }
+
+    function filter(code, list) {
+
+        list ??= [];
+
+        console.warn("filter", list);
+        
+        let result = code.map( (l, idx) => {
+            idx = idx + 1 + 2;
+            let excluded = list.find( (v) => {
+                if( v === '*')
+                    return true;
+                if( idx === v)
+                    return true;
+                if( Array.isArray(v) && v[0] <= idx && v[1] >= idx)
+                    return true;
+            }) !== undefined;
+            
+            if( excluded )
+                return `# ${l}`;
+            return l;
+        });
+
+        return result;
+    }
+
+    (async () => {
+    
+        // numbers
+        const search = new URLSearchParams( location.search );
+        const test_name = search.get("test");
+    
+        if( test_name === null)
+            return;
+    
+        let exclude_list = await (await fetch('./exclude_list.txt')).text();
+        exclude_list = Object.fromEntries( exclude_list.split('#').slice(0).map(e => {
+
+            let lines = e.split('\n');
+            let name = lines[0].slice(1);
+
+            let exclude = lines.slice(1).filter(e => e[0] !== '/' && e.length !== 0).map( e => {
+                e = e.split('-');
+                if( e.length === 1) {
+                    if( e[0] === '*')
+                        return e[0];
+                    return parseInt(e[0]);
+                }
+                return [parseInt(e[0]), parseInt(e[1])]
+            });
+
+            return [name, exclude];
+        }) );
+
+        let total = 0;
+        let excluded_count = 0;
+
+        let tests_names  = [test_name];
+        if( test_name === 'all')
+            tests_names = ['basic test suite', 'numbers'];
+
+        // 'classes' => after some basic types/operators...
+
+        // lists
+        // dicts
+        // sets
+        // exceptions
+        // strings
+
+        // string methods
+        // f-string
+        // generators
+        // imports
+
+        // print
+        // iterators
+        // files open_read
+        // bytes
+        // decorators
+        // descriptors
+        // exec_eval
+        // pattern matching
+        // string format
+
+        // reflected_methods
+        // special methods
+        // memoryview
+        // javascript objects
+
+        let exit = false;
+
+        for(let test_name of tests_names) {
+            let code = await (await fetch(`./unittests/${test_name}.py`)).text();
+
+            const tests = code.split('#').slice(1).map( t => '#'+t);
+
+            for(let test of tests) {
+
+                let code = test.split('\n');
+
+                const name = code[0].slice(1).trim();
+
+                code = filter(code, exclude_list[`${test_name}.${name}`]);
+
+                total += code.length;
+                for(let i = 1; i < code.length; ++i)
+                    excluded_count += code[i][0] === '#';
+
+                code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
+        
+                code = code.map( (line) => {
+
+                    if( ! line.startsWith('assert ') )
+                        return line;
+                    return `write(${ line.slice(7) })`;
+                });
+                code = code.join('\n'); 
+
+                await compute( code );
+
+                if( ! document.querySelector('.output_sbrython').classList.contains('success') ) {
+                    exit = true;
+                    break;
+                }
+            }
+            if( exit )
+                break;
+        }
+
+        console.warn("RESULT", excluded_count, total);
+    })();
+    </script>
 </body>
 </html>

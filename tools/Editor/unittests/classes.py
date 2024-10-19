@@ -1,3 +1,5 @@
+# classes
+
 from tester import assert_raises
 
 class baz:
@@ -31,7 +33,7 @@ class foo(bar,truc):
 
 
 obj = foo()
-#assert str(bar.test)=="<function bar.test>"
+
 assert obj.A == 8
 assert obj.x == 0
 assert obj.test() == 'test in foo'

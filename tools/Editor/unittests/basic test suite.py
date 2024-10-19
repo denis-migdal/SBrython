@@ -618,8 +618,8 @@ assert f([1, 2, 3], [4, 5, 6]) == (-12, -6)
 
 # issue 1355
 def f():
-  [{ # comment
-    0: 0} # comment
+  [{
+    0: 0}
     for _ in []]
 
 # issue 1363
@@ -673,22 +673,20 @@ assert [x for x in "abc" if "xyz"[0 if 1 else 2] < "z"] == ['a', 'b', 'c']
 
 # issue 1545
 assert (lambda:
-    # A greeting.
     'hi')() == 'hi'
 assert (lambda: (
-    # A greeting.
     "hi"
 ))() == 'hi'
 
 assert (lambda: (
     '''
-    # not a comment
+     not a comment
     hi
     '''
-))() == "\n    # not a comment\n    hi\n    "
+))() == "\n    not a comment\n    hi\n    "
 
-assert lambda:(  # A greeter.
-    print('hi')  # Short for "Hello".
+assert lambda:( 
+    print('hi')
 )() == 'hi'
 
 # issue 1557

@@ -3,40 +3,44 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    let target = node.target;
-    if( "targets" in node)
-        target = node.targets[0];
+    let type = "operators.=";
 
-    const left  = convert_node(target    , context );
     const right = convert_node(node.value, context);
-
     let right_type: string|null = right.result_type;
     if( "annotation" in node) {
         right_type = node.annotation.id ?? "None";
         if( right.result_type !== null && right.result_type !== right_type)
-            throw new Error("Wrong result_type");
+            console.warn("Wrong result_type");
     }
 
-    let type = "operators.=";
+    const isMultiTarget = "targets" in node;
+    const targets = isMultiTarget ? node.targets : [node.target];
 
-    if( left.type === "symbol") {
+    const lefts = targets.map( (n:any) => {
 
-        // if exists, ensure type.
-        if( left.value in context.local_variables) {
-            const result_type = context.local_variables[left.value];
-            if( result_type !== null && right_type !== result_type)
-                throw new Error("Wrong result_type");
+        const left  = convert_node(n, context );
 
-            // annotation_type
-        } else if (context.type !== "class") {
-            context.local_variables[left.value] = right_type;
-            type += "(init)";
-        }
-    }
+        if( left.type === "symbol") {
     
+            // if exists, ensure type.
+            if( left.value in context.local_variables) {
+                const result_type = context.local_variables[left.value];
+                if( result_type !== null && right_type !== result_type)
+                    console.warn("Wrong result_type");
+    
+                // annotation_type
+            } else if (context.type !== "class") {
+                context.local_variables[left.value] = right_type;
+                type += "(init)";
+            }
+        }
+
+        return left;
+    });
+
     return new ASTNode(node, type, right_type, null,
         [
-            left,
+            ...lefts,
             right,
         ]
     );

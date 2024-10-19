@@ -1,0 +1,413 @@
+# numbers.numbers
+
+//TODO
+
+// is instance
+9
+30
+// str()
+10
+31
+// unary
+16
+33
+
+// NOT TODO
+
+// assert_raise
+5
+// __class__
+8
+29
+// __abs__ __ceil__ __mod__
+34-40
+
+# numbers.issue 98
+// from_bytes
+*
+
+# numbers.issue 115
+// complex
+*
+# numbers.complex numbers
+// complex
+*
+
+# numbers.issue 294
+// from_bytes
+*
+
+# numbers.issue 498
+// complex+hash+int()
+*
+
+# numbers.long integers
+// Math.pi 
+4-7
+// **
+8-11
+49-51
+// int()
+13-47
+
+# numbers.float subclass
+*
+
+# numbers.issue 749
+// __eq__
+*
+
+# numbers.issue 794
+// to_bytes
+*
+
+# numbers.issue 840
+// ** + id()
+*
+
+# numbers.PEP 515
+// stange representations
+*
+
+# numbers.issue 955
+// complex numbers
+*
+
+# numbers.issue 967
+// unary not
+4
+7
+9
+10
+14
+
+# numbers.issue 1001
+// complex numbers
+*
+
+# numbers.issue 1092
+// to_bytes
+*
+
+# numbers.issue 1098
+// f-string
+*
+
+# numbers.issue 1211
+// complex numbers
+*
+
+# numbers.issue 1127
+// boolean op
+*
+
+# numbers.issue 1234
+// round()
+*
+
+# numbers.issue 1245
+// eval + complex numbers
+*
+
+# numbers.& for long integers
+// & operator
+*
+
+# numbers.issue 1462
+// bit operator
+*
+
+# numbers.issue 1298
+// pow / Fraction
+*
+
+# numbers.issue 1295
+// format stuff
+*
+
+# numbers..2G}' for i in nums]
+// format stuff
+*
+
+# numbers.issue 1299
+// pow OU %
+*
+
+# numbers.issue 1300
+// complex numbers
+*
+
+# numbers.issue 1309
+// pow + Fraction
+*
+
+# numbers.issue 1328
+// float() + pow + >>/<<
+*
+
+# numbers.issue 1330
+// repr
+*
+
+# numbers.issue 1338
+// %
+*
+
+# numbers.issue 1412
+// +=
+*
+
+# numbers.issue 1491
+// unary + - ~
+*
+
+# numbers.issue 1504
+// int()
+*
+
+# numbers.issue 1558
+// bytes
+*
+
+# numbers.issue 1666
+// abs + **
+*
+
+# numbers.issue 1686
+// __mul__ __rmull__
+*
+
+# numbers.augmented assignment on list item
+// += operator
+*
+
+# numbers.hash of integers
+*
+
+# numbers.issue 1784
+// str() + pow() + ** + divmod + float()
+*
+
+# numbers.issue 1840
+// **
+*
+
+# numbers.issue 1924
+// bit_count + unary - + **
+*
+
+# numbers.issue 1947
+// complex numbers
+*
+
+# numbers.issue 1955
+// %=
+*
+
+# numbers.issue 1960
+// int()
+*
+
+# numbers.issue 1994
+// += / abs()
+*
+
+# numbers.method __complex__
+*
+
+# numbers.issue 2026
+// <<=
+*
+
+# numbers.issue 2095
+// f-string + unary -
+*
+
+# numbers.issue 2110
+// pow + %
+*
+
+# numbers.issue 2122
+// int() % **
+*
+
+# numbers.issue 2228
+// int()
+*
+
+# numbers.issue 2361
+// TypeError
+*
+
+# numbers.issue
+// WTF
+*
+
+# numbers.issue 2396
+// complex numbers
+*
+
+# numbers.issue 2407
+// pow() + unary -
+*
+
+# numbers.issue 2465
+// type() + **
+*
+
+# classes.classes
+5
+// multi-inheritance
+28-45
+
+
+# basic test suite.numbers
+// duplicate ?
+*
+
+# basic test suite.bitwise operators
+*
+
+# basic test suite.__neg__
+*
+
+# basic test suite.not sure how to convert this to assert (raise)?
+// raise
+*
+
+# basic test suite.string methods
+*
+
+# basic test suite.list examples
+*
+
+# basic test suite.lambda
+*
+
+# basic test suite.inline functions and classes
+*
+
+# basic test suite.bytes
+*
+
+# basic test suite.filter
+// filter + list
+*
+
+# basic test suite.functions and methods
+// could work...
+*
+
+# basic test suite.use of "global" in functions
+*
+
+# basic test suite.nonlocal and global
+*
+
+# basic test suite.__setattr__ defined in a class
+*
+
+# basic test suite.nested scopes
+// tabulations assert ?
+*
+
+# basic test suite.check that line is in exception info
+*
+
+# basic test suite.vars()
+*
+
+# basic test suite.@ operator (PEP 465)
+*
+
+# basic test suite.sys.exc_info
+*
+
+# basic test suite.comparisons with None
+*
+
+# basic test suite.del
+*
+
+# basic test suite.PEP 572 (assignement expressions)
+*
+
+# basic test suite.operation with unary neg
+*
+
+# basic test suite.issue 1355
+// ?
+*
+
+# basic test suite.issue 1387
+// ternary op
+*
+
+# basic test suite.PEP 585
+// list and tuples
+*
+
+# basic test suite.issue 1535
+// TF
+*
+
+# basic test suite.issue 1545
+// lambdas
+*
+
+# basic test suite.issue 1654
+// classes + strange stuff
+*
+
+# basic test suite.issue 1693
+// list (append)
+*
+
+# basic test suite.issue 1721
+// not <=
+*
+
+# basic test suite.issue 1819
+// list en comprehension + eval
+*
+
+# basic test suite.various flavours of try / except / else / finally
+*
+
+# basic test suite.issue 1961
+// += + for in
+*
+
+# basic test suite.docstrings
+*
+
+# basic test suite.issue 2041
+// function args parsing
+*
+
+# basic test suite.issue 2069
+// global + assert issue + , operator
+*
+
+# basic test suite.issue 2112
+// f-string + list en comprehension
+*
+
+# basic test suite.setting function attributes __defaults__ and __kwdefaults__
+*
+
+# basic test suite.issue 2134
+// todo
+*
+
+# basic test suite.issue 2167
+// ?
+*
+
+# basic test suite.issue 2422
+// globals
+*
+
+# basic test suite.issue 2443
+// map + iter
+*

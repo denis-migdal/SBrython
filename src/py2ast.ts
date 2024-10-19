@@ -43,17 +43,28 @@ export function py2ast(code: string, filename: string): AST {
     }
 }
 
-export function convert_node(brython_node: any, context: Context): ASTNode {
-
+function getNodeType(brython_node: any): string {
     let name = brython_node.sbrython_type ?? brython_node.constructor.$name;
 
+    if(name === 'BinOp')
+        name = `BinOp.${brython_node.op.constructor.$name}`;
+
+    return name;
+}
+
+export function convert_node(brython_node: any, context: Context): ASTNode {
+
+    let name = getNodeType(brython_node);
+
     if( !(name in modules) ) {
-        console.log( brython_node )
-        console.warn("Module not registered", name);
+        console.warn("Module not registered:", name);
+        console.warn(`at ${brython_node.lineno}:${brython_node.col_offset}`);
+        console.log( brython_node );
         name = "null"
     }
 
-    for(let module of modules[name]) {
+    // we may have many modules for the same node type.
+    for(let module of modules[name]) { 
         const result = module.AST_CONVERT(brython_node, context);
         if(result !== undefined) {
             result.toJS = module.AST2JS;
@@ -61,19 +72,8 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
         }
     }
 
-    /*
-    for(let module_name in CORE_MODULES) {
-        const module = CORE_MODULES[module_name as keyof typeof CORE_MODULES];
-        let result = module.AST_CONVERT(brython_node, context);
-        if(result !== undefined) {
-            result.toJS = module.AST2JS;
-            return result;
-        }
-    }
-    */
-
     console.error(brython_node);
-    throw new Error("Unsupported node");
+    throw new Error(`Unsupported node ${name} at ${brython_node.lineno}:${brython_node.col_offset}`);
 }
 
 //TODO: move2core_modules ?
