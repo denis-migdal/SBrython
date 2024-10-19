@@ -1,5 +1,106 @@
 # SimplerBrython
 
+## Status
+
+Mean speed increase :
+Mean file size increase :
+Unit tests : 
+
+Lines ignored : 1393/
+Lines passed  : 719+/8,416
+Lines ignored : 1393+
+
+https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
+
+### Roadmap
+
+#### Unit tests
+
+-> stats
+-> scroll bottom...
+
+-> no initial computation.
+
+-> Assert node => test
+-> assert -> write() in tests => replace at language level...
+-> optimize execution of tests + measure perfs (speed + total size)
+    -> total in last thingy.
+
+Refactor
+    -> body/newline/args (toJS...)
+    -> editor : split into files...
+
+Bugs
+    -> bug : code gen vs print code include ";" aux lignes... 
+        -> une fonction exportée
+
+#### Operators
+
+0. assert + is ~> generics __add__
+0. enforce types.
+1. 1+1 => 1+1, type(1+1).__name__ [is]
+2. types = [1] + op[+] => generate
+3. [+,*]
+4. op precedence
+5. add types+op.
+6. Handle exceptions... => TypeError:
+    => filtrer les comparaisons légales.
+    (sub/rsub)
+
+
+=> https://docs.python.org/3/reference/expressions.html#operator-summary
+
+=> for each op
+    => for each type1
+        => for each type2
+            => type1 op type2 
+                => verif value + type.
+=> + operator priority.
+
+a op b => NotImplemented, try b op a.
+    => strict type enforce.
+
+-> operators + operator priority (+ verify type) + type casts
+
+-> or/and/not
+-> </<=/>/>=/==/!=/is/is/not
+-> +/-/*/%/
+-> +, - unary
+-> /, //
+-> |, ^, &, <<, >>, ~
+
+-> int()
+-> float()
+-> divmod()
+-> pow() + **
+-> round()
+
+x types...
+-> int/float/bool
+-> list/tuple/range
+-> set/frozenset / dict
+-> bytes/bytearray/memoryview
+
+-> in / not in
+-> []
+-> len() / min() / max() / .count() / .index()
+
+-> bit_length() + bit_count() + to_bytes() + from_bytes() + hash()
+-> complex + complex() + conjugate()
+
+-> math.XXX
+
+#### Complex functions calls ?
+
+#### List/Tuples/etc.
+
+#### Classes ?
+
+
+#### Brython inter-op ?
+
+## Links
+
 https://denis-migdal.github.io/SimplerBrython/
 https://denis-migdal.github.io/SimplerBrython/doc
 https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
@@ -38,30 +139,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - modules 
     - export (functions) / import (already loaded) / import browser (=globalThis)
 
-## Unit tests
-
--> scroll bottom...
-
-Using Brython test suite.
-
-Status : 0/26
-Lines passed  : 2+/8,416
-Lines ignored : 5+
-
-- /tools/Editor/index.html?test=numbers
-- /tools/Editor/index.html?test=classes
-
-+ Modules/DOM interface (test python interropt).
-+ 3 issues.
-
 ## Currently Working on...
-
-Bugs
-    -> bug : code gen vs print code include ";" aux lignes... 
-        -> une fonction exportée
-Refactor
-    -> body/newline/args (toJS...)
-    -> editor : split into files...
 
 -> classes
     -> cstr.
@@ -72,6 +150,7 @@ Refactor
 -> unit tests : 25 core features.
 -> JS API
 
++ mails G. group.
 
 (new features)
     - import/export

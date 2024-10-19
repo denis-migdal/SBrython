@@ -1,215 +1,14 @@
 <!DOCTYPE html>
 <html>
-    <head>
-
-    </head>
+    <head></head>
 <body>
 
 <script src="../../brython/www/src/brython.js"></script>
 
-
 <div class="editor">
     <div>
-        <!-- log(1+1) -->
-<!--
-
--->
         <strong>Input</strong>
-        <textarea id="python">
-
-# from browser import write
-# For Brython compat:
-from browser import window as _w_
-write = _w_.write
-
-# classes
-#class A:
-
-    # cstr => __new__ then __init__.
-    # __new__ => createObject(proto) + __new__ ?
-
-    # attr = "2" # __new__ (auto create...)
-
-    # def __init__(self):
-    #     write("init")
-    # def foo(self, a):
-    #    write("foo")
-    #    write(self.attr)
-
-# dict
-dict = {"e": 4, "f": 5}
-dict["e"] = 6 
-write(dict)
-
-# list/tuple
-list  = [1,2]
-tuple = (1,2)
-write(list)
-write(tuple)
-
-list[0] = 3
-write(  list[0] )
-write( tuple[0] )
-
-# []
-# [] = 
-# .append() => rewrite => push()
-
-# f-string
-write( f"{2}y" )
-write( f"yy" )
-
-# import
-import browser
-from browser import window as w
-
-# try/except
-try:
-    raise Exception()
-except Exception as e:
-    write("caught")
-
-def fee():
-    raise Exception()
-
-try:
-    fee()
-except Exception as e:
-    write("caught2")
-
-# fct dummy
-def fii():
-    return
-
-# for range
-for i in range(2):
-    write(i)
-
-for i in range(1, 2):
-    write(i)
-
-for i in range(0, 4, 2):
-    write(i)
-
-##fct
-def foo(a:int,b:int) -> int:
-    write(a+b)
-foo(1,2)
-
-def faa(a:int) -> int:
-    return a
-
-write(faa(4))
-
-#TODO: with 2 args...
-
-# while
-h = True
-while h:
-    write("LOOP")
-    h = False
-
-# if / elif / else
-if False:
-    pass
-else:
-    write("ELSE")
-    write("ELSE")
-
-if False:
-    pass
-else:
-    write("ELSE")
-
-
-if False:
-    pass
-elif False:
-    write("False")
-    write("False")
-elif True:
-    write("True")
-else:
-    write("END")
-
-#if pass
-if True:
-    pass
-
-# str
-write("")
-write("ok")
-
-# float
-write(1.0)
-write(1.2)
-
-# Comments
-if True: #End of line comment
-    write(0)
-0==0 #test
-write(
-    #test
-    0
-)
-#None (implicit)
-g: None = write(0)
-# write(g     == None) expected to be true, not the case in Brython
-write(   0  == g)
-write(False == g)
-write(   1  == g)
-write(True  == g)
-
-#None (explicit)
-
-f = None
-write(None)
-write(None  == None)
-write(   0  == None)
-write(False == None)
-write(   1  == None)
-write(True  == None)
-
-# decl
-a = 2
-write(a)
-b = False
-write(b)
-d       = write(3)
-e: None = write(3)
-
-# operator.== (literals)
-write(True == True)
-write(False == False)
-write(False == True)
-write(False == 0)
-write(True == 0)
-write(False == 1)
-write(True == 1)
-write(False == 2)
-write(True == 2)
-write(0 == 0)
-write(0 == 1)
-
-# if boolean:
-if False:
-    write(0)
-if True:
-    write(True)
-    write(False)
-c = True
-if c:
-    write(3)
-</textarea>
-
-<!--
-
-ab = 1
-b = "2"
-
-if a == b:
-    pass
--->
+        <textarea id="python"></textarea>
     </div>
     <div>
         <strong>Output (SBryton)</strong>
@@ -341,7 +140,7 @@ function highlight(target) {
     if( prev_highlighted !== null) {
 
         for(let gui_elem of prev_highlighted.$gui_elems)
-            gui_elem.classList.remove("highlight");
+            gui_elem?.classList.remove("highlight");
         prev_highlighted = null;
     }
 
@@ -351,7 +150,7 @@ function highlight(target) {
 
     prev_highlighted = $node;
     for(let gui_elem of $node.$gui_elems)
-        gui_elem.classList.add("highlight");
+        gui_elem?.classList.add("highlight");
 }
 
 brython_output.addEventListener("mouseover", ev => {
@@ -433,7 +232,8 @@ function update() {
         step1 = globalThis.performance.now();
         js_code = ast2js(ast);
         step2 = globalThis.performance.now();
-        sb = new SBrython()
+        sb = new SBrython();
+        sb._b_.assert = (cond) => { if( cond ) output.push(["[Assertion failed]", new Error().stack]); };
         sb.runJSCode(js_code, ast);
     } catch(e) {
         console.error(e); //TODO
@@ -537,15 +337,31 @@ function update() {
 	print_js( js_code, ast );
 
     let equals = true;
-    let min_id = Math.min(brython_result.length, sbrython_result.length)
-    for(let i = 0; i < min_id; ++i) {
+    let max_id = Math.max(brython_result.length, sbrython_result.length)
+    for(let i = 0; i < max_id; ++i) {
 
-        const stackline = parse_stack(sbrython_result[i].stack, sb)[0];
-        const node = stackline2astnode(stackline, sb);
-        node.$gui_elems.push( sbrython_result[i], brython_result[i] );
-        sbrython_result[i].$node = node;
-         brython_result[i].$node = node;
-        //TODO: in the other direction...
+        // stack trace.
+        if( i < sbrython_result.length ) {
+            const stackline = parse_stack(sbrython_result[i].stack, sb)[0];
+            const node = stackline2astnode(stackline, sb);
+            node.$gui_elems.push( sbrython_result[i], brython_result[i] );
+            sbrython_result[i].$node = node;
+
+            if( i < brython_result.length )
+                brython_result[i].$node = node;
+        }
+
+        if( i >= brython_result.length || i >= sbrython_result.length ) {
+            
+            if( i >= brython_result.length )
+                sbrython_result[i].classList.add("error");
+            if( i >= sbrython_result.length )
+                brython_result[i].classList.add("error");
+
+            equals = false;
+
+            continue;
+        }
 
         let line_equals = true;
 
