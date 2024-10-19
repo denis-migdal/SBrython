@@ -1093,6 +1093,20 @@ def f(x, y, z):
 
 assert f(1, True is not False, 'ok') == 'ok'
 
+# call function with **kw where kw has keys() and __getitem__
+class D:
+    def keys(self):
+        return 'a'
+    def __getitem__(self, key):
+        return 7
+
+d = D()
+
+def f(**kw):
+    return kw
+
+assert f(**d) == {'a': 7}
+
 # issue 2422
 a2422 = 0
 del globals()['a2422']

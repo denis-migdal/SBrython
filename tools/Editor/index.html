@@ -170,15 +170,10 @@ js_output.addEventListener("mouseover", ev => {
     highlight(ev.target);
 })
 
-function update() {
-	const code = python_input.value;
-    sbrython_output.textContent = "";
-     brython_output.textContent = "";
+function executeBrython(code) {
 
-    sbrython_output.classList.remove("success");
-    sbrython_output.classList.remove("error");
-
-    let is_sbrython = true;
+    const filename = "sbrython_editor.js";
+    const output = [];
     window.write = function(txt) {
 
         if( Array.isArray(txt) ) // clone to prevent update issues...
@@ -187,91 +182,11 @@ function update() {
         output.push([txt, new Error().stack]);
     };
 
-    let output = [];
-    let ast;
-    let js_code = "";
-
-    const filename = "sbrython_editor.js";
-    let _ast;
-
-    if(false) {
-        const parser = new $B.Parser(code, filename, 'file');
-        _ast = $B._PyPegen.run_parser(parser);
-
-        //step0 = globalThis.performance.now();
-        ast = {
-            nodes: convert_ast(_ast),
-            filename
-        }
-
-        console.warn(ast);
-    }
-
-    let beg = globalThis.performance.now();
-    let step1;
-    let step2;
-    let step0;
-    let js_fct;
-    let sb;
-
+    let jscode = '';
+    let times = new Array(3).fill(NaN);
     try {
-        //ast = py2ast( code );
-        //ast = py2ast_fast(code);
-        //step0 = globalThis.performance.now();
-        if( true ) {
-            const parser = new $B.Parser(code, filename, 'file');
-            _ast = $B._PyPegen.run_parser(parser);
-
-            step0 = globalThis.performance.now();
-            ast = {
-                nodes: convert_ast(_ast),
-                filename
-            }
-        }
-
-        step1 = globalThis.performance.now();
-        js_code = ast2js(ast);
-        step2 = globalThis.performance.now();
-        sb = new SBrython();
-        sb._b_.assert = (cond) => { if( ! cond ) output.push(["[Assertion failed]", new Error().stack]); };
-        sb.runJSCode(js_code, ast);
-    } catch(e) {
-        console.error(e); //TODO
-    }
-
-    let sbrython_result = output.map( e => {
-                const div = document.createElement('div')
-                div.textContent = `${e[0]}`;
-                div.raw = e[0];
-                div.stack = e[1];
-                return div;
-            });
-    try {
-        console.log("AST", _ast);
-        let end = globalThis.performance.now();
-        let size = (100 * js_code.length / code.length - 100).toFixed(2);
-
-        sbrython_output.replaceChildren(
-            ...sbrython_result,
-
-`**code size +${size}%**
-**Executed in ${end-beg}ms**
-    **Py2AST:  ${step0-beg}ms
-    **ASTConv: ${step1-step0}ms
-    **AST2JS:  ${step2-step1}ms
-    **Runtime: ${end-step2}ms`
-// **Py2AST:  ${step1-beg}ms
-
-        );
-    } catch(e) {}
-
-    output = [];
-    is_sbrython = false;
-    //console.log("c2", code2);
-    let js_code2;
-    beg = globalThis.performance.now();
-    try {
-        js_code2 = $B.pythonToJS(code);
+        times[0] = globalThis.performance.now();
+        jscode = $B.pythonToJS(code);
         /*
         const filename = "filename";
         const parser = new $B.Parser(code, filename, 'file');
@@ -288,40 +203,199 @@ function update() {
                                     imported})
         js_code2 = js_obj.js
         */
-
-        //console.log(js_code2);
-        step2 = globalThis.performance.now();
-        const fct = new Function(js_code2); //TODO args
+        times[1] = globalThis.performance.now();
+        const fct = new Function(jscode); //TODO args
         fct();
+        times[2] = globalThis.performance.now();
     } catch(e) {
         console.error(e); //TODO
     }
 
+    return {
+        output,
+        times,
+        //ast,
+        jscode,
+        pycode: code
+    };
+}
+
+function executeSBrython(code) {
+
+    const filename = "sbrython_editor.js";
+    
+    const output = [];
+    window.write = function(txt) {
+
+        if( Array.isArray(txt) ) // clone to prevent update issues...
+            txt = [...txt];
+
+        output.push([txt, new Error().stack]);
+    };
+
+    let jscode = "";
+    let ast = [];
+    let sb = null;
+
+    let times = new Array(5).fill(NaN);
+
+    try {
+        times[0] = globalThis.performance.now();
+        if( true ) {
+            //ast = py2ast( code );
+            const parser = new $B.Parser(code, filename, 'file');
+            const _ast = $B._PyPegen.run_parser(parser);
+
+            times[1] = globalThis.performance.now();
+            ast = {
+                nodes: convert_ast(_ast),
+                filename
+            }
+        } else {
+            //ast = py2ast_fast(code);
+            //times[1] = globalThis.performance.now();
+        }
+
+        times[2] = globalThis.performance.now();
+        jscode = ast2js(ast);
+        times[3] = globalThis.performance.now();
+        sb = new SBrython();
+        sb._b_.assert = (cond) => { if( ! cond ) output.push(["[Assertion failed]", new Error().stack]); };
+        sb.runJSCode(jscode, ast);
+        times[4] = globalThis.performance.now();
+    } catch(e) {
+        console.error(e); //TODO
+    }
+
+    return {
+        output,
+        times,
+        ast,
+        jscode,
+        pycode: code,
+        engine: sb
+    };
+}
+
+function execute(code) {
+
+    const brython = executeBrython(code);
+    const sbrython= executeSBrython(code);
+
+    // TODO compare
+
+    return {
+         brython,
+        sbrython,
+        success: true
+    };
+}
+
+window.execute = execute;
+
+function tdiff(times, a, b) {
+    return (times[a]-times[b]).toFixed(3);
+}
+
+function updateBrythonFromResults({pycode, output, times, jscode}) {
+
     let brython_result = output.map( e => {
+            const div = document.createElement('div')
+            div.textContent = `${e[0]}`;
+            div.raw = e[0];
+            div.stack = e[1]
+            return div;
+        });
+
+    let size = (100 * jscode.length / pycode.length - 100).toFixed(2);
+
+    brython_output.replaceChildren(
+            ...brython_result,
+`**code size +${size}%**
+**Executed in ${tdiff(times, 2, 0)}ms**
+    **Py2JS:   ${tdiff(times, 1, 0)}ms**
+    **Runtime: ${tdiff(times, 2, 1)}ms**`
+    );
+
+    return brython_result;
+}
+function updateSBrythonFromResults({pycode, output, times, jscode}) {
+
+    let sbrython_result = output.map( e => {
                 const div = document.createElement('div')
                 div.textContent = `${e[0]}`;
                 div.raw = e[0];
-                div.stack = e[1]
+                div.stack = e[1];
                 return div;
             });
-    try {
-        let end = globalThis.performance.now();
-        let size = (100 * js_code2.length / code.length - 100).toFixed(2);
+            
+    let size = (100 * jscode.length / pycode.length - 100).toFixed(2);
 
-        brython_output.replaceChildren(
-            ...brython_result,
+    sbrython_output.replaceChildren(
+        ...sbrython_result,
 `**code size +${size}%**
-**Executed in ${end-beg}ms**
-    **Py2JS:   ${step2-beg}ms
-    **Runtime: ${end-step2}ms`
-    );
+**Executed in ${tdiff(times, 4, 0)}ms**
+    **Py2AST:  ${tdiff(times, 1, 0)}ms**
+    **ASTConv: ${tdiff(times, 2, 1)}ms**
+    **AST2JS:  ${tdiff(times, 3, 2)}ms**
+    **Runtime: ${tdiff(times, 4, 3)}ms**`
+        );
 
-    /*
-    **Py2AST:  ${step1-beg}ms
-    **AST2JS:  ${step2-step1}ms*/
-    } catch(e) {
-        console.error(e);
-    }
+    return sbrython_result;
+}
+
+function updateFromResults(results) {
+
+    const {sbrython, brython} = results;
+
+    // SBrython
+    const sbrython_results = updateSBrythonFromResults(sbrython);
+
+    // Brython
+    const  brython_results = updateBrythonFromResults(brython);
+
+    // both
+    const ast = sbrython.ast;
+    try {
+    	print_js( sbrython.jscode, ast );
+    } catch(e) { console.warn(e); }
+    try {
+        print_python( sbrython.pycode, ast );
+    } catch(e) { console.warn(e); }
+    try {
+        print_ast( ast );
+    } catch(e) { console.warn(e); }
+
+    try {
+        print_errors(brython_results, sbrython_results, sbrython.engine);
+    } catch(e) { console.warn(e); }
+}
+
+function clearResults() {
+
+    sbrython_output.textContent = "";
+     brython_output.textContent = "";
+
+    js_output    .textContent = "";
+    python_output.textContent = "";
+    ast_output   .textContent = "";
+
+    sbrython_output.classList.remove("success");
+    sbrython_output.classList.remove("error");
+}
+
+function update() {
+
+	const code = python_input.value;
+
+    clearResults();
+    const result = execute(code);
+    updateFromResults(result);
+}
+
+window.update = update;
+
+function print_errors(brython_result, sbrython_result, sb) {
 
     function isNone(value) {
         return (typeof value === "object")
@@ -329,12 +403,7 @@ function update() {
         && value.__class__.__qualname__ === "NoneType";
     }
 
-    print_python( code, ast );
-	print_ast( ast );
-    console.log(js_code);
     //console.log(js_fct.toString());
-    console.warn("AST", ast);
-	print_js( js_code, ast );
 
     let equals = true;
     let max_id = Math.max(brython_result.length, sbrython_result.length)
@@ -391,8 +460,6 @@ function update() {
 
     sbrython_output.classList.add(equals ? "success" : "error");
 }
-
-window.update = update;
 
 function print_node(node) {
     const html_bloc = document.createElement("div");
@@ -558,18 +625,15 @@ update();
 <script type="module">
 
     async function compute(code) {
+        
+        //TODO: acc results ?
 
-        const input = document.getElementById('python');
-        input.textContent = code;
-
-        window.update();
+        return window.execute(code);
     }
 
     function filter(code, list) {
 
         list ??= [];
-
-        console.warn("filter", list);
         
         let result = code.map( (l, idx) => {
             idx = idx + 1 + 2;
@@ -653,7 +717,7 @@ update();
         // memoryview
         // javascript objects
 
-        let exit = false;
+        let error = false;
 
         for(let test_name of tests_names) {
             let code = await (await fetch(`./unittests/${test_name}.py`)).text();
@@ -674,26 +738,30 @@ update();
 
                 code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
         
-                /*code = code.map( (line) => {
-
-                    if( ! line.startsWith('assert ') )
-                        return line;
-                    return `write(${ line.slice(7) })`;
-                });*/
                 code = code.join('\n'); 
 
-                await compute( code );
-
-                if( ! document.querySelector('.output_sbrython').classList.contains('success') ) {
-                    exit = true;
+                let results = await compute( code );
+                if(results.success) {
+                    error = true;
                     break;
                 }
             }
-            if( exit )
+            if( error )
                 break;
         }
 
-        console.warn("RESULT", excluded_count, total);
+        // if( error )
+
+        const result_sbrython = document.querySelector('.output_sbrython');
+        result_sbrython.textContent += `\n**Excluded: ${excluded_count}/${total}**`;
+        //TODO: result if success / print stuff if failed
+/*
+        **code size +27.41%**
+**Executed in 0ms**
+    **Py2AST:  0ms
+    **ASTConv: 0ms
+    **AST2JS:  0ms
+    **Runtime: 0ms*/
     })();
     </script>
 </body>

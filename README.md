@@ -6,7 +6,7 @@ Mean speed increase :
 Mean file size increase :
 Unit tests : 
 
-Test ignored: 1624/2097
+Test ignored: 1638/2112
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 
@@ -14,21 +14,24 @@ https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 
 #### Unit tests
 
+// privacy.reduceTimerPrecision
+
 -> stats
--> scroll bottom...
-
--> no initial computation.
-
 -> optimize execution of tests + measure perfs (speed + total size)
+-> no initial computation.
     -> total in last thingy.
 
-Refactor
-    -> body/newline/args (toJS...)
-    -> editor : split into files...
+-> scroll bottom...
+
+#### Some core refactor (osef)
 
 Bugs
     -> bug : code gen vs print code include ";" aux lignes... 
         -> une fonction exportée
+
+Refactor
+    -> body/newline/args (toJS...)
+
 
 #### Operators
 
