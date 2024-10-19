@@ -820,6 +820,8 @@ if( window.location.search === '')
     **AST2JS : ${tdiff(sbtimes, 3, 2)}ms**
     **Runtime: ${tdiff(sbtimes, 4, 3)}ms** (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})`
 
+    result_sbrython.classList.add('success');
+
     result_brython.textContent = 
 `**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
 **Executed in: ${tdiff(btimes, 2, 0)}ms**
