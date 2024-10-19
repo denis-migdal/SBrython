@@ -779,7 +779,7 @@ if( window.location.search === '')
 
                 code = filter(code, exclude_list[`${test_name}.${name}`]);
 
-                total += code.length;
+                total += code.length - 1;
                 for(let i = 1; i < code.length; ++i)
                     excluded_count += code[i][0] === '#';
 
@@ -811,7 +811,7 @@ if( window.location.search === '')
 
         result_sbrython.textContent = 
 `**Status     : ${error ? 'FAILED' : 'SUCCESS'}
-**Excluded   : ${excluded_count}/${total}**
+**Excluded   : ${excluded_count}/${total} (${total-excluded_count} tested)**
 **Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
 **Executed in: ${tdiff(sbtimes, 4, 0)}ms** (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
     **Py2JS  : ${tdiff(sbtimes, 3, 0)}ms** (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
