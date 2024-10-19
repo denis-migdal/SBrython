@@ -411,3 +411,100 @@
 # basic test suite.issue 2443
 // map + iter
 *
+
+
+# numbers.True and False are instances of int
+// isinstance
+*
+
+# numbers.issue 350
+// infinity + repr
+*
+
+# numbers.issue 352
+// infinity
+*
+
+# numbers.issue 564
+// isinstance
+*
+
+# numbers.issue 1033
+// Fraction et str()
+*
+
+# numbers.issue 1040
+// bool and number operations
+*
+
+# numbers.issue 1049
+// float inheritance
+*
+
+# numbers.issue 1115
+// float inheritance
+*
+
+# numbers.as_integer_ratio() on integers
+*
+
+# numbers.issue 1315
+// divmod + str()
+*
+
+# numbers.issue 1396
+// format
+*
+
+# numbers.issue 1511
+// infinity
+*
+
+# numbers.issue 1524
+// // op + float inheritance
+*
+
+# numbers.issue 1578
+// str()
+*
+
+# numbers.issue 2087
+// sys
+*
+
+# numbers.digits in non-latin alphabets
+// ch
+*
+
+# numbers.# issue 2465
+// type() + **
+*
+
+# basic test suite.strings
+// strings
+*
+
+# basic test suite.enumerate
+*
+
+# basic test suite.dir
+*
+
+# basic test suite.nested function scopes
+*
+
+# basic test suite.restore built-in range
+*
+
+# basic test suite.unpacking in "for" target
+*
+
+# basic test suite.assert try_except_else_finally() == 4
+*
+
+# basic test suite.chained assignments and unpacking
+*
+
+# basic test suite.call function with **kw where kw has keys() and __getitem__
+// removed from test.
+*

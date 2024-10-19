@@ -6,9 +6,7 @@ Mean speed increase :
 Mean file size increase :
 Unit tests : 
 
-Lines ignored : 1393/
-Lines passed  : 719+/8,416
-Lines ignored : 1393+
+Test ignored: 1637/2097
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 
@@ -21,8 +19,6 @@ https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 
 -> no initial computation.
 
--> Assert node => test
--> assert -> write() in tests => replace at language level...
 -> optimize execution of tests + measure perfs (speed + total size)
     -> total in last thingy.
 
@@ -136,6 +132,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - Keywords
     - pass
     - return (expr)
+    - assert (raises a JS error for now)
 - modules 
     - export (functions) / import (already loaded) / import browser (=globalThis)
 
