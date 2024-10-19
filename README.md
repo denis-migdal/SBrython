@@ -6,7 +6,7 @@ Mean speed increase :
 Mean file size increase :
 Unit tests : 
 
-Test ignored: 1637/2097
+Test ignored: 1624/2097
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 

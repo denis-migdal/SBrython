@@ -307,10 +307,6 @@
 # basic test suite.__setattr__ defined in a class
 *
 
-# basic test suite.nested scopes
-// tabulations assert ?
-*
-
 # basic test suite.check that line is in exception info
 *
 
@@ -386,7 +382,7 @@
 *
 
 # basic test suite.issue 2069
-// global + assert issue + , operator
+// global + , operator
 *
 
 # basic test suite.issue 2112
