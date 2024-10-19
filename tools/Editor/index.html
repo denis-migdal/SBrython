@@ -779,7 +779,12 @@ if( window.location.search === '')
 
                 code = filter(code, exclude_list[`${test_name}.${name}`]);
 
-                total += code.length - 1;
+                let nbEmptyLines = 0;
+                for(let i = 1; i < code.length; ++i)
+                    if(code[i].trim() === '')
+                        ++nbEmptyLines;
+
+                total += code.length - 1 - nbEmptyLines;
                 for(let i = 1; i < code.length; ++i)
                     excluded_count += code[i][0] === '#';
 
