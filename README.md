@@ -4,9 +4,7 @@
 
 Mean speed gain : -23.53% (runtime -57.14%, py2js +0% -due to Brython to SBrython AST conversion-).
 Mean file size gain : -84.97%
-Unit tests : 
-
-Test ignored: 1853/2112
+Unit tests : 69/1922 (1853 excluded)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
