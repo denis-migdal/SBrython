@@ -59,7 +59,18 @@ Refactor
 
 #### Operators
 
--> exp notation
+-> expressions
+    -> exp notation
+    -> infinity
+-> other types...
+    -> bool
+    -> str
+    -> conversions methods.
+-> other operators...
+    -> unary.
+    -> compare.
+    -> and/or/not
+    -> +=
 
 -> type()
     -> TypeName2StaticType (use) + import.
@@ -80,9 +91,7 @@ Refactor
 
 Tot (149)
 
-(61)
-- ** (10)
-- % (5)
+(??)
 - unary (7)
 - op (12)
 - pow (7)
@@ -93,61 +102,34 @@ Tot (149)
 - infinity (3)
 
 (51)
-- isinstance (5)
+- bool (2)
 - abs() (3)
 - str() (5)
 - float() (7)
 - int() (13)
 - divmod() (2)
-- complex (12)
 - type(2)
-- bool (2)
+- isinstance (5)
+- complex (12)
 
 (19)
 - except (5)
 - assertRaises (4)
 - assert raise (10)
 
-0. enforce types + __op__ => @overload
-1. 1+1 => 1+1, type(1+1).__name__ [is]
-2. types = [1] + op[+] => generate
-3. [+,*]
-4. op precedence
-5. add types+op.
-6. Handle exceptions... => TypeError:
-    => filtrer les comparaisons légales.
-    (sub/rsub)
-
-
-=> https://docs.python.org/3/reference/expressions.html#operator-summary
-
-=> for each op
-    => for each type1
-        => for each type2
-            => type1 op type2 
-                => verif value + type.
-=> + operator priority.
-
-a op b => NotImplemented, try b op a.
-    => strict type enforce.
-
--> operators + operator priority (+ verify type) + type casts
-
 -> or/and/not
--> </<=/>/>=/==/!=/is/is/not
--> +/-/*/%/
+-> </<=/>/>=/==/!=/is not
 -> +, - unary
--> /, //
 -> |, ^, &, <<, >>, ~
 
 -> int()
 -> float()
 -> divmod()
--> pow() + **
+-> pow()
 -> round()
 
 x types...
--> int/float/bool
+-> bool
 -> list/tuple/range
 -> set/frozenset / dict
 -> bytes/bytearray/memoryview
@@ -200,6 +182,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - None (explicit = JS null / implicit = JS undefined)
 - Operators
     - is
+    - **, *, /, //, -, +
     - =  (bool/int/None) + with annotations
     - == (bool/int/None)
     - [] (list/tuple[int])
@@ -214,16 +197,13 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
+-> operators+other keywords.
+-> fct calls more complex.
+-> list/tuple/dict
 -> classes
     -> cstr.
     -> class type in context ?
--> operators+priority+other keywords.
--> list/tuple/dict -> subs symbols
--> fct calls more complex.
--> unit tests : 25 core features.
 -> JS API
-
-+ mails G. group.
 
 (new features)
     - import/export
@@ -287,16 +267,6 @@ main_body
         => si g= (g op d)
         => sinon (g) op (d op x)
 
-### Symb. subs
-
-    - call()
-        => [obj, method_name, args]
-        => if obj_type.method_name in subs
-            => if subs[...].filter()
-                => new Node (Subs) / value = (args_nodes) => JS
-        => subs.ts in modules... (gathers).
-    => test only with append => push (one arg)
-
 ### Complex fct params
 
 Cf https://github.com/brython-dev/brython/issues/2478
@@ -354,8 +324,7 @@ Cf https://github.com/brython-dev/brython/issues/2478
         - async/await
         + move some 2 keywords.
     - ops
-        x. ops priority+direction : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
-        a. +-/* **, % unary -, //,
+        a. unary -/+
         b. cmp : > >= < <= !=
         c. or / and / not
 
@@ -402,9 +371,6 @@ Cf https://github.com/brython-dev/brython/issues/2478
 - [ ] Better editor :
     - [ ] Twice exec, one with runtime type checks
     - [ ] make asserts that will be only be performed in SBrython (no Brython)
-    - [ ] split unit tests (resume + split output)
-        - [ ] output : accordion (closed if success, open first error/fail) + highlight first error.
-        - [ ] show AST/Code only for open output.
     - [ ] scroll to
 - [ ] Type
     - [ ] Better type deduction: if type === => change local type in body.
