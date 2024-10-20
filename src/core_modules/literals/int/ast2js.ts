@@ -3,6 +3,11 @@ import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
+    let value = this.value;
+
+    if( (this as any).asFloat && typeof value === "bigint" )
+        value = Number(value);
+
     if( (this as any).asFloat ) // opti
         return toJS(r`${this.value}`, cursor);        
 

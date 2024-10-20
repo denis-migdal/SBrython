@@ -16,8 +16,6 @@ export default function convert(node: any, context: Context) {
     if( node.ops[0].constructor.$name === "Is" )
         suffix = '(is)'
 
-    console.warn(node);
-
     return new ASTNode(node, `operators.==${suffix}`, "bool", null,
         [
             left,

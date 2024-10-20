@@ -2,9 +2,9 @@
 
 ## Status
 
-Mean speed gain : -3.70% (runtime -54.17%, py2js +5.07%).
+Mean speed gain : -19.67% (runtime -40.63%, py2js +3.45%).
 Mean file size gain : -84.85%
-Unit tests : 69/1917 (1848 excluded)
+Unit tests : 73/1917 (1844 excluded)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -59,18 +59,20 @@ Refactor
 
 #### Operators
 
--> expressions
-    -> exp notation
-    -> infinity
 -> other types...
     -> bool
     -> str
-    -> conversions methods.
 -> other operators...
     -> unary.
     -> compare.
     -> and/or/not
     -> +=
+-> fcts (subs. in global space)
+    -> conversions methods.
+    -> float()
+        -> infinity
+    -> pow()
+    -> etc.
 
 -> type()
     -> TypeName2StaticType (use) + import.
@@ -94,19 +96,19 @@ Tot (149)
 (??)
 - unary (7)
 - op (12)
-- pow (7)
 - = (10)
 - << (2)
 - comparisons with None (1)
 - not (4)
-- infinity (3)
 
-(51)
+(??)
 - bool (2)
 - abs() (3)
 - str() (5)
 - float() (7)
 - int() (13)
+- pow() (7)
+- infinity() (3)
 - divmod() (2)
 - type(2)
 - isinstance (5)

@@ -44,11 +44,6 @@
 # numbers.long integers
 // Math.pi 
 4-7
-// exp notation
-9
-11
-50
-51
 // int()
 13-47
 
