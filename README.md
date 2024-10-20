@@ -10,11 +10,43 @@ https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
+
 ### Roadmap
 
 #### Unit tests
 
 -> scroll bottom...
+
+- basic
+- numbers
+
+- classes
+
+(7)
+- dicts
+- lists
+- exception
+- javascript objects
+- bytes
+- sets
+- string methods
+
+(3)
+- memoryview
+- f-string
+- print
+
+(10)
+- pattern matching
+- generators
+- iterators
+- import
+- files open_read
+- exec_eval
+- decorators
+- descriptors
+- reflected_methods
+- special methods
 
 #### Some core refactor (osef)
 
@@ -27,8 +59,63 @@ Refactor
 
 #### Operators
 
-0. assert + is ~> generics __add__
-0. enforce types.
+-> is operator... (===) [works with Brython]
+-> reverse during ASTConversion + set type during ASTConversion
+
+-> operators
+    -> (+) => get op names [__add__, __radd__]...
+    -> replace all ops by op names
+    -> op. order.
+    -> replace all types op + inheritance ?
+
+-> type()
+    -> TypeName2StaticType (use) + import.
+    -> not necessary ?
+    -> .constructor & type (is object) & substitution for substituted types.
+-> isinstance()
+    -> do not implement yet as type should be known at transpilation...
+    -> a instanceof b => +typeof...
+        -> __class__ / __instancecheck__
+        -> https://peps.python.org/pep-3119/
+
+-> attrs
+    (attrs are first static attrs then non-static when init in cstr, static is used for class __new__) => getter/setter (if undefined => static) ?
+    + https://jsperf.app/juqife/1/preview
+        => immutable type
+        => @dataclass(frozen=True)
+        => Final[int]
+
+Tot (149)
+
+(61)
+- unary (7)
+- op (12)
+- ** (10)
+- pow (7)
+- % (5)
+- = (10)
+- << (2)
+- comparisons with None (1)
+- not (4)
+- infinity (3)
+
+(51)
+- isinstance (5)
+- abs() (3)
+- str() (5)
+- float() (7)
+- int() (13)
+- divmod() (2)
+- complex (12)
+- type(2)
+- bool (2)
+
+(19)
+- except (5)
+- assertRaises (4)
+- assert raise (10)
+
+0. enforce types + __op__ => @overload
 1. 1+1 => 1+1, type(1+1).__name__ [is]
 2. types = [1] + op[+] => generate
 3. [+,*]
@@ -119,6 +206,7 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - f-string
     - None (explicit = JS null / implicit = JS undefined)
 - Operators
+    - is
     - =  (bool/int/None) + with annotations
     - == (bool/int/None)
     - [] (list/tuple[int])

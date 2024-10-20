@@ -11,7 +11,14 @@ export default function convert(node: any, context: Context) {
         //throw new Error("Not implemented");
     }
 
-    return new ASTNode(node, "operators.==", "bool", null,
+    //TODO
+    let suffix = '';
+    if( node.ops[0].constructor.$name === "Is" )
+        suffix = '(is)'
+
+    console.warn(node);
+
+    return new ASTNode(node, `operators.==${suffix}`, "bool", null,
         [
             left,
             right,

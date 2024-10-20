@@ -487,6 +487,7 @@
 *
 
 # basic test suite.nested function scopes
+// *args
 *
 
 # basic test suite.restore built-in range
