@@ -2,9 +2,9 @@
 
 ## Status
 
-Mean speed gain : -23.53% (runtime -57.14%, py2js +0% -due to Brython to SBrython AST conversion-).
-Mean file size gain : -84.97%
-Unit tests : 69/1922 (1853 excluded)
+Mean speed gain : -3.70% (runtime -54.17%, py2js +5.07%).
+Mean file size gain : -84.85%
+Unit tests : 69/1917 (1848 excluded)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -59,14 +59,7 @@ Refactor
 
 #### Operators
 
--> is operator... (===) [works with Brython]
--> reverse during ASTConversion + set type during ASTConversion
-
--> operators
-    -> (+) => get op names [__add__, __radd__]...
-    -> replace all ops by op names
-    -> op. order.
-    -> replace all types op + inheritance ?
+-> exp notation
 
 -> type()
     -> TypeName2StaticType (use) + import.
@@ -88,11 +81,11 @@ Refactor
 Tot (149)
 
 (61)
+- ** (10)
+- % (5)
 - unary (7)
 - op (12)
-- ** (10)
 - pow (7)
-- % (5)
 - = (10)
 - << (2)
 - comparisons with None (1)

@@ -358,9 +358,9 @@ function updateBrythonFromResults({pycode, output, times, jscode}) {
     brython_output.replaceChildren(
             ...brython_result,
 `**code size   ${rdiff(pycode.length, jscode.length)}**
-**Executed in:${tdiff(times, 2, 0)}ms**
-    **Py2JS  :${tdiff(times, 1, 0)}ms**
-    **Runtime: ${tdiff(times, 2, 1)}ms**`
+**Executed in: ${tdiff(times, 2, 0)}ms**
+    **Runtime: ${tdiff(times, 2, 1)}ms**
+    **Py2JS  : ${tdiff(times, 1, 0)}ms**`
     );
 
     return brython_result;
@@ -389,10 +389,11 @@ function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
         ...sbrython_result,
 `${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
 **Executed in: ${tdiff(times, 4, 0)}ms**
-    **Py2AST : ${tdiff(times, 1, 0)}ms**
-    **ASTConv: ${tdiff(times, 2, 1)}ms**
-    **AST2JS : ${tdiff(times, 3, 2)}ms**
-    **Runtime: ${tdiff(times, 4, 3)}ms**`
+    **Runtime: ${tdiff(times, 4, 3)}ms**
+    **Py2JS  : ${tdiff(times, 3, 0)}ms**
+        **Py2AST : ${tdiff(times, 1, 0)}ms**
+        **ASTConv: ${tdiff(times, 2, 1)}ms**
+        **AST2JS : ${tdiff(times, 3, 2)}ms**`
         );
 
     return sbrython_result;
@@ -579,13 +580,23 @@ function print_code_node(node, code, type) {
     let subparts = new Array(node.children.length * 2 + 1);
     let cursor = node[type].start;
     let offset = 0;
-    for(let i = 0; i < node.children.length; ++i) {
-        const ctype = node.children[i][type];
+
+    let children = node.children.sort( (a,b) => {
+        console.warn(a, b);
+        if( a[type].start.line === b[type].start.line) {
+            return a[type].start.col - b[type].start.col;
+        }
+
+        return a[type].start.line - b[type].start.line;
+    })
+
+    for(let i = 0; i < children.length; ++i) {
+        const ctype = children[i][type];
         if( ctype === undefined )
             continue;
         subparts[offset++] = slice_code(code, cursor, ctype.start);
-        subparts[offset++] = print_code_node(node.children[i], code, type);
-        cursor = node.children[i][type].end;
+        subparts[offset++] = print_code_node(children[i], code, type);
+        cursor = children[i][type].end;
     }
     subparts[offset++] = slice_code(code, cursor, node[type].end);
 
@@ -819,19 +830,19 @@ if( window.location.search === '')
 **Tested     : ${total-excluded_count}/${total} (${excluded_count} excluded)**
 **Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
 **Executed in: ${tdiff(sbtimes, 4, 0)}ms** (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
+    **Runtime: ${tdiff(sbtimes, 4, 3)}ms** (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
     **Py2JS  : ${tdiff(sbtimes, 3, 0)}ms** (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
-    **Py2AST : ${tdiff(sbtimes, 1, 0)}ms**
-    **ASTConv: ${tdiff(sbtimes, 2, 1)}ms**
-    **AST2JS : ${tdiff(sbtimes, 3, 2)}ms**
-    **Runtime: ${tdiff(sbtimes, 4, 3)}ms** (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})`
+        **Py2AST : ${tdiff(sbtimes, 1, 0)}ms**
+        **ASTConv: ${tdiff(sbtimes, 2, 1)}ms**
+        **AST2JS : ${tdiff(sbtimes, 3, 2)}ms**`
 
     result_sbrython.classList.add('success');
 
     result_brython.textContent = 
 `**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
 **Executed in: ${tdiff(btimes, 2, 0)}ms**
-    **Py2JS  : ${tdiff(btimes, 1, 0)}ms**
-    **Runtime: ${tdiff(btimes, 2, 1)}ms**`
+    **Runtime: ${tdiff(btimes, 2, 1)}ms**
+    **Py2JS  : ${tdiff(btimes, 1, 0)}ms**`
 
     })();
     </script>

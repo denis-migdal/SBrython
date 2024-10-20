@@ -44,9 +44,11 @@
 # numbers.long integers
 // Math.pi 
 4-7
-// **
-8-11
-49-51
+// exp notation
+9
+11
+50
+51
 // int()
 13-47
 
@@ -62,7 +64,7 @@
 *
 
 # numbers.issue 840
-// ** + id()
+// id()
 *
 
 # numbers.PEP 515
@@ -130,8 +132,8 @@
 *
 
 # numbers.issue 1299
-// pow OU %
-*
+// pow
+4
 
 # numbers.issue 1300
 // complex numbers
@@ -150,7 +152,7 @@
 *
 
 # numbers.issue 1338
-// %
+// unary -
 *
 
 # numbers.issue 1412
@@ -170,7 +172,7 @@
 *
 
 # numbers.issue 1666
-// abs + **
+// abs
 *
 
 # numbers.issue 1686
@@ -185,15 +187,11 @@
 *
 
 # numbers.issue 1784
-// str() + pow() + ** + divmod + float()
-*
-
-# numbers.issue 1840
-// **
+// str() + pow() + divmod + float()
 *
 
 # numbers.issue 1924
-// bit_count + unary - + **
+// bit_count + unary -
 *
 
 # numbers.issue 1947
@@ -224,11 +222,11 @@
 *
 
 # numbers.issue 2110
-// pow + %
+// pow()
 *
 
 # numbers.issue 2122
-// int() % **
+// int()
 *
 
 # numbers.issue 2228
@@ -252,7 +250,7 @@
 *
 
 # numbers.issue 2465
-// type() + **
+// type()
 *
 
 # classes.classes
@@ -457,7 +455,7 @@
 *
 
 # numbers.issue 1524
-// // op + float inheritance
+// float inheritance
 *
 
 # numbers.issue 1578
@@ -473,7 +471,7 @@
 *
 
 # numbers.# issue 2465
-// type() + **
+// type()
 *
 
 # basic test suite.strings
@@ -588,3 +586,8 @@
 # basic test suite.object(1) raises TypeError
 // assert raise
 *
+
+# basic test suite.exception attributes
+// assert raise
+*
+

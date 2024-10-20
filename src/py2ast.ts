@@ -44,12 +44,7 @@ export function py2ast(code: string, filename: string): AST {
 }
 
 function getNodeType(brython_node: any): string {
-    let name = brython_node.sbrython_type ?? brython_node.constructor.$name;
-
-    if(name === 'BinOp')
-        name = `BinOp.${brython_node.op.constructor.$name}`;
-
-    return name;
+    return brython_node.sbrython_type ?? brython_node.constructor.$name;
 }
 
 export function convert_node(brython_node: any, context: Context): ASTNode {
