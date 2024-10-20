@@ -115,29 +115,33 @@ export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNod
 type GenBinaryOperator_Opts = {
     call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode) => any,
     return_type    : Record<string, string>,
-    convert       ?: (a: ASTNode) => any
+    convert       ?: (a: ASTNode) => any,
+    same_order    ?: boolean
 }
 
 export function GenBinaryOperator(name: string, {
     call_substitute,
     return_type,
+    same_order = false,
     convert = (a: ASTNode) => a
 }: GenBinaryOperator_Opts) {
+
+    const fct = (node: ASTNode, self: ASTNode, o: ASTNode) => {
+        return call_substitute(node, self, convert(o) );
+    };
+
+    const rfct = same_order ? fct : (node: ASTNode, self: ASTNode, o: ASTNode) => {
+        return call_substitute(node, convert(o), self);
+    };
 
     return {
         [`__${ name}__`]: {
             return_type: (o: string) => return_type[o] ?? SType_NOT_IMPLEMENTED,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode) => {
-                //TODO conversion
-                return call_substitute(node, self, convert(o) );
-            }
+            call_substitute: fct
         },
         [`__r${name}__`]: {
             return_type: (o: string) => return_type[o] ?? SType_NOT_IMPLEMENTED,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode) => {
-                //TODO conversion
-                return call_substitute(node, convert(o), self);
-            }
+            call_substitute: rfct
         },
     };
 }

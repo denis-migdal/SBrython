@@ -1,6 +1,6 @@
 import { ASTNode } from "structs/ASTNode";
 import { binary_jsop, GenBinaryOperator, Int2Float } from "structs/BinaryOperators";
-import { SType_NOT_IMPLEMENTED, STypeObj } from "structs/SType";
+import { STypeObj } from "structs/SType";
 
 const SType_int = {
     ...GenBinaryOperator('pow', {

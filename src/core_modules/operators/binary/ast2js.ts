@@ -1,11 +1,13 @@
 import { toJS } from "ast2js";
 import SType_float from "core_modules/literals/float/stype";
 import SType_int from "core_modules/literals/int/stype";
+import SType_str from "core_modules/literals/str/stype";
 import { ASTNode, CodePos } from "structs/ASTNode";
 
 export const name2SType = {
     "int"  : SType_int,
-    "float": SType_float
+    "float": SType_float,
+    "str"  : SType_str
 }
 export type STypeName = keyof typeof name2SType;
 

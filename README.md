@@ -59,9 +59,6 @@ Refactor
 
 #### Operators
 
--> other types...
-    -> bool
-    -> str
 -> other operators...
     -> unary.
     -> compare.
@@ -196,6 +193,11 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - assert (raises a JS error for now)
 - modules 
     - export (functions) / import (already loaded) / import browser (=globalThis)
+
+### Not implemented:
+
+- Operations on bool + None (you shouldn't do it anyway).
+- bit operations
 
 ## Currently Working on...
 
