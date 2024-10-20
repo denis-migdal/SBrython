@@ -2,6 +2,30 @@ import { r } from "ast2js";
 import { ASTNode } from "./ASTNode";
 import { SType_NOT_IMPLEMENTED, STypeFctSubs, STypeObj } from "./SType";
 
+import SType_float from "core_modules/literals/float/stype";
+import SType_int from "core_modules/literals/int/stype";
+import SType_str from "core_modules/literals/str/stype";
+export const name2SType = {
+    "int"  : SType_int,
+    "float": SType_float,
+    "str"  : SType_str
+}
+export type STypeName = keyof typeof name2SType;
+
+export const bname2pyname = {
+    "USub": "__neg__",
+
+    "Pow" : "__pow__",
+
+    "Mult"    : "__mul__",
+    "Div"     : "__truediv__",
+    "FloorDiv": "__floordiv__",
+    "Mod"     : "__mod__",
+
+    "Add"     : "__add__",
+    "Sub"     : "__sub__",
+}
+
 export const BinaryOperators = {
     '__pow__'     : '__rpow__',
     '__mul__'     : '__rmul__',
@@ -16,7 +40,8 @@ export const BinaryOperators = {
 // TODO: unary op too...
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
-export const JSBinaryOperators = [
+export const JSOperators = [
+    ['u.-'],
     ['**'], // right to left !
     ['*', '/', '%'], // Python also has //
     ['+', '-'],
@@ -70,12 +95,12 @@ export function Int2Float(a: ASTNode) {
     return r`Number(${a})`;
 }
 
-let JSBinaryOperatorsPriority: Record<string, number> = {};
-for(let i = 0; i < JSBinaryOperators.length; ++i) {
+let JSOperatorsPriority: Record<string, number> = {};
+for(let i = 0; i < JSOperators.length; ++i) {
 
-    const priority = JSBinaryOperators.length - i;
-    for(let op of JSBinaryOperators[i])
-        JSBinaryOperatorsPriority[op] = priority;
+    const priority = JSOperators.length - i;
+    for(let op of JSOperators[i])
+        JSOperatorsPriority[op] = priority;
 
 }
 
@@ -97,12 +122,11 @@ export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNod
 
     let result = r`${a}${op}${b}`;
 
-    // TODO js op priority order...
     if( check_priority && "parent_op" in node ) {
 
         let direction       = (node as any).parent_op_dir;
-        let cur_priority    = JSBinaryOperatorsPriority[op];
-        let parent_priority = JSBinaryOperatorsPriority[node.parent_op as any];
+        let cur_priority    = JSOperatorsPriority[op];
+        let parent_priority = JSOperatorsPriority[node.parent_op as any];
 
         if( parent_priority > cur_priority 
             || (parent_priority === cur_priority && direction === 'right' )
@@ -112,6 +136,30 @@ export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNod
 
     return result;
 }
+
+
+export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_priority = true) {
+
+    if(a instanceof ASTNode) {
+        (a as any).parent_op = op;
+        (a as any).parent_op_dir = 'right';
+    }
+
+    let result = r`${op}${a}`;
+
+    if( check_priority && "parent_op" in node ) {
+
+        let direction       = (node as any).parent_op_dir;
+        let cur_priority    = JSOperatorsPriority[op];
+        let parent_priority = JSOperatorsPriority[node.parent_op as any];
+
+        if( direction === 'left' && parent_priority > cur_priority )
+            result = r`(${result})`;
+    }
+
+    return result;
+}
+
 type GenBinaryOperator_Opts = {
     call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode) => any,
     return_type    : Record<string, string>,

@@ -60,7 +60,6 @@ Refactor
 #### Operators
 
 -> other operators...
-    -> unary.
     -> compare.
     -> and/or/not
     -> +=
@@ -91,7 +90,6 @@ Refactor
 Tot (149)
 
 (??)
-- unary (7)
 - op (12)
 - = (10)
 - << (2)
@@ -118,7 +116,6 @@ Tot (149)
 
 -> or/and/not
 -> </<=/>/>=/==/!=/is not
--> +, - unary
 -> |, ^, &, <<, >>, ~
 
 -> int()
@@ -128,7 +125,6 @@ Tot (149)
 -> round()
 
 x types...
--> bool
 -> list/tuple/range
 -> set/frozenset / dict
 -> bytes/bytearray/memoryview
@@ -194,10 +190,13 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - modules 
     - export (functions) / import (already loaded) / import browser (=globalThis)
 
-### Not implemented:
+### Not implemented (yet)
 
-- Operations on bool + None (you shouldn't do it anyway).
-- bit operations
+- Operators:
+    - Operations on bool + None (you shouldn't do it anyway).
+    - bit operations (not common)
+    - Operations on bytes (not common)
+    - unary + (not common)
 
 ## Currently Working on...
 

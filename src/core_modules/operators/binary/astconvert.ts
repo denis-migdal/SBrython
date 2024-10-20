@@ -1,22 +1,7 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { name2SType } from "./ast2js";
 import { SType_NOT_IMPLEMENTED } from "structs/SType";
-import { reversed_operator } from "structs/BinaryOperators";
-
-const bname2pyname = {
-    "Pow" : "__pow__",
-
-    "Mult"    : "__mul__",
-    "Div"     : "__truediv__",
-    "FloorDiv": "__floordiv__",
-    "Mod"     : "__mod__",
-
-    "Add"     : "__add__",
-    "Sub"     : "__sub__",
-}
-
-// __floordiv__ and __truediv__
+import { bname2pyname, name2SType, reversed_operator } from "structs/BinaryOperators";
 
 export default function convert(node: any, context: Context) {
 

@@ -1,10 +1,15 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, Int2Float } from "structs/BinaryOperators";
-import { SType_NOT_IMPLEMENTED, STypeObj } from "structs/SType";
+import { binary_jsop, GenBinaryOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
+import { STypeObj } from "structs/SType";
 
 const SType_float = {
-
+    "__neg__": {
+        return_type: () => 'float',
+        call_substitute: (node: ASTNode, a: ASTNode) => {
+            return unary_jsop(node, '-', a);
+        }
+    },
     ...GenBinaryOperator('pow', {
         return_type: {'float': 'float', 'int': 'float'},
         convert: (a) => a.result_type === 'int' ? Int2Float(a) : a,

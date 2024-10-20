@@ -8,9 +8,6 @@
 // str()
 10
 31
-// unary
-16
-33
 
 // NOT TODO
 
@@ -146,17 +143,16 @@
 // repr
 *
 
-# numbers.issue 1338
-// unary -
-*
-
 # numbers.issue 1412
 // +=
 *
 
 # numbers.issue 1491
-// unary + - ~
-*
+// unary + ~
+4
+6
+10
+12
 
 # numbers.issue 1504
 // int()
@@ -186,7 +182,7 @@
 *
 
 # numbers.issue 1924
-// bit_count + unary -
+// bit_count
 *
 
 # numbers.issue 1947
@@ -213,7 +209,7 @@
 *
 
 # numbers.issue 2095
-// f-string + unary -
+// f-string
 *
 
 # numbers.issue 2110
@@ -241,7 +237,7 @@
 *
 
 # numbers.issue 2407
-// pow() + unary -
+// pow()
 *
 
 # numbers.issue 2465
@@ -313,6 +309,7 @@
 *
 
 # basic test suite.comparisons with None
+// requires bytes
 *
 
 # basic test suite.del
@@ -322,6 +319,7 @@
 *
 
 # basic test suite.operation with unary neg
+// [] op
 *
 
 # basic test suite.issue 1355

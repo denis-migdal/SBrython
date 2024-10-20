@@ -1,8 +1,14 @@
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, Int2Float } from "structs/BinaryOperators";
+import { binary_jsop, GenBinaryOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_int = {
+    "__neg__": {
+        return_type: () => 'int',
+        call_substitute: (node: ASTNode, a: ASTNode) => {
+            return unary_jsop(node, '-', a);
+        }
+    },
     ...GenBinaryOperator('pow', {
         return_type: {'int': 'int'},
         call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {

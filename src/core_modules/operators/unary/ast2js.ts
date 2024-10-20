@@ -1,6 +1,7 @@
 import { toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
-import { name2SType } from "structs/BinaryOperators";
+import { name2SType, STypeName } from "structs/BinaryOperators";
+
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
