@@ -1,6 +1,6 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, Int2Float } from "structs/BinaryOperators";
+import { binary_jsop, GenBinaryOperator, GenEqOperator, Int2Float } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_str = {

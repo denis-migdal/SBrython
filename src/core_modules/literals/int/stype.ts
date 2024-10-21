@@ -1,8 +1,17 @@
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
+import { binary_jsop, GenBinaryOperator, GenEqOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_int = {
+
+    ...GenEqOperator({
+        supported_types: ["int", "float", "bool"],
+        convert     : (a) => Int2Float(a, true),
+        self_convert: (a) => Int2Float(a, true),
+        call_substitute(node, left, op, right) {
+            return binary_jsop(node, left, op, right);
+        },
+    }),
     "__neg__": {
         return_type: () => 'int',
         call_substitute: (node: ASTNode, a: ASTNode) => {

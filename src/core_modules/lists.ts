@@ -12,14 +12,14 @@ import AST_CONVERT_5 from "./pass/astconvert.ts";
 import      AST2JS_5 from "./pass/ast2js.ts";
 import AST_CONVERT_6 from "./operators/unary/astconvert.ts";
 import      AST2JS_6 from "./operators/unary/ast2js.ts";
-import AST_CONVERT_7 from "./operators/binary/astconvert.ts";
-import      AST2JS_7 from "./operators/binary/ast2js.ts";
-import AST_CONVERT_8 from "./operators/attr/astconvert.ts";
-import      AST2JS_8 from "./operators/attr/ast2js.ts";
-import AST_CONVERT_9 from "./operators/[]/astconvert.ts";
-import      AST2JS_9 from "./operators/[]/ast2js.ts";
-import AST_CONVERT_10 from "./operators/==/astconvert.ts";
-import      AST2JS_10 from "./operators/==/ast2js.ts";
+import AST_CONVERT_7 from "./operators/compare/astconvert.ts";
+import      AST2JS_7 from "./operators/compare/ast2js.ts";
+import AST_CONVERT_8 from "./operators/binary/astconvert.ts";
+import      AST2JS_8 from "./operators/binary/ast2js.ts";
+import AST_CONVERT_9 from "./operators/attr/astconvert.ts";
+import      AST2JS_9 from "./operators/attr/ast2js.ts";
+import AST_CONVERT_10 from "./operators/[]/astconvert.ts";
+import      AST2JS_10 from "./operators/[]/ast2js.ts";
 import AST_CONVERT_11 from "./operators/=/astconvert.ts";
 import      AST2JS_11 from "./operators/=/ast2js.ts";
 import AST_CONVERT_12 from "./literals/str/astconvert.ts";
@@ -100,19 +100,19 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_6,
 		     AST2JS:      AST2JS_6
 	},
-	"operators.binary": {
+	"operators.compare": {
 		AST_CONVERT: AST_CONVERT_7,
 		     AST2JS:      AST2JS_7
 	},
-	"operators.attr": {
+	"operators.binary": {
 		AST_CONVERT: AST_CONVERT_8,
 		     AST2JS:      AST2JS_8
 	},
-	"operators.[]": {
+	"operators.attr": {
 		AST_CONVERT: AST_CONVERT_9,
 		     AST2JS:      AST2JS_9
 	},
-	"operators.==": {
+	"operators.[]": {
 		AST_CONVERT: AST_CONVERT_10,
 		     AST2JS:      AST2JS_10
 	},

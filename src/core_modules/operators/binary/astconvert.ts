@@ -24,14 +24,15 @@ export default function convert(node: any, context: Context) {
 
     // try reversed operator
     if( type === SType_NOT_IMPLEMENTED) {
-        op = reversed_operator(op);
-        method = name2SType[right.result_type as STypeName][op];
-        [left, right] = [right, left];
-
-        type = method.return_type(right.result_type);
+        op     = reversed_operator(op);
+        method = name2SType[right.result_type as STypeName]?.[op];
+        if( method !== undefined)
+            type   = method.return_type(left.result_type);
 
         if( type === SType_NOT_IMPLEMENTED)
             throw new Error('NOT IMPLEMENTED!');
+
+        [left, right] = [right, left];
     }
 
     return new ASTNode(node, "operators.binary", type, op,

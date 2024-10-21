@@ -8,7 +8,7 @@ export default function convert(node: any, _context: Context) {
             || node.value.__class__.__qualname__ !== "NoneType" )
         return;
 
-    return new ASTNode(node, "literals.None", "None", null);
+    return new ASTNode(node, "literals.None", "NoneType", null);
 }
 
 convert.brython_name = "Constant";

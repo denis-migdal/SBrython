@@ -59,10 +59,78 @@ Refactor
 
 #### Operators
 
+Opti:
+    -> facultative conversions (not bigint) ~> asFloat ? [we can duplicate literals.]
+    -> could == put false (but side-effects...)
+
+-> solution :
+    (0) operators + reversed while keeping order (keep order).
+        -> + add NoneType.
+    (1) with repeat.
+    (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
+    (3) temporary variable (+ clean-up: (t=null, x) ).
+        [N=2, N=3]
+    (4) affectations
+    (5) or/and/not (global operators)
+        -> only boolean for now (?)
+        -> (__bool__() ?? __len__())
+    (6) globalSpaceFctsSubs.
+    (7) type() [fake py class] / isinstance()
+        - mro (+ __isinstance__ / __class__) ?
+    (?) 
+    (*) fct call/signatures... (! many call signatures !)
+    (*) tuple/dict/list/set/etc.
+    (*) classes
+    (*) Brython interactions.
+
 -> other operators...
-    -> compare.
+    -> subs. can't inherit base types
+        -> option to enable.
+        -> perform some if literal left-side.
+    -> compare
+        -> comparison chains...
+            -> clean at the end (garbage collection...)
+                -> r = (), _r_.t.length = 0, r
+                -> do we care ?
+            -> 1 < 2 < 3
+            -> $B.rich_comp('__lt__', 1, locals.$op = 2) && $B.rich_comp('__lt__', locals.$op, locals.$op = 3)
+                    -> op, a, b => a, op, b + use symbol.
+                    -> last locals.$op unnecessary.
+                        -> clean it for gc ? (locals.$op= null, 3)
+                            -> osef or some very specific cases issue ?
+                -> no subs ? $cmp.(a, '>=', b, '>', c) simply...
+                    -> evaluation issue !!!!
+                
+                -> subs N=2
+                -> subs N=3 ([init], op) <= evaluation issue !!!!
+                    -> need like Brython.
+                -> repeat (N>=3)
+                    -> if literals.
+                    -> if symbols.
+                    -> simple op.
+                        -> precompute literals.
+                            -> /!\ readability !
+                            -> variable of literal.
+                            -> during ast conversion (kills runtime unit tests xD)
+                        -> only simple symbols op without side-effects (fuzzy limits so no op ?) : readability + cost of affectation vs operation.
+                            -> what should we do ?
+                            -> limit to N operations (?)
+                            -> osef ? (rare + gain not much ?)
+                    -> reversed operator
+                        - a > b <= b < a.
+                        - execution order + requires to alternate between t1 t2 (N>=4)...
+                        -> an option in substitution __ge__ -> __rge__ / __le__.
     -> and/or/not
-    -> +=
+    -> += (a = a + b)
+        // locals_exec.a = $B.augm_assign(locals_exec.a, '+=', 1)
+        // $B.$setitem((locals.$tg = locals_exec.a), (locals.$key = 'a'), $B.augm_assign($B.$getitem(locals.$tg, locals.$key), '+=', 1))
+            // setattr + getattr.
+        -> += system (??) [~= jsop ?]
+            ==> if not self conversion and no uncommutable reverse? replace op + by +=
+        -> a = a + b -> can repeat ?
+            -> well, this is an issue for future me ;)
+            -> can subs. same issue than cmp op.
+            -> but solution more complex. (setattr/getattr) with (a+k) in temporary variables...
 -> fcts (subs. in global space)
     -> conversions methods.
     -> float()
@@ -192,11 +260,20 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ### Not implemented (yet)
 
+- Operation order guaranteed:
+    - 3*"e" <= change order.
+    - cmp operator : if not defined, reverse change order.
 - Operators:
     - Operations on bool + None (you shouldn't do it anyway).
     - bit operations (not common)
     - Operations on bytes (not common)
     - unary + (not common)
+
+### Possible optimizations
+
+- pre-compute operations on literals.
+- Write own Py2AST parser.
+- Replace ASTNode by a struct (when introduced in JS) / avoid allocations.
 
 ## Currently Working on...
 

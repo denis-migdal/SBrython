@@ -5,10 +5,15 @@ import { SType_NOT_IMPLEMENTED, STypeFctSubs, STypeObj } from "./SType";
 import SType_float from "core_modules/literals/float/stype";
 import SType_int from "core_modules/literals/int/stype";
 import SType_str from "core_modules/literals/str/stype";
+import SType_None from "core_modules/literals/None/stype";
+import SType_bool from "core_modules/literals/bool/stype";
+
 export const name2SType = {
-    "int"  : SType_int,
-    "float": SType_float,
-    "str"  : SType_str
+    "float"   : SType_float,
+    "int"     : SType_int,
+    "bool"    : SType_bool,
+    "str"     : SType_str,
+    "NoneType": SType_None
 }
 export type STypeName = keyof typeof name2SType;
 
@@ -24,6 +29,10 @@ export const bname2pyname = {
 
     "Add"     : "__add__",
     "Sub"     : "__sub__",
+
+    "Is"      : "is",
+    "Eq"      : "__eq__",
+    "NotEq"   : "__ne__",
 }
 
 export const BinaryOperators = {
@@ -35,6 +44,9 @@ export const BinaryOperators = {
 
     '__add__'    : '__radd__',
     '__sub__'    : '__rsub__',
+
+    '__eq__'     : '__eq__',
+    '__ne__'     : '__ne__'
 }
 
 // TODO: unary op too...
@@ -61,36 +73,72 @@ export const JSOperators = [
 
 
 /*
-1.__abs__()           1.__init__(           1.__rfloordiv__(
-1.__add__(            1.__init_subclass__(  1.__rlshift__(
-1.__and__(            1.__int__()           1.__rmod__(
-1.__bool__()          1.__invert__()        1.__rmul__(
-1.__ceil__(           1.__le__(             1.__ror__(
-1.__class__(          1.__lshift__(         1.__round__(
-1.__delattr__(        1.__lt__(             1.__rpow__(
-1.__dir__()           1.__mod__(            1.__rrshift__(
-1.__divmod__(         1.__mul__(            1.__rshift__(
-1.__doc__             1.__ne__(             1.__rsub__(
-1.__eq__(             1.__neg__()           1.__rtruediv__(
-1.__float__()         1.__new__(            1.__rxor__(<-
-1.__floor__(          1.__or__(             1.__setattr__(
-1.__floordiv__(       1.__pos__()           1.__sizeof__()
-1.__format__(         1.__pow__(            1.__str__()
-1.__ge__(           ->1.__radd__(           1.__sub__(
-1.__getattribute__(   1.__rand__(           1.__subclasshook__(
-1.__getnewargs__()    1.__rdivmod__(        1.__truediv__(
-1.__gt__(             1.__reduce__()        1.__trunc__(
-1.__hash__()          1.__reduce_ex__(      1.__xor__(
-1.__index__()         1.__repr__()          
+unary
+- neg (unary -)
+- pos (unary +)
 
+- bool
+- float
+- int
+- str
+- repr
+
+- abs
+- ceil
+- floor
+- round
+- trunc
+
+binary
+- pow/rpow
+- divmod/rdivmod
+- mod/rmod
+- mul/rmul
+- floordiv //
+- add/radd
+- sub/rsub
+
+- eq/req
+- ge/le
+- gt/lt
+
+- lshift/rlshift
+- rshift/rrshift
+- and/rand
+- ne/rne
+- or/ror
+- xor/rxor
+- invert/rinvert
+
+class
+- class
+- new
+- init
+- init_subclass
+
+- subclasshook // __isinstancecheck__ 
+
+- dir
+- delattr
+- setattr
+- getattribute
+
+- doc
+- format
+- getnewargs
+- hash
+- index (?)
+- sizeof
 */
 
-export function Int2Float(a: ASTNode) {
+export function Int2Float(a: ASTNode, optional = false) {
 
     if( a.type === 'literals.int') {
         (a as any).asFloat = true;
         return a;
     }
+    if( optional )
+        return a;
 
     return r`Number(${a})`;
 }
@@ -158,6 +206,46 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
     }
 
     return result;
+}
+
+type GenEqOperator_Opts = {
+    call_substitute: (node: ASTNode, left: ASTNode, op: "=="|"!=", right: ASTNode, reversed: boolean) => any,
+    supported_types: string[],
+    convert       ?: (a: ASTNode) => any,
+    self_convert  ?: (a: ASTNode) => any,
+}
+
+export function GenEqOperator({
+    call_substitute,
+    supported_types,
+    convert = (a: ASTNode) => a,
+    self_convert = (a: ASTNode) => a
+}: GenEqOperator_Opts) {
+
+    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
+
+    return {
+        '__eq__': {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean = false) => {
+                
+                const left  = reversed ? convert(o)         : self_convert(self);
+                const right = reversed ? self_convert(self) : convert(o);
+
+                return call_substitute(node, left, '==', right, reversed);
+            }
+        },
+        '__ne__': {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean = false) => {
+                
+                const left  = reversed ? convert(o)         : self_convert(self);
+                const right = reversed ? self_convert(self) : convert(o);
+
+                return call_substitute(node, left, '!=', right, reversed);
+            }
+        },
+    };
 }
 
 type GenBinaryOperator_Opts = {
