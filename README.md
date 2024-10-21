@@ -67,19 +67,17 @@ Opti:
     (3) temporary variable (+ clean-up: (t=null, x) ).
         [N=2, N=3]
 
-    (4) or/and/not
-        -> int/float/None/bool/str (for now relies on JS ?)
-        -> (__bool__() ?? __len__())
-    (5) affectations
+    (5) affectations.
     (6) globalSpaceFctsSubs.
     (7) type() [fake py class] / isinstance()
         - mro (+ __isinstance__ / __class__) ?
-    (?) 
+    (8) bytes
     (*) fct call/signatures... (! many call signatures !)
     (*) tuple/dict/list/set/etc.
     (*) classes
     (*) Brython interactions.
 
+-> not the generic case (later) -> we know how to do it (Brython), later, avoid as much as possible.
 -> other operators...
     -> subs. can't inherit base types
         -> option to enable.
@@ -156,11 +154,9 @@ Opti:
 Tot (149)
 
 (??)
-- op (12)
+- op (??)
 - = (10)
 - << (2)
-- comparisons with None (1)
-- not (4)
 
 (??)
 - bool (2)
@@ -179,10 +175,6 @@ Tot (149)
 - except (5)
 - assertRaises (4)
 - assert raise (10)
-
--> or/and/not
--> </<=/>/>=
--> |, ^, &, <<, >>, ~
 
 -> int()
 -> float()
@@ -242,10 +234,12 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
         - f-string
     - None (explicit = JS null / implicit = JS undefined)
 - Operators
-    - is
-    - **, *, /, //, -, +
+    - is/is not
+    - !=, ==,
+    - and, or, not
+    - **, *, /, //, -, +, %, unary -
+    - |, &, ^, <<, >>
     - =  (bool/int/None) + with annotations
-    - == (bool/int/None)
     - [] (list/tuple[int])
 - Symbols
     - JS global symbols.
@@ -263,9 +257,10 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     - cmp operator : if not defined, reverse change order.
 - Operators:
     - Operations on bool + None (you shouldn't do it anyway).
-    - bit operations (not common)
     - Operations on bytes (not common)
     - unary + (not common)
+    - or/and/not on classes
+        -> (__bool__() ?? __len__())
 
 ### Possible optimizations
 

@@ -82,7 +82,7 @@
 *
 
 # numbers.issue 1127
-// bitwise op
+// override bitwise op
 *
 
 # numbers.issue 1234
@@ -98,7 +98,7 @@
 *
 
 # numbers.issue 1462
-// bit operator
+// &=, |=
 *
 
 # numbers.issue 1298
@@ -219,7 +219,7 @@
 *
 
 # numbers.issue
-// f-string + bit operations
+// f-strings
 *
 
 # numbers.issue 2396
@@ -243,9 +243,6 @@
 # basic test suite.numbers
 // +=
 17
-
-# basic test suite.bitwise operators
-*
 
 # basic test suite.not sure how to convert this to assert (raise)?
 // raise

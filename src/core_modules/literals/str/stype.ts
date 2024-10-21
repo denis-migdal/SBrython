@@ -1,9 +1,12 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, GenEqOperator, Int2Float } from "structs/BinaryOperators";
+import { binary_jsop, GenBinaryOperator, GenCmpOperator, GenEqOperator, Int2Float } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_str = {
+    ...GenCmpOperator({
+       supported_types: ['str'] 
+    }),
     ...GenBinaryOperator('mul', {
         return_type: {'int': 'str'},
         convert: (a) => Int2Float(a),

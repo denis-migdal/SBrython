@@ -35,6 +35,19 @@ export const bname2pyname = {
     "IsNot"   : "is not",
     "Eq"      : "__eq__",
     "NotEq"   : "__ne__",
+
+    "Gt"      : "__gt__",
+    "GtE"     : "__ge__",
+    "Lt"      : "__lt__",
+    "LtE"     : "__le__",
+
+    "Invert"  : "__not__",
+
+    "BitOr"   : "__or__",
+    "BitXor"  : "__xor__",
+    "BitAnd"  : "__and__",
+    "RShift"  : "__rshift__",
+    "LShift"  : "__lshift__",
 }
 
 export const BinaryOperators = {
@@ -48,7 +61,19 @@ export const BinaryOperators = {
     '__sub__'    : '__rsub__',
 
     '__eq__'     : '__eq__',
-    '__ne__'     : '__ne__'
+    '__ne__'     : '__ne__',
+
+    '__lt__'     : '__gt__',
+    '__gt__'     : '__lt__',
+    '__le__'     : '__ge__',
+    '__ge__'     : '__le__',
+
+    '__not__'    : '__rnot__',
+    '__or__'     : '__ror__',
+    '__and__'    : '__rand__',
+    '__xor__'    : '__rxor__',
+    '__lshift__' : '__rlshift__',
+    '__rshift__' : '__rrshift__',
 }
 
 // TODO: unary op too...
@@ -59,15 +84,13 @@ export const JSOperators = [
     ['**'], // right to left !
     ['*', '/', '%'], // Python also has //
     ['+', '-'],
-
-    //TODO:
-    ['<<', '>>', '>>>'],
+    ['<<', '>>', '>>>'], //TODO
     ['<', '<=', '>=', '>'],
     ['==', '!=', '===', '!=='],
-    ['&'],
-    ['^'],
-    ['|'],
-    ['&&'],
+    ['&'],  //TODO
+    ['^'],  //TODO
+    ['|'],  //TODO
+    ['&&'], //TODO
     ['||', '??'],
     ['='] /* et tous les dérivés */ // right to left !
     // etc.
@@ -99,10 +122,6 @@ binary
 - floordiv //
 - add/radd
 - sub/rsub
-
-- eq/req
-- ge/le
-- gt/lt
 
 - lshift/rlshift
 - rshift/rrshift
@@ -252,6 +271,61 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
     }
 
     return result;
+}
+
+type GenCmpOperator_Opts = {
+    supported_types: string[],
+};
+
+function _genCmp(op1: string, op2: string) {
+    return (node: ASTNode, self: ASTNode, o: ASTNode, invert_dir: boolean, reversed: boolean) => {
+        
+        let op = op1;
+        if( reversed )
+            invert_dir = ! invert_dir;
+        if( invert_dir )
+            op = op2;
+        return reversed ? binary_jsop(node, o, op, self) : binary_jsop(node, self, op, o);
+    }
+}
+
+export function GenCmpOperator({
+    supported_types
+}: GenCmpOperator_Opts) {
+
+    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
+
+    const xt = _genCmp('<' , '>');
+    const xe = _genCmp('<=', '>=');
+
+    return {
+        __lt__: {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                console.warn("lt", self, o, reversed);
+                return xt(node, self, o, false, reversed);
+            }
+        },
+        __gt__: {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                console.warn("gt", self, o, reversed);
+                return xt(node, self, o, true, reversed);
+            }
+        },
+        __le__: {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                return xe(node, self, o, false, reversed);
+            }
+        },
+        __ge__: {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                return xe(node, self, o, true, reversed);
+            }
+        }
+    }
 }
 
 type GenEqOperator_Opts = {

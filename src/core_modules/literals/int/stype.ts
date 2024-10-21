@@ -1,6 +1,6 @@
 import { ASTNode } from "structs/ASTNode";
 import { binary_jsop, GenBinaryOperator, GenEqOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
-import { STypeObj } from "structs/SType";
+import { SType_NOT_IMPLEMENTED, STypeObj } from "structs/SType";
 
 const SType_int = {
 
@@ -58,6 +58,40 @@ const SType_int = {
         return_type: {'int': 'int'},
         call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
             return binary_jsop(node, a, '-', b);
+        }
+    }),
+    __not__: {
+        return_type: () => 'int',
+        call_substitute: (node: ASTNode, a: ASTNode) => unary_jsop(node, '~', a)
+    },
+    ...GenBinaryOperator('or', {
+        return_type: {'int': 'int'},
+        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            return binary_jsop(node, a, '|', b);
+        }
+    }),
+    ...GenBinaryOperator('xor', {
+        return_type: {'int': 'int'},
+        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            return binary_jsop(node, a, '^', b);
+        }
+    }),
+    ...GenBinaryOperator('and', {
+        return_type: {'int': 'int'},
+        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            return binary_jsop(node, a, '&', b);
+        }
+    }),
+    ...GenBinaryOperator('lshift', {
+        return_type: {'int': 'int'},
+        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            return binary_jsop(node, a, '<<', b);
+        }
+    }),
+    ...GenBinaryOperator('rshift', {
+        return_type: {'int': 'int'},
+        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            return binary_jsop(node, a, '>>', b);
         }
     })
 } satisfies STypeObj;

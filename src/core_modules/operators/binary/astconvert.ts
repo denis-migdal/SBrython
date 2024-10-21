@@ -30,7 +30,7 @@ export default function convert(node: any, context: Context) {
             type   = method.return_type(left.result_type);
 
         if( type === SType_NOT_IMPLEMENTED)
-            throw new Error('NOT IMPLEMENTED!');
+            throw new Error(`${right.result_type} ${op} ${left.result_type} NOT IMPLEMENTED!`);
 
         [left, right] = [right, left];
     }
