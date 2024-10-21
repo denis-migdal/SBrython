@@ -577,18 +577,19 @@ function print_code_node(node, code, type) {
     node.$gui_elems ??= [];
     node.$gui_elems.push( html_bloc );
 
-    let subparts = new Array(node.children.length * 2 + 1);
-    let cursor = node[type].start;
-    let offset = 0;
-
-    let children = node.children.sort( (a,b) => {
+    let children = node.children.filter( (a) => a[type] !== undefined )
+                                .sort( (a,b) => {
         
         if( a[type].start.line === b[type].start.line) {
             return a[type].start.col - b[type].start.col;
         }
 
         return a[type].start.line - b[type].start.line;
-    })
+    });
+
+    let subparts = new Array(children.length * 2 + 1);
+    let cursor = node[type].start;
+    let offset = 0;
 
     for(let i = 0; i < children.length; ++i) {
         const ctype = children[i][type];

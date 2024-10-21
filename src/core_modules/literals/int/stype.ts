@@ -1,9 +1,25 @@
+import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, GenEqOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
-import { SType_NOT_IMPLEMENTED, STypeObj } from "structs/SType";
+import { binary_jsop, GenBinaryOperator, GenEqOperator, id_jsop, Int2Float, name2SType, unary_jsop } from "structs/BinaryOperators";
+import { STypeObj } from "structs/SType";
 
 const SType_int = {
 
+    __init__: {
+        return_type: () => 'int',
+        call_substitute: (node, other) => {
+            const method = name2SType[other.result_type]?.__int__;
+            if( method === undefined )
+                throw new Error(`${other.result_type}.__int__ not defined`);
+            return method.call_substitute(node, other);
+        }
+    },
+    __int__: {
+        return_type: () => 'int',
+        call_substitute(node, self) {
+            return id_jsop(node, self);
+        }
+    },
     ...GenEqOperator({
         supported_types: ["int", "float", "bool"],
         convert     : (a) => Int2Float(a, true),

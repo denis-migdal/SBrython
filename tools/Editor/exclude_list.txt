@@ -126,7 +126,7 @@
 *
 
 # numbers.issue 1328
-// float() + pow + >>/<<
+// float() + pow
 *
 
 # numbers.issue 1330

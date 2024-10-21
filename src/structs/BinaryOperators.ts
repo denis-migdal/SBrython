@@ -99,7 +99,6 @@ export const JSOperators = [
 
 /*
 unary
-- neg (unary -)
 - pos (unary +)
 
 - bool
@@ -117,19 +116,6 @@ unary
 binary
 - pow/rpow
 - divmod/rdivmod
-- mod/rmod
-- mul/rmul
-- floordiv //
-- add/radd
-- sub/rsub
-
-- lshift/rlshift
-- rshift/rrshift
-- and/rand
-- ne/rne
-- or/ror
-- xor/rxor
-- invert/rinvert
 
 class
 - class
@@ -219,6 +205,15 @@ export function multi_jsop(node: ASTNode, op: string, ...values: ASTNode[]) {
     }
 
     return result;
+}
+
+export function id_jsop(node: ASTNode, a: ASTNode) {
+    if(a instanceof ASTNode) {
+        (a as any).parent_op     = (node as any).parent_op;
+        (a as any).parent_op_dir = (node as any).parent_op_dir;
+    }
+
+    return r`${a}`;
 }
 
 export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNode|any, check_priority = true) {

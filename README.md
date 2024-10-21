@@ -63,15 +63,19 @@ Opti:
     -> could precompute when result is false (but side-effets).
 
 -> solution :
+    (1) types cstr (for conversions...)
+        => cstr() => call -> __int__
+
     (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
     (3) temporary variable (+ clean-up: (t=null, x) ).
         [N=2, N=3]
 
-    (5) affectations.
-    (6) globalSpaceFctsSubs.
-    (7) type() [fake py class] / isinstance()
+    (4) affectations.
+        => /!\ += (a chain ?)
+
+    (5) type() [fake py class] / isinstance()
         - mro (+ __isinstance__ / __class__) ?
-    (8) bytes
+    (6) bytes
     (*) fct call/signatures... (! many call signatures !)
     (*) tuple/dict/list/set/etc.
     (*) classes
@@ -159,14 +163,16 @@ Tot (149)
 - << (2)
 
 (??)
-- bool (2)
-- abs() (3)
+- bool() (2)
 - str() (5)
 - float() (7)
+    - infinity() (3)
 - int() (13)
-- pow() (7)
-- infinity() (3)
+
+- abs()    (3)
+- pow()    (7)
 - divmod() (2)
+
 - type(2)
 - isinstance (5)
 - complex (12)
