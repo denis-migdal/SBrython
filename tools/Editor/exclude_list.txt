@@ -9,8 +9,6 @@
 10
 31
 
-// NOT TODO
-
 // assert_raise
 5
 // __class__
@@ -60,20 +58,12 @@
 *
 
 # numbers.PEP 515
-// stange representations
+// strange representations
 *
 
 # numbers.issue 955
 // complex numbers
 *
-
-# numbers.issue 967
-// unary not
-4
-7
-9
-10
-14
 
 # numbers.issue 1001
 // complex numbers
@@ -92,7 +82,7 @@
 *
 
 # numbers.issue 1127
-// boolean op
+// bitwise op
 *
 
 # numbers.issue 1234
@@ -229,7 +219,7 @@
 *
 
 # numbers.issue
-// WTF
+// f-string + bit operations
 *
 
 # numbers.issue 2396
@@ -251,13 +241,10 @@
 
 
 # basic test suite.numbers
-// duplicate ?
-*
+// +=
+17
 
 # basic test suite.bitwise operators
-*
-
-# basic test suite.__neg__
 *
 
 # basic test suite.not sure how to convert this to assert (raise)?
@@ -284,7 +271,7 @@
 *
 
 # basic test suite.functions and methods
-// could work...
+// cmp method + fct return type
 *
 
 # basic test suite.use of "global" in functions
@@ -323,7 +310,7 @@
 *
 
 # basic test suite.issue 1355
-// ?
+// listes en comprehension
 *
 
 # basic test suite.issue 1387
@@ -335,7 +322,7 @@
 *
 
 # basic test suite.issue 1535
-// TF
+// liste en comprehension
 *
 
 # basic test suite.issue 1545
@@ -351,7 +338,7 @@
 *
 
 # basic test suite.issue 1721
-// not <=
+// <=
 *
 
 # basic test suite.issue 1819
@@ -384,11 +371,11 @@
 *
 
 # basic test suite.issue 2134
-// todo
+// break + loop else
 *
 
 # basic test suite.issue 2167
-// ?
+// fct args parsing
 *
 
 # basic test suite.issue 2422
@@ -421,7 +408,7 @@
 *
 
 # numbers.issue 1040
-// bool and number operations
+// bool operations with number
 *
 
 # numbers.issue 1049
@@ -584,3 +571,6 @@
 // assert raise
 *
 
+# basic test suite.Korean
+// deduce fct return type
+*

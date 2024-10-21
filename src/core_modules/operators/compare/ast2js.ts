@@ -19,7 +19,8 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
 
         op     = reversed_operator(op);
         method = name2SType[right.result_type as STypeName]?.[op];
-        type   = method.return_type(left.result_type);
+        if( method !== undefined )
+            type   = method.return_type(left.result_type);
         
         if( type === SType_NOT_IMPLEMENTED) {
             if( op !== '__eq__' && op !== '__ne__' )
@@ -50,11 +51,16 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         const right = this.children[i+1];
 
         if( op === 'is' ) {
-            //TODO: binary_jsop.
-            js += toJS(r`${left} === ${right}`, cursor);
+            js += toJS( binary_jsop(this, left, '===', right), cursor);
+            continue;
+        }
+        if( op === 'is not' ) {
+            js += toJS( binary_jsop(this, left, '!==', right), cursor);
             continue;
         }
 
+        //TODO: chain...
+        
         js += toJS( find_and_call_substitute(this, left, op, right), cursor);
     }
 

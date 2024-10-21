@@ -14,6 +14,9 @@ export default function convert(node: any, context: Context) {
         throw new Error("not implemented");
     }
 
+    if( op === 'not')
+        return new ASTNode(node, "operators.unary", "bool", "not", [ left ] );
+
     let type = SType_NOT_IMPLEMENTED;
     let method = name2SType[left.result_type as STypeName]?.[op];
 

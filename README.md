@@ -4,7 +4,7 @@
 
 Mean speed gain : -19.67% (runtime -40.63%, py2js +3.45%).
 Mean file size gain : -84.85%
-Unit tests : 73/1917 (1844 excluded)
+Unit tests : 102/1909 (1807 excluded)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -60,20 +60,17 @@ Refactor
 #### Operators
 
 Opti:
-    -> facultative conversions (not bigint) ~> asFloat ? [we can duplicate literals.]
-    -> could == put false (but side-effects...)
+    -> could precompute when result is false (but side-effets).
 
 -> solution :
-    (0) operators + reversed while keeping order (keep order).
-        -> + add NoneType.
-    (1) with repeat.
     (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
     (3) temporary variable (+ clean-up: (t=null, x) ).
         [N=2, N=3]
-    (4) affectations
-    (5) or/and/not (global operators)
-        -> only boolean for now (?)
+
+    (4) or/and/not
+        -> int/float/None/bool/str (for now relies on JS ?)
         -> (__bool__() ?? __len__())
+    (5) affectations
     (6) globalSpaceFctsSubs.
     (7) type() [fake py class] / isinstance()
         - mro (+ __isinstance__ / __class__) ?
@@ -133,6 +130,7 @@ Opti:
             -> but solution more complex. (setattr/getattr) with (a+k) in temporary variables...
 -> fcts (subs. in global space)
     -> conversions methods.
+    -> (!!x) for __bool__() ?
     -> float()
         -> infinity
     -> pow()
@@ -183,7 +181,7 @@ Tot (149)
 - assert raise (10)
 
 -> or/and/not
--> </<=/>/>=/==/!=/is not
+-> </<=/>/>=
 -> |, ^, &, <<, >>, ~
 
 -> int()

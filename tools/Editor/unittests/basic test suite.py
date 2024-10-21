@@ -45,6 +45,7 @@ assert 2 << 16 == 131072
 assert 131072 >> 16 == 2
 
 # __neg__
+x = 3
 assert -x == -3
 y = 2.1
 assert -y == -2.1
