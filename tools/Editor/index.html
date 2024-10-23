@@ -128,6 +128,26 @@ const python_output = document.querySelector(".python_ouput");
 const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
 
+python_input.addEventListener('keydown', (ev) => {
+
+if(ev.code === "Tab") {
+        ev.preventDefault();
+
+        let beg = python_input.selectionStart;
+        let end = python_input.selectionEnd;
+
+        const txt = python_input.value;
+        const preText  = txt.slice(0  , beg);
+        const postText = txt.slice(end, txt.length);
+
+        python_input.value = preText + "    " + postText; // input tab key
+        
+        const pos = beg+4;
+        python_input.setSelectionRange(pos, pos);
+    }
+});
+
+
 const sbrython_output = document.querySelector(".output_sbrython");
 const  brython_output = document.querySelector(".output_brython");
 
@@ -209,6 +229,7 @@ function executeBrython(code) {
         times[2] = globalThis.performance.now();
         fct();
         times[3] = globalThis.performance.now();
+
     } catch(e) {
         console.error(e);
         error = e;
@@ -408,7 +429,7 @@ function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
     sbrython_output.replaceChildren(
         ...sbrython_result,
 `${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
-**Executed in    : ${tdiff(times, 4, 0)}**
+**Executed in    : ${tsdiff(times, 4, 0)}**
     **Runtime    : ${tsdiff(times, 5, 3)}**
         **genFct : ${tsdiff(times, 4, 3)}**
         **exeFct : ${tsdiff(times, 5, 4)}**
@@ -754,6 +775,7 @@ if( window.location.search === '')
 
         let total = 0;
         let excluded_count = 0;
+        let nb_suites = 0;
 
         let tests_names  = [test_name];
         if( test_name === 'all' || 'brython')
@@ -834,6 +856,7 @@ if( window.location.search === '')
                 if(code_len === nbExcluded)
                     continue;
 
+                ++nb_suites;
 
                 //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
         
@@ -872,7 +895,7 @@ if( window.location.search === '')
 
         result_sbrython.textContent = 
 `Status         : ${error ? 'FAILED' : 'SUCCESS'}
-Tested         : ${total-excluded_count}/${total} (${excluded_count} excluded)
+Tested         : ${total-excluded_count}/${total} (${excluded_count} excluded) [${nb_suites}]
 Code size      : ${code_size} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})
 Executed in    : ${tsdiff(sbtimes, 4, 0)} (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
     Runtime    : ${tsdiff(sbtimes, 5, 3)} (${rdiff(tdiff(btimes, 3, 1), tdiff(sbtimes, 4, 3))})
@@ -881,7 +904,7 @@ Executed in    : ${tsdiff(sbtimes, 4, 0)} (${rdiff(tdiff(btimes, 2, 0), tdiff(sb
     Py2JS      : ${tsdiff(sbtimes, 3, 0)} (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
         Py2AST : ${tsdiff(sbtimes, 1, 0)}
         ASTConv: ${tsdiff(sbtimes, 2, 1)}
-        AST2JS : ${tsdiff(sbtimes, 3, 2)}`
+        AST2JS : ${tsdiff(sbtimes, 3, 2)} (${rdiff(tdiff(btimes, 1, 0) - tdiff(sbtimes, 1, 0), tdiff(sbtimes, 3, 2))})`
 
     result_sbrython.classList.add('success');
 

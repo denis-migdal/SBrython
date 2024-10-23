@@ -8,15 +8,14 @@ export default {
         return --result;
     },
     mod_real: <T>(a: number, b: number) => {
-        // @ts-ignore
-        return (a%b)+b*(a < 0 !== b < 0);
+
+        const mod = (a % b + b) % b;
+        if( mod === 0 && b < 0 )
+            return -0;
+        return mod;
     },
     mod_int: <T>(a: bigint, b: bigint) => {
 
-        if( a < 0 !== b < 0)
-            return (a%b)+b;
-
-        // @ts-ignore
-        return a%b;
+        return (a % b + b) % b;
     }
 }

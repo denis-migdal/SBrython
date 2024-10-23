@@ -4,16 +4,16 @@
 
 ```
 Status         : SUCCESS
-Tested         : 96/1909 (1813 excluded)
+Tested         : 96/1909 (1813 excluded) [15]
 Code size      :          (x 6.53/-84.68%)
-Executed in    : 46.560ms (x 1.16/-13.97%)
-    Runtime    :  5.520ms (x 1.91/-47.53%)
-        genFct :  5.100ms (x 1.18/-15.28%)
-        exeFct :  0.420ms (x 8.81/-88.65%)
-    Py2JS      : 41.460ms (x 1.16/-13.80%)
-        Py2AST : 35.560ms
-        ASTConv:  3.140ms
-        AST2JS :  2.760ms
+Executed in    : 37.520ms (x 1.16/-13.43%)
+    Runtime    :  4.380ms (x 1.94/-48.50%)
+        genFct :  4.120ms (x 1.20/-16.60%)
+        exeFct :  0.260ms (x11.77/-91.50%)
+    Py2JS      : 33.400ms (x 1.15/-13.02%)
+        Py2AST : 28.340ms
+        ASTConv:  2.640ms
+        AST2JS :  2.420ms (x 4.16/-75.94%)
 ```
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
@@ -69,37 +69,14 @@ Refactor
 
 #### Operators
 
-    // done
-        // fix unit test system bugs...
-            // stats : = instead of +=...
-            // split between string to JS and JS exec.
-            // Values for only 96 lines : TOO MUCH !
-            // -> real value maybe lower : cost for performances.now().
-            // -> many fcts (maybe only one would be faster)
-            //  -> in reality, repetition, fct calls/loops/etc.
-                // Conversion, can be improve, but else AoT => gen+conversion removed.
-                // own AST + better structs when available. [only require to be smaller than genFct]
-                    // BUT VERY slow
-            // compare brython/sbrython results : wasn't putting false if diff lines.
-            // assert equals => gives the lines
-            // lines : count the comments...
-            // was adding an import (write)
-        // Bugs
-            // % (one of them negative)
-                // (a%b)+b*(a < 0 !== b < 0);
-            // // on negative numbers...
-            // priority of unary -
-
     //TODO
-        // stats : runtime => toJS + execute.
         // % on float
             // -> binaryJSOps with substitute (remove %=)
         // bitwise op...
             // requires canX system...
             // false if ^=...
             // ~ is missing (int) [invert] (unary)
-        // +=1/-=1 special rule ?
-            // +1 / -1
+        // +=1/-=1 ++i/--i rule ?
         // add for other types
         // redo cmp op and unary op ?
             // Eq -> same type use default ? [special rule in default]
@@ -346,6 +323,8 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 - pre-compute operations on literals.
 - Write own Py2AST parser.
 - Replace ASTNode by a struct (when introduced in JS) / avoid allocations.
+
++ cf https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/ftPUn9LMAAAJ
 
 ## Currently Working on...
 
