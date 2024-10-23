@@ -1,7 +1,8 @@
 import { r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
-import { binary_jsop, Int2Float, name2SType, reversed_operator } from "structs/BinaryOperators";
+import { binary_jsop, Int2Float, reversed_operator } from "structs/BinaryOperators";
 import { SType_NOT_IMPLEMENTED } from "structs/SType";
+import { name2SType } from "structs/STypes";
 
 
 function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right: ASTNode) {
@@ -11,7 +12,7 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
     const ltype = left.result_type;
 
     let type = SType_NOT_IMPLEMENTED;
-    let method = name2SType[left.result_type as STypeName]?.[op];
+    let method = name2SType(left.result_type)?.[op];
     if( method !== undefined )
         type = method.return_type(right.result_type!);
 
@@ -28,7 +29,7 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
 
             const jsop = op === '__eq__' ? '===' : '!==';
 
-            return binary_jsop(node, Int2Float(left, true), jsop, Int2Float(right, true));
+            return binary_jsop(node, left, jsop, right);
         }
 
         reversed = true;

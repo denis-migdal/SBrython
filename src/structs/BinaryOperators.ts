@@ -1,21 +1,6 @@
 import { r } from "ast2js";
 import { ASTNode } from "./ASTNode";
-import { SType_NOT_IMPLEMENTED, STypeFctSubs, STypeObj } from "./SType";
-
-import SType_float from "core_modules/literals/float/stype";
-import SType_int from "core_modules/literals/int/stype";
-import SType_str from "core_modules/literals/str/stype";
-import SType_None from "core_modules/literals/None/stype";
-import SType_bool from "core_modules/literals/bool/stype";
-
-export const name2SType = {
-    "float"   : SType_float,
-    "int"     : SType_int,
-    "bool"    : SType_bool,
-    "str"     : SType_str,
-    "NoneType": SType_None
-}
-export type STypeName = keyof typeof name2SType;
+import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "./SType";
 
 export const bname2pyname = {
     "USub": "__neg__",
@@ -76,6 +61,41 @@ export const BinaryOperators = {
     '__rshift__' : '__rrshift__',
 }
 
+export const AssignOperators = {
+    '__pow__'     : '__ipow__',
+    '__mul__'     : '__imul__',
+    '__truediv__' : '__itruediv__',
+    '__floordiv__': '__ifloordiv__',
+    '__mod__'     : '__imod__',
+
+    '__add__'    : '__iadd__',
+    '__sub__'    : '__isub__',
+
+    '__or__'     : '__ior__',
+    '__and__'    : '__iand__',
+    '__xor__'    : '__ixor__',
+    '__lshift__' : '__ilshift__',
+    '__rshift__' : '__irshift__',
+}
+
+
+export const jsop2pyop = {
+    '**': 'pow',
+    '*' : 'mul',
+    '/' : 'truediv',
+    '//': 'floordiv',
+    '%' : 'mod',
+    
+    '+' : 'add',
+    '-' : 'sub',
+    
+    '|' : 'or',
+    '&' : 'and',
+    '^' : 'xor',
+    '<<': 'lshift',
+    '>>': 'rshift'
+};
+
 // TODO: unary op too...
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
@@ -96,6 +116,116 @@ export const JSOperators = [
     // etc.
 ];
 
+/*
+https://docs.python.org/3/library/functions.html#callable
+
+-> classes
+bool()
+float()
+int()
+str()
+bytearray() [Uint8Array] (RW)
+bytes()     [?]          (RO) <- no types in JS...
+                              <- Uint8Array with flag ? freeze() [JS unsafe]
+            b"e\xFF" instead of [101,101], etc. (32 <= byt <= 126)
+type()
+list()      [Array]
+tuple()     [Object.frozen(Array)]
+
+set()       // relies on hash()... => set[literals]
+                            => set() / <- JS set.
+                       => bytes/bytearray/etc.
+                            => inherit Set()
+                                => Internal keys() set [recompute hash when add/remove]
+                                  or
+                                => internally stored as Map(hash, value) (?)
+frozenset()            => extends set to replace modifiers.
+
+dict()
+                        dict[str] as Object.create(null) + (and pure JSObj as dict[str] )
+                        => inherit Map()
+                            => Set(hash) / Map(hash, key) / Map(key, hash) ???
+                                // get/set.
+                            => Map(key, value)
+
+object()
+complex()
+memoryview()            => ArrayBuffer ?
+
+-> print
+ascii()
+bin()
+hex()
+oct()
+repr()
+hash()
+
+-> maths
+abs()
+divmod()
+pow()
+round()
+
+-> lists
+all()
+any()
+filter()
+map()
+max()
+min()
+sum()
+len()
+enumerate()
+reversed()
+slice()
+sorted()
+zip()
+
+-> iter
+range()
+aiter()
+iter()
+anext()
+next()
+
+-> str
+ord()
+chr()
+format()
+print()
+f""
+
+callable()
+classmethod()
+staticmethod()
+property()
+super()
+isinstance()
+issubclass()
+delattr()
+getattr()
+hasattr()
+setattr()
+dir()
+
+eval()
+exec()
+compile()
+breakpoint()
+
+globals()
+locals()
+vars()
+__import__()
+
+id()
+    -> on-demand weakref ?
+
+help()
+input()
+open()
+
+*/
 
 /*
 unary
@@ -140,8 +270,11 @@ class
 
 export function Int2Float(a: ASTNode, optional = false) {
 
+    //TODO canBeFloat + etc.
+
     if( a.type === 'literals.int') {
-        (a as any).asFloat = true;
+        (a as any).asFloat      = true;
+        (a as any).asFloatIsOpt = optional;
         return a;
     }
     if( optional )
@@ -265,6 +398,66 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
             result = r`(${result})`;
     }
 
+    return result;
+}
+
+function genDefaultJSUnaries() {
+
+}
+
+function genDefaultJSCmps() {
+
+}
+
+type GenBinaryOps_Opts = {
+    convert_other?: Record<string, string>
+};
+
+
+function generateConvert(convert: Record<string, string>) {
+    return (node: ASTNode) => {
+        const target = convert[node.result_type!];
+        if( target === undefined )
+            return node;
+
+        //TODO: other types
+        //TODO: use __x__ operators ?
+        return Int2Float(node);
+    };
+}
+
+export function genBinaryOps(ret_type: string, ops: (keyof typeof jsop2pyop)[], other_type: string[], 
+                         {
+                            convert_other = {}
+                         }: GenBinaryOps_Opts = {}) {
+
+    let result: Record<string, STypeFctSubs> = {};
+
+    const return_type = (o: string) => other_type.includes(o) ? ret_type : SType_NOT_IMPLEMENTED;
+    const conv_other  = generateConvert(convert_other);
+
+    for(let op of ops) {
+        const pyop = jsop2pyop[op];
+        result[`__${pyop}__`] = {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                return binary_jsop(node, self, op, conv_other(other) );
+            },
+        };
+        result[`__r${pyop}__`] = {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                return binary_jsop(node, conv_other(other), op, self);
+            },
+        };
+        result[`__i${pyop}__`] = {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                return binary_jsop(node, self, op+'=', conv_other(other) );
+            },
+        };
+    }
+    
     return result;
 }
 

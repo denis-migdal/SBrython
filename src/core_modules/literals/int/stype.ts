@@ -1,14 +1,15 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, GenEqOperator, id_jsop, Int2Float, name2SType, unary_jsop } from "structs/BinaryOperators";
+import { binary_jsop, GenBinaryOperator, GenEqOperator, id_jsop, Int2Float, unary_jsop } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
+import { name2SType } from "structs/STypes";
 
 const SType_int = {
 
     __init__: {
         return_type: () => 'int',
         call_substitute: (node, other) => {
-            const method = name2SType[other.result_type]?.__int__;
+            const method = name2SType(other.result_type)?.__int__;
             if( method === undefined )
                 throw new Error(`${other.result_type}.__int__ not defined`);
             return method.call_substitute(node, other);
@@ -55,7 +56,7 @@ const SType_int = {
     ...GenBinaryOperator('floordiv', {
         return_type: {'int': 'int'},
         call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '/', b);
+            return r`_b_.floordiv(${a},${b})`; // binary_jsop(node, a, '/', b);
         }
     }),
     ...GenBinaryOperator('mod', {

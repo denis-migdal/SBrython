@@ -1,7 +1,8 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { SType_NOT_IMPLEMENTED } from "structs/SType";
-import { bname2pyname, name2SType } from "structs/BinaryOperators";
+import { bname2pyname } from "structs/BinaryOperators";
+import { name2SType } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
@@ -18,7 +19,7 @@ export default function convert(node: any, context: Context) {
         return new ASTNode(node, "operators.unary", "bool", "not", [ left ] );
 
     let type = SType_NOT_IMPLEMENTED;
-    let method = name2SType[left.result_type as STypeName]?.[op];
+    let method = name2SType(left.result_type as STypeName)?.[op];
 
     if( method !== undefined )
         type = method.return_type();

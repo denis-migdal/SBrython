@@ -182,6 +182,7 @@ function executeBrython(code) {
         output.push([txt, new Error().stack]);
     };
 
+    let error = null;
     let jscode = '';
     let times = new Array(3).fill(NaN);
     try {
@@ -208,7 +209,8 @@ function executeBrython(code) {
         fct();
         times[2] = globalThis.performance.now();
     } catch(e) {
-        console.error(e); //TODO
+        console.error(e);
+        error = e;
     }
 
     return {
@@ -216,7 +218,8 @@ function executeBrython(code) {
         times,
         //ast,
         jscode,
-        pycode: code
+        pycode: code,
+        error
     };
 }
 
@@ -262,7 +265,14 @@ function executeSBrython(code) {
         jscode = ast2js(ast);
         times[3] = globalThis.performance.now();
         sb = new SBrython();
-        sb._b_.assert = (cond) => { if( ! cond ) output.push(["[Assertion failed]", new Error().stack]); };
+        sb._b_.assert = (cond) => { if( ! cond ) {
+            const stack = new Error().stack;
+
+            const stackline = parse_stack(stack, sb)[0];
+            const node = stackline2astnode(stackline, sb);
+
+            output.push([`[Assertion failed as line ${node.pycode.start.line}]`, stack]);
+        } };
         sb.runJSCode(jscode, ast);
         times[4] = globalThis.performance.now();
     } catch(e) {
@@ -290,12 +300,14 @@ function areOutputEquals(brython_result, sbrython_result, lines) {
         && value.__class__.__qualname__ === "NoneType";
     }
 
-    let max_id = Math.max(brython_result.length, sbrython_result.length)
+    let max_id = Math.max(brython_result.length, sbrython_result.length);
+
     for(let i = 0; i < max_id; ++i) {
 
         lines[i] = true;
         if( i >= brython_result.length || i >= sbrython_result.length ) {
             lines[i] = false;
+            equals   = false;
             continue;
         }
         
@@ -331,7 +343,7 @@ function execute(code) {
     const sbrython= executeSBrython(code);
 
     const lines_equals = [];
-    const success = sbrython.error === null && areOutputEquals(brython.output, sbrython.output, lines_equals);
+    const success = areOutputEquals(brython.output, sbrython.output, lines_equals) && brython.error === null && sbrython.error === null;
 
     return {
          brython,
@@ -404,7 +416,7 @@ function updateFromResults(results) {
     const {sbrython, brython} = results;
 
     // code...
-    python_input.textContent = sbrython.pycode;
+    // python_input.value = sbrython.pycode;
 
     // SBrython
     const sbrython_results = updateSBrythonFromResults(sbrython);
@@ -430,6 +442,8 @@ function updateFromResults(results) {
 }
 
 function clearResults() {
+
+    //python_input.value = "";
 
     sbrython_output.textContent = "";
      brython_output.textContent = "";
@@ -475,8 +489,12 @@ function print_errors({success, sbrython, lines_equals}, brython_result, sbrytho
         }
 
         const line_class = lines_equals[i] ? "success" : "error";
-        sbrython_result[i].classList.add(line_class);
-         brython_result[i].classList.add(line_class);
+
+        if( i < sbrython_result.length )
+            sbrython_result[i].classList.add(line_class);
+
+        if( i <  brython_result.length )
+             brython_result[i].classList.add(line_class);
     }
 
     sbrython_output.classList.add(success ? "success" : "error");
@@ -666,12 +684,13 @@ if( window.location.search === '')
         stats. brython.code_len += result. brython.jscode.length;
         stats.sbrython.code_len += result.sbrython.jscode.length;
 
-        for(let i = 1; i < stats.brython.times.length; ++i)
-            stats.brython.times[i] = result.brython.times[i] - result.brython.times[0];
-        
-        for(let i = 1; i < stats.sbrython.times.length; ++i)
-            stats.sbrython.times[i] = result.sbrython.times[i] - result.sbrython.times[0];
+        for(let i = 1; i < stats.brython.times.length; ++i) {
+            stats.brython.times[i] += result.brython.times[i] - result.brython.times[0];
+        }
 
+        for(let i = 1; i < stats.sbrython.times.length; ++i){
+            stats.sbrython.times[i] += result.sbrython.times[i] - result.sbrython.times[0];
+        }
         return result
     }
 
@@ -816,10 +835,17 @@ if( window.location.search === '')
 
         if(error) {
             window.updateFromResults(lastResults);
+
+            const python_input = document.querySelector('#python');
+            python_input.value = lastResults.sbrython.pycode;
+
             return;
         }
         // if( error )
 
+        const python_input = document.querySelector('#python');
+        python_input.value = "";
+        
         const result_sbrython = document.querySelector('.output_sbrython');
         const result_brython  = document.querySelector('.output_brython');
 

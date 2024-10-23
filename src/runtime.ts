@@ -27,7 +27,7 @@ export class SBrython {
         //TODO: filename 2 modulename.
         this.#registered_AST[ast.filename] = ast;
 
-        console.log(jscode);
+        //console.log(jscode);
         const js_fct = new Function("__SBRYTHON__", `${jscode}\nreturn __exported__;`);
         this.#exported[ast.filename] = js_fct(this);
     }

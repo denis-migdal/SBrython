@@ -2,9 +2,9 @@
 
 ## Status
 
-Mean speed gain : -19.67% (runtime -40.63%, py2js +3.45%).
-Mean file size gain : -84.85%
-Unit tests : 102/1909 (1807 excluded)
+Mean speed gain : -23.43% (runtime -40.75%, py2js -14.14%).
+Mean file size gain : -84.62%
+Unit tests : 95/1911 (1816 excluded)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -59,40 +59,70 @@ Refactor
 
 #### Operators
 
-Opti:
-    -> could precompute when result is false (but side-effets).
+    // stats : = instead of +=...
+    // + cmp results...
+    // assert equals => gives the wrong result = better
 
--> solution :
-    (1) types cstr (for conversions...)
-        => cstr() => call -> __int__
+    //...
 
-    (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
-    (3) temporary variable (+ clean-up: (t=null, x) ).
-        [N=2, N=3]
+    //TODO: bug unary priority...
 
-    (4) affectations.
-        => /!\ += (a chain ?)
+    //TODO: add other JSBinop
+    //TODO: add for other types
+    //TODO: redo cmp op and unary op ?
+
+    (2) Affectation system (auto-generate operators)
+        => addDefaultOperator()
+                -> /!\ cmp op. (==)/(===) -> return true [int convert?]
+                -> /!\ unary op (?) [keep like that for now ?]
+            => //= (?)
+            => // iadd / imul / ixxx operators !!!
+        => default += (=> = (a+b)) (can't do += by default)
+            => /!\ += repeat a.
+    (0) -> canBeFloat() on ASTNode + on operators + requestOptiInt(true/false) [or whatever ?]
+    (1) Compare int/float/bool -> requestOptiInt / int2Float() (internally request).
+    (3) constructors
+    (4) type() / isinstance()
+    (5) other types
+
+    (0) bytes type vs bytearray !!!
+        -> Uint8Array() => bytes.
+            .from([0xFF, 0xFF]) is faster
+                => if 32<= <=126 ~> normal str else hex
+                => even more faster:
+                function b(str) {
+                    str = str[0];
+                    const result = new Uint8Array(str.length);
+                    for(let i = 0; i < result.length; ++i)
+                        result[i] = str.codePointAt(i);
+                    return result;
+                }
+        -> number converted to BigInt during conversions... <- but can accept asFloat.
+
+    (1) Compare operators
+        (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
+        (3) temporary variable (+ clean-up: (t=null, x) ).
+            [N=2, N=3]
 
     (5) type() [fake py class] / isinstance()
         - mro (+ __isinstance__ / __class__) ?
-    (6) bytes
+        https://docs.python.org/3/library/functions.html
     (*) fct call/signatures... (! many call signatures !)
     (*) tuple/dict/list/set/etc.
     (*) classes
     (*) Brython interactions.
 
--> not the generic case (later) -> we know how to do it (Brython), later, avoid as much as possible.
+-> asFloat => (>> & ^ | ~) ? => BigInt(asFloat(a) & asFloat(b) ).
+    => operators.canBeFloat()
+        => Node.canBeFloat()
+            => if Int2Float() and canBeFloat() => enforce float.
 -> other operators...
-    -> subs. can't inherit base types
-        -> option to enable.
-        -> perform some if literal left-side.
     -> compare
         -> comparison chains...
             -> clean at the end (garbage collection...)
                 -> r = (), _r_.t.length = 0, r
                 -> do we care ?
             -> 1 < 2 < 3
-            -> $B.rich_comp('__lt__', 1, locals.$op = 2) && $B.rich_comp('__lt__', locals.$op, locals.$op = 3)
                     -> op, a, b => a, op, b + use symbol.
                     -> last locals.$op unnecessary.
                         -> clean it for gc ? (locals.$op= null, 3)
@@ -115,12 +145,9 @@ Opti:
                             -> what should we do ?
                             -> limit to N operations (?)
                             -> osef ? (rare + gain not much ?)
-                    -> reversed operator
-                        - a > b <= b < a.
-                        - execution order + requires to alternate between t1 t2 (N>=4)...
-                        -> an option in substitution __ge__ -> __rge__ / __le__.
     -> and/or/not
     -> += (a = a + b)
+        => Auto convert some operators ?
         // locals_exec.a = $B.augm_assign(locals_exec.a, '+=', 1)
         // $B.$setitem((locals.$tg = locals_exec.a), (locals.$key = 'a'), $B.augm_assign($B.$getitem(locals.$tg, locals.$key), '+=', 1))
             // setattr + getattr.
@@ -260,14 +287,15 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 - Operation order guaranteed:
     - 3*"e" <= change order.
-    - cmp operator : if not defined, reverse change order.
 - Operators:
     - Operations on bool + None (you shouldn't do it anyway).
     - Operations on bytes (not common)
     - unary + (not common)
     - or/and/not on classes
         -> (__bool__() ?? __len__())
-
+    - redefined operators on inherited literals.
+        -> substitutions only possible if left-side literal.
+    
 ### Possible optimizations
 
 - pre-compute operations on literals.

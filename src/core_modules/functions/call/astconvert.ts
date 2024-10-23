@@ -1,11 +1,11 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { name2SType } from "structs/BinaryOperators";
+import { name2SType } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
     //TODO: can be better
-    const klass = name2SType[node.func.id];
+    const klass = name2SType(node.func.id);
     let type = null;
     if( klass !== undefined )
         type = klass.__init__.return_type();

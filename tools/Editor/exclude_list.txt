@@ -1,7 +1,4 @@
 # numbers.numbers
-
-//TODO
-
 // is instance
 9
 30
@@ -239,10 +236,18 @@
 // multi-inheritance
 28-45
 
+# numbers.issue 967
+// bool cmp
+*
+
+# numbers.issue 1338
+// % behavior...
+*
 
 # basic test suite.numbers
 // +=
 17
+18
 
 # basic test suite.not sure how to convert this to assert (raise)?
 // raise

@@ -1,21 +1,15 @@
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { toJS } from "ast2js";
+import { ASTNode, CodePos } from "structs/ASTNode";
+import { AssignOperators, reversed_operator } from "structs/BinaryOperators";
 import { SType_NOT_IMPLEMENTED } from "structs/SType";
-import { bname2pyname, reversed_operator } from "structs/BinaryOperators";
 import { name2SType } from "structs/STypes";
 
-export default function convert(node: any, context: Context) {
+export default function ast2js(this: ASTNode, cursor: CodePos) {
 
-    let left  = convert_node(node.left , context );
-    let right = convert_node(node.right, context);
+    let left  = this.children[0];
+    let right = this.children[1];
 
-    let op = bname2pyname[node.op.constructor.$name];
-
-    if( op === undefined) {
-        console.warn("OP", node.op.constructor.$name);
-        throw new Error("not implemented");
-    }        
-
+    let op = AssignOperators[this.value];
 
     let type = SType_NOT_IMPLEMENTED;
     let method = name2SType(left.result_type as STypeName)?.[op];
@@ -23,8 +17,10 @@ export default function convert(node: any, context: Context) {
     if( method !== undefined )
         type = method.return_type(right.result_type!);
 
-    // try reversed operator
+    // try a = a + b
     if( type === SType_NOT_IMPLEMENTED) {
+        throw new Error(`${right.result_type} ${op}= ${left.result_type} NOT IMPLEMENTED!`);
+        /*
         op     = reversed_operator(op);
         method = name2SType(right.result_type as STypeName)?.[op];
         if( method !== undefined)
@@ -34,14 +30,8 @@ export default function convert(node: any, context: Context) {
             throw new Error(`${right.result_type} ${op} ${left.result_type} NOT IMPLEMENTED!`);
 
         [left, right] = [right, left];
+        */
     }
 
-    return new ASTNode(node, "operators.binary", type, op,
-        [
-            left,
-            right
-        ]
-    );
+    return toJS( method.call_substitute(this, left, right), cursor);
 }
-
-convert.brython_name = ["BinOp"];
