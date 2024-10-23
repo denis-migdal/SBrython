@@ -70,6 +70,13 @@ Refactor
     // done
         // fix unit test system bugs...
             // stats : = instead of +=...
+            // split between string to JS and JS exec.
+            // Values for only 96 lines : TOO MUCH !
+            // -> real value maybe lower : cost for performances.now().
+            // -> many fcts (maybe only one would be faster)
+            //  -> in reality, repetition, fct calls/loops/etc.
+                // Conversion, can be improve, but else AoT => gen+conversion removed.
+                // own AST + better structs when available. [only require to be smaller than genFct]
             // compare brython/sbrython results : wasn't putting false if diff lines.
             // assert equals => gives the lines
             // lines : count the comments...

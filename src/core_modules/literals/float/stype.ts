@@ -23,7 +23,9 @@ const SType_float = {
                         convert_other: {'int': 'float'}
                     }
     ),
-    //TODO... => substitute_call => no *= ?
+    //TODO %
+    //TODO...
+    // => substitute_call => no *= ?
     ...GenBinaryOperator('floordiv', {
         return_type: {'int': 'int', 'float': 'int'},
         convert: (a) => a.result_type === 'int' ? Int2Float(a) : a,

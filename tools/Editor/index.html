@@ -818,9 +818,18 @@ if( window.location.search === '')
                     if(code[i].trim() === '')
                         ++nbEmptyLines;
 
-                total += code.length - 1 - nbEmptyLines;
+                let code_len = code.length - 1 - nbEmptyLines;
+
+                let nbExcluded = 0;
                 for(let i = 1; i < code.length; ++i)
-                    excluded_count += code[i][0] === '#';
+                    nbExcluded += code[i][0] === '#';
+
+                total          += code_len;
+                excluded_count += nbExcluded;
+
+                if(code_len === nbExcluded)
+                    continue;
+
 
                 //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
         
