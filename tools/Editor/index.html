@@ -356,8 +356,11 @@ function execute(code) {
     };
 }
 
+function tsdiff(times, a, b) {
+    return (times[a]-times[b]).toFixed(3).padStart(6) + "ms";
+}
 function tdiff(times, a, b) {
-    return (times[a]-times[b]).toFixed(3);
+    return times[a]-times[b];
 }
 
 function updateBrythonFromResults({pycode, output, times, jscode}) {
@@ -373,11 +376,11 @@ function updateBrythonFromResults({pycode, output, times, jscode}) {
     brython_output.replaceChildren(
             ...brython_result,
 `**code size   ${rdiff(pycode.length, jscode.length)}**
-**Executed in: ${tdiff(times, 2, 0)}ms**
-    **Runtime: ${tdiff(times, 3, 1)}ms**
-        **genFct: ${tdiff(times, 2, 1)}ms**
-        **exeFct: ${tdiff(times, 3, 2)}ms**
-    **Py2JS  : ${tdiff(times, 1, 0)}ms**`
+**Executed in: ${tsdiff(times, 2, 0)}**
+    **Runtime: ${tsdiff(times, 3, 1)}**
+        **genFct: ${tsdiff(times, 2, 1)}**
+        **exeFct: ${tsdiff(times, 3, 2)}**
+    **Py2JS  : ${tsdiff(times, 1, 0)}**`
     );
 
     return brython_result;
@@ -385,7 +388,7 @@ function updateBrythonFromResults({pycode, output, times, jscode}) {
 
 function rdiff(js, py) {
     const nb = (100 * py / js - 100).toFixed(2);
-    return `${nb > 0 ? '+' : ''}${nb}%`;
+    return `x${(js/py).toFixed(2).padStart(5)}/${nb > 0 ? '+' : ''}${nb.padStart(5)}%`;
 }
 
 function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
@@ -405,14 +408,14 @@ function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
     sbrython_output.replaceChildren(
         ...sbrython_result,
 `${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
-**Executed in: ${tdiff(times, 4, 0)}ms**
-    **Runtime: ${tdiff(times, 5, 3)}ms**
-        **genFct: ${tdiff(times, 4, 3)}ms**
-        **exeFct: ${tdiff(times, 5, 4)}ms**
-    **Py2JS  : ${tdiff(times, 3, 0)}ms**
-        **Py2AST : ${tdiff(times, 1, 0)}ms**
-        **ASTConv: ${tdiff(times, 2, 1)}ms**
-        **AST2JS : ${tdiff(times, 3, 2)}ms**`
+**Executed in    : ${tdiff(times, 4, 0)}**
+    **Runtime    : ${tsdiff(times, 5, 3)}**
+        **genFct : ${tsdiff(times, 4, 3)}**
+        **exeFct : ${tsdiff(times, 5, 4)}**
+    **Py2JS      : ${tsdiff(times, 3, 0)}**
+        **Py2AST : ${tsdiff(times, 1, 0)}**
+        **ASTConv: ${tsdiff(times, 2, 1)}**
+        **AST2JS : ${tsdiff(times, 3, 2)}**`
         );
 
     return sbrython_result;
@@ -472,8 +475,9 @@ function update() {
     updateFromResults(result);
 }
 
-window.tdiff = tdiff;
 window.rdiff = rdiff;
+window.tdiff = tdiff;
+window.tsdiff= tsdiff;
 window.execute = execute;
 window.clearResults = clearResults;
 window.updateFromResults = updateFromResults;
@@ -864,28 +868,30 @@ if( window.location.search === '')
         const btimes = stats.brython.times;
         const sbtimes = stats.sbrython.times;
 
+        const code_size = false ? rdiff(stats.code_len, stats.sbrython.code_len) : '        ';
+
         result_sbrython.textContent = 
-`Status     : ${error ? 'FAILED' : 'SUCCESS'}
-Tested     : ${total-excluded_count}/${total} (${excluded_count} excluded)
-Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
-Executed in: ${tdiff(sbtimes, 4, 0)}ms (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
-    Runtime: ${tdiff(sbtimes, 5, 3)}ms (${rdiff(tdiff(btimes, 3, 1), tdiff(sbtimes, 4, 3))})
-        genFct: ${tdiff(sbtimes, 4, 3)}ms (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
-        exeFct: ${tdiff(sbtimes, 5, 4)}ms (${rdiff(tdiff(btimes, 3, 2), tdiff(sbtimes, 5, 4))})
-    Py2JS  : ${tdiff(sbtimes, 3, 0)}ms (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
-        Py2AST : ${tdiff(sbtimes, 1, 0)}ms
-        ASTConv: ${tdiff(sbtimes, 2, 1)}ms
-        AST2JS : ${tdiff(sbtimes, 3, 2)}ms`
+`Status         : ${error ? 'FAILED' : 'SUCCESS'}
+Tested         : ${total-excluded_count}/${total} (${excluded_count} excluded)
+Code size      : ${code_size} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})
+Executed in    : ${tsdiff(sbtimes, 4, 0)} (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
+    Runtime    : ${tsdiff(sbtimes, 5, 3)} (${rdiff(tdiff(btimes, 3, 1), tdiff(sbtimes, 4, 3))})
+        genFct : ${tsdiff(sbtimes, 4, 3)} (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
+        exeFct : ${tsdiff(sbtimes, 5, 4)} (${rdiff(tdiff(btimes, 3, 2), tdiff(sbtimes, 5, 4))})
+    Py2JS      : ${tsdiff(sbtimes, 3, 0)} (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
+        Py2AST : ${tsdiff(sbtimes, 1, 0)}
+        ASTConv: ${tsdiff(sbtimes, 2, 1)}
+        AST2JS : ${tsdiff(sbtimes, 3, 2)}`
 
     result_sbrython.classList.add('success');
 
     result_brython.textContent = 
 `**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
-**Executed in: ${tdiff(btimes, 2, 0)}ms**
-    **Runtime: ${tdiff(btimes, 3, 1)}ms**
-        **genFct: ${tdiff(btimes, 2, 1)}ms**
-        **exeFct: ${tdiff(btimes, 3, 2)}ms**
-    **Py2JS  : ${tdiff(btimes, 1, 0)}ms**`
+**Executed in: ${tsdiff(btimes, 2, 0)}**
+    **Runtime: ${tsdiff(btimes, 3, 1)}**
+        **genFct: ${tsdiff(btimes, 2, 1)}**
+        **exeFct: ${tsdiff(btimes, 3, 2)}**
+    **Py2JS  : ${tsdiff(btimes, 1, 0)}**`
 
     })();
     </script>
