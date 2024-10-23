@@ -3,15 +3,15 @@
 ## Status
 
 Tested     : 96/1909 (1813 excluded)
-Code size  : -62.39% (-88.51%)**
-Executed in: 77.440ms (-20.46%)
-    Runtime: 25.560ms (-31.93%)
-        genFct: 24.600ms (-18.05%)
-        exeFct: 0.960ms (-84.31%)
-    Py2JS  : 52.840ms (-21.53%)
-        Py2AST : 47.240ms
-        ASTConv: 3.000ms
-        AST2JS : 2.600ms
+Code size  : -12.63% (-84.68%)**
+Executed in: 60.100ms (-12.24%)
+    Runtime: 7.340ms (-44.43%)
+        genFct: 6.780ms (-9.84%)
+        exeFct: 0.560ms (-88.03%)
+    Py2JS  : 53.320ms (-12.53%)
+        Py2AST : 46.020ms
+        ASTConv: 3.660ms
+        AST2JS : 3.640ms
 
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
@@ -77,6 +77,7 @@ Refactor
             //  -> in reality, repetition, fct calls/loops/etc.
                 // Conversion, can be improve, but else AoT => gen+conversion removed.
                 // own AST + better structs when available. [only require to be smaller than genFct]
+                    // BUT VERY slow
             // compare brython/sbrython results : wasn't putting false if diff lines.
             // assert equals => gives the lines
             // lines : count the comments...
