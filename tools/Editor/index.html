@@ -184,7 +184,7 @@ function executeBrython(code) {
 
     let error = null;
     let jscode = '';
-    let times = new Array(3).fill(NaN);
+    let times = new Array(4).fill(NaN);
     try {
         times[0] = globalThis.performance.now();
         jscode = $B.pythonToJS(code);
@@ -206,8 +206,9 @@ function executeBrython(code) {
         */
         times[1] = globalThis.performance.now();
         const fct = new Function(jscode); //TODO args
-        fct();
         times[2] = globalThis.performance.now();
+        fct();
+        times[3] = globalThis.performance.now();
     } catch(e) {
         console.error(e);
         error = e;
@@ -240,7 +241,7 @@ function executeSBrython(code) {
     let ast = [];
     let sb = null;
 
-    let times = new Array(5).fill(NaN);
+    let times = new Array(6).fill(NaN);
 
     let error = null;
 
@@ -273,8 +274,10 @@ function executeSBrython(code) {
 
             output.push([`[Assertion failed as line ${node.pycode.start.line}]`, stack]);
         } };
-        sb.runJSCode(jscode, ast);
+        const fct = sb.buildModule(jscode, ast);
         times[4] = globalThis.performance.now();
+        fct(sb);
+        times[5] = globalThis.performance.now();
     } catch(e) {
         console.error(e);
         error = e;
@@ -371,7 +374,9 @@ function updateBrythonFromResults({pycode, output, times, jscode}) {
             ...brython_result,
 `**code size   ${rdiff(pycode.length, jscode.length)}**
 **Executed in: ${tdiff(times, 2, 0)}ms**
-    **Runtime: ${tdiff(times, 2, 1)}ms**
+    **Runtime: ${tdiff(times, 3, 1)}ms**
+        **genFct: ${tdiff(times, 2, 1)}ms**
+        **exeFct: ${tdiff(times, 3, 2)}ms**
     **Py2JS  : ${tdiff(times, 1, 0)}ms**`
     );
 
@@ -401,7 +406,9 @@ function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
         ...sbrython_result,
 `${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
 **Executed in: ${tdiff(times, 4, 0)}ms**
-    **Runtime: ${tdiff(times, 4, 3)}ms**
+    **Runtime: ${tdiff(times, 5, 3)}ms**
+        **genFct: ${tdiff(times, 4, 3)}ms**
+        **exeFct: ${tdiff(times, 5, 4)}ms**
     **Py2JS  : ${tdiff(times, 3, 0)}ms**
         **Py2AST : ${tdiff(times, 1, 0)}ms**
         **ASTConv: ${tdiff(times, 2, 1)}ms**
@@ -522,7 +529,7 @@ function print_node(node) {
 }
 
 function print_ast(_ast) {
-    
+
     const ast = _ast.nodes;
 
     const nodes = ast.map( node => {
@@ -783,11 +790,11 @@ if( window.location.search === '')
         let stats = {
             brython: {
                 code_len: 0,
-                times: [0,0,0]
+                times: new Array(4).fill(0)
             },
             sbrython: {
                 code_len: 0,
-                times: [0,0,0,0,0]
+                times: new Array(6).fill(0)
             },
             code_len: 0
         }
@@ -815,7 +822,7 @@ if( window.location.search === '')
                 for(let i = 1; i < code.length; ++i)
                     excluded_count += code[i][0] === '#';
 
-                code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
+                //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
         
                 code = code.join('\n'); 
 
@@ -849,22 +856,26 @@ if( window.location.search === '')
         const sbtimes = stats.sbrython.times;
 
         result_sbrython.textContent = 
-`**Status     : ${error ? 'FAILED' : 'SUCCESS'}**
-**Tested     : ${total-excluded_count}/${total} (${excluded_count} excluded)**
-**Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
-**Executed in: ${tdiff(sbtimes, 4, 0)}ms** (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
-    **Runtime: ${tdiff(sbtimes, 4, 3)}ms** (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
-    **Py2JS  : ${tdiff(sbtimes, 3, 0)}ms** (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
-        **Py2AST : ${tdiff(sbtimes, 1, 0)}ms**
-        **ASTConv: ${tdiff(sbtimes, 2, 1)}ms**
-        **AST2JS : ${tdiff(sbtimes, 3, 2)}ms**`
+`Status     : ${error ? 'FAILED' : 'SUCCESS'}
+Tested     : ${total-excluded_count}/${total} (${excluded_count} excluded)
+Code size  : ${rdiff(stats.code_len, stats.sbrython.code_len)} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})**
+Executed in: ${tdiff(sbtimes, 4, 0)}ms (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
+    Runtime: ${tdiff(sbtimes, 5, 3)}ms (${rdiff(tdiff(btimes, 3, 1), tdiff(sbtimes, 4, 3))})
+        genFct: ${tdiff(sbtimes, 4, 3)}ms (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
+        exeFct: ${tdiff(sbtimes, 5, 4)}ms (${rdiff(tdiff(btimes, 3, 2), tdiff(sbtimes, 5, 4))})
+    Py2JS  : ${tdiff(sbtimes, 3, 0)}ms (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
+        Py2AST : ${tdiff(sbtimes, 1, 0)}ms
+        ASTConv: ${tdiff(sbtimes, 2, 1)}ms
+        AST2JS : ${tdiff(sbtimes, 3, 2)}ms`
 
     result_sbrython.classList.add('success');
 
     result_brython.textContent = 
 `**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
 **Executed in: ${tdiff(btimes, 2, 0)}ms**
-    **Runtime: ${tdiff(btimes, 2, 1)}ms**
+    **Runtime: ${tdiff(btimes, 3, 1)}ms**
+        **genFct: ${tdiff(btimes, 2, 1)}ms**
+        **exeFct: ${tdiff(btimes, 3, 2)}ms**
     **Py2JS  : ${tdiff(btimes, 1, 0)}ms**`
 
     })();

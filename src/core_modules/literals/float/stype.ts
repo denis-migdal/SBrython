@@ -17,7 +17,7 @@ const SType_float = {
         }
     },
     ...genBinaryOps('float',
-                    ['**', '*', '/', '%', '+', '-'],
+                    ['**', '*', '/', '+', '-'],
                     ['float', 'int', 'bool'],
                     {
                         convert_other: {'int': 'float'}

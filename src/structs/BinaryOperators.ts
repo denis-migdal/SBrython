@@ -381,12 +381,16 @@ export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNod
 
 export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_priority = true) {
 
+    let result = r`${op}${a}`;
+
+    if(op === '-')
+        op = 'u.-';
+
     if(a instanceof ASTNode) {
         (a as any).parent_op = op;
         (a as any).parent_op_dir = RIGHT;
     }
 
-    let result = r`${op}${a}`;
 
     if( check_priority && "parent_op" in node ) {
 

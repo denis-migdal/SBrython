@@ -56,13 +56,13 @@ const SType_int = {
     ...GenBinaryOperator('floordiv', {
         return_type: {'int': 'int'},
         call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return r`_b_.floordiv(${a},${b})`; // binary_jsop(node, a, '/', b);
+            return r`_b_.floordiv_int(${a},${b})`; // binary_jsop(node, a, '/', b);
         }
     }),
     ...GenBinaryOperator('mod', {
         return_type: {'int': 'int'},
         call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '%', b);
+            return r`_b_.mod_int(${a}, ${b})`;
         }
     }),
     ...GenBinaryOperator('add', {

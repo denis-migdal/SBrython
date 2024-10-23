@@ -242,7 +242,6 @@
 
 # numbers.issue 1338
 // % behavior...
-*
 
 # basic test suite.numbers
 // +=

@@ -19,8 +19,7 @@ export class SBrython {
     //TODO: runPythonCode() ?
 
     //TODO: somehow, remove AST arg ???
-    runJSCode(jscode: string, ast: AST) {
-
+    buildModule(jscode: string, ast: AST) {
         if(ast.filename in this.#registered_AST)
             throw new Error(`AST ${ast.filename} already registered!`);
 
@@ -28,8 +27,11 @@ export class SBrython {
         this.#registered_AST[ast.filename] = ast;
 
         //console.log(jscode);
-        const js_fct = new Function("__SBRYTHON__", `${jscode}\nreturn __exported__;`);
-        this.#exported[ast.filename] = js_fct(this);
+        return new Function("__SBRYTHON__", `${jscode}\nreturn __exported__;`);
+    }
+
+    runJSCode(jscode: string, ast: AST) {
+        this.#exported[ast.filename] = this.buildModule(jscode, ast)(this);
     }
 
     getModules() {
