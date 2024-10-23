@@ -522,9 +522,7 @@ function print_node(node) {
 }
 
 function print_ast(_ast) {
-
-    let lineid = 0;
-
+    
     const ast = _ast.nodes;
 
     const nodes = ast.map( node => {
@@ -532,7 +530,7 @@ function print_ast(_ast) {
         const line = document.createElement("div");
 
         const lineno = document.createElement('span');
-        lineno.textContent = `${++lineid}:`;
+        lineno.textContent = `${node.pycode.start.line}:`;
 
         lineno.style.setProperty("vertical-align", "top");
         lineno.style.setProperty("font-weight", "bold");
@@ -629,14 +627,12 @@ function print_code(code, _ast, type) {
 
     const ast = _ast.nodes;
 
-    let lineid = 0;
-
     const nodes = ast.map( node => {
 
         const line = document.createElement("div");
 
         const lineno = document.createElement('span');
-        lineno.textContent = `${++lineid}:`;
+        lineno.textContent = `${ node.pycode.start.line }:`;
 
         lineno.style.setProperty("vertical-align", "top");
         lineno.style.setProperty("font-weight", "bold");
@@ -845,7 +841,7 @@ if( window.location.search === '')
 
         const python_input = document.querySelector('#python');
         python_input.value = "";
-        
+
         const result_sbrython = document.querySelector('.output_sbrython');
         const result_brython  = document.querySelector('.output_brython');
 
