@@ -4,15 +4,15 @@
 
 Status         : SUCCESS
 Tested         : 95/1909 (1814 excluded) [15]
-Code size      :          (x 6.48/-84.57%)
-Executed in    : 46.320ms (x 1.47/-31.76%)
-    Runtime    :  2.500ms (x 3.06/-67.34%)
-        genFct :  2.280ms (x 1.81/-44.66%)
-        exeFct :  0.220ms (x13.00/-92.31%)
-    Py2JS      : 44.040ms (x 1.45/-30.93%)
-        Py2AST : 36.440ms
-        ASTConv:  3.920ms
-        AST2JS :  3.680ms (x 7.42/-86.53%)
+Code size      :          (x 6.50/-84.61%)
+Executed in    : 46.540ms (x 1.08/-6.99%)
+    Runtime    :  2.040ms (x 2.98/-66.42%)
+        genFct :  1.840ms (x 1.76/-43.21%)
+        exeFct :  0.200ms (x11.20/-91.07%)
+    Py2JS      : 44.700ms (x 1.05/-4.49%)
+        Py2AST : 37.980ms
+        ASTConv:  4.060ms
+        AST2JS :  2.660ms (x 3.32/-69.84%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -68,45 +68,6 @@ Refactor
 
 #### Operators
 
-    //TODO
-        // -> jsint
-            // https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/ZF2mKGfUAAAJ
-        // % on float
-            // -> binaryJSOps with substitute (remove %=)
-        // bitwise op...
-            // requires canX system...
-            // false if ^=...
-            // ~ is missing (int) [invert] (unary)
-        // +=1/-=1 ++i/--i rule ?
-        // add for other types
-        // redo cmp op and unary op ?
-            // Eq -> same type use default ? [special rule in default]
-                // -> check if int optimized.
-        // must be float system.
-            => fint ? <= int implemented as a float ? (must_be_float)
-                (fast/float int)
-        // canBeFloat system
-            // optional ? (no loss on precision/overflow/underflow)
-                // things that returns int.
-                // %, ^, &, |, >>
-                    // % Chromium vs FF... (only when asked float then...)
-                    // &, |, ^, (-20%) >> (-26%)  [-56% on Chromium]
-                    // both or none.
-                    // re-cast (result_cast)
-                // + cmp both or none too (for now duplicate)
-                // + -
-                // + //
-                // + ||/&& (may be hard.)
-                // other : auto-convert.
-
-    (2) Affectation system (auto-generate operators)
-        => addDefaultOperator()
-                -> /!\ cmp op. (==)/(===) -> return true [int convert?]
-                -> /!\ unary op (?) [keep like that for now ?]
-        => default += (=> = (a+b)) (can't do += by default)
-            => /!\ += repeat a.
-    (0) -> canBeFloat() on ASTNode + on operators + requestOptiInt(true/false) [or whatever ?]
-    (1) Compare int/float/bool -> requestOptiInt / int2Float() (internally request).
     (3) constructors
     (4) type() / isinstance()
     (5) other types

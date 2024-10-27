@@ -14,6 +14,8 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     let type = SType_NOT_IMPLEMENTED;
     let method = name2SType(left.result_type as STypeName)?.[op];
 
+    console.warn(op, this.value, left.result_type, method, name2SType(left.result_type as STypeName));
+
     if( method !== undefined )
         type = method.return_type(right.result_type!);
 

@@ -1,6 +1,7 @@
 import { r } from "ast2js";
 import { ASTNode } from "./ASTNode";
 import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "./SType";
+import { AST } from "py2ast";
 
 export const bname2pyname = {
     "USub": "__neg__",
@@ -280,8 +281,24 @@ class
 
 export function Int2Number(a: ASTNode, target = "float") {
 
-    console.warn("i2n", a);
+    if( a.result_type === 'jsint')
+        return a;
+
     if( a.type === 'literals.int') {
+        (a as any).as = target;
+        return a;
+    }
+    if( a.value === '__mul__' || a.value === '__rmul__' ) {
+        const ltype = a.children[0].result_type;
+        const rtype = a.children[1].result_type;
+        if(    (ltype === 'int' || ltype === 'jsint')
+            && (rtype === 'int' || rtype === 'jsint')
+        ) {
+            (a as any).as = target;
+            return a;
+        }
+    }
+    if( a.value === '__neg__' && a.children[0].result_type === 'int') {
         (a as any).as = target;
         return a;
     }
@@ -294,8 +311,15 @@ export function Int2Number(a: ASTNode, target = "float") {
 
 export function Number2Int(a: ASTNode) {
 
+    if( a.result_type === 'int')
+        return a;
+
     if( a.type === 'literals.int') {
         (a as any).as = 'int';
+        return a;
+    }
+    if( a.value === '__neg__' && a.children[0].result_type === 'jsint') {
+        (a as any).as = "int";
         return a;
     }
 
@@ -427,14 +451,16 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
 
 
 type GenUnaryOps_Opts = {
-    convert_self ?: (s: any) => any
+    convert_self   ?: (s: any) => any,
+    call_substitute?: (node: ASTNode, a: ASTNode) => any
 };
 
 
 export function genUnaryOps(ret_type  : string,
                             ops       : (keyof typeof jsop2pyop)[],
                             {
-                                convert_self = (a) => a
+                                convert_self = (a) => a,
+                                call_substitute
                             }: GenUnaryOps_Opts = {}
                         ) {
 
@@ -443,15 +469,18 @@ export function genUnaryOps(ret_type  : string,
     const return_type = (o: string) => ret_type;
 
     for(let op of ops) {
+
         const pyop = jsop2pyop[op];
         if( op === 'u.-')
             op = '-';
 
+        call_substitute ??= (node: ASTNode, self: ASTNode) => {
+            return unary_jsop(node, op, convert_self(self) );
+        };
+
         result[`__${pyop}__`] = {
             return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
-                return unary_jsop(node, op, convert_self(self) );
-            },
+            call_substitute
         };
     }
     
@@ -532,10 +561,16 @@ export function genBinaryOps(ret_type: string,
             return_type,
             call_substitute: rcs,
         };
-        if( convert_self !== idFct && call_substitute === undefined)
+        if( convert_self === idFct && call_substitute === undefined)
             result[`__i${pyop}__`] = {
                 return_type,
                 call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                    
+                    if( op === '+' && other.value === 1)
+                        return unary_jsop(node, '++', self);
+                    if( op === '-' && other.value === 1)
+                        return unary_jsop(node, '--', self);
+                    
                     return binary_jsop(node, self, op+'=', conv_other(other) );
                 },
             };

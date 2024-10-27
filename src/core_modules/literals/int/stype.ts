@@ -1,6 +1,6 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number } from "structs/BinaryOperators";
+import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, unary_jsop } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 import { name2SType } from "structs/STypes";
 
@@ -24,13 +24,27 @@ const SType_int = {
     /* */
     ...genBinaryOps('int',
         [
-            // '**' and '*' => if "as float" could accept loss of precision.
-            '**', '*', '+', '-',
+            // '**' => if "as float" could accept loss of precision.
+            '**', '+', '-',
             '&', '|', '^', '>>', '<<'
         ],
         ['int', 'jsint'],
         {
             convert_other: {'jsint': 'int'}
+        }
+    ),
+    ...genBinaryOps('int', ['*'], ['int'],
+        {
+            call_substitute(node, a, b) {
+                const opti = (node as any).as === 'float';
+
+                if( opti ) {
+                    // TODO: check if really interesting...
+                    return binary_jsop(node, Int2Number(a), '*', Int2Number(b) );
+                }
+                
+                return binary_jsop(node, a, '*', b);
+            },
         }
     ),
     ...genBinaryOps('float', ['/'], ['int', 'jsint', 'float'],
@@ -57,9 +71,19 @@ const SType_int = {
         }
     ),
 
-    // '-' could transfert 'as'
     ...genUnaryOps('int',
-        ['u.-']
+        ['u.-'],
+        {
+            call_substitute: (node, a) => {
+                const opti = (node as any).as === 'real';
+
+                if( opti ) {
+                    return unary_jsop(node, '-', Int2Number(a) );
+                }
+                
+                return unary_jsop(node, '-', a );
+            },
+        }
     ),
     ...genUnaryOps('int',
         ['~'],
