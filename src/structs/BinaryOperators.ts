@@ -302,21 +302,6 @@ export function Number2Int(a: ASTNode) {
     return r`BigInt(${a})`;
 }
 
-export function Int2Float(a: ASTNode, optional = false) {
-
-    //TODO canBeFloat + etc.
-
-    if( a.type === 'literals.int') {
-        (a as any).asFloat      = true;
-        (a as any).asFloatIsOpt = optional;
-        return a;
-    }
-    if( optional )
-        return a;
-
-    return r`Number(${a})`;
-}
-
 let JSOperatorsPriority: Record<string, number> = {};
 for(let i = 0; i < JSOperators.length; ++i) {
 
@@ -473,10 +458,6 @@ export function genUnaryOps(ret_type  : string,
     return result;
 }
 
-function genDefaultJSCmps() {
-
-}
-
 type GenBinaryOps_Opts = {
     convert_other   ?: Record<string, string>,
     convert_self    ?: (s: any) => any,
@@ -563,38 +544,6 @@ export function genBinaryOps(ret_type: string,
     return result;
 }
 
-/*
-function _genCmp(op1: string, op2: string) {
-    return (node: ASTNode, self: ASTNode, o: ASTNode, invert_dir: boolean, reversed: boolean) => {
-        
-        let op = op1;
-        if( reversed )
-            invert_dir = ! invert_dir;
-        if( invert_dir )
-            op = op2;
-        return reversed ? binary_jsop(node, o, op, self) : binary_jsop(node, self, op, o);
-    }
-}
-
-export function GenCmpOperator({
-    supported_types
-}: GenCmpOperator_Opts) {
-
-    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
-
-    const xt = _genCmp('<' , '>');
-    const xe = _genCmp('<=', '>=');
-
-    return {
-        __lt__: {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                console.warn("lt", self, o, reversed);
-                return xt(node, self, o, false, reversed);
-            }
-        },
-*/
-
 export const CMPOPS_LIST = ['==', '!=', '>', '<', '>=', '<='] as const;
 
 const reverse = {
@@ -656,133 +605,4 @@ export function genCmpOps(  ops       : readonly (keyof typeof jsop2pyop)[],
     }
     
     return result;
-}
-
-type GenCmpOperator_Opts = {
-    supported_types: string[],
-};
-
-function _genCmp(op1: string, op2: string) {
-    return (node: ASTNode, self: ASTNode, o: ASTNode, invert_dir: boolean, reversed: boolean) => {
-        
-        let op = op1;
-        if( reversed )
-            invert_dir = ! invert_dir;
-        if( invert_dir )
-            op = op2;
-        return reversed ? binary_jsop(node, o, op, self) : binary_jsop(node, self, op, o);
-    }
-}
-
-export function GenCmpOperator({
-    supported_types
-}: GenCmpOperator_Opts) {
-
-    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
-
-    const xt = _genCmp('<' , '>');
-    const xe = _genCmp('<=', '>=');
-
-    return {
-        __lt__: {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                console.warn("lt", self, o, reversed);
-                return xt(node, self, o, false, reversed);
-            }
-        },
-        __gt__: {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                console.warn("gt", self, o, reversed);
-                return xt(node, self, o, true, reversed);
-            }
-        },
-        __le__: {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                return xe(node, self, o, false, reversed);
-            }
-        },
-        __ge__: {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                return xe(node, self, o, true, reversed);
-            }
-        }
-    }
-}
-
-type GenEqOperator_Opts = {
-    call_substitute: (node: ASTNode, left: ASTNode, op: "=="|"!=", right: ASTNode, reversed: boolean) => any,
-    supported_types: string[],
-    convert       ?: (a: ASTNode) => any,
-    self_convert  ?: (a: ASTNode) => any,
-}
-
-export function GenEqOperator({
-    call_substitute,
-    supported_types,
-    convert = (a: ASTNode) => a,
-    self_convert = (a: ASTNode) => a
-}: GenEqOperator_Opts) {
-
-    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
-
-    return {
-        '__eq__': {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean = false) => {
-                
-                const left  = reversed ? convert(o)         : self_convert(self);
-                const right = reversed ? self_convert(self) : convert(o);
-
-                return call_substitute(node, left, '==', right, reversed);
-            }
-        },
-        '__ne__': {
-            return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean = false) => {
-                
-                const left  = reversed ? convert(o)         : self_convert(self);
-                const right = reversed ? self_convert(self) : convert(o);
-
-                return call_substitute(node, left, '!=', right, reversed);
-            }
-        },
-    };
-}
-
-type GenBinaryOperator_Opts = {
-    call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode) => any,
-    return_type    : Record<string, string>,
-    convert       ?: (a: ASTNode) => any,
-    same_order    ?: boolean
-}
-
-export function GenBinaryOperator(name: string, {
-    call_substitute,
-    return_type,
-    same_order = false,
-    convert = (a: ASTNode) => a
-}: GenBinaryOperator_Opts) {
-
-    const fct = (node: ASTNode, self: ASTNode, o: ASTNode) => {
-        return call_substitute(node, self, convert(o) );
-    };
-
-    const rfct = same_order ? fct : (node: ASTNode, self: ASTNode, o: ASTNode) => {
-        return call_substitute(node, convert(o), self);
-    };
-
-    return {
-        [`__${ name}__`]: {
-            return_type: (o: string) => return_type[o] ?? SType_NOT_IMPLEMENTED,
-            call_substitute: fct
-        },
-        [`__r${name}__`]: {
-            return_type: (o: string) => return_type[o] ?? SType_NOT_IMPLEMENTED,
-            call_substitute: rfct
-        },
-    };
 }
