@@ -109,17 +109,17 @@ export function convert_args(node: any, context: Context) {
         defaults.push(undefined);
     }
 
-    console.warn(_args);
     if( context.type === "class")
         _args = _args.slice(1);
 
     const args = new Array<ASTNode>(_args.length);
     const doffset  = _args.length - defaults.length;
+    //TODO: 4 different loops...
     for(let i = 0; i < _args.length; ++i) {
         let arg_type = "pos";
         if( i < node.args.posonlyargs.length)
             arg_type = "posonly";
-        if( i >= _args.length - node.args.kwonlyargs.length - hasKWArgs)
+        if( i >= _args.length - node.args.kwonlyargs.length - +hasKWArgs)
             arg_type = "kwonly";
         if( i === vararg_idx)
             arg_type = "vararg";
@@ -128,8 +128,6 @@ export function convert_args(node: any, context: Context) {
         args[i] = convert_arg(_args[i], defaults[i - doffset], arg_type, context);
         context.local_variables[args[i].value] = args[i].result_type;
     }
-    
-    //TODO: kwargsS
 
     let first: any;
     let last : any;

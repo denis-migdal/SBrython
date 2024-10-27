@@ -4,7 +4,7 @@ import SType_str from "core_modules/literals/str/stype";
 import SType_None from "core_modules/literals/None/stype";
 import SType_bool from "core_modules/literals/bool/stype";
 import SType_jsint from "core_modules/literals/int/stype_jsint";
-import { SType } from "./SType";
+import { STypeObj } from "./SType";
 
 //export type STypeName = keyof typeof name2SType;
 

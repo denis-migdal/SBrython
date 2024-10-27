@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { AST } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import CORE_MODULES from "./core_modules/lists";

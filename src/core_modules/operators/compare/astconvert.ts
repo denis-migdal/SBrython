@@ -10,7 +10,7 @@ import { bname2pyname } from "structs/BinaryOperators";
 export default function convert(node: any, context: Context) {
 
     const ops = node.ops.map( (e: any) => {
-        const op = bname2pyname[e.constructor.$name];
+        const op = (bname2pyname as any)[e.constructor.$name];
         if( op === undefined)
             throw new Error(`${e.constructor.$name} not implemented!`);
         return op;

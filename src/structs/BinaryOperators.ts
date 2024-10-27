@@ -588,9 +588,9 @@ const reverse = {
     "<": ">",
     ">=": "<=",
     "<=": ">=",
-}
+} as const;
 
-export function genCmpOps(  ops       : readonly (keyof typeof jsop2pyop)[],
+export function genCmpOps(  ops       : readonly (keyof typeof reverse)[],
                             other_type: readonly string[],
                             {
                                 convert_other   = {},

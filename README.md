@@ -67,6 +67,8 @@ Refactor
 
 #### Operators
 
+    (0) cf fcts/calls/astconv.ts
+
     (1) constructors
         => genBaseCstr() (?) ou une fct ?
         => bool()
@@ -90,16 +92,16 @@ Refactor
         => + respect original indentation...
         => + deduce params of JS fct from toString().
 
-        (c) arguments...
-                => kwonly + defaults
-                => *t + **args
-
-                => 1. pos
-                => *t
-                => 3. kw_only  => if *t => [t]
-                => 4. **kwargs => name in {} de kw_only.
-        -> fct 100x quicker ???
-
+        (c) complex calls... => store in type...
+            => in local  ?
+            => in STypes ?
+                {__call__: { substitute call } }
+                    => give ASTNode (better).
+                /!\ convert jsint to int (if unknown or int)
+                => cstr => genCall(...?).
+            => methods or in dict (or other struct) => type... (hum)
+                (:int,:float, a: int, ...t: int) -> int
+                (:int,:float, {args: int})       -> int
 
         (d) Brython <=> SBrython interactions / SBrython <=> JS module interactions.
             => 2x2 for Brython (export/import JS/Py space).
@@ -578,4 +580,4 @@ Info
     - [ ] Arg parsing: https://github.com/brython-dev/brython/issues/2478
 
 
-Simple, Speed, Static, Small
+Simple, Speedy, Static, Small

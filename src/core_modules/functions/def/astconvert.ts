@@ -4,7 +4,6 @@ import { _name2SType } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
-    console.warn(node);
     const args = convert_args(node, context);
 
 
@@ -34,7 +33,7 @@ export default function convert(node: any, context: Context) {
             _name2SType[signature] = {
                 __call__: {
                     return_type: () => fct_return_type,
-                    substitute_call: () => "" /* argument parsing */
+                    call_substitute: () => "" /* argument parsing */
                 }
             }
         }
@@ -60,7 +59,7 @@ export default function convert(node: any, context: Context) {
             _name2SType[signature] = {
                 __call__: {
                     return_type: () => fct_return_type,
-                    substitute_call: () => "" /* argument parsing */
+                    call_substitute: () => "" /* argument parsing */
                 }
             }
     }

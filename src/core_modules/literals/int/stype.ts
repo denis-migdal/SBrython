@@ -1,7 +1,7 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, unary_jsop } from "structs/BinaryOperators";
-import { STypeObj } from "structs/SType";
+import { STypeFctSubs, STypeObj } from "structs/SType";
 import { name2SType } from "structs/STypes";
 
 const SType_int = {
@@ -9,10 +9,10 @@ const SType_int = {
     __init__: {
         return_type: () => 'int',
         call_substitute: (node, other) => {
-            const method = name2SType(other.result_type)?.__int__;
+            const method = name2SType(other.result_type)?.__int__ as STypeFctSubs;
             if( method === undefined )
                 throw new Error(`${other.result_type}.__int__ not defined`);
-            return method.call_substitute(node, other);
+            return method.call_substitute!(node, other);
         }
     },
     __int__: {

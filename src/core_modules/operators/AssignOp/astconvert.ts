@@ -9,7 +9,7 @@ export default function convert(node: any, context: Context) {
     let left  = convert_node(node.target , context );
     let right = convert_node(node.value, context);
 
-    let op = bname2pyname[node.op.constructor.$name];
+    let op = (bname2pyname as any)[node.op.constructor.$name];
 
     if( op === undefined) {
         console.warn("OP", node.op.constructor.$name);
