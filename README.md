@@ -3,16 +3,16 @@
 ## Status
 
 Status         : SUCCESS
-Tested         : 95/1909 (1814 excluded) [15]
-Code size      :          (x 6.50/-84.61%)
-Executed in    : 46.540ms (x 1.08/-6.99%)
-    Runtime    :  2.040ms (x 2.98/-66.42%)
-        genFct :  1.840ms (x 1.76/-43.21%)
-        exeFct :  0.200ms (x11.20/-91.07%)
-    Py2JS      : 44.700ms (x 1.05/-4.49%)
-        Py2AST : 37.980ms
-        ASTConv:  4.060ms
-        AST2JS :  2.660ms (x 3.32/-69.84%)
+Tested         : 108/1902 (1794 excluded) [17]
+Code size      :          (x 6.58/-84.81%)
+Executed in    : 66.240ms (x 1.08/-7.77%)
+    Runtime    :  5.920ms (x 2.09/-52.20%)
+        genFct :  5.660ms (x 1.39/-27.99%)
+        exeFct :  0.260ms (x15.31/-93.47%)
+    Py2JS      : 60.580ms (x 1.06/-5.28%)
+        Py2AST : 44.880ms
+        ASTConv:  9.520ms
+        AST2JS :  6.180ms (x 3.09/-67.61%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
