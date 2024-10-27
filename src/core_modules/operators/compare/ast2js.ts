@@ -19,7 +19,7 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
     if( type === SType_NOT_IMPLEMENTED) {
 
         op     = reversed_operator(op);
-        method = name2SType[right.result_type as STypeName]?.[op];
+        method = name2SType(right.result_type as STypeName)?.[op];
         if( method !== undefined )
             type   = method.return_type(left.result_type);
         

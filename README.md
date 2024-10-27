@@ -2,19 +2,17 @@
 
 ## Status
 
-```
 Status         : SUCCESS
-Tested         : 96/1909 (1813 excluded) [15]
-Code size      :          (x 6.53/-84.68%)
-Executed in    : 37.520ms (x 1.16/-13.43%)
-    Runtime    :  4.380ms (x 1.94/-48.50%)
-        genFct :  4.120ms (x 1.20/-16.60%)
-        exeFct :  0.260ms (x11.77/-91.50%)
-    Py2JS      : 33.400ms (x 1.15/-13.02%)
-        Py2AST : 28.340ms
-        ASTConv:  2.640ms
-        AST2JS :  2.420ms (x 4.16/-75.94%)
-```
+Tested         : 95/1909 (1814 excluded) [15]
+Code size      :          (x 6.48/-84.57%)
+Executed in    : 46.320ms (x 1.47/-31.76%)
+    Runtime    :  2.500ms (x 3.06/-67.34%)
+        genFct :  2.280ms (x 1.81/-44.66%)
+        exeFct :  0.220ms (x13.00/-92.31%)
+    Py2JS      : 44.040ms (x 1.45/-30.93%)
+        Py2AST : 36.440ms
+        ASTConv:  3.920ms
+        AST2JS :  3.680ms (x 7.42/-86.53%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -66,10 +64,13 @@ Bugs
 
 Refactor
     -> body/newline/args (toJS...)
+    -> try/catch/finaly / if/elif/else => use only one AST.
 
 #### Operators
 
     //TODO
+        // -> jsint
+            // https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/ZF2mKGfUAAAJ
         // % on float
             // -> binaryJSOps with substitute (remove %=)
         // bitwise op...
@@ -81,6 +82,9 @@ Refactor
         // redo cmp op and unary op ?
             // Eq -> same type use default ? [special rule in default]
                 // -> check if int optimized.
+        // must be float system.
+            => fint ? <= int implemented as a float ? (must_be_float)
+                (fast/float int)
         // canBeFloat system
             // optional ? (no loss on precision/overflow/underflow)
                 // things that returns int.
@@ -130,6 +134,9 @@ Refactor
         - mro (+ __isinstance__ / __class__) ?
         https://docs.python.org/3/library/functions.html
     (*) fct call/signatures... (! many call signatures !)
+        => deduce ret type (simple/complexe) (->)
+        => call ret type
+    (?) for in range => canbeint...
     (*) tuple/dict/list/set/etc.
     (*) classes
     (*) Brython interactions.

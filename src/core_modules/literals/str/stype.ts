@@ -1,26 +1,24 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, GenCmpOperator, GenEqOperator, Int2Float } from "structs/BinaryOperators";
+import { CMPOPS_LIST, genBinaryOps, genCmpOps} from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_str = {
-    ...GenCmpOperator({
-       supported_types: ['str'] 
-    }),
-    ...GenBinaryOperator('mul', {
-        return_type: {'int': 'str'},
-        convert: (a) => Int2Float(a),
-        same_order: true,
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return r`${a}.repeat(${b})`;
-        }
-    }),
-    ...GenBinaryOperator('add', {
-        return_type: {'str': 'str'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '+', b);
-        }
-    })
+
+    ...genCmpOps  (CMPOPS_LIST,
+        ['str']),
+    ...genBinaryOps("str", ["+"], ["str"]),
+    ...genBinaryOps("str", ["*"], ["int", "jsint"],
+        {
+            convert_other  : {"int": "float"},
+            call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+                
+                if( a.result_type !== "str" )
+                    [a,b] = [b,a];
+
+                return r`${a}.repeat(${b})`;
+            }
+        }),
 } satisfies STypeObj;
 
 export default SType_str;

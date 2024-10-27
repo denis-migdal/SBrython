@@ -86,9 +86,18 @@ export const jsop2pyop = {
     '//': 'floordiv',
     '%' : 'mod',
     
-    '+' : 'add',
-    '-' : 'sub',
-    
+    '+'  : 'add',
+    '-'  : 'sub',
+    'u.-': 'neg',
+
+    '==' : 'eq',
+    '!=' : 'ne',
+    '<'  : 'lt',
+    '<=' : 'le',
+    '>=' : 'ge',
+    '>'  : 'gt',
+
+    '~' : 'not',
     '|' : 'or',
     '&' : 'and',
     '^' : 'xor',
@@ -268,6 +277,31 @@ class
 - sizeof
 */
 
+
+export function Int2Number(a: ASTNode, target = "float") {
+
+    console.warn("i2n", a);
+    if( a.type === 'literals.int') {
+        (a as any).as = target;
+        return a;
+    }
+    if( target === "float" )
+        return r`Number(${a})`;
+
+    // int -> jsint cast is facultative...
+    return a;
+}
+
+export function Number2Int(a: ASTNode) {
+
+    if( a.type === 'literals.int') {
+        (a as any).as = 'int';
+        return a;
+    }
+
+    return r`BigInt(${a})`;
+}
+
 export function Int2Float(a: ASTNode, optional = false) {
 
     //TODO canBeFloat + etc.
@@ -405,8 +439,38 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
     return result;
 }
 
-function genDefaultJSUnaries() {
 
+
+type GenUnaryOps_Opts = {
+    convert_self ?: (s: any) => any
+};
+
+
+export function genUnaryOps(ret_type  : string,
+                            ops       : (keyof typeof jsop2pyop)[],
+                            {
+                                convert_self = (a) => a
+                            }: GenUnaryOps_Opts = {}
+                        ) {
+
+    let result: Record<string, STypeFctSubs> = {};
+
+    const return_type = (o: string) => ret_type;
+
+    for(let op of ops) {
+        const pyop = jsop2pyop[op];
+        if( op === 'u.-')
+            op = '-';
+
+        result[`__${pyop}__`] = {
+            return_type,
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                return unary_jsop(node, op, convert_self(self) );
+            },
+        };
+    }
+    
+    return result;
 }
 
 function genDefaultJSCmps() {
@@ -414,25 +478,38 @@ function genDefaultJSCmps() {
 }
 
 type GenBinaryOps_Opts = {
-    convert_other?: Record<string, string>
+    convert_other   ?: Record<string, string>,
+    convert_self    ?: (s: any) => any,
+    call_substitute ?: (node: ASTNode, self: ASTNode|any, other: ASTNode|any) => any
 };
 
 
 function generateConvert(convert: Record<string, string>) {
     return (node: ASTNode) => {
-        const target = convert[node.result_type!];
+        const src    = node.result_type!;
+        const target = convert[src];
         if( target === undefined )
             return node;
 
-        //TODO: other types
-        //TODO: use __x__ operators ?
-        return Int2Float(node);
+        //TODO: improve:
+        if( src === "int")
+            return Int2Number(node, target);
+        if( target === "int" )
+            return Number2Int(node);
+
+        throw new Error("Unfound conversion");
     };
 }
 
-export function genBinaryOps(ret_type: string, ops: (keyof typeof jsop2pyop)[], other_type: string[], 
+const idFct = <T>(a: T) => a;
+
+export function genBinaryOps(ret_type: string,
+                            ops: (keyof typeof jsop2pyop)[],
+                            other_type: string[], 
                          {
-                            convert_other = {}
+                            convert_other   = {},
+                            convert_self    = idFct,
+                            call_substitute,
                          }: GenBinaryOps_Opts = {}) {
 
     let result: Record<string, STypeFctSubs> = {};
@@ -441,24 +518,140 @@ export function genBinaryOps(ret_type: string, ops: (keyof typeof jsop2pyop)[], 
     const conv_other  = generateConvert(convert_other);
 
     for(let op of ops) {
+
         const pyop = jsop2pyop[op];
+        if( op === '//')
+            op = '/';
+
+        let cs  = (node: ASTNode, self: ASTNode, other: ASTNode) => {
+            return binary_jsop(node, convert_self(self), op, conv_other(other) );
+        }
+
+        let rcs = (node: ASTNode, self: ASTNode, other: ASTNode) => {
+            return binary_jsop(node, conv_other(other), op, convert_self(self) );
+        }
+
+        if( call_substitute !== undefined ) {
+
+            cs  = (node: ASTNode, self: ASTNode, o: ASTNode) => {
+                return call_substitute(node, convert_self(self), conv_other(o) );
+            };
+        
+            // same_order ? fct : 
+            rcs = (node: ASTNode, self: ASTNode, o: ASTNode) => {
+                return call_substitute(node, conv_other(o), convert_self(self) );
+            };
+        }
+
         result[`__${pyop}__`] = {
             return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
-                return binary_jsop(node, self, op, conv_other(other) );
-            },
+            call_substitute: cs,
         };
         result[`__r${pyop}__`] = {
             return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
-                return binary_jsop(node, conv_other(other), op, self);
-            },
+            call_substitute: rcs,
         };
-        result[`__i${pyop}__`] = {
+        if( convert_self !== idFct && call_substitute === undefined)
+            result[`__i${pyop}__`] = {
+                return_type,
+                call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                    return binary_jsop(node, self, op+'=', conv_other(other) );
+                },
+            };
+    }
+    
+    return result;
+}
+
+/*
+function _genCmp(op1: string, op2: string) {
+    return (node: ASTNode, self: ASTNode, o: ASTNode, invert_dir: boolean, reversed: boolean) => {
+        
+        let op = op1;
+        if( reversed )
+            invert_dir = ! invert_dir;
+        if( invert_dir )
+            op = op2;
+        return reversed ? binary_jsop(node, o, op, self) : binary_jsop(node, self, op, o);
+    }
+}
+
+export function GenCmpOperator({
+    supported_types
+}: GenCmpOperator_Opts) {
+
+    const return_type = (o: string) => supported_types.includes(o) ? 'bool': SType_NOT_IMPLEMENTED;
+
+    const xt = _genCmp('<' , '>');
+    const xe = _genCmp('<=', '>=');
+
+    return {
+        __lt__: {
             return_type,
-            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
-                return binary_jsop(node, self, op+'=', conv_other(other) );
-            },
+            call_substitute: (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                console.warn("lt", self, o, reversed);
+                return xt(node, self, o, false, reversed);
+            }
+        },
+*/
+
+export const CMPOPS_LIST = ['==', '!=', '>', '<', '>=', '<='] as const;
+
+const reverse = {
+    "==": "==",
+    "!=": "!=",
+    ">": "<",
+    "<": ">",
+    ">=": "<=",
+    "<=": ">=",
+}
+
+export function genCmpOps(  ops       : readonly (keyof typeof jsop2pyop)[],
+                            other_type: readonly string[],
+                            {
+                                convert_other   = {},
+                                convert_self    = idFct,
+                                call_substitute,
+                             }: GenBinaryOps_Opts = {} ) {
+
+    let result: Record<string, STypeFctSubs> = {};
+
+    const return_type = (o: string) => other_type.includes(o) ? "bool" : SType_NOT_IMPLEMENTED;
+    const conv_other  = generateConvert(convert_other);
+
+    for(let op of ops) {
+
+        const pyop = jsop2pyop[op];
+
+        let cs  = (node: ASTNode, self: ASTNode, other: ASTNode, reversed: boolean) => {
+
+            let cop = op;
+
+            let a = convert_self(self);
+            let b = conv_other(other);
+            if( reversed ) {
+                [a,b] = [b,a];
+                cop = reverse[cop];
+            }
+
+            if( cop[0] === '=' || cop[0] === '!' ) {
+                if( self.result_type === other.result_type)
+                    cop = cop + '=';
+            }
+
+            return binary_jsop(node, a, cop, b);
+        }
+
+        if( call_substitute !== undefined ) {
+
+            cs  = (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+                return call_substitute(node, convert_self(self), conv_other(o) ); //TODO...
+            };
+        }
+
+        result[`__${pyop}__`] = {
+            return_type,
+            call_substitute: cs,
         };
     }
     

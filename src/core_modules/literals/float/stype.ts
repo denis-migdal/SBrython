@@ -1,38 +1,38 @@
 import { r } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, genBinaryOps, GenEqOperator, Int2Float, unary_jsop } from "structs/BinaryOperators";
+import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 
 const SType_float = {
-    ...GenEqOperator({
-        supported_types: ["float", "bool"],
-        call_substitute(node, left, op, right) {
-            return binary_jsop(node, left, op, right);
-        },
-    }),
-    "__neg__": {
-        return_type: () => 'float',
-        call_substitute: (node: ASTNode, a: ASTNode) => {
-            return unary_jsop(node, '-', a);
-        }
-    },
     ...genBinaryOps('float',
                     ['**', '*', '/', '+', '-'],
-                    ['float', 'int', 'bool'],
+                    ['float', 'int', 'jsint', 'bool'],
                     {
                         convert_other: {'int': 'float'}
                     }
     ),
-    //TODO %
-    //TODO...
-    // => substitute_call => no *= ?
-    ...GenBinaryOperator('floordiv', {
-        return_type: {'int': 'int', 'float': 'int'},
-        convert: (a) => a.result_type === 'int' ? Int2Float(a) : a,
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return r`Math.floor(${binary_jsop(node, a, '/', b, false)})`;
+    ...genBinaryOps('float',
+        ['//'],
+        ['float', 'int', 'jsint', 'bool'],
+        {
+            convert_other: {'int': 'float'},
+            call_substitute(node, self, other) {
+                return r`_b_.floordiv_float(${self}, ${other})`;
+            },
         }
-    }),
+    ),
+    ...genBinaryOps('float',
+        ['%'],
+        ['float', 'int', 'jsint', 'bool'],
+        {
+            convert_other: {'int': 'float'},
+            call_substitute(node, self, other) {
+                return r`_b_.mod_float(${self}, ${other})`;
+            },
+        }
+    ),
+    ...genUnaryOps('float', ['u.-']),
+    ...genCmpOps  (CMPOPS_LIST,
+                   ['float', 'bool', 'int', 'jsint']),
 } satisfies STypeObj;
 
 export default SType_float;

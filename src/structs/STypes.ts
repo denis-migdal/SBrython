@@ -3,6 +3,7 @@ import SType_int from "core_modules/literals/int/stype";
 import SType_str from "core_modules/literals/str/stype";
 import SType_None from "core_modules/literals/None/stype";
 import SType_bool from "core_modules/literals/bool/stype";
+import SType_jsint from "core_modules/literals/int/stype_jsint";
 
 //export type STypeName = keyof typeof name2SType;
 
@@ -11,6 +12,7 @@ export function name2SType(name: string) {
     const name2SType = {
         "float"   : SType_float,
         "int"     : SType_int,
+        "jsint"   : SType_jsint,
         "bool"    : SType_bool,
         "str"     : SType_str,
         "NoneType": SType_None

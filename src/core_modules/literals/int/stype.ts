@@ -1,6 +1,6 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, GenBinaryOperator, GenEqOperator, id_jsop, Int2Float, unary_jsop } from "structs/BinaryOperators";
+import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number } from "structs/BinaryOperators";
 import { STypeObj } from "structs/SType";
 import { name2SType } from "structs/STypes";
 
@@ -21,96 +21,52 @@ const SType_int = {
             return id_jsop(node, self);
         }
     },
-    ...GenEqOperator({
-        supported_types: ["int", "float", "bool"],
-        convert     : (a) => Int2Float(a, true),
-        self_convert: (a) => Int2Float(a, true),
-        call_substitute(node, left, op, right) {
-            return binary_jsop(node, left, op, right);
-        },
-    }),
-    "__neg__": {
-        return_type: () => 'int',
-        call_substitute: (node: ASTNode, a: ASTNode) => {
-            return unary_jsop(node, '-', a);
+    /* */
+    ...genBinaryOps('int',
+        [
+            // '**' and '*' => if "as float" could accept loss of precision.
+            '**', '*', '+', '-',
+            '&', '|', '^', '>>', '<<'
+        ],
+        ['int', 'jsint'],
+        {
+            convert_other: {'jsint': 'int'}
         }
-    },
-    ...GenBinaryOperator('pow', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '**', b);
+    ),
+    ...genBinaryOps('float', ['/'], ['int', 'jsint', 'float'],
+        {
+            convert_self : (s) => Int2Number(s, 'float'),
+            convert_other: {'int': 'float'}
         }
-    }),
-    ...GenBinaryOperator('mul', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '*', b);
+    ),
+    ...genBinaryOps('int', ['//'], ['int', 'jsint'],
+        {
+            convert_other: {"jsint": "int"},
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                return r`_b_.floordiv_int(${self}, ${other})`;
+            },
         }
-    }),
-    ...GenBinaryOperator('truediv', {
-        return_type: {'int': 'float'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, Int2Float(a), '/', Int2Float(b), false);
+    ),
+    ...genBinaryOps('int', ['%'], ['int', 'jsint'],
+        {
+            convert_other: {"jsint": "int"},
+            call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                // do not handle -0
+                return r`_b_.mod_int(${self}, ${other})`;
+            },
         }
-    }),
-    ...GenBinaryOperator('floordiv', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return r`_b_.floordiv_int(${a},${b})`; // binary_jsop(node, a, '/', b);
-        }
-    }),
-    ...GenBinaryOperator('mod', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return r`_b_.mod_int(${a}, ${b})`;
-        }
-    }),
-    ...GenBinaryOperator('add', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '+', b);
-        }
-    }),
-    ...GenBinaryOperator('sub', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '-', b);
-        }
-    }),
-    __not__: {
-        return_type: () => 'int',
-        call_substitute: (node: ASTNode, a: ASTNode) => unary_jsop(node, '~', a)
-    },
-    ...GenBinaryOperator('or', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '|', b);
-        }
-    }),
-    ...GenBinaryOperator('xor', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '^', b);
-        }
-    }),
-    ...GenBinaryOperator('and', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '&', b);
-        }
-    }),
-    ...GenBinaryOperator('lshift', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '<<', b);
-        }
-    }),
-    ...GenBinaryOperator('rshift', {
-        return_type: {'int': 'int'},
-        call_substitute: (node: ASTNode, a: ASTNode, b: ASTNode) => {
-            return binary_jsop(node, a, '>>', b);
-        }
-    })
+    ),
+
+    // '-' could transfert 'as'
+    ...genUnaryOps('int',
+        ['u.-']
+    ),
+    ...genUnaryOps('int',
+        ['~'],
+    ),
+    ...genCmpOps(  CMPOPS_LIST,
+                   ['float', 'int', 'jsint', 'bool'] )
+    /* */
 } satisfies STypeObj;
 
 export default SType_int;

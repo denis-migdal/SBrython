@@ -11,7 +11,9 @@ export default function convert(node: any, _context: Context) {
     if( typeof value !== "number" && typeof value !== "bigint" )
         return;
 
-    return new ASTNode(node, "literals.int", "int", value);
+    const real_type = typeof value !== "number" ? "int" : "jsint";
+
+    return new ASTNode(node, "literals.int", real_type, value);
 }
 
 convert.brython_name = "Constant";

@@ -1,4 +1,7 @@
 export default {
+    floordiv_float: (a: number, b: number) => {
+        return Math.floor( a/b );
+    },
     floordiv_int: (a: bigint, b: bigint) => {
 
         let result = a/b;
@@ -7,7 +10,7 @@ export default {
 
         return --result;
     },
-    mod_real: <T>(a: number, b: number) => {
+    mod_float: <T>(a: number, b: number) => {
 
         const mod = (a % b + b) % b;
         if( mod === 0 && b < 0 )

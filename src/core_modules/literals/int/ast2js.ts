@@ -3,13 +3,19 @@ import { ASTNode, CodePos } from "structs/ASTNode";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
+    let suffix = "";
+    let target = (this as any).as;
+
     let value = this.value;
 
-    if( (this as any).asFloat && (! (this as any).asFloatIsOpt) && typeof value === "bigint")
-        value = Number(value);
+    if(target === "float") {
+        if( this.result_type === "int" )
+            value = Number(value); // remove useless precision.
+    }
+    else if( target === "int" || this.result_type === "int" )
+        // if already bigint do not cast into jsint (loss of precision).
+        suffix = "n";
 
-    if( (this as any).asFloat && typeof value === "number") // opti
-        return toJS(r`${this.value}`, cursor);        
-
-    return toJS(r`${this.value}n`, cursor);
+    // 1e+54 should had be stored as bigint.
+    return toJS(r`${value}${suffix}`, cursor);
 }

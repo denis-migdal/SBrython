@@ -575,3 +575,7 @@
 # basic test suite.Korean
 // deduce fct return type
 *
+
+# basic test suite.nested scopes
+// deduce fct return type
+14 
