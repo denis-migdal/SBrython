@@ -124,7 +124,10 @@ export function args2js(node: ASTNode, cursor: CodePos) {
     for( idx = _args.length - 1; idx >= 0; --idx) {
         if( _args[idx].type === 'arg.posonly' )
             break;
-        if( _args[idx].children.length === 0 && _args[idx].type !== "arg.kwarg")
+        if( _args[idx].children.length === 0
+            && _args[idx].type !== "arg.kwarg"
+            && _args[idx].type !== "arg.kwonly"
+        )
             break;
     }
 
