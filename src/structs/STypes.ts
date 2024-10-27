@@ -4,19 +4,19 @@ import SType_str from "core_modules/literals/str/stype";
 import SType_None from "core_modules/literals/None/stype";
 import SType_bool from "core_modules/literals/bool/stype";
 import SType_jsint from "core_modules/literals/int/stype_jsint";
+import { SType } from "./SType";
 
 //export type STypeName = keyof typeof name2SType;
 
+export const _name2SType: Record<string,STypeObj> = {
+    "float"   : SType_float,
+    "int"     : SType_int,
+    "jsint"   : SType_jsint,
+    "bool"    : SType_bool,
+    "str"     : SType_str,
+    "NoneType": SType_None
+}
+
 export function name2SType(name: string) {
-
-    const name2SType = {
-        "float"   : SType_float,
-        "int"     : SType_int,
-        "jsint"   : SType_jsint,
-        "bool"    : SType_bool,
-        "str"     : SType_str,
-        "NoneType": SType_None
-    }
-
-    return name2SType[name as keyof typeof name2SType];
+    return _name2SType[name];
 }

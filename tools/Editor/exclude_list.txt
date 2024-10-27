@@ -254,7 +254,7 @@
 *
 
 # basic test suite.functions and methods
-// cmp method + fct return type
+// methods (cmp+return type)
 *
 
 # basic test suite.use of "global" in functions
@@ -321,7 +321,7 @@
 *
 
 # basic test suite.issue 1721
-// functions return type
+// decl order
 *
 
 # basic test suite.issue 1819
@@ -553,11 +553,3 @@
 # basic test suite.exception attributes
 // assert raise
 *
-
-# basic test suite.Korean
-// deduce fct return type
-*
-
-# basic test suite.nested scopes
-// deduce fct return type
-14 

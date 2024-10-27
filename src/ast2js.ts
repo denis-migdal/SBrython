@@ -1,5 +1,6 @@
 import { AST } from "py2ast";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { binary_jsop, Int2Number, Number2Int } from "structs/BinaryOperators";
 import { Body } from "structs/Body";
 
 export function ast2js(ast: AST) {
@@ -138,6 +139,15 @@ export function args2js(node: ASTNode, cursor: CodePos) {
 export function arg2js(node: ASTNode, cursor: CodePos) {
     
     const start = {...cursor};
+
+    if(node.children.length === 1) {
+
+        let value: any = node.children[0];
+        if( value.result_type === 'jsint' && node.result_type === 'int')
+            value = Number2Int(value);
+
+        return toJS( binary_jsop(node, node.value, '=', value), cursor);
+    }
 
     let js = node.value;
     cursor.col += js.length;

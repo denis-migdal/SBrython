@@ -94,8 +94,17 @@ export function convert_args(node: any, context: Context) {
     if( context.type === "class")
         _args = _args.slice(1);
 
-    const args = _args.map( (m:any) => convert_arg(m, context) ); //TODO...
+    const args = new Array<ASTNode>(_args.length);
+
+    const defaults = node.args.defaults;
+    const doffset  = _args.length - defaults.length;
+    for(let i = 0; i < _args.length; ++i) {
+        args[i] = convert_arg(_args[i], defaults[i - doffset], context);
+        context.local_variables[args[i].value] = args[i].result_type;
+    }
     
+    //TODO: kwargsS
+
     let first: any;
     let last : any;
     if( args.length !== 0) {
@@ -126,9 +135,23 @@ export function convert_args(node: any, context: Context) {
 
     return new ASTNode(virt_node, "args", null, null, args);
 }
-export function convert_arg(node: any, context: Context) {
+export function convert_arg(node: any, defval: any, context: Context) {
 
-    return new ASTNode(node, "arg", node.annotation?.id, node.arg);
+    let result_type = node.annotation?.id;
+    let children = new Array<ASTNode>();
+    if( defval !== undefined ) {
+
+        const child = convert_node( defval,context);
+        children.push( child );
+
+        if( result_type === undefined ) {
+            result_type = child.result_type;
+            if(result_type === 'jsint')
+                result_type = 'int';
+        }
+    }
+
+    return new ASTNode(node, "arg", result_type, node.arg, children);
 }
 
 export function listpos(node: any[]) {

@@ -128,6 +128,8 @@ const python_output = document.querySelector(".python_ouput");
 const ast_output = document.querySelector("#ast");
 const js_output = document.querySelector("#js");
 
+python_input.value = localStorage.getItem('sbrython_code') ?? "";
+
 python_input.addEventListener('keydown', (ev) => {
 
 if(ev.code === "Tab") {
@@ -490,6 +492,7 @@ function clearResults() {
 function update() {
 
 	const code = python_input.value;
+    localStorage.setItem('sbrython_code', code);
 
     clearResults();
     const result = execute(code);

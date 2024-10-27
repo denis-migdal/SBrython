@@ -1,18 +1,17 @@
 # SimplerBrython
 
 ## Status
-
 Status         : SUCCESS
-Tested         : 108/1902 (1794 excluded) [17]
-Code size      :          (x 6.58/-84.81%)
-Executed in    : 66.240ms (x 1.08/-7.77%)
-    Runtime    :  5.920ms (x 2.09/-52.20%)
-        genFct :  5.660ms (x 1.39/-27.99%)
-        exeFct :  0.260ms (x15.31/-93.47%)
-    Py2JS      : 60.580ms (x 1.06/-5.28%)
-        Py2AST : 44.880ms
-        ASTConv:  9.520ms
-        AST2JS :  6.180ms (x 3.09/-67.61%)
+Tested         : 112/1899 (1787 excluded) [18]
+Code size      :          (x 6.84/-85.38%)
+Executed in    : 52.200ms (x 1.24/-19.25%)
+    Runtime    :  3.240ms (x 3.21/-68.89%)
+        genFct :  2.800ms (x 1.69/-40.93%)
+        exeFct :  0.440ms (x 9.68/-89.67%)
+    Py2JS      : 49.400ms (x 1.21/-17.53%)
+        Py2AST : 42.080ms
+        ASTConv:  4.080ms
+        AST2JS :  3.240ms (x 5.50/-81.82%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -68,9 +67,64 @@ Refactor
 
 #### Operators
 
-    (3) constructors
-    (4) type() / isinstance()
-    (5) other types
+    (1) constructors
+        => genBaseCstr() (?) ou une fct ?
+        => bool()
+            => https://docs.python.org/3/library/stdtypes.html#truth
+        => float()
+            => only str (+infinity)
+                +> __float__ then __index__
+        => int()
+            => str + base (opt)
+                +> __float__ then __index__
+        => str()
+            => __str__ then repr() (__repr__)
+
+    (2) fct deduce return_type
+        => improve type deduce
+            => decl order...
+            => recursive fct...
+        => return int => jsint conversion (how?)
+        => parcours de graphe -> changer...
+            => recursive vs pile...
+
+        (c) arguments...
+        => + destructuring...
+        => + JS fct deduce params.
+
+        (d) Brython <=> SBrython interactions / SBrython <=> JS module interactions.
+            => 2x2 for Brython (export/import JS/Py space).
+            => import types too...
+                => when parsing import => load and parse import (if Py) ?
+                => add type info in SBrython modules (AST is here too)
+
+
+        => cf todo list...
+            => JS gen -> SType -> JS call.
+                => SType "(pyargs, y, z)" => SFctType["args"] => get details for call parsing (including return type).
+                
+                => JS print
+                => call => parseArgs
+
+                => 1. pos
+                => *t
+                => 2. defaults => 1+ with 1 non-pos-only transform to kw (before *t)
+                => 3. kw_only  => if *t => [t]
+                => 4. **kwargs => name in {} de kw_only.
+
+                => call at the same time.
+
+            => ~= SType with __call__ ? [évite le problème var vs call type].
+            => unique ret type
+            => ordered_types.
+            => kw types.
+                => with defaults.
+            + int convert (if unknown, int, or jsint)
+    (3) type() / isinstance() [Type SClass...]
+        -> async + yield => compat mode : call doesn't call.
+        -> await w.import()
+    (4) other types / classes...
+    (5) boucles + break/continue/etc
 
     (0) bytes type vs bytearray !!!
         -> Uint8Array() => bytes.
@@ -86,7 +140,7 @@ Refactor
                 }
         -> number converted to BigInt during conversions... <- but can accept asFloat.
 
-    (1) Compare operators
+    (1) Compare & += operators
         (2) canRepeat ? (symbol + literals + 'simple ops on literal/symbol' (not implement ?) ).
         (3) temporary variable (+ clean-up: (t=null, x) ).
             [N=2, N=3]
@@ -102,11 +156,6 @@ Refactor
     (*) classes
     (*) Brython interactions.
 
--> asFloat => (>> & ^ | ~) ? => BigInt(asFloat(a) & asFloat(b) ).
-    => operators.canBeFloat()
-        => Node.canBeFloat()
-            => if Int2Float() and canBeFloat() => enforce float.
--> other operators...
     -> compare
         -> comparison chains...
             -> clean at the end (garbage collection...)
@@ -147,6 +196,7 @@ Refactor
             -> well, this is an issue for future me ;)
             -> can subs. same issue than cmp op.
             -> but solution more complex. (setattr/getattr) with (a+k) in temporary variables...
+
 -> fcts (subs. in global space)
     -> conversions methods.
     -> (!!x) for __bool__() ?
@@ -523,3 +573,6 @@ Info (TODO)
 
 Info
     - [ ] Arg parsing: https://github.com/brython-dev/brython/issues/2478
+
+
+Simple, Speed, Static, Small

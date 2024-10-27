@@ -1,6 +1,6 @@
 import { r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
-import { binary_jsop, Int2Float, reversed_operator } from "structs/BinaryOperators";
+import { binary_jsop, reversed_operator } from "structs/BinaryOperators";
 import { SType_NOT_IMPLEMENTED } from "structs/SType";
 import { name2SType } from "structs/STypes";
 
