@@ -115,15 +115,43 @@ export function args2js(node: ASTNode, cursor: CodePos) {
     cursor.col += 1;
 
     const args = node.children[0];
+    const _args = args.children;
+
+    let kw_pos = null;
     
-    for(let i = 0 ; i < args.children.length; ++i) {
+    let idx;
+    //TODO: starts after kw ???
+    for( idx = _args.length - 1; idx >= 0; --idx) {
+        if( _args[idx].type === 'arg.posonly' )
+            break;
+        if( _args[idx].children.length === 0 && _args[idx].type !== "arg.kwarg")
+            break;
+    }
+
+    if( idx !== _args.length ) {
+        let count = _args.length - idx - 1;
+        if( idx < _args.length - 1 && _args[idx+1].type === "arg.kwonly" )
+            kw_pos = idx+1;
+        if( count > 1 ) //|| count !== 0 && idx !== -1 && _args[idx].children.length === 1 )
+            kw_pos = idx+1;
+    }
+    
+    for(let i = 0 ; i < _args.length; ++i) {
         if( i !== 0) {
             js += ",";
             ++cursor.col;
         }
 
-        js += arg2js(args.children[i], cursor);
+        if( kw_pos === i)
+            js += toJS('{', cursor);
+        if( i === _args.length-1 && _args[i].type === "arg.vararg" )
+            (_args[i] as any).last = true;
+
+        js += arg2js(_args[i], cursor);
     }
+
+    if( kw_pos !== null)
+        js += toJS('} = {}', cursor);
 
     js += ")";
     cursor.col += 1;
@@ -140,7 +168,16 @@ export function arg2js(node: ASTNode, cursor: CodePos) {
     
     const start = {...cursor};
 
-    if(node.children.length === 1) {
+    if( node.type === "arg.vararg" ) {
+        if( (node as any).last)
+            return toJS(`...${node.value}`, cursor);
+        return toJS( binary_jsop(node, node.value, '=', "[]"), cursor);
+    }
+
+    if( node.type === "arg.kwarg" )
+        return toJS( binary_jsop(node, node.value, '=', "{}"), cursor);
+
+    if(node.children.length === 1 ) {
 
         let value: any = node.children[0];
         if( value.result_type === 'jsint' && node.result_type === 'int')

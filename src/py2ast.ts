@@ -90,16 +90,42 @@ export function convert_body(node: any, context: Context) {
 //TODO: move2core_modules ?
 export function convert_args(node: any, context: Context) {
 
-    let _args = node.args.args;
+    // kwarg
+    let _args = [...node.args.posonlyargs, ...node.args.args];
+    const defaults = [...node.args.defaults];
+
+    let vararg_idx = null;
+    if( node.args.vararg !== undefined) {
+        vararg_idx = _args.length;
+        _args   .push( node.args.vararg );
+        defaults.push( undefined );
+    }
+    _args.push(...node.args.kwonlyargs);
+    defaults.push( ...node.args.kw_defaults );
+
+    const hasKWArgs = node.args.kwarg !== undefined;
+    if( hasKWArgs ) {
+        _args.push( node.args.kwarg );
+        defaults.push(undefined);
+    }
+
+    console.warn(_args);
     if( context.type === "class")
         _args = _args.slice(1);
 
     const args = new Array<ASTNode>(_args.length);
-
-    const defaults = node.args.defaults;
     const doffset  = _args.length - defaults.length;
     for(let i = 0; i < _args.length; ++i) {
-        args[i] = convert_arg(_args[i], defaults[i - doffset], context);
+        let arg_type = "pos";
+        if( i < node.args.posonlyargs.length)
+            arg_type = "posonly";
+        if( i >= _args.length - node.args.kwonlyargs.length - hasKWArgs)
+            arg_type = "kwonly";
+        if( i === vararg_idx)
+            arg_type = "vararg";
+        if( hasKWArgs && i === _args.length - 1)
+            arg_type = "kwarg";
+        args[i] = convert_arg(_args[i], defaults[i - doffset], arg_type, context);
         context.local_variables[args[i].value] = args[i].result_type;
     }
     
@@ -109,8 +135,8 @@ export function convert_args(node: any, context: Context) {
     let last : any;
     if( args.length !== 0) {
 
-        first= node.args.args[0];
-        last = node.args.args[node.args.args.length-1];
+        first= _args[0];
+        last = _args[_args.length-1];
 
     } else {
         // an estimation...
@@ -135,7 +161,7 @@ export function convert_args(node: any, context: Context) {
 
     return new ASTNode(virt_node, "args", null, null, args);
 }
-export function convert_arg(node: any, defval: any, context: Context) {
+export function convert_arg(node: any, defval: any, type:string, context: Context) {
 
     let result_type = node.annotation?.id;
     let children = new Array<ASTNode>();
@@ -151,7 +177,7 @@ export function convert_arg(node: any, defval: any, context: Context) {
         }
     }
 
-    return new ASTNode(node, "arg", result_type, node.arg, children);
+    return new ASTNode(node, `arg.${type}`, result_type, node.arg, children);
 }
 
 export function listpos(node: any[]) {

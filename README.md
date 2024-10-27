@@ -80,17 +80,26 @@ Refactor
         => str()
             => __str__ then repr() (__repr__)
 
-    (2) fct deduce return_type
+    => deduce ret type
         => improve type deduce
-            => decl order...
-            => recursive fct...
+            => decl order.../recursive fct...
+            => parcours de graphe -> changer...
+                => recursive vs pile...
         => return int => jsint conversion (how?)
-        => parcours de graphe -> changer...
-            => recursive vs pile...
+    => improve fct args
+        => + respect original indentation...
+        => + deduce params of JS fct from toString().
 
         (c) arguments...
-        => + destructuring...
-        => + JS fct deduce params.
+                => kwonly + defaults
+                => *t + **args
+
+                => 1. pos
+                => *t
+                => 3. kw_only  => if *t => [t]
+                => 4. **kwargs => name in {} de kw_only.
+        -> fct 100x quicker ???
+
 
         (d) Brython <=> SBrython interactions / SBrython <=> JS module interactions.
             => 2x2 for Brython (export/import JS/Py space).
@@ -105,12 +114,6 @@ Refactor
                 
                 => JS print
                 => call => parseArgs
-
-                => 1. pos
-                => *t
-                => 2. defaults => 1+ with 1 non-pos-only transform to kw (before *t)
-                => 3. kw_only  => if *t => [t]
-                => 4. **kwargs => name in {} de kw_only.
 
                 => call at the same time.
 
