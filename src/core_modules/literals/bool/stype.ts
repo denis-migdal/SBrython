@@ -1,11 +1,9 @@
 import { CMPOPS_LIST, genCmpOps } from "structs/BinaryOperators";
-import { STypeObj } from "structs/SType";
+import { addSType, SType_bool, SType_float, SType_int, SType_jsint } from "structs/STypes";
 
-const SType_bool = {
+addSType('bool', {
     
     ...genCmpOps  (CMPOPS_LIST,
-        ['float', 'bool', 'int', 'jsint']),
+        [SType_float, SType_bool, SType_int, SType_jsint]),
     
-} satisfies STypeObj;
-
-export default SType_bool;
+});

@@ -1,10 +1,8 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { bname2pyname, reversed_operator } from "structs/BinaryOperators";
+import { bname2pyname } from "structs/BinaryOperators";
 
 export default function convert(node: any, context: Context) {
-
-    console.warn("assign", node);
 
     let left  = convert_node(node.target , context );
     let right = convert_node(node.value, context);

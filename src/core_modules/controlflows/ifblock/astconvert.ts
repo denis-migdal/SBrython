@@ -1,5 +1,6 @@
-import { Context, convert_body, convert_line, convert_node, listpos } from "py2ast";
+import { Context, convert_body, convert_node, listpos } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
+import { SType_bool } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
@@ -13,7 +14,7 @@ export default function convert(node: any, context: Context) {
 
         const cond = convert_node(node.test, context);
         
-        if(cond.result_type !== "bool")
+        if(cond.result_type !== SType_bool)
             throw new Error(`Type ${cond.result_type} not yet supported as if condition`);
 
         return new ASTNode(node, `controlflows.${node.ifblock}`, null, null, [

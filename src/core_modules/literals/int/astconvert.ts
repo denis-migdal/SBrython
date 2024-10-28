@@ -1,5 +1,6 @@
 import { Context } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
+import { SType_int, SType_jsint } from "structs/STypes";
 
 export default function convert(node: any, _context: Context) {
 
@@ -11,7 +12,7 @@ export default function convert(node: any, _context: Context) {
     if( typeof value !== "number" && typeof value !== "bigint" )
         return;
 
-    const real_type = typeof value !== "number" ? "int" : "jsint";
+    const real_type = typeof value !== "number" ? SType_int : SType_jsint;
 
     return new ASTNode(node, "literals.int", real_type, value);
 }

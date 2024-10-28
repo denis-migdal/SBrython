@@ -1,5 +1,6 @@
 import { Context } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
+import { SType_NoneType } from "structs/STypes";
 
 export default function convert(node: any, _context: Context) {
 
@@ -8,7 +9,7 @@ export default function convert(node: any, _context: Context) {
             || node.value.__class__.__qualname__ !== "NoneType" )
         return;
 
-    return new ASTNode(node, "literals.None", "NoneType", null);
+    return new ASTNode(node, "literals.None", SType_NoneType, null);
 }
 
 convert.brython_name = "Constant";

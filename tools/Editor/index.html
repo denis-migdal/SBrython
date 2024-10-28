@@ -547,10 +547,16 @@ function print_node(node) {
     if( node.value != null)
         html_bloc.textContent += `:${node.value}`;
     if( node.result_type !== null) {
+
+        let name = node.result_type.__name__;
+        if(name === "function") {
+            name += ` () -> ${node.result_type.__call__.return_type()?.__name__}`;
+        }
+
         let as_type = "";
         if( node.as !== undefined )
             as_type = ` as ${node.as}`;
-        html_bloc.textContent += ` (${node.result_type}${as_type})`;
+        html_bloc.textContent += ` (${name}${as_type})`;
     }
 
 	for(let child of node.children) {

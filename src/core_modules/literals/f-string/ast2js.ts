@@ -1,5 +1,6 @@
-import { r, toJS } from "ast2js";
+import { toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { SType_str } from "structs/STypes";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
@@ -7,7 +8,7 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     for(let child of this.children) {
 
-        if( child.result_type === "str") {
+        if( child.result_type === SType_str) {
 
             // h4ck
             child.jscode = {

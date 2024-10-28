@@ -3,7 +3,10 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    context.local_variables[node.name] = 'class.' + node.name;
+    context.local_symbols[node.name] = {
+        __name__: node.name,
+        //TODO __call__
+    }
 
     context = new Context("class", context);
 

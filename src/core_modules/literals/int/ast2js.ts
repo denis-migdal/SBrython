@@ -1,5 +1,6 @@
 import { r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { SType_int } from "structs/STypes";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
@@ -9,10 +10,10 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     let value = this.value;
 
     if(target === "float") {
-        if( this.result_type === "int" )
+        if( this.result_type === SType_int )
             value = Number(value); // remove useless precision.
     }
-    else if( target === "int" || this.result_type === "int" )
+    else if( target === "int" || this.result_type === SType_int )
         // if already bigint do not cast into jsint (loss of precision).
         suffix = "n";
 

@@ -1,7 +1,7 @@
 import { r } from "ast2js";
 import { ASTNode } from "./ASTNode";
-import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "./SType";
-import { AST } from "py2ast";
+import { STypeFctSubs, STypeObj } from "./SType";
+import { SType_bool, SType_int, SType_jsint, SType_NotImplementedType } from "./STypes";
 
 export const bname2pyname = {
     "USub": "__neg__",
@@ -281,7 +281,7 @@ class
 
 export function Int2Number(a: ASTNode, target = "float") {
 
-    if( a.result_type === 'jsint')
+    if( a.result_type === SType_jsint)
         return a;
 
     if( a.type === 'literals.int') {
@@ -291,14 +291,14 @@ export function Int2Number(a: ASTNode, target = "float") {
     if( a.value === '__mul__' || a.value === '__rmul__' ) {
         const ltype = a.children[0].result_type;
         const rtype = a.children[1].result_type;
-        if(    (ltype === 'int' || ltype === 'jsint')
-            && (rtype === 'int' || rtype === 'jsint')
+        if(    (ltype === SType_int || ltype === SType_jsint)
+            && (rtype === SType_int || rtype === SType_jsint)
         ) {
             (a as any).as = target;
             return a;
         }
     }
-    if( a.value === '__neg__' && a.children[0].result_type === 'int') {
+    if( a.value === '__neg__' && a.children[0].result_type === SType_int) {
         (a as any).as = target;
         return a;
     }
@@ -311,14 +311,14 @@ export function Int2Number(a: ASTNode, target = "float") {
 
 export function Number2Int(a: ASTNode) {
 
-    if( a.result_type === 'int')
+    if( a.result_type === SType_int)
         return a;
 
     if( a.type === 'literals.int') {
         (a as any).as = 'int';
         return a;
     }
-    if( a.value === '__neg__' && a.children[0].result_type === 'jsint') {
+    if( a.value === '__neg__' && a.children[0].result_type === SType_jsint) {
         (a as any).as = "int";
         return a;
     }
@@ -452,21 +452,21 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_prio
 
 type GenUnaryOps_Opts = {
     convert_self   ?: (s: any) => any,
-    call_substitute?: (node: ASTNode, a: ASTNode) => any
+    substitute_call ?: (node: ASTNode, a: ASTNode) => any
 };
 
 
-export function genUnaryOps(ret_type  : string,
+export function genUnaryOps(ret_type  : STypeObj,
                             ops       : (keyof typeof jsop2pyop)[],
                             {
                                 convert_self = (a) => a,
-                                call_substitute
+                                substitute_call
                             }: GenUnaryOps_Opts = {}
                         ) {
 
     let result: Record<string, STypeFctSubs> = {};
 
-    const return_type = (o: string) => ret_type;
+    const return_type = (o: STypeObj) => ret_type;
 
     for(let op of ops) {
 
@@ -474,13 +474,13 @@ export function genUnaryOps(ret_type  : string,
         if( op === 'u.-')
             op = '-';
 
-        call_substitute ??= (node: ASTNode, self: ASTNode) => {
+        substitute_call ??= (node: ASTNode, self: ASTNode) => {
             return unary_jsop(node, op, convert_self(self) );
         };
 
         result[`__${pyop}__`] = {
             return_type,
-            call_substitute
+            substitute_call
         };
     }
     
@@ -490,13 +490,13 @@ export function genUnaryOps(ret_type  : string,
 type GenBinaryOps_Opts = {
     convert_other   ?: Record<string, string>,
     convert_self    ?: (s: any) => any,
-    call_substitute ?: (node: ASTNode, self: ASTNode|any, other: ASTNode|any) => any
+    substitute_call ?: (node: ASTNode, self: ASTNode|any, other: ASTNode|any) => any
 };
 
 
 function generateConvert(convert: Record<string, string>) {
     return (node: ASTNode) => {
-        const src    = node.result_type!;
+        const src    = node.result_type!.__name__;
         const target = convert[src];
         if( target === undefined )
             return node;
@@ -513,18 +513,18 @@ function generateConvert(convert: Record<string, string>) {
 
 const idFct = <T>(a: T) => a;
 
-export function genBinaryOps(ret_type: string,
+export function genBinaryOps(ret_type: STypeObj,
                             ops: (keyof typeof jsop2pyop)[],
-                            other_type: string[], 
+                            other_type: STypeObj[], 
                          {
                             convert_other   = {},
                             convert_self    = idFct,
-                            call_substitute,
+                            substitute_call,
                          }: GenBinaryOps_Opts = {}) {
 
     let result: Record<string, STypeFctSubs> = {};
 
-    const return_type = (o: string) => other_type.includes(o) ? ret_type : SType_NOT_IMPLEMENTED;
+    const return_type = (o: STypeObj) => other_type.includes(o) ? ret_type : SType_NotImplementedType;
     const conv_other  = generateConvert(convert_other);
 
     for(let op of ops) {
@@ -541,30 +541,30 @@ export function genBinaryOps(ret_type: string,
             return binary_jsop(node, conv_other(other), op, convert_self(self) );
         }
 
-        if( call_substitute !== undefined ) {
+        if( substitute_call !== undefined ) {
 
             cs  = (node: ASTNode, self: ASTNode, o: ASTNode) => {
-                return call_substitute(node, convert_self(self), conv_other(o) );
+                return substitute_call(node, convert_self(self), conv_other(o) );
             };
         
             // same_order ? fct : 
             rcs = (node: ASTNode, self: ASTNode, o: ASTNode) => {
-                return call_substitute(node, conv_other(o), convert_self(self) );
+                return substitute_call(node, conv_other(o), convert_self(self) );
             };
         }
 
         result[`__${pyop}__`] = {
             return_type,
-            call_substitute: cs,
+            substitute_call: cs,
         };
         result[`__r${pyop}__`] = {
             return_type,
-            call_substitute: rcs,
+            substitute_call: rcs,
         };
-        if( convert_self === idFct && call_substitute === undefined)
+        if( convert_self === idFct && substitute_call === undefined)
             result[`__i${pyop}__`] = {
                 return_type,
-                call_substitute: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                substitute_call: (node: ASTNode, self: ASTNode, other: ASTNode) => {
                     
                     if( op === '+' && other.value === 1)
                         return unary_jsop(node, '++', self);
@@ -591,16 +591,16 @@ const reverse = {
 } as const;
 
 export function genCmpOps(  ops       : readonly (keyof typeof reverse)[],
-                            other_type: readonly string[],
+                            other_type: readonly STypeObj[],
                             {
                                 convert_other   = {},
                                 convert_self    = idFct,
-                                call_substitute,
+                                substitute_call,
                              }: GenBinaryOps_Opts = {} ) {
 
     let result: Record<string, STypeFctSubs> = {};
 
-    const return_type = (o: string) => other_type.includes(o) ? "bool" : SType_NOT_IMPLEMENTED;
+    const return_type = (o: STypeObj) => other_type.includes(o) ? SType_bool : SType_NotImplementedType;
     const conv_other  = generateConvert(convert_other);
 
     for(let op of ops) {
@@ -626,16 +626,16 @@ export function genCmpOps(  ops       : readonly (keyof typeof reverse)[],
             return binary_jsop(node, a, cop, b);
         }
 
-        if( call_substitute !== undefined ) {
+        if( substitute_call !== undefined ) {
 
             cs  = (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
-                return call_substitute(node, convert_self(self), conv_other(o) ); //TODO...
+                return substitute_call(node, convert_self(self), conv_other(o) ); //TODO...
             };
         }
 
         result[`__${pyop}__`] = {
             return_type,
-            call_substitute: cs,
+            substitute_call: cs,
         };
     }
     

@@ -1,3 +1,5 @@
+import { STypeObj } from "./SType";
+
 export type CodePos = {
     line: number,
     col : number
@@ -13,7 +15,7 @@ interface IASTNode  {
 	type    : string;
 	value   : any;
 	children: ASTNode[];
-	result_type: string|null;
+	result_type: STypeObj|null;
 
     pycode: CodeRange;
     jscode?: CodeRange;
@@ -26,14 +28,14 @@ export class ASTNode implements IASTNode {
 	type    : string;
 	value   : any;
 	children: ASTNode[] = [];
-	result_type: string|null = null;
+	result_type: STypeObj|null = null;
 
     pycode: CodeRange;
     jscode?: CodeRange;
 
 	toJS?: (this: ASTNode, cursor: CodePos) => string;
 
-	constructor(brython_node: any, type: string, result_type: string|null, _value: any = null, children: ASTNode[] = []) {
+	constructor(brython_node: any, type: string, result_type: STypeObj|null, _value: any = null, children: ASTNode[] = []) {
 
 		this.type   = type;
 		this.result_type = result_type;

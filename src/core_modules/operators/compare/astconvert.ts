@@ -1,11 +1,7 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { bname2pyname } from "structs/BinaryOperators";
-
-/*
-- ge/le
-- gt/lt
-*/
+import { SType_bool } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
@@ -19,7 +15,7 @@ export default function convert(node: any, context: Context) {
     const left   = convert_node(node.left, context );
     const rights = node.comparators.map( (n:any) => convert_node(n, context) );
 
-    return new ASTNode(node, `operators.compare`, "bool", ops,
+    return new ASTNode(node, `operators.compare`, SType_bool, ops,
         [
             left,
             ...rights,

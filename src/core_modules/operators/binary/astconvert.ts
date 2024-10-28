@@ -1,8 +1,8 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "structs/SType";
+import { STypeFctSubs } from "structs/SType";
 import { bname2pyname, reversed_operator } from "structs/BinaryOperators";
-import { name2SType } from "structs/STypes";
+import { SType_NotImplementedType } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
@@ -17,20 +17,20 @@ export default function convert(node: any, context: Context) {
     }        
 
 
-    let type = SType_NOT_IMPLEMENTED;
-    let method = name2SType(left.result_type!)?.[op] as STypeFctSubs;
+    let type = SType_NotImplementedType;
+    let method = left.result_type?.[op] as STypeFctSubs;
 
     if( method !== undefined )
         type = method.return_type(right.result_type!);
 
     // try reversed operator
-    if( type === SType_NOT_IMPLEMENTED) {
+    if( type === SType_NotImplementedType) {
         op     = reversed_operator(op);
-        method = name2SType(right.result_type!)?.[op] as STypeFctSubs;
+        method = right.result_type?.[op] as STypeFctSubs;
         if( method !== undefined)
             type   = method.return_type(left.result_type!);
 
-        if( type === SType_NOT_IMPLEMENTED)
+        if( type === SType_NotImplementedType)
             throw new Error(`${right.result_type} ${op} ${left.result_type} NOT IMPLEMENTED!`);
 
         [left, right] = [right, left];

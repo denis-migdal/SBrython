@@ -13,16 +13,19 @@ export default function convert(node: any, context: Context) {
     let value = node.id;
 
     if( value === 'self')
-        value = 'this';
+        value = 'this'; //TODO type of current context ! -> self in local_symbols ?
+    else if( value in context.local_symbols)
+        result_type = context.local_symbols[value];
 
-    else if( value in context.local_variables)
-        result_type = context.local_variables[value];
+    /*
+        //TODO globalSymbols
     else if(value in _r_) {
         if( isClass(_r_[value as keyof typeof _r_]) )
             result_type = `class.${value}`;
 
         value = `_r_.${value}`;
     }
+    */
 
    return new ASTNode(node, "symbol", result_type, value);
 }

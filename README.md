@@ -1,22 +1,44 @@
 # SimplerBrython
 
 ## Status
+
 Status         : SUCCESS
 Tested         : 112/1899 (1787 excluded) [18]
-Code size      :          (x 6.84/-85.38%)
-Executed in    : 52.200ms (x 1.24/-19.25%)
-    Runtime    :  3.240ms (x 3.21/-68.89%)
-        genFct :  2.800ms (x 1.69/-40.93%)
-        exeFct :  0.440ms (x 9.68/-89.67%)
-    Py2JS      : 49.400ms (x 1.21/-17.53%)
-        Py2AST : 42.080ms
-        ASTConv:  4.080ms
-        AST2JS :  3.240ms (x 5.50/-81.82%)
+Code size      :          (x 6.79/-85.27%)
+Executed in    : 30.920ms (x 1.45/-30.83%)
+    Runtime    :  2.000ms (x 3.40/-70.59%)
+        genFct :  1.700ms (x 1.85/-45.86%)
+        exeFct :  0.300ms (x 8.80/-88.64%)
+    Py2JS      : 29.220ms (x 1.42/-29.69%)
+        Py2AST : 24.640ms
+        ASTConv:  2.480ms
+        AST2JS :  2.100ms (x 8.06/-87.59%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
+### Library size
+
+- Runtime: <14kB (contains comments+TS types)
+
+find ./src -name "runtime.ts" -print0 | du --files0-from=- -hc --apparent-size
++
+find ./src/core_runtime -print0 | du --files0-from=- -hs --apparent-size
+
+- py2js + runtime (without py2AST) (deadcode ?)
+
+head -n -1 dist/dev/index.js | wc -c
+<189kB
+
+Target: ~500kB ?
+    => more features = bigger lib size.
+
+(zip/tar.bz2)
+Archive: 421kB -> 73kB  (zip)  /  65.8kB (bz)
+                  80kB  (gzip) /  65.5kB (lzma) / 65.7 (br)
+                  (~x6.4)
+Brython: 1,1MB -> 208kB (x5.29) / 180 kB (x6.11)
 
 ### Roadmap
 
@@ -67,7 +89,31 @@ Refactor
 
 #### Operators
 
-    (0) cf fcts/calls/astconv.ts
+    (0) Complex fct call
+        (b) py2ast args => 4 different loops, compute some info here ?
+            => + improve return_type() => function ??? [signature]
+            => dont {} <- pos in args_node.value ?
+        (c) Store info in SType { __call__:(self?, call_node) {} }
+        (d) Use info in complex call.
+
+// end_pos_idx / vararg_idx
+// [idx]  => name   [for the pos in {}]
+// [name] => idx|-1 [all except pos_only & vararg & kwarg -1 for in {}]
+    // can generate type desc + help JS gen ?
+
+// 1) Pos (node.args)
+//     pos_idx (infinity if vararg)
+//     vararg_idx = pos_idx if none ?
+// i < vararg_idx >>> pos
+// i > vararg_idx >>> vararg (if last ...t)
+// i > pos_idx ==> search in kw for {} => [i]=name
+    // could be removed, but harder JS usage if multi defaults.
+// kw => [name] = 0/-1  stared => {a: 4, ...stared, ...stared}.
+    //        -1 => {}
+    //       >=0 => pos idx
+    // undefined : kwargs
+// TODO *t,**d
+
 
     (1) constructors
         => genBaseCstr() (?) ou une fct ?
@@ -160,6 +206,7 @@ Refactor
     (*) tuple/dict/list/set/etc.
     (*) classes
     (*) Brython interactions.
+    (*) TS output ?
 
     -> compare
         -> comparison chains...
@@ -226,6 +273,29 @@ Refactor
         => immutable type
         => @dataclass(frozen=True)
         => Final[int]
+
+    
+1) Finish
+    => complex fct calls
+    => impl. built in types/fcts.
+    => classes
+2) JS/Brython interactions (x6)
+    => import + export
+    => JS + Brython JS side + Brython Py side
+    => testers ?
+        => small real-life code (no gotcha)
+        => my own students.
+3) Refactor+doc
+4) Own AST => for now extract Brython.
+5) Compat mode...
+
+=> full compat may be too much work TBH.
+=> complex function call (almost done)
+    => classes
+    => imports (get types) + Brython/JS interactions (gen types - can't get ret type?).
+=> testers : test your simple code (do not try edge cases)
+    => bug fix -> core feature -> compat module -> edge case -> workaround_possible
+    => current limitations ok/nok ?
 
 Tot (149)
 

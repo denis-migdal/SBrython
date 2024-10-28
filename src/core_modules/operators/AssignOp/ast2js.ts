@@ -1,8 +1,8 @@
 import { toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
-import { AssignOperators, reversed_operator } from "structs/BinaryOperators";
-import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "structs/SType";
-import { name2SType } from "structs/STypes";
+import { AssignOperators } from "structs/BinaryOperators";
+import { STypeFctSubs } from "structs/SType";
+import { SType_NotImplementedType } from "structs/STypes";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
@@ -11,14 +11,14 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     let op = (AssignOperators as any)[this.value];
 
-    let type = SType_NOT_IMPLEMENTED;
-    let method = name2SType(left.result_type!)?.[op] as STypeFctSubs;
+    let type = SType_NotImplementedType;
+    let method = left.result_type?.[op] as STypeFctSubs;
 
     if( method !== undefined )
         type = method.return_type(right.result_type!);
 
     // try a = a + b
-    if( type === SType_NOT_IMPLEMENTED) {
+    if( type === SType_NotImplementedType) {
         throw new Error(`${right.result_type} ${op}= ${left.result_type} NOT IMPLEMENTED!`);
         /*
         op     = reversed_operator(op);
@@ -33,5 +33,5 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         */
     }
 
-    return toJS( method.call_substitute!(this, left, right), cursor);
+    return toJS( method.substitute_call!(this, left, right), cursor);
 }

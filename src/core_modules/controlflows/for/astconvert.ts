@@ -4,7 +4,7 @@ import { ASTNode } from "structs/ASTNode";
 export default function convert(node: any, context: Context) {
 
     const target = node.target.id;
-    context.local_variables[target] = null; //TODO
+    context.local_symbols[target] = null; //TODO
 
     if( node.iter.constructor.$name === "Call" && node.iter.func.id === "range") {
 

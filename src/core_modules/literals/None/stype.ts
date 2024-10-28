@@ -1,6 +1,3 @@
-import { STypeObj } from "structs/SType";
+import { addSType } from "structs/STypes";
 
-const SType_None = {
-} satisfies STypeObj;
-
-export default SType_None;
+addSType('NoneType', {});

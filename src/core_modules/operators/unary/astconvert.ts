@@ -1,8 +1,8 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { SType_NOT_IMPLEMENTED, STypeFctSubs } from "structs/SType";
+import { STypeFctSubs } from "structs/SType";
 import { bname2pyname } from "structs/BinaryOperators";
-import { name2SType } from "structs/STypes";
+import { SType_bool, SType_NotImplementedType } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
@@ -16,15 +16,15 @@ export default function convert(node: any, context: Context) {
     }
 
     if( op === 'not')
-        return new ASTNode(node, "operators.unary", "bool", "not", [ left ] );
+        return new ASTNode(node, "operators.unary", SType_bool, "not", [ left ] );
 
-    let type = SType_NOT_IMPLEMENTED;
-    let method = name2SType(left.result_type!)?.[op] as STypeFctSubs;
+    let type = SType_NotImplementedType;
+    let method = left.result_type?.[op] as STypeFctSubs;
 
     if( method !== undefined )
         type = method.return_type();
 
-    if( type === SType_NOT_IMPLEMENTED) {
+    if( type === SType_NotImplementedType) {
         throw new Error(`${op} ${left.result_type} NOT IMPLEMENTED!`);
 
         throw new Error('NOT IMPLEMENTED!');

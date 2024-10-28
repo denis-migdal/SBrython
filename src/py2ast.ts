@@ -4,6 +4,7 @@ declare var $B: any;
 import {ASTNode} from "./structs/ASTNode";
 
 import CORE_MODULES from "./core_modules/lists";
+import { STypeObj } from "structs/SType";
 
 
 export type AST = {
@@ -126,7 +127,7 @@ export function convert_args(node: any, context: Context) {
         if( hasKWArgs && i === _args.length - 1)
             arg_type = "kwarg";
         args[i] = convert_arg(_args[i], defaults[i - doffset], arg_type, context);
-        context.local_variables[args[i].value] = args[i].result_type;
+        context.local_symbols[args[i].value] = args[i].result_type;
     }
 
     let first: any;
@@ -211,11 +212,11 @@ export class Context {
 
         this.type = type;
 
-        this.local_variables = parent_context === null ? Object.create(null) 
-                                                       : {...parent_context.local_variables}
+        this.local_symbols = parent_context === null ? Object.create(null) 
+                                                       : {...parent_context.local_symbols}
     }
     type;
-    local_variables: Record<string, string|null>;
+    local_symbols: Record<string, STypeObj|null>;
 }
 
 export function convert_ast(ast: any): ASTNode[] {
