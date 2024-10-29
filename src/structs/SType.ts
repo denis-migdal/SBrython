@@ -13,9 +13,12 @@ export type STypeFct = {
 
     __name__: string;
     __call__: {
-
+        args_names : string[],
+        args_pos   : Record<string, number>,
         idx_end_pos: number;
         idx_vararg : number;
+        has_kw     : boolean;
+        kwargs    ?: string;
     } & STypeFctSubs;
 };
 

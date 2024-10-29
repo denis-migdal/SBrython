@@ -2,6 +2,8 @@ import { Context, convert_body, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFct, STypeObj } from "structs/SType";
 import { getSType, SType_NoneType } from "structs/STypes";
+import { default_call } from "../call/ast2js";
+
 
 export default function convert(node: any, context: Context) {
 
@@ -11,10 +13,13 @@ export default function convert(node: any, context: Context) {
     const SType_fct: STypeFct = {
         __name__: "function",
         __call__: {
+            args_names     : new Array(node.args.args.length+node.args.posonlyargs.length),
+            args_pos       : {},
             idx_end_pos    : -1,
             idx_vararg     : -1,
+            has_kw         : false,
             return_type    : () => fct_return_type!, // ?
-            substitute_call: () => "" /* argument parsing */
+            substitute_call: default_call
         }
     }
 
@@ -72,6 +77,8 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     const _args = node.args;
     const has_vararg = _args.vararg !== undefined;
     const has_kwarg  = _args.kwarg  !== undefined;
+    const args_pos   = meta.args_pos;
+    const args_names = meta.args_names;
 
     const total_args = _args.posonlyargs.length
                      + _args.args.length
@@ -99,6 +106,8 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     for(let i = 0; i < pos.length; ++i ) {
         const arg = convert_arg(pos[i], pos_defaults[i - doffset], "pos", context);
         context.local_symbols[arg.value] = arg.result_type;
+
+        args_names[offset] = arg.value;
         args[offset++] = arg;
     }
 
@@ -122,6 +131,14 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
             meta.idx_end_pos -= nb_pos_defaults;
     }
 
+    let cut_off   = meta.idx_end_pos;
+    if( cut_off === Number.POSITIVE_INFINITY)
+        cut_off = meta.idx_vararg;
+    for(let i = posonly.length; i < cut_off; ++i)
+        args_pos[args[i].value] = i;
+
+    for(let i = cut_off; i < meta.idx_vararg; ++i)
+        args_pos[args[i].value] = -1;
 
     //TODO: idx_end_pos (if default and no idx_vararg)
 
@@ -129,18 +146,24 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     const kwonly      = _args.kwonlyargs;
     const kw_defaults = _args.kw_defaults;
 
+    meta.has_kw = meta.idx_vararg !== cut_off || kwonly.length !== 0;
+
     doffset = kw_defaults.length - kwonly.length;
     for(let i = 0; i < kwonly.length; ++i ) {
         const arg = convert_arg(kwonly[i], kw_defaults[i], "kwonly", context);
         context.local_symbols[arg.value] = arg.result_type;
+
+        args_pos[arg.value] = -1;
         args[offset++] = arg;
     }
 
-    // vararg
+    // kwarg
     if( has_kwarg ) {
         const arg = convert_arg(_args.kwarg, undefined, "kwarg", context);
         context.local_symbols[arg.value] = arg.result_type;
         args[offset++] = arg;
+
+        meta.kwargs = arg.value;
     }
 
     //TODO...

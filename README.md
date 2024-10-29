@@ -95,6 +95,8 @@ Refactor
 
     (0) Complex fct call
         (d) Use info in complex call.
+            => **kw not correctly implemented...
+            => t[] not implemented...
         (e) int => __class__ => __name__
         (f) Imports
             => can assert some info

@@ -45,6 +45,9 @@ export function args2js(node: ASTNode, cursor: CodePos) {
     let kw_start = meta.idx_end_pos;
     if( kw_start === Number.POSITIVE_INFINITY )
         kw_start = meta.idx_vararg + 1;
+
+    if( meta.kwargs !== undefined && kw_start === _args.length-1)
+        ++kw_start;
     
     for(let i = 0 ; i < _args.length; ++i) {
         if( i !== 0) {
