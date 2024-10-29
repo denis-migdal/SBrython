@@ -4,15 +4,15 @@
 
 Status         : SUCCESS
 Tested         : 112/1899 (1787 excluded) [18]
-Code size      :          (x 6.79/-85.27%)
-Executed in    : 30.920ms (x 1.45/-30.83%)
-    Runtime    :  2.000ms (x 3.40/-70.59%)
-        genFct :  1.700ms (x 1.85/-45.86%)
-        exeFct :  0.300ms (x 8.80/-88.64%)
-    Py2JS      : 29.220ms (x 1.42/-29.69%)
-        Py2AST : 24.640ms
-        ASTConv:  2.480ms
-        AST2JS :  2.100ms (x 8.06/-87.59%)
+Code size      :          (x 6.79/-85.26%)
+Executed in    : 33.300ms (x 1.31/-23.83%)
+    Runtime    :  2.040ms (x 3.19/-68.62%)
+        genFct :  1.820ms (x 1.76/-43.12%)
+        exeFct :  0.220ms (x11.82/-91.54%)
+    Py2JS      : 31.480ms (x 1.29/-22.31%)
+        Py2AST : 26.740ms
+        ASTConv:  2.600ms
+        AST2JS :  2.140ms (x 6.44/-84.47%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -84,28 +84,40 @@ Bugs
         -> une fonction exportée
 
 Refactor
+    -> Body as ASTNode module + first set of lines is a body ? (+ ";" issue)
+        -> how to set indent level ?
+    -> Args as ASTNode module (?)
+        -> how to set indentation scheme ?
     -> body/newline/args (toJS...)
     -> try/catch/finaly / if/elif/else => use only one AST.
 
 #### Operators
 
     (0) Complex fct call
-        (b) py2ast args => 4 different loops, compute some info here ?
-            => + improve return_type() => function ??? [signature]
-            => dont {} <- pos in args_node.value ?
-        (c) Store info in SType { __call__:(self?, call_node) {} }
         (d) Use info in complex call.
-
-// end_pos_idx / vararg_idx
-// [idx]  => name   [for the pos in {}]
-// [name] => idx|-1 [all except pos_only & vararg & kwarg -1 for in {}]
-    // can generate type desc + help JS gen ?
+        (e) int => __class__ => __name__
+        (f) Imports
+            => can assert some info
+                => class vs fcts (new or not?)
+                => can deduce shape
+                    - JS  => *t by default.
+                    - Bry => from fct info
+                => can't get ret type though.
+            => return type issue (static...)
+            => Register SType when module parsing/transcription.
+            => .d.sbry for type definition
+                => JS API quite BIG => but not runtime.
+                => could be own parser in a first step.
+            => wrapper for inline SType decl ? as(o, T): T ? setRetType ?
+            => generic call with indirections
+                => can be generated from SType
+                => bigger runtime.
 
 // 1) Pos (node.args)
 //     pos_idx (infinity if vararg)
 //     vararg_idx = pos_idx if none ?
 // i < vararg_idx >>> pos
-// i > vararg_idx >>> vararg (if last ...t)
+// i > vararg_idx < pos_idx > >>> vararg (if last ...t)
 // i > pos_idx ==> search in kw for {} => [i]=name
     // could be removed, but harder JS usage if multi defaults.
 // kw => [name] = 0/-1  stared => {a: 4, ...stared, ...stared}.
