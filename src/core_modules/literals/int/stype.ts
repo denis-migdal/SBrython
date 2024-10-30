@@ -1,20 +1,56 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
-import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, unary_jsop } from "structs/BinaryOperators";
+import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, Number2Int, unary_jsop } from "structs/BinaryOperators";
 import { STypeFctSubs } from "structs/SType";
-import { addSType, SType_bool, SType_float, SType_int, SType_jsint } from "structs/STypes";
+import { addSType, SType_bool, SType_float, SType_int, SType_jsint, SType_str } from "structs/STypes";
+
+const SType_type_int = addSType('type[int]', {
+    __call__: {
+        //TODO...
+        return_type: () => SType_int,
+        substitute_call: (node) => {
+
+            const other = node.children[1];
+            const other_type = other.result_type
+
+            //TODO use their __int__ ?
+            if( other_type === SType_int )
+                return other;
+            if( other_type === SType_jsint)
+                return Number2Int(other);
+            if( other_type === SType_float )
+                return r`BigInt(Math.trunc(${other}))`;
+
+            //TODO: power...
+            if( other_type === SType_str ) {
+
+                //if( node.children.length === 3)
+                //    return r`BigInt(parseInt(${other}, ${node.children[2]}))`;
+
+                //TODO: optimize if other is string litteral...
+                return r`BigInt(${other})`; //, ${node.children[2]}))`; 
+            }
+
+            const method = other.result_type?.__int__ as STypeFctSubs;
+            if( method === undefined )
+                throw new Error(`${other.result_type.__name__}.__int__ not defined`);
+            return method.substitute_call!(node, other);
+        }
+    }
+});
 
 addSType('int', {
 
-    __init__: {
-        return_type: () => SType_int,
-        substitute_call: (node, other) => {
-            const method = other.result_type?.__int__ as STypeFctSubs;
-            if( method === undefined )
-                throw new Error(`${other.result_type}.__int__ not defined`);
-            return method.substitute_call!(node, other);
+    //TODO: fix type...
+    __class__: SType_type_int,
+
+    __str__: {
+        return_type: () => SType_str,
+        substitute_call(node) {
+            return r`${node}.toString()`;
         }
     },
+
     __int__: {
         return_type: () => SType_int,
         substitute_call(node, self) {

@@ -110,7 +110,7 @@ export const jsop2pyop = {
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
 export const JSOperators = [
-    ['u.-'],
+    ['!', '++', '--', '~', 'u.-'],
     ['**'], // right to left !
     ['*', '/', '%'], // Python also has //
     ['+', '-'],

@@ -7,7 +7,7 @@ export function getSType<T extends STypeObj>(name: string): T {
 }
 
 export function addSType(name: string, type: Omit<STypeObj, '__name__'>) {
-    Object.assign( getSType(name), type );
+    return Object.assign( getSType(name), type );
 }
 
 export const SType_int                = getSType("int");

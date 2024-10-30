@@ -33,6 +33,7 @@ import AST_CONVERT_15 from "./literals/int/astconvert.ts";
 import      AST2JS_15 from "./literals/int/ast2js.ts";
 import AST_CONVERT_16 from "./literals/float/astconvert.ts";
 import      AST2JS_16 from "./literals/float/ast2js.ts";
+import     RUNTIME_16 from "./literals/float/runtime.ts";
 import AST_CONVERT_17 from "./literals/f-string/astconvert.ts";
 import      AST2JS_17 from "./literals/f-string/ast2js.ts";
 import AST_CONVERT_18 from "./literals/f-string/FormattedValue/astconvert.ts";
@@ -234,6 +235,7 @@ export default MODULES;
 
 const RUNTIME = {};
 Object.assign(RUNTIME, RUNTIME_9);
+Object.assign(RUNTIME, RUNTIME_16);
 Object.assign(RUNTIME, RUNTIME_21);
 Object.assign(RUNTIME, RUNTIME_24);
 Object.assign(RUNTIME, RUNTIME_29);

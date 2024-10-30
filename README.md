@@ -3,16 +3,16 @@
 ## Status
 
 Status         : SUCCESS
-Tested         : 112/1899 (1787 excluded) [18]
-Code size      :          (x 6.79/-85.26%)
-Executed in    : 33.300ms (x 1.31/-23.83%)
-    Runtime    :  2.040ms (x 3.19/-68.62%)
-        genFct :  1.820ms (x 1.76/-43.12%)
-        exeFct :  0.220ms (x11.82/-91.54%)
-    Py2JS      : 31.480ms (x 1.29/-22.31%)
-        Py2AST : 26.740ms
-        ASTConv:  2.600ms
-        AST2JS :  2.140ms (x 6.44/-84.47%)
+Tested         : 160/1881 (1721 excluded) [26]
+Code size      :          (x 6.53/-84.69%)
+Executed in    : 60.780ms (x 1.18/-15.14%)
+    Runtime    :  3.660ms (x 4.17/-76.05%)
+        genFct :  3.200ms (x 1.92/-48.05%)
+        exeFct :  0.460ms (x15.65/-93.61%)
+    Py2JS      : 57.580ms (x 1.14/-12.04%)
+        Py2AST : 49.520ms
+        ASTConv:  4.260ms
+        AST2JS :  3.800ms (x 4.19/-76.16%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -93,44 +93,28 @@ Refactor
 
 #### Operators
 
-    (0) Complex fct call
-        (d) Use info in complex call.
-            => **kw not correctly implemented...
-            => t[] not implemented...
-        (e) int => __class__ => __name__
-        (f) Imports
-            => can assert some info
-                => class vs fcts (new or not?)
-                => can deduce shape
-                    - JS  => *t by default.
-                    - Bry => from fct info
-                => can't get ret type though.
-            => return type issue (static...)
-            => Register SType when module parsing/transcription.
-            => .d.sbry for type definition
-                => JS API quite BIG => but not runtime.
-                => could be own parser in a first step.
-            => wrapper for inline SType decl ? as(o, T): T ? setRetType ?
-            => generic call with indirections
-                => can be generated from SType
-                => bigger runtime.
+    -> isinstance() / len() / divmod()
+        -> function as SType...
+    -> type()
+        -> requires generics.... type[T](a: T): type[T]...
 
-// 1) Pos (node.args)
-//     pos_idx (infinity if vararg)
-//     vararg_idx = pos_idx if none ?
-// i < vararg_idx >>> pos
-// i > vararg_idx < pos_idx > >>> vararg (if last ...t)
-// i > pos_idx ==> search in kw for {} => [i]=name
-    // could be removed, but harder JS usage if multi defaults.
-// kw => [name] = 0/-1  stared => {a: 4, ...stared, ...stared}.
-    //        -1 => {}
-    //       >=0 => pos idx
-    // undefined : kwargs
-// TODO *t,**d
+    -> except
+    -> for in
+    -> break/continue/else loop [also if/try refactor].
 
+    -> listes en comprehensions ?
+    -> ternary op ?
 
     (1) constructors
-        => genBaseCstr() (?) ou une fct ?
+        - type(a)   => a.__class__ => SType_int [for now]
+            => initial local_symbols
+        - isinstance() => (?)
+                => type(a) === b [for now]
+            => initial local_symbols
+            => + after type guards...
+            => TypeGuard[type] => fct only one arg.
+                => also TypeIs (but meh)
+
         => bool()
             => https://docs.python.org/3/library/stdtypes.html#truth
         => float()
@@ -141,6 +125,11 @@ Refactor
                 +> __float__ then __index__
         => str()
             => __str__ then repr() (__repr__)
+
+        => dict()
+            => hash is intjs (32bits)
+                => if no hash() => return self ?
+                => then eq.
 
     => deduce ret type
         => improve type deduce
@@ -288,9 +277,37 @@ Refactor
         => @dataclass(frozen=True)
         => Final[int]
 
+    (0) Complex fct call
+        => unit tests
+        => not opti (but only at transcription, and still quick compared to py2AST)
+            => the way I generate str is far from optimal... (need to keep track of pos in JS code)
+                => arrays of arrays of arrays of arrays etc.
+                => flatten the array ? => toJS => only at the really really end ?
+                    => I can pre-allocate big array (?)
+                    => join or += ?
+                    => would requires benchmark.
+
+        => JS code generation, flatten toJS arrays (but prevent copies)
+        => generate sourcemap from AST
+        (e) int => __class__ => __name__
+        (f) Imports
+            => can assert some info
+                => class vs fcts (new or not?)
+                => can deduce shape
+                    - JS  => *t by default.
+                    - Bry => from fct info
+                => can't get ret type though.
+            => return type issue (static...)
+            => Register SType when module parsing/transcription.
+            => .d.sbry for type definition
+                => JS API quite BIG => but not runtime.
+                => could be own parser in a first step.
+            => wrapper for inline SType decl ? as(o, T): T ? setRetType ?
+            => generic call with indirections
+                => can be generated from SType
+                => bigger runtime.
     
 1) Finish
-    => complex fct calls
     => impl. built in types/fcts.
     => classes
 2) JS/Brython interactions (x6)

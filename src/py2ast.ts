@@ -5,6 +5,7 @@ import {ASTNode} from "./structs/ASTNode";
 
 import CORE_MODULES from "./core_modules/lists";
 import { STypeObj } from "structs/SType";
+import { SType_float, SType_int, SType_str } from "structs/STypes";
 
 
 export type AST = {
@@ -133,6 +134,12 @@ export class Context {
 export function convert_ast(ast: any): ASTNode[] {
 
     const context = new Context();
+
+    //TODO: builtin_symbols
+    //TODO: fix types...
+    context.local_symbols['int']   = SType_int  .__class__;
+    context.local_symbols['str']   = SType_str  .__class__;
+    context.local_symbols['float'] = SType_float.__class__;
 
     const result = new Array(ast.body.length);
     for(let i = 0; i < ast.body.length; ++i) {

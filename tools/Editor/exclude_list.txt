@@ -2,9 +2,6 @@
 // is instance
 9
 30
-// str()
-10
-31
 
 // assert_raise
 5
@@ -14,8 +11,33 @@
 // __abs__ __ceil__ __mod__
 34-40
 
+# numbers.long integers
+// Math.pi 
+4-7
+// int() with base
+13-47
+
+
+# numbers.issue 749
+// __eq__
+*
+
 # numbers.issue 98
 // from_bytes
+*
+# numbers.issue 294
+// from_bytes
+*
+
+# numbers.issue 1092
+// to_bytes
+*
+# numbers.issue 794
+// to_bytes
+*
+
+# numbers.PEP 515
+// strange representations
 *
 
 # numbers.issue 115
@@ -24,106 +46,73 @@
 # numbers.complex numbers
 // complex
 *
-
-# numbers.issue 294
-// from_bytes
-*
-
 # numbers.issue 498
-// complex+hash+int()
+// complex+hash
 *
-
-# numbers.long integers
-// Math.pi 
-4-7
-// int()
-13-47
-
-# numbers.float subclass
+# numbers.issue 955
+// complex numbers
 *
-
-# numbers.issue 749
-// __eq__
+# numbers.issue 1001
+// complex numbers
 *
-
-# numbers.issue 794
-// to_bytes
+# numbers.issue 1211
+// complex numbers
+*
+# numbers.issue 1245
+// eval + complex numbers
+*
+# numbers.issue 1300
+// complex numbers
+*
+# numbers.issue 1947
+// complex numbers
+*
+# numbers.issue 2396
+// complex numbers
+*
+# numbers.method __complex__
 *
 
 # numbers.issue 840
 // id()
 *
-
-# numbers.PEP 515
-// strange representations
-*
-
-# numbers.issue 955
-// complex numbers
-*
-
-# numbers.issue 1001
-// complex numbers
-*
-
-# numbers.issue 1092
-// to_bytes
-*
-
-# numbers.issue 1098
-// f-string
-*
-
-# numbers.issue 1211
-// complex numbers
+# numbers.issue 1234
+// round()
 *
 
 # numbers.issue 1127
 // override bitwise op
 *
-
-# numbers.issue 1234
-// round()
-*
-
-# numbers.issue 1245
-// eval + complex numbers
-*
-
 # numbers.& for long integers
 // & operator
 *
 
-# numbers.issue 1462
-// list
-*
 
 # numbers.issue 1298
 // pow / Fraction
 *
+# numbers.issue 1299
+// pow
+4
+# numbers.issue 1309
+// pow + Fraction
+*
+# numbers.issue 1328
+// pow()
+*
+# numbers.issue 2110
+// pow()
+*
+# numbers.issue 2407
+// pow()
+*
+
 
 # numbers.issue 1295
 // format stuff
 *
-
 # numbers..2G}' for i in nums]
 // format stuff
-*
-
-# numbers.issue 1299
-// pow
-4
-
-# numbers.issue 1300
-// complex numbers
-*
-
-# numbers.issue 1309
-// pow + Fraction
-*
-
-# numbers.issue 1328
-// float() + pow
 *
 
 # numbers.issue 1330
@@ -136,7 +125,10 @@
 10
 
 # numbers.issue 1504
-// int()
+// int() with base
+*
+# numbers.issue 1960
+// int() with base 0
 *
 
 # numbers.issue 1558
@@ -151,70 +143,38 @@
 // __mul__ __rmull__
 *
 
-# numbers.augmented assignment on list item
-// list
-*
 
 # numbers.hash of integers
 *
 
 # numbers.issue 1784
-// str() + pow() + divmod + float()
+// pow() + divmod
 *
 
 # numbers.issue 1924
 // bit_count
 *
 
-# numbers.issue 1947
-// complex numbers
-*
-
 # numbers.issue 1955
 // %=
-*
-
-# numbers.issue 1960
-// int()
 *
 
 # numbers.issue 1994
 // float += int / abs()
 *
 
-# numbers.method __complex__
+# numbers.issue 1098
+// f-string
 *
-
 # numbers.issue 2095
 // f-string
 *
-
-# numbers.issue 2110
-// pow()
-*
-
-# numbers.issue 2122
-// int()
-*
-
-# numbers.issue 2228
-// int()
-*
-
-# numbers.issue 2361
-// TypeError
-*
-
 # numbers.issue
 // f-strings
 *
 
-# numbers.issue 2396
-// complex numbers
-*
-
-# numbers.issue 2407
-// pow()
+# numbers.issue 2361
+// TypeError
 *
 
 # numbers.issue 2465
@@ -226,13 +186,6 @@
 // multi-inheritance
 28-45
 
-# numbers.issue 967
-// bool cmp
-*
-
-# basic test suite.not sure how to convert this to assert (raise)?
-// raise
-*
 
 # basic test suite.string methods
 *
@@ -247,10 +200,6 @@
 *
 
 # basic test suite.bytes
-*
-
-# basic test suite.filter
-// filter + list
 *
 
 # basic test suite.functions and methods
@@ -300,12 +249,20 @@
 // ternary op
 *
 
+# numbers.issue 1462
+// list
+*
+# numbers.augmented assignment on list item
+// list
+*
+# basic test suite.filter
+// filter + list
+*
 # basic test suite.PEP 585
 // list and tuples
 *
-
-# basic test suite.issue 1535
-// liste en comprehension
+# basic test suite.issue 1693
+// list (append)
 *
 
 # basic test suite.issue 1545
@@ -316,16 +273,8 @@
 // classes + strange stuff
 *
 
-# basic test suite.issue 1693
-// list (append)
-*
-
 # basic test suite.issue 1721
 // decl order
-*
-
-# basic test suite.issue 1819
-// list en comprehension + eval
 *
 
 # basic test suite.various flavours of try / except / else / finally
@@ -338,14 +287,16 @@
 # basic test suite.docstrings
 *
 
-# basic test suite.issue 2041
-// function args parsing
-*
-
 # basic test suite.issue 2069
 // global + , operator
 *
 
+# basic test suite.issue 1535
+// liste en comprehension
+*
+# basic test suite.issue 1819
+// list en comprehension + eval
+*
 # basic test suite.issue 2112
 // f-string + list en comprehension
 *
@@ -358,7 +309,7 @@
 *
 
 # basic test suite.issue 2167
-// fct args parsing
+// fct args parsing + classes ?
 *
 
 # basic test suite.issue 2422
@@ -369,25 +320,19 @@
 // map + iter
 *
 
+# numbers.issue 350
+// repr
+7
 
 # numbers.True and False are instances of int
 // isinstance
 *
-
-# numbers.issue 350
-// infinity + repr
-*
-
-# numbers.issue 352
-// infinity
-*
-
 # numbers.issue 564
 // isinstance
 *
 
 # numbers.issue 1033
-// Fraction et str()
+// Fraction
 *
 
 # numbers.issue 1040
@@ -397,32 +342,24 @@
 # numbers.issue 1049
 // float inheritance
 *
-
 # numbers.issue 1115
 // float inheritance
+*
+# numbers.issue 1524
+// float inheritance
+*
+# numbers.float subclass
 *
 
 # numbers.as_integer_ratio() on integers
 *
 
 # numbers.issue 1315
-// divmod + str()
+// divmod
 *
 
 # numbers.issue 1396
 // format
-*
-
-# numbers.issue 1511
-// infinity
-*
-
-# numbers.issue 1524
-// float inheritance
-*
-
-# numbers.issue 1578
-// str()
 *
 
 # numbers.issue 2087
@@ -438,7 +375,7 @@
 *
 
 # basic test suite.strings
-// strings
+// len()
 *
 
 # basic test suite.enumerate
@@ -448,7 +385,7 @@
 *
 
 # basic test suite.nested function scopes
-// *args
+// unknown fct call
 *
 
 # basic test suite.restore built-in range
@@ -468,35 +405,21 @@
 *
 
 # numbers.issue 982
-// except + int()
+// except
 *
-
 # numbers.issue 1156
 // except + isinstance()
 *
 
 # numbers.issue 1512
-// maths + isnan + float()
+// maths + isnan
 *
-
-# numbers.issue 1864
-// assertRaises
-*
-
-# numbers.issue 1885
-// assertRaises
-*
-
-# numbers.issue 2023
-// assertRaises
-*
+# numbers.issue 1511
+// math.isnan
+7-8
 
 # numbers.issue 2058
 // hash()
-*
-
-# numbers.issue 2363
-// assertRaises
 *
 
 # basic test suite.use imported names : override built-in range
@@ -507,49 +430,54 @@
 // constructor = 0 ??
 *
 
-# basic test suite.PEP 570 (positional-only parameters)
+# numbers.issue 1864
+// assertRaises
 *
-
+# numbers.issue 1885
+// assertRaises
+*
+# numbers.issue 2023
+// assertRaises
+*
+# numbers.issue 2363
+// assertRaises
+*
+# basic test suite.PEP 570 (positional-only parameters)
+// assert_raises
+*
+# basic test suite.not sure how to convert this to assert (raise)?
+// raise
+*
 # basic test suite.issue 1557
 // assert raise
 *
-
 # basic test suite.issue 1642
 // assert raise
 *
-
 # basic test suite.issue 1697
 // assert raise
 *
-
 # basic test suite.issue 1802
 // assert raise
 *
-
 # basic test suite.issue 1803
 // assert raise
 *
-
 # basic test suite.issue 1807
 // assert raise
 *
-
 # basic test suite.symtable syntax errors
 // assert raise
 *
-
 # basic test suite.error in function calls
 // assert raise
 *
-
 # basic test suite.issue 2071
 // assert raise
 *
-
 # basic test suite.object(1) raises TypeError
 // assert raise
 *
-
 # basic test suite.exception attributes
 // assert raise
 *
