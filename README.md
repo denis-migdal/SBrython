@@ -95,15 +95,26 @@ Refactor
 
     -> isinstance() / len() / divmod()
         -> function as SType...
+        -> cstr / typeof / __class__
     -> type()
-        -> requires generics.... type[T](a: T): type[T]...
+        { __class__ } / cstr / typeof => {__name__: "int"}
+        -> substitute_value() => _r_.int 
+        -> requires placeholders for types...
 
-    -> except
-    -> for in
     -> break/continue/else loop [also if/try refactor].
+    -> except
 
     -> listes en comprehensions ?
     -> ternary op ?
+
+    => other builtin (list/tuple/dict/set/bytes)
+    => classes
+
+    => f-string/format
+    => ?
+
+    => parsing
+        => do not enter subcontext => push to list.
 
     (1) constructors
         - type(a)   => a.__class__ => SType_int [for now]
@@ -141,39 +152,12 @@ Refactor
         => + respect original indentation...
         => + deduce params of JS fct from toString().
 
-        (c) complex calls... => store in type...
-            => in local  ?
-            => in STypes ?
-                {__call__: { substitute call } }
-                    => give ASTNode (better).
-                /!\ convert jsint to int (if unknown or int)
-                => cstr => genCall(...?).
-            => methods or in dict (or other struct) => type... (hum)
-                (:int,:float, a: int, ...t: int) -> int
-                (:int,:float, {args: int})       -> int
-
         (d) Brython <=> SBrython interactions / SBrython <=> JS module interactions.
             => 2x2 for Brython (export/import JS/Py space).
             => import types too...
                 => when parsing import => load and parse import (if Py) ?
                 => add type info in SBrython modules (AST is here too)
 
-
-        => cf todo list...
-            => JS gen -> SType -> JS call.
-                => SType "(pyargs, y, z)" => SFctType["args"] => get details for call parsing (including return type).
-                
-                => JS print
-                => call => parseArgs
-
-                => call at the same time.
-
-            => ~= SType with __call__ ? [évite le problème var vs call type].
-            => unique ret type
-            => ordered_types.
-            => kw types.
-                => with defaults.
-            + int convert (if unknown, int, or jsint)
     (3) type() / isinstance() [Type SClass...]
         -> async + yield => compat mode : call doesn't call.
         -> await w.import()

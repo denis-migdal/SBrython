@@ -1,20 +1,21 @@
 import { body2js, r, toJS } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
+import { Number2Int } from "structs/BinaryOperators";
 
 export default function ast2js(this: ASTNode, cursor: CodePos) {
 
     if( this.type === "controlflows.for(range)") {
 
-        let beg : string|ASTNode  = "0n";
-        let incr: string|ASTNode = "1n";
-        let end  = this.children[0];
+        let beg : string|ASTNode|any  = "0n";
+        let incr: string|ASTNode|any = "1n";
+        let end  = Number2Int(this.children[0]);
 
         if( this.children.length > 2) {
-            beg = this.children[0];
-            end = this.children[1];
+            beg = Number2Int(this.children[0]);
+            end = Number2Int(this.children[1]);
         }
         if( this.children.length > 3)
-            incr = this.children[2];
+            incr = Number2Int(this.children[2]);
 
         let js = toJS(r`for(var ${this.value} = ${beg}; ${this.value} < ${end}; ${this.value} += ${incr})`, cursor);
         js += body2js(this, cursor, this.children.length-1);
