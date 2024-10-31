@@ -3,10 +3,14 @@ import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    return new ASTNode(node, `controlflows.catch`, null, node.name, [
-        convert_node(node.type, context),
-        convert_body(node, context)
-    ]);
+    let children;
+    if( node.type !== undefined) {
+        children = [convert_node(node.type, context), convert_body(node, context)]
+    } else {
+        children = [ convert_body(node, context) ];
+    }
+
+    return new ASTNode(node, `controlflows.catch`, null, node.name, children);
 }
 
 convert.brython_name = "ExceptHandler";

@@ -16,10 +16,12 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
     js+= newline(this, cursor, 1);
 
     js+= newline(this, cursor, 1);
+
     for(let handler of this.children)
         js+= toJS(handler, cursor);
-
-    js+= toJS("else{ throw _raw_err_ }", cursor); //TODO...
+    
+    if( this.children[ this.children.length - 1].children.length !== 1 )
+        js+= toJS("else{ throw _raw_err_ }", cursor); //TODO...
 
     js+= newline(this, cursor, 0);
     js+= toJS("}", cursor);

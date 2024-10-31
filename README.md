@@ -101,8 +101,13 @@ Refactor
         -> substitute_value() => _r_.int 
         -> requires placeholders for types...
 
-    -> break/continue/else loop [also if/try refactor].
-    -> except
+    -> if/try refactor (1 block)
+        -> except
+            -> fix raise Exception...
+            -> const _err = _b_.getPyException()
+            -> indent errors (body refactor)
+            -> if/else if/else => first (1block)
+        -> else loop.
 
     -> listes en comprehensions ?
     -> ternary op ?
