@@ -245,10 +245,6 @@
 // listes en comprehension
 *
 
-# basic test suite.issue 1387
-// ternary op
-*
-
 # numbers.issue 1462
 // list
 *

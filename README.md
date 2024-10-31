@@ -93,6 +93,8 @@ Refactor
 
 #### Operators
 
+    -> listes en comprehensions ?
+
     -> isinstance() / len() / divmod()
         -> function as SType...
         -> cstr / typeof / __class__
@@ -108,9 +110,6 @@ Refactor
             -> indent errors (body refactor)
             -> if/else if/else => first (1block)
         -> else loop.
-
-    -> listes en comprehensions ?
-    -> ternary op ?
 
     => other builtin (list/tuple/dict/set/bytes)
     => classes

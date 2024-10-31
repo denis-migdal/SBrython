@@ -73,14 +73,16 @@ import AST_CONVERT_33 from "./controlflows/tryblock/catchblock/astconvert.ts";
 import      AST2JS_33 from "./controlflows/tryblock/catchblock/ast2js.ts";
 import AST_CONVERT_34 from "./controlflows/tryblock/catch/astconvert.ts";
 import      AST2JS_34 from "./controlflows/tryblock/catch/ast2js.ts";
-import AST_CONVERT_35 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_35 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_36 from "./controlflows/for/astconvert.ts";
-import      AST2JS_36 from "./controlflows/for/ast2js.ts";
-import AST_CONVERT_37 from "./comments/astconvert.ts";
-import      AST2JS_37 from "./comments/ast2js.ts";
-import AST_CONVERT_38 from "./class/classdef/astconvert.ts";
-import      AST2JS_38 from "./class/classdef/ast2js.ts";
+import AST_CONVERT_35 from "./controlflows/ternary/astconvert.ts";
+import      AST2JS_35 from "./controlflows/ternary/ast2js.ts";
+import AST_CONVERT_36 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_36 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_37 from "./controlflows/for/astconvert.ts";
+import      AST2JS_37 from "./controlflows/for/ast2js.ts";
+import AST_CONVERT_38 from "./comments/astconvert.ts";
+import      AST2JS_38 from "./comments/ast2js.ts";
+import AST_CONVERT_39 from "./class/classdef/astconvert.ts";
+import      AST2JS_39 from "./class/classdef/ast2js.ts";
 
 
 const MODULES = {
@@ -224,21 +226,25 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_34,
 		     AST2JS:      AST2JS_34
 	},
-	"controlflows.ifblock": {
+	"controlflows.ternary": {
 		AST_CONVERT: AST_CONVERT_35,
 		     AST2JS:      AST2JS_35
 	},
-	"controlflows.for": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_36,
 		     AST2JS:      AST2JS_36
 	},
-	"comments": {
+	"controlflows.for": {
 		AST_CONVERT: AST_CONVERT_37,
 		     AST2JS:      AST2JS_37
 	},
-	"class.classdef": {
+	"comments": {
 		AST_CONVERT: AST_CONVERT_38,
 		     AST2JS:      AST2JS_38
+	},
+	"class.classdef": {
+		AST_CONVERT: AST_CONVERT_39,
+		     AST2JS:      AST2JS_39
 	},
 }
 
