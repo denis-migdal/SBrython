@@ -2,17 +2,31 @@
 
 ## Status
 
+[merged]
 Status         : SUCCESS
-Tested         : 160/1881 (1721 excluded) [26]
-Code size      :          (x 6.53/-84.69%)
-Executed in    : 60.780ms (x 1.18/-15.14%)
-    Runtime    :  3.660ms (x 4.17/-76.05%)
-        genFct :  3.200ms (x 1.92/-48.05%)
-        exeFct :  0.460ms (x15.65/-93.61%)
-    Py2JS      : 57.580ms (x 1.14/-12.04%)
-        Py2AST : 49.520ms
-        ASTConv:  4.260ms
-        AST2JS :  3.800ms (x 4.19/-76.16%)
+Tested         : 167/1877 (1710 excluded) [27]
+Code size      :          (x 8.47/-88.19%)
+Executed in    : 52.460ms (x 1.31/-23.59%)
+    Runtime    :  1.500ms (x19.44/-94.86%) -> 49.580ms (vs 2)
+        genFct :  0.540ms (x 4.33/-76.92%) ->  6.580ms (vs 1.19)
+        exeFct :  0.960ms (x 8.50/-88.24%) ->  0.400ms (vs 14)
+    Py2JS      : 51.920ms (x 1.28/-21.71%) -> 43.000ms (vs 1.22)
+        Py2AST : 45.120ms                  -> 35.920ms
+        ASTConv:  3.300ms                  ->  3.800ms
+        AST2JS :  3.500ms (x 6.06/-83.49%) ->  3.280ms (vs 5)
+
+[unmerged]
+Status         : SUCCESS
+Tested         : 167/1877 (1710 excluded) [27]
+Code size      :          (x 6.60/-84.86%)
+Executed in    : 49.580ms (x 1.21/-17.67%)
+    Runtime    :  6.980ms (x 2.05/-51.19%)
+        genFct :  6.580ms (x 1.19/-16.28%)
+        exeFct :  0.400ms (x14.05/-92.88%)
+    Py2JS      : 43.000ms (x 1.22/-17.88%)
+        Py2AST : 35.920ms
+        ASTConv:  3.800ms
+        AST2JS :  3.280ms (x 5.01/-80.05%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -93,7 +107,46 @@ Refactor
 
 #### Operators
 
-    -> listes en comprehensions ?
+    -> builtin functions   => fct as SType
+    -> type()/isinstance() => Type placeholder with === => _r_.int
+    -> classes + builtin classes
+    [X] refactors (cf above and below)
+        -> 27x (small scripts... => 167 lines)
+        -> option to merge everything ?
+        -> /!\ genFct may also have str concat computations !!!
+            => (ropes)
+            => measure that too...
+                => may explain why only x2 faster instead of 6.6x faster.
+                    => how to ?
+            => no ways to compute/force ?
+            => cost of Function creation ? cost of JS parser startup ?
+            => cost of the function call ?
+        -> if/try blocks
+        -> toJS
+            => flatten array or r => keep [[] ...] ?
+            => join/js_obj
+            => newline (?) => br() ? nl() ?
+            => can return r`` => toJS can be made externally...
+            => do not pass cursor ?
+        -> parse order
+            -> requires body refactor
+                -> do not include {} (set it ourselves : {${body}})
+                -> generate fake return at the end.
+                -> catch block => insert fake assign ?
+            -> ASTConv visit order ?
+                -> function def at the end of body ?
+                    -> add to context.
+                    -> or when first called.
+                -> recursive calls ?
+                    -> break return first.
+                        -> return set return type.
+        -> Body/Args ASTNode
+            -> first is body
+            -> ";" in printer depends on next symbol when printing...
+                -> add to the node -> line (???)
+            -> indent level (how?) -> value has father node ? -> jscode.start...
+            -> Args indent (?)
+    -> imports / interactions
 
     -> isinstance() / len() / divmod()
         -> function as SType...
@@ -112,12 +165,13 @@ Refactor
         -> else loop.
 
     => other builtin (list/tuple/dict/set/bytes)
+        -> listes en comprehensions ?
     => classes
 
     => f-string/format
     => ?
 
-    => parsing
+    => AST parsing strategy
         => do not enter subcontext => push to list.
 
     (1) constructors

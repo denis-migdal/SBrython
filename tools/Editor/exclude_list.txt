@@ -84,7 +84,7 @@
 // override bitwise op
 *
 # numbers.& for long integers
-// & operator
+// & operator -> for in list (get element type...)
 *
 
 
@@ -277,7 +277,7 @@
 *
 
 # basic test suite.issue 1961
-// for in
+// for in list
 *
 
 # basic test suite.docstrings

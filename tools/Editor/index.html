@@ -765,6 +765,7 @@ if( window.location.search === '')
         // numbers
         const search = new URLSearchParams( location.search );
         const test_name = search.get("test");
+        const merge     = search.get("merge") === "true" ? true : false;
     
         if( test_name === null)
             return;
@@ -841,6 +842,8 @@ if( window.location.search === '')
         }
         window.clearResults();
 
+        let full_code = "";
+
         for(let test_name of tests_names) {
             let code = await (await fetch(`./unittests/${test_name}.py`)).text();
 
@@ -877,14 +880,23 @@ if( window.location.search === '')
         
                 code = code.join('\n'); 
 
-                lastResults = await compute( code, stats );
-                if( ! lastResults.success) {
-                    error = true;
-                    break;
+                if( ! merge ) {
+                    lastResults = await compute( code, stats );
+                    if( ! lastResults.success) {
+                        error = true;
+                        break;
+                    }
+                } else {
+                    code = code.split('\n').map(e => `\t${e}`).join('\n');
+                    full_code += `def _${nb_suites}():\n${code}\n_${nb_suites}()\n`;
                 }
             }
             if( error )
                 break;
+        }
+
+        if( merge ) {
+            lastResults = await compute( full_code, stats );
         }
 
         if(error) {
