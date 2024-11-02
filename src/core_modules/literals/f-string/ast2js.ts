@@ -1,30 +1,29 @@
-import { toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { jscode_cursor, w } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 import { SType_str } from "structs/STypes";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    let js = toJS("`", cursor);
+    w("`");
 
     for(let child of this.children) {
 
         if( child.result_type === SType_str) {
 
-            // h4ck
+            const start = jscode_cursor();
+
+            w(child.value);
+
             child.jscode = {
-                start: {...cursor},
-                end: null as any
-            }
-            js += toJS(child.value, cursor);
-            child.jscode.end = {...cursor};
+                start,
+                end: jscode_cursor()
+            };
 
         } else if(child.type === "literals.f-string.FormattedValue") {
-            js += toJS(child, cursor);
+            w(child);
         } else
             throw new Error("unsupported");
     }
 
-    js += toJS("`", cursor);
-
-    return js;
+    w("`");
 }

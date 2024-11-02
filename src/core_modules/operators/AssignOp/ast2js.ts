@@ -1,10 +1,10 @@
-import { toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { wr } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 import { AssignOperators } from "structs/BinaryOperators";
 import { STypeFctSubs } from "structs/SType";
 import { SType_NotImplementedType } from "structs/STypes";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
     let left  = this.children[0];
     let right = this.children[1];
@@ -33,5 +33,5 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         */
     }
 
-    return toJS( method.substitute_call!(this, left, right), cursor);
+    wr( method.substitute_call!(this, left, right) );
 }

@@ -1,8 +1,10 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { w, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
+    
     if( this.value[0] === '"')
-        return toJS(r`${this.value}`, cursor);
-    return toJS(r`"${this.value}"`, cursor);
+        return w(this.value);
+    
+    wt`"${this.value}"`;
 }

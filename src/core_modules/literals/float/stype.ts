@@ -46,6 +46,7 @@ const SType_type_float = addSType('type[float]', {
 
 addSType('float', {
 
+    // @ts-ignore
     __class__: SType_type_float,
 
     __str__: {

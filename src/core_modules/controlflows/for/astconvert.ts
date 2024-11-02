@@ -1,4 +1,4 @@
-import { Context, convert_body, convert_line, convert_node } from "py2ast";
+import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { SType_int } from "structs/STypes";
 
@@ -14,7 +14,7 @@ export default function convert(node: any, context: Context) {
 
         return new ASTNode(node, "controlflows.for(range)", null, target, [
             ... node.iter.args.map( (n:any) => convert_node(n, context) ),
-            convert_body(node, context)
+            convert_node(node.body, context)
         ]);
 
     }
@@ -22,7 +22,7 @@ export default function convert(node: any, context: Context) {
     //TODO: get type...
     return new ASTNode(node, "controlflows.for", null, target, [
         convert_node(node.iter, context),
-        convert_body(node, context)
+        convert_node(node.body, context)
     ]);
 }
 

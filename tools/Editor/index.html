@@ -279,7 +279,7 @@ function executeSBrython(code) {
 
             times[1] = globalThis.performance.now();
             ast = {
-                nodes: convert_ast(_ast),
+                body: convert_ast(_ast),
                 filename
             }
         } else {
@@ -570,7 +570,7 @@ function print_node(node) {
 
 function print_ast(_ast) {
 
-    const ast = _ast.nodes;
+    const ast = _ast.body.children;
 
     const nodes = ast.map( node => {
 
@@ -672,7 +672,7 @@ function print_code_node(node, code, type) {
 // pycode or jscode
 function print_code(code, _ast, type) {
 
-    const ast = _ast.nodes;
+    const ast = _ast.body.children;
 
     const nodes = ast.map( node => {
 
@@ -918,7 +918,7 @@ if( window.location.search === '')
         const btimes = stats.brython.times;
         const sbtimes = stats.sbrython.times;
 
-        const code_size = false ? rdiff(stats.code_len, stats.sbrython.code_len) : '        ';
+        const code_size = true ? rdiff(stats.code_len, stats.sbrython.code_len) : '        ';
 
         result_sbrython.textContent = 
 `Status         : ${error ? 'FAILED' : 'SUCCESS'}

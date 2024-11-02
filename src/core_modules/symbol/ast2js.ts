@@ -1,7 +1,7 @@
-import { toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { w } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    return toJS(this.value, cursor); //TODO
+    w(this.value);
 }

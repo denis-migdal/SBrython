@@ -1,6 +1,6 @@
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, _cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
     //TODO...
     return ""; //`${this.value}`;

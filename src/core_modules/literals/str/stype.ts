@@ -27,6 +27,7 @@ const SType_type_str = addSType('type[str]', {
 
 addSType('str', {
 
+    // @ts-ignore
     __class__: SType_type_str,
 
     ...genCmpOps  (CMPOPS_LIST,

@@ -1,17 +1,15 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { w, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    let js = toJS("{", cursor);
+    w('{');
 
-    for(let i = 0; i < this.children.length; i+=2) {
-        if(i !== 0)
-            js+= toJS(", ", cursor);
-        js += toJS(r`${this.children[i]}: ${this.children[i+1]}`, cursor);
-    }
+    if( this.children.length > 0 )
+        wt`${this.children[0]}: ${this.children[1]}`;
 
-        js+= toJS("}", cursor);
+    for(let i = 2; i < this.children.length; i+=2)
+        wt`, ${this.children[i]}: ${this.children[i+1]}`;
 
-    return js;
+    w('}');
 }

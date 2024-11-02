@@ -10,20 +10,7 @@ export type CodeRange = {
     end  : CodePos
 }
 
-interface IASTNode  {
-
-	type    : string;
-	value   : any;
-	children: ASTNode[];
-	result_type: STypeObj|null;
-
-    pycode: CodeRange;
-    jscode?: CodeRange;
-
-	toJS?: (this: ASTNode, cursor: CodePos) => string;
-}
-
-export class ASTNode implements IASTNode {
+export class ASTNode {
 
 	type    : string;
 	value   : any;
@@ -33,7 +20,7 @@ export class ASTNode implements IASTNode {
     pycode: CodeRange;
     jscode?: CodeRange;
 
-	toJS?: (this: ASTNode, cursor: CodePos) => string;
+	write?: (this: ASTNode) => void;
 
 	constructor(brython_node: any, type: string, result_type: STypeObj|null, _value: any = null, children: ASTNode[] = []) {
 
@@ -44,11 +31,11 @@ export class ASTNode implements IASTNode {
 		this.pycode = {
 			start: {
 				line: brython_node.lineno,
-				col: brython_node.col_offset
+				col : brython_node.col_offset
 			},
 			end: {
 				line: brython_node.end_lineno,
-				col: brython_node.end_col_offset
+				col : brython_node.end_col_offset
 			}
 		}
 	}

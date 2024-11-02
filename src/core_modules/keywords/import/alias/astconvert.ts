@@ -1,4 +1,4 @@
-import { Context, convert_node } from "py2ast";
+import { Context } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {

@@ -1,4 +1,4 @@
-import { toJS } from "ast2js";
+import { w, wr } from "ast2js";
 import { ASTNode, CodePos } from "structs/ASTNode";
 import { binary_jsop, reversed_operator } from "structs/BinaryOperators";
 import { STypeFctSubs } from "structs/SType";
@@ -39,31 +39,25 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
     return method.substitute_call!(node, left, right, reversed);
 }
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
-    
-    let js = '';
+export default function ast2js(this: ASTNode) {
     
     for(let i = 0; i < this.value.length; ++i) {
         if( i !== 0 )
-            js += toJS(' && ', cursor);
+            w(' && ');
 
         const op    = this.value[i];
         const left  = this.children[i];
         const right = this.children[i+1];
 
         if( op === 'is' ) {
-            js += toJS( binary_jsop(this, left, '===', right), cursor);
+            wr( binary_jsop(this, left, '===', right) );
             continue;
         }
         if( op === 'is not' ) {
-            js += toJS( binary_jsop(this, left, '!==', right), cursor);
+            wr( binary_jsop(this, left, '!==', right) );
             continue;
         }
-
-        //TODO: chain...
         
-        js += toJS( find_and_call_substitute(this, left, op, right), cursor);
+        wr( find_and_call_substitute(this, left, op, right) );
     }
-
-    return js;
 }

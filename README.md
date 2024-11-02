@@ -2,31 +2,34 @@
 
 ## Status
 
+=> += "".toString() makes things faster (wtf ??)
+
+
 [merged]
 Status         : SUCCESS
 Tested         : 167/1877 (1710 excluded) [27]
-Code size      :          (x 8.47/-88.19%)
-Executed in    : 52.460ms (x 1.31/-23.59%)
-    Runtime    :  1.500ms (x19.44/-94.86%) -> 49.580ms (vs 2)
-        genFct :  0.540ms (x 4.33/-76.92%) ->  6.580ms (vs 1.19)
-        exeFct :  0.960ms (x 8.50/-88.24%) ->  0.400ms (vs 14)
-    Py2JS      : 51.920ms (x 1.28/-21.71%) -> 43.000ms (vs 1.22)
-        Py2AST : 45.120ms                  -> 35.920ms
-        ASTConv:  3.300ms                  ->  3.800ms
-        AST2JS :  3.500ms (x 6.06/-83.49%) ->  3.280ms (vs 5)
+Code size      : x 1.05/-4.63% (x 8.36/-88.04%)
+Executed in    : 48.640ms (x 1.24/-19.55%)
+    Runtime    :  1.480ms (x15.36/-93.49%)
+        genFct :  0.560ms (x 2.61/-61.64%)
+        exeFct :  0.920ms (x 7.76/-87.11%)
+    Py2JS      : 48.080ms (x 1.23/-18.51%)
+        Py2AST : 42.920ms
+        ASTConv:  2.660ms
+        AST2JS :  2.500ms (x 6.43/-84.45%)
 
 [unmerged]
 Status         : SUCCESS
 Tested         : 167/1877 (1710 excluded) [27]
-Code size      :          (x 6.60/-84.86%)
-Executed in    : 49.580ms (x 1.21/-17.67%)
-    Runtime    :  6.980ms (x 2.05/-51.19%)
-        genFct :  6.580ms (x 1.19/-16.28%)
-        exeFct :  0.400ms (x14.05/-92.88%)
-    Py2JS      : 43.000ms (x 1.22/-17.88%)
-        Py2AST : 35.920ms
-        ASTConv:  3.800ms
-        AST2JS :  3.280ms (x 5.01/-80.05%)
+Code size      : x 0.90/+10.72% (x 6.72/-85.11%)
+Executed in    : 40.020ms (x 1.43/-30.08%)
+    Runtime    :  2.560ms (x 4.08/-75.51%)
+        genFct :  2.180ms (x 1.96/-49.07%)
+        exeFct :  0.380ms (x12.16/-91.77%)
+    Py2JS      : 37.840ms (x 1.40/-28.55%)
+        Py2AST : 32.200ms
+        ASTConv:  3.260ms
+        AST2JS :  2.380ms (x 8.72/-88.54%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -34,7 +37,7 @@ https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=bryth
 
 ### Library size
 
-- Runtime: <14kB (contains comments+TS types)
+- Runtime: <14.8kB (contains comments+TS types)
 
 find ./src -name "runtime.ts" -print0 | du --files0-from=- -hc --apparent-size
 +
@@ -42,8 +45,9 @@ find ./src/core_runtime -print0 | du --files0-from=- -hs --apparent-size
 
 - py2js + runtime (without py2AST) (deadcode ?)
 
+(lot of webpack junks)
 head -n -1 dist/dev/index.js | wc -c
-<189kB
+<204.47kB
 
 Target: ~500kB ?
     => more features = bigger lib size.
@@ -91,62 +95,41 @@ Brython: 1,1MB -> 208kB (x5.29) / 180 kB (x6.11)
 - reflected_methods
 - special methods
 
-#### Some core refactor (osef)
-
-Bugs
-    -> bug : code gen vs print code include ";" aux lignes... 
-        -> une fonction exportée
-
-Refactor
-    -> Body as ASTNode module + first set of lines is a body ? (+ ";" issue)
-        -> how to set indent level ?
-    -> Args as ASTNode module (?)
-        -> how to set indentation scheme ?
-    -> body/newline/args (toJS...)
-    -> try/catch/finaly / if/elif/else => use only one AST.
-
 #### Operators
 
-    -> builtin functions   => fct as SType
+    1. Refactor
+        (d) parse order
+            -> ignore function def (add to a context list)
+            -> parse them at the end or upon first call.
+            -> set fct type on first encountered return.
+    2. Add builtin functions (builder) => no need to add them to SType.
+        -> e.g. len() / use it to generate __class__ ?
+    3. Classes def ?
+    4. Write doc ?
+        -> import/export + tools.
+        -> 16ms
+        -> compliance over performances, performances over compliance.
+        -> what SBrython is not:
+            -> no debug
+            -> no runtime (perf) -> options possibles but breaks perfs.
+    5. Import / brython interactions ?
+    6. type guards (local_symbols in if...) + parent local_symbols ???
+        -> union of types...
+        -> generics...
+        -> ...
+
     -> type()/isinstance() => Type placeholder with === => _r_.int
     -> classes + builtin classes
-    [X] refactors (cf above and below)
-        -> 27x (small scripts... => 167 lines)
-        -> option to merge everything ?
-        -> /!\ genFct may also have str concat computations !!!
-            => (ropes)
-            => measure that too...
-                => may explain why only x2 faster instead of 6.6x faster.
-                    => how to ?
-            => no ways to compute/force ?
-            => cost of Function creation ? cost of JS parser startup ?
-            => cost of the function call ?
-        -> if/try blocks
-        -> toJS
-            => flatten array or r => keep [[] ...] ?
-            => join/js_obj
-            => newline (?) => br() ? nl() ?
-            => can return r`` => toJS can be made externally...
-            => do not pass cursor ?
-        -> parse order
-            -> requires body refactor
-                -> do not include {} (set it ourselves : {${body}})
-                -> generate fake return at the end.
-                -> catch block => insert fake assign ?
-            -> ASTConv visit order ?
-                -> function def at the end of body ?
-                    -> add to context.
-                    -> or when first called.
-                -> recursive calls ?
-                    -> break return first.
-                        -> return set return type.
-        -> Body/Args ASTNode
-            -> first is body
-            -> ";" in printer depends on next symbol when printing...
-                -> add to the node -> line (???)
-            -> indent level (how?) -> value has father node ? -> jscode.start...
-            -> Args indent (?)
+    -> doc (simple usage/rationnal/philosophy)
+        -> use Brython for dev, SBrython for prod (speed up, less security checks)
+        -> Editor -> download+upload? (beta)
+            -> futur: deno + lib (client+server)
     -> imports / interactions
+        => merge into the same JS.
+        => opti with webworker and prefetch before parsing
+        => promise.all before first execution.
+        => Last-Modified and If-Modified-Since
+        => import map with modifications dates and URL.
 
     -> isinstance() / len() / divmod()
         -> function as SType...
@@ -155,14 +138,8 @@ Refactor
         { __class__ } / cstr / typeof => {__name__: "int"}
         -> substitute_value() => _r_.int 
         -> requires placeholders for types...
-
-    -> if/try refactor (1 block)
-        -> except
-            -> fix raise Exception...
-            -> const _err = _b_.getPyException()
-            -> indent errors (body refactor)
-            -> if/else if/else => first (1block)
-        -> else loop.
+    => rewrite isinstance => typeof a === b // a instanceof b
+    => [instanceof might cause issues]
 
     => other builtin (list/tuple/dict/set/bytes)
         -> listes en comprehensions ?
@@ -220,7 +197,6 @@ Refactor
         -> async + yield => compat mode : call doesn't call.
         -> await w.import()
     (4) other types / classes...
-    (5) boucles + break/continue/etc
 
     (0) bytes type vs bytearray !!!
         -> Uint8Array() => bytes.
@@ -319,17 +295,6 @@ Refactor
         => @dataclass(frozen=True)
         => Final[int]
 
-    (0) Complex fct call
-        => unit tests
-        => not opti (but only at transcription, and still quick compared to py2AST)
-            => the way I generate str is far from optimal... (need to keep track of pos in JS code)
-                => arrays of arrays of arrays of arrays etc.
-                => flatten the array ? => toJS => only at the really really end ?
-                    => I can pre-allocate big array (?)
-                    => join or += ?
-                    => would requires benchmark.
-
-        => JS code generation, flatten toJS arrays (but prevent copies)
         => generate sourcemap from AST
         (e) int => __class__ => __name__
         (f) Imports
@@ -358,7 +323,7 @@ Refactor
     => testers ?
         => small real-life code (no gotcha)
         => my own students.
-3) Refactor+doc
+3) doc
 4) Own AST => for now extract Brython.
 5) Compat mode...
 
@@ -494,8 +459,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Currently Working on...
 
--> operators+other keywords.
--> fct calls more complex.
 -> list/tuple/dict
 -> classes
     -> cstr.
@@ -515,14 +478,6 @@ Principle
     1. Complex functions params...
     2. Classes (lot of things)
     3. Symb. substitution system (for List/Tuple/Dict)
-    
-    4. Refactors
-        - ASTNode type refactor
-        - join([Array], ", ") => handle in toJS
-        - nl(indent_src, 1)   => handle in toJS
-        - body()              => handle in toJS
-        - toJS += : only "+".
-
     5. clean doc/README...
     6. Brython unit test
         - assert keyword
@@ -535,10 +490,8 @@ Principle
 
 ### ASTNode type refactor
 
-    - ifblock => split files.
     - =(assign) variant (how to remove ?)
     - remove type from constructor, set it depending on the filename ?
-    - make a typeof for type ? so that it isn't string ?
 
 ### SBrython AST
 
@@ -546,8 +499,6 @@ Principle
     -> WEBASM to control allocations ?
     -> ?
 - Type checker/setter after AST build.
--> toJS => lors du convert node...
-
 
 - associer gauche ou droite ?
 
@@ -563,24 +514,6 @@ main_body
     (g) op (d) op
         => si g= (g op d)
         => sinon (g) op (d op x)
-
-### Complex fct params
-
-Cf https://github.com/brython-dev/brython/issues/2478
-
-- Python function
-    - (...pos_only & pos_no_defaults)
-        - [add if only one default].
-        - [add if default is None... (null)]
-    - ({...pos_with_defaults, ...kw_args, kwargs})
-        - if only kwargs => {} directly...
-    - (...vargs)
-- call with kw args.
-
-- fake for JS (later) -> get params names.
-- assert how to use it from JS.toString() [needs to be known at transcript time...]
-    => import => local variable => type + "ref" (if known at transcript time) => operator.??? => now we have the JS fct...
-    +> plug [native code fcts...]
 
 ### Classes
 
@@ -614,16 +547,9 @@ Cf https://github.com/brython-dev/brython/issues/2478
     - [ ] py code in core_modules ? => pre-transpile
         - [ ] JS code insert
 
-
-
     - keywords
-        - continue+break;
         - async/await
         + move some 2 keywords.
-    - ops
-        a. unary -/+
-        b. cmp : > >= < <= !=
-        c. or / and / not
 
 ## Documentation (TODO)
 
@@ -697,12 +623,9 @@ Cf https://github.com/brython-dev/brython/issues/2478
 - [ ] list used core_module + extend core_module.
 - [ ] brython better perfs...:
     - split Py2JS into Py2AST and AST2JS
-    - disable cache
     cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
 
 - [ ] traceback... (+ need compat mode for locals)
-
-- [ ] convert body into full core_module ? idem for fct args ?
 
 - [ ] SBrython
     - [ ] doc API + complete API

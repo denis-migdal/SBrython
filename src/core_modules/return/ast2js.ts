@@ -1,10 +1,10 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { w, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
     if( this.children.length === 0)
-        return toJS("return null", cursor);
+        return w("return null");
 
-    return toJS(r`return ${this.children[0]}`, cursor);
+    return wt`return ${this.children[0]}`;
 }

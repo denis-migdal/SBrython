@@ -1,5 +1,4 @@
 import Py_Exception from "core_runtime/Exceptions/Exception";
-import { AST } from "py2ast";
 import { SBrython } from "runtime";
 import { ASTNode } from "structs/ASTNode";
 
@@ -7,7 +6,7 @@ function filter_stack(stack: string[]) {
   return stack.filter( e => e.includes('brython_') ); //TODO improves...
 }
 
-
+//TODO: use ~=sourcemap...
 function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: number): null|ASTNode {
 
   for(let i = 0; i < nodes.length; ++i) {
@@ -31,7 +30,7 @@ function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: numbe
 
 export function stackline2astnode(stackline: StackLine, sb: SBrython): ASTNode {
   const ast = sb.getASTFor("sbrython_editor.js");
-  return find_astnode_from_jscode_pos(ast.nodes, stackline[1], stackline[2])!;
+  return find_astnode_from_jscode_pos(ast.body.children, stackline[1], stackline[2])!;
 }
 
 export type StackLine = [string, number, number];
@@ -71,7 +70,7 @@ export function parse_stack(stack: any, sb: SBrython): StackLine[] {
 
         //TODO: extract filename.
         const ast = sb.getASTFor("sbrython_editor.js");
-        const node = find_astnode_from_jscode_pos(ast.nodes, line, col)!;
+        const node = find_astnode_from_jscode_pos(ast.body.children, line, col)!;
         if(node.type === "symbol")
           col += node.value.length; // V8 gives first character of the symbol name when FF gives "("...
 
@@ -103,6 +102,19 @@ Exception: [msg]`;
     console.log(exception_str);
 }
 
+function get_py_exception(_raw_err_: any, __SBRYTHON__: any) {
+  // @ts-ignore
+  const _err_ = _raw_err_ instanceof _b_.PythonError
+              ? _raw_err_.python_exception
+              // @ts-ignore
+              : new _r_.JSException(_raw_err_);
+
+  debug_print_exception(_err_, __SBRYTHON__);
+  
+  return _err_;
+}
+
 export default {
-    debug_print_exception
+    debug_print_exception,
+    get_py_exception
 };

@@ -1,8 +1,8 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 import { SType_int } from "structs/STypes";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
     let suffix = "";
     let target = (this as any).as;
@@ -18,5 +18,5 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         suffix = "n";
 
     // 1e+54 should had be stored as bigint.
-    return toJS(r`${value}${suffix}`, cursor);
+    wt`${value}${suffix}`;
 }

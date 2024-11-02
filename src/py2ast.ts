@@ -9,7 +9,7 @@ import { SType_float, SType_int, SType_str } from "structs/STypes";
 
 
 export type AST = {
-    nodes: ASTNode[],
+    body    : ASTNode,
     filename: string
 }
 
@@ -33,25 +33,53 @@ for(let module_name in CORE_MODULES) {
         (modules[name] ??= []).push(module);
 }
 
-
 export function py2ast(code: string, filename: string): AST {
 
     const parser = new $B.Parser(code, filename, 'file');
 	const _ast = $B._PyPegen.run_parser(parser);
     //console.log("AST", _ast);
+
 	return {
-        nodes: convert_ast(_ast),
+        body: convert_ast(_ast),
         filename
     }
 }
 
+export function convert_ast(ast: any): ASTNode {
+
+    const context = new Context();
+
+    //TODO: builtin_symbols
+    //TODO: fix types...
+
+    //@ts-ignore
+    context.local_symbols['int']   = SType_int  .__class__;
+    //@ts-ignore
+    context.local_symbols['str']   = SType_str  .__class__;
+    //@ts-ignore
+    context.local_symbols['float'] = SType_float.__class__;
+
+    return convert_node(ast.body, context);
+}
+
+
 function getNodeType(brython_node: any): string {
-    return brython_node.sbrython_type ?? brython_node.constructor.$name;
+
+    // likely a body.
+    if( Array.isArray(brython_node) )
+        return "Body";
+
+    return brython_node.constructor.$name;
 }
 
 export function convert_node(brython_node: any, context: Context): ASTNode {
 
     let name = getNodeType(brython_node);
+
+    if(name === "Expr") {
+        brython_node = brython_node.value;
+        name = getNodeType(brython_node);
+    }
 
     if( !(name in modules) ) {
         console.warn("Module not registered:", name);
@@ -64,7 +92,7 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     for(let module of modules[name]) { 
         const result = module.AST_CONVERT(brython_node, context);
         if(result !== undefined) {
-            result.toJS = module.AST2JS;
+            result.write = module.AST2JS;
             return result;
         }
     }
@@ -73,50 +101,17 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     throw new Error(`Unsupported node ${name} at ${brython_node.lineno}:${brython_node.col_offset}`);
 }
 
-//TODO: move2core_modules ?
-export function convert_body(node: any, context: Context) {
+export function list2astnode(node: any[]) {
 
-    const lines = node.body.map( (m:any) => convert_line(m, context) );
-    const last = node.body[node.body.length-1];
-
-    const virt_node = {
-        lineno    : node.body[0].lineno,
-        col_offset: node.body[0].col_offset,
-
-        end_lineno    : last.end_lineno,
-        end_col_offset: last.end_col_offset
-    }
-
-    return new ASTNode(virt_node, "body", null, null, lines);
-}
-
-
-export function listpos(node: any[]) {
-
-    let beg = node[0];
-    let end = node[node.length-1];
+    const beg = node[0];
+    const end = node[node.length-1];
 
     return {
-        //lineno : beg.lineno - 1,
-        //col_offset: node.col_offset,
-        lineno : beg.lineno,
-        col_offset: beg.col_offset,
-        end_lineno: end.end_lineno,
+        lineno        : beg.lineno,
+        col_offset    : beg.col_offset,
+        end_lineno    : end.end_lineno,
         end_col_offset: end.end_col_offset,
     };
-}
-
-export function convert_line(line: any, context: Context): ASTNode {
-
-    let node = line;
-
-    if( line.constructor.$name === "Expr")
-        node = line.value;
-    /*
-    if( "value" in line && ! ("targets" in line) && ! ("target" in line) )
-        node = line.value;*/
-
-    return convert_node( node, context );
 }
 
 export class Context {
@@ -129,28 +124,4 @@ export class Context {
     }
     type;
     local_symbols: Record<string, STypeObj|null>;
-}
-
-export function convert_ast(ast: any): ASTNode[] {
-
-    const context = new Context();
-
-    //TODO: builtin_symbols
-    //TODO: fix types...
-    context.local_symbols['int']   = SType_int  .__class__;
-    context.local_symbols['str']   = SType_str  .__class__;
-    context.local_symbols['float'] = SType_float.__class__;
-
-    const result = new Array(ast.body.length);
-    for(let i = 0; i < ast.body.length; ++i) {
-        //TODO: detect comments
-        result[i] = convert_line(ast.body[i], context);
-
-
-        //console.log(result[i].type);
-    }
-
-    //TODO: detect comments...
-
-    return result;
 }

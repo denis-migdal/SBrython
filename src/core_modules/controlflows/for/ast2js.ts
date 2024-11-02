@@ -1,8 +1,11 @@
-import { body2js, r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { NL, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 import { Number2Int } from "structs/BinaryOperators";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
+
+    const idx  = this.value;
+    const body = this.children[this.children.length-1];
 
     if( this.type === "controlflows.for(range)") {
 
@@ -17,14 +20,10 @@ export default function ast2js(this: ASTNode, cursor: CodePos) {
         if( this.children.length > 3)
             incr = Number2Int(this.children[2]);
 
-        let js = toJS(r`for(var ${this.value} = ${beg}; ${this.value} < ${end}; ${this.value} += ${incr})`, cursor);
-        js += body2js(this, cursor, this.children.length-1);
-
-        return js;
+        return wt`for(var ${idx} = ${beg}; ${idx} < ${end}; ${idx} += ${incr}){${body}${NL}}`;
     }
 
-    let js = toJS(r`for(var ${this.value} of this.children[0])`, cursor);
-        js += body2js(this, cursor, 1);
-    
-    return js;
+    const list = this.children[0];
+
+    wt`for(var ${idx} of ${list}){${body}${NL}}`;
 }

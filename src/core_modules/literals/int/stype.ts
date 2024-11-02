@@ -42,6 +42,7 @@ const SType_type_int = addSType('type[int]', {
 addSType('int', {
 
     //TODO: fix type...
+    // @ts-ignore
     __class__: SType_type_int,
 
     __str__: {

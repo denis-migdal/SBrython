@@ -24,11 +24,8 @@ export default function convert(node: any, context: Context) {
     if( method !== undefined )
         type = method.return_type();
 
-    if( type === SType_NotImplementedType) {
+    if( type === SType_NotImplementedType)
         throw new Error(`${op} ${left.result_type} NOT IMPLEMENTED!`);
-
-        throw new Error('NOT IMPLEMENTED!');
-    }
 
     return new ASTNode(node, "operators.unary", type, op, [ left ] );
 }

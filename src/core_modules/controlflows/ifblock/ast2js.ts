@@ -1,30 +1,18 @@
-import { body2js, r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { NL, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    if( this.type === "controlflows.ifblock") {
-        let js = "";
-        for(let i = 0; i < this.children.length; ++i)
-            js += toJS(this.children[i], cursor);
-        return js;
+    // if
+    wt`if(${this.children[0]}){${this.children[1]}${NL}}`;
+
+    // else if
+    let i;
+    for(i = 2; i < this.children.length - 1; i += 2) {
+        wt`else if(${this.children[i]}){${this.children[i+1]}${NL}}`;
     }
 
-    //if
-    let keyword = "if";
-    if( this.type === "controlflows.elif")
-        keyword = "else if";
-    if( this.type === "controlflows.else")
-        keyword = "else";
-
-    let js = toJS(keyword, cursor);
-    let offset = 0;
-    if( keyword !== "else") { // if/elif condition.
-        offset = 1;
-        js += toJS(r`(${this.children[0]})`, cursor);
-    }
-
-    js += body2js(this, cursor, offset);
-
-    return js;
+    // else
+    if( i === this.children.length - 1 )
+        wt`else {${this.children[i]}${NL}}`;
 }

@@ -1,133 +1,139 @@
 import { AST } from "py2ast";
 import { ASTNode, CodePos } from "structs/ASTNode";
-import { Body } from "structs/Body";
+
+const cursor: { line: number, line_offset: number} = {
+    line       : 0,
+    line_offset: 0
+};
+let jscode: string;
+
+export function jscode_cursor(): CodePos {
+    return {
+        line: cursor.line,
+        col : jscode.length - cursor.line_offset
+    }
+}
+
+function new_jscode(filename: string) {
+
+    jscode  = `//# sourceURL=${filename}\n`;
+    jscode += `const {_r_, _b_} = __SBRYTHON__;\n`;
+
+    cursor.line = 3;
+    cursor.line_offset = jscode.length;
+}
+
+type Printable = {toString(): string};
+
+let indent = "    ";
+let cur_indent_level = -1;
+let cur_indent = "";
+
+export const NL = {
+    toString: function() {
+
+        ++cursor.line;
+        cursor.line_offset = jscode.length + 1;
+
+        return "\n" + cur_indent;
+    }
+}
+export const BB = {
+    toString: function() {
+        if( ++cur_indent_level > 0)
+            cur_indent += indent;
+        return "";
+    }
+}
+export const BE = {
+    toString: function() {
+        --cur_indent_level;
+        cur_indent = cur_indent.slice(0,-4);
+        return "";
+    }
+}
+
+
+export function r(...args: [TemplateStringsArray, ...(Printable|ASTNode)[]]) {
+    return args;
+}
+
+export function wr(args: [TemplateStringsArray, ...(Printable|ASTNode)[]]) {
+    if( typeof args === "string")
+        return w(args);
+    return wt(...args);
+}
+
+export function wt(str: TemplateStringsArray, ...args: (Printable|ASTNode)[]) {
+    
+    for(let i = 0; i < args.length; ++i) {
+        jscode += str[i];
+        w(args[i]);
+    }
+
+    jscode += str[args.length];
+}
+
+export function w(...args: (Printable|ASTNode)[]) {
+
+    for(let i = 0; i < args.length; ++i) {
+
+        let arg = args[i];
+
+        if( Array.isArray(arg) ) { // likely a r``
+            wr(arg as any);
+            continue;
+        }
+
+        if( ! (arg instanceof ASTNode) ) {
+
+            if( arg === undefined )
+                arg = "undefined";
+            if( arg === null )
+                arg = "null";
+
+            jscode += arg.toString();
+            continue;
+        }
+
+        // @ts-ignore
+        arg.jscode = {
+            start: {
+                line: cursor.line,
+                col : jscode.length - cursor.line_offset
+            }
+        };
+
+        arg.write!();
+
+        arg.jscode!.end = {
+            line: cursor.line,
+            col : jscode.length - cursor.line_offset
+        }
+    }
+}
 
 export function ast2js(ast: AST) {
 
-    const exported = []; // move2ast gen ?
+    new_jscode(ast.filename);
 
-	let js = `//# sourceURL=${ast.filename}\n`;
-	    js+= `const {_r_, _b_} = __SBRYTHON__;\n`;
-    let cursor = {line: 3, col: 0};
-	for(let node of ast.nodes) {
+    w(ast.body);
 
-		js += astnode2js(node, cursor);
+    // TODO: better export strategy (?)
+    jscode += `\nconst __exported__ = {};\n`;
 
-        if(node.type === "functions.def")
-            exported.push(node.value);
-        else
-            js += toJS(";", cursor)
-
-        js +=    newline(node, cursor);
+    /**
+    const lines = ast.body.children;
+    const exported = new Array(lines.length);
+    let offset = 0;
+    for(let i = 0; i < lines.length; ++i) {
+        if( lines[i].type === "functions.def")
+        exported[i] = lines[i].value;
     }
+    exported.length = offset;
 
-    js += `\nconst __exported__ = {${exported.join(', ')}};\n`;
+    jscode += `\nconst __exported__ = {${exported.join(', ')}};\n`;
+    /**/
 
-	return js;
-}
-
-export function r(str: TemplateStringsArray, ...args:any[]) {
-    return [str, args];
-}
-
-export function toJS( str: ReturnType<typeof r>|string|ASTNode|Body,
-                      cursor: CodePos ) {
-
-    if( typeof str === "string") {
-        cursor.col += str.length;
-        return str;
-    }
-
-    if( str instanceof Body ) {
-        return str.toJS(cursor);
-    }
-
-    if( str instanceof ASTNode
-        || str instanceof Object && ! Array.isArray(str) ) { // for py2ast_fast
-        return astnode2js(str, cursor);
-    }
-
-    let js = "";
-
-    let e: any;
-    let s: string = "";
-
-    for(let i = 0; i < str[1].length; ++i) {
-
-        s = str[0][i];
-        js += s;
-        cursor.col += s.length;
-
-        e = str[1][i];
-        if( e instanceof Object) {
-            js += toJS(e, cursor);
-        } else {
-            s = `${e}`;
-            js += s;
-            cursor.col += s.length;
-        }
-    }
-
-    s = str[0][str[1].length];
-    js += s;
-    cursor.col += s.length;
-
-    return js;
-}
-
-//TODO: move2core_modules ?
-export function body2js(node: ASTNode, cursor: CodePos, idx = 0, print_bracket = true) {
-    
-    const start = {...cursor};
-
-    let js = "";
-    if(print_bracket)
-        js+="{";
-    const body = node.children[idx];//body: ASTNode[];
-
-    for(let i = 0; i < body.children.length; ++i) {
-        js += newline(node, cursor, 1);
-        js += astnode2js(body.children[i], cursor)
-    }
-
-    if(print_bracket) {
-        js += newline(node, cursor);
-        js += "}";
-        cursor.col += 1;
-    }
-
-    body.jscode = {
-        start: start,
-        end  : {...cursor}
-    }
-
-    return js;
-}
-
-export function newline(node: ASTNode, cursor: CodePos, indent_level: number = 0) {
-
-    let base_indent = node.jscode!.start.col;
-    if( ["controlflows.else", "controlflows.elif", "controlflows.catchblock"].includes(node.type) ) {
-       --base_indent;
-    }
-
-    const indent = indent_level*4 + base_indent;
-
-    ++cursor.line;
-    cursor.col = indent;
-    return "\n" + "".padStart(indent);
-}
-
-export function astnode2js(node: ASTNode, cursor: CodePos) {
-
-    node.jscode = {
-        start: {...cursor},
-        end  : null as any
-    }
-
-    let js = node.toJS!(cursor);
-
-    node.jscode.end = {...cursor}
-    
-    return js;
+	return jscode;
 }

@@ -1,22 +1,20 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { w, wt } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    let js = "";
+    w("const {");
 
-    js += toJS("const {", cursor);
     for(let i = 0; i < this.children.length; ++i) {
         if( i !== 0)
-            js += toJS(", ", cursor );
-        js += toJS( this.children[i], cursor );
+            w(", ");
+        w(this.children[i]);
     }
-    js += toJS("} = ", cursor);
+
+    w('} = ');
     
     if(this.value === null)
-        js += toJS("__SBRYTHON__.getModules()", cursor);
+        w("__SBRYTHON__.getModules()");
     else
-        js += toJS(`__SBRYTHON__.getModule("${this.value}")`, cursor);
-
-    return js;
+        wt`__SBRYTHON__.getModule("${this.value}")`;
 }

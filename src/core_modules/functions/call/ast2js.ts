@@ -1,45 +1,37 @@
-import { r, toJS } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { r, wr } from "ast2js";
+import { ASTNode } from "structs/ASTNode";
 import { STypeFct } from "structs/SType";
 
 function print_obj(obj: Record<string, any>) {
 
-    let entries = Object.entries(obj);
+    const keys = Object.keys(obj);
+    if(keys.length === 0)
+        return [[]];
 
-    let str  = new Array(entries.length+1); // ?
-    let data = new Array(entries.length);
+    const str = new Array(keys.length+1);
+    str[0] = `{${keys[0]}: `;
+    let i;
+    for(i = 1; i < keys.length; ++i)
+        str[i]  = `, ${keys[i]}: `;
 
-    str [0] = `{${entries[0][0]}:`;
-    data[0] = entries[0][1];
+    str[i] = "}";
 
-    for(let i = 1; i < entries.length; ++i) {
-        str [i] = `, ${entries[i][0]}: `
-        data[i] = entries[i][1];
-    }
-    str[entries.length] = '}';
-
-    return [ str, data ];
+    return [str, ...Object.values(obj)];
 }
 
 function join(data: any[], sep=", ") {
 
     if(data.length === 0)
-        return [[""], []];
+        return [[]];
 
-    let result = new Array(data.length);
+    const str = new Array(data.length+1);
+    str[0] = "";
+    let i;
+    for(i = 1; i < data.length; ++i)
+        str[i] = sep;
+    str[i] = "";
 
-    let str = new Array(data.length+1);
-
-    str[0]    = "";
-    result[0] = data[0] ?? "undefined";
-
-    for(let i = 1; i < data.length; ++i) {
-           str[i] = sep;
-        result[i] = data[i] ?? "undefined";
-    }
-    str[data.length] = "";
-
-    return [str,result];
+    return [str, ...data];
 }
 
 export function default_call(node: ASTNode) {
@@ -134,7 +126,7 @@ export function default_call(node: ASTNode) {
     return r`${node.children[0]}(${join(pos)})`; // args ?
 }
 
-export default function ast2js(this: ASTNode, cursor: CodePos) {
+export default function ast2js(this: ASTNode) {
 
-    return toJS( (this.value as STypeFct).__call__.substitute_call!(this), cursor);
+    wr( (this.value as STypeFct).__call__.substitute_call!(this) );
 }

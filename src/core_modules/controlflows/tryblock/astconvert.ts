@@ -1,28 +1,17 @@
-import { Context, convert_body, convert_line, convert_node, listpos } from "py2ast";
+import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    const children = [
-        {
-            sbrython_type: "Try.try",
-            ...node
-        },
-        {
-            sbrython_type: "Try.catchblock",
-            ...listpos(node.handlers),
-            handlers: node.handlers
-        }
-    ];
+    const children = new Array<ASTNode>(node.handlers.length+1);
 
-    const astnode = new ASTNode(node, "controlflows.tryblock", null, null, [
-        ...children.map( n => convert_node(n, context) )
-    ]);
+    // try body
+    children[0] = convert_node(node.body, context);
 
-    //fix pycode.
-    astnode.children[0].pycode.end = astnode.children[1].pycode.start;
+    for(let i = 0; i < node.handlers; ++i)
+        children[i+1] = convert_node(node.handlers[i], context);
 
-    return astnode;
+    return new ASTNode(node, "controlflows.tryblock", null, null, children);
 }
 
 convert.brython_name = "Try";

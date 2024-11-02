@@ -62,27 +62,27 @@ import AST_CONVERT_28 from "./functions/call/astconvert.ts";
 import      AST2JS_28 from "./functions/call/ast2js.ts";
 import AST_CONVERT_29 from "./functions/call/keyword/astconvert.ts";
 import      AST2JS_29 from "./functions/call/keyword/ast2js.ts";
-import AST_CONVERT_30 from "./controlflows/while/astconvert.ts";
-import      AST2JS_30 from "./controlflows/while/ast2js.ts";
-import AST_CONVERT_31 from "./controlflows/tryblock/astconvert.ts";
-import      AST2JS_31 from "./controlflows/tryblock/ast2js.ts";
-import     RUNTIME_31 from "./controlflows/tryblock/runtime.ts";
-import AST_CONVERT_32 from "./controlflows/tryblock/try/astconvert.ts";
-import      AST2JS_32 from "./controlflows/tryblock/try/ast2js.ts";
-import AST_CONVERT_33 from "./controlflows/tryblock/catchblock/astconvert.ts";
-import      AST2JS_33 from "./controlflows/tryblock/catchblock/ast2js.ts";
-import AST_CONVERT_34 from "./controlflows/tryblock/catch/astconvert.ts";
-import      AST2JS_34 from "./controlflows/tryblock/catch/ast2js.ts";
-import AST_CONVERT_35 from "./controlflows/ternary/astconvert.ts";
-import      AST2JS_35 from "./controlflows/ternary/ast2js.ts";
-import AST_CONVERT_36 from "./controlflows/ifblock/astconvert.ts";
-import      AST2JS_36 from "./controlflows/ifblock/ast2js.ts";
-import AST_CONVERT_37 from "./controlflows/for/astconvert.ts";
-import      AST2JS_37 from "./controlflows/for/ast2js.ts";
-import AST_CONVERT_38 from "./comments/astconvert.ts";
-import      AST2JS_38 from "./comments/ast2js.ts";
-import AST_CONVERT_39 from "./class/classdef/astconvert.ts";
-import      AST2JS_39 from "./class/classdef/ast2js.ts";
+import AST_CONVERT_30 from "./functions/args/astconvert.ts";
+import      AST2JS_30 from "./functions/args/ast2js.ts";
+import AST_CONVERT_31 from "./controlflows/while/astconvert.ts";
+import      AST2JS_31 from "./controlflows/while/ast2js.ts";
+import AST_CONVERT_32 from "./controlflows/tryblock/astconvert.ts";
+import      AST2JS_32 from "./controlflows/tryblock/ast2js.ts";
+import     RUNTIME_32 from "./controlflows/tryblock/runtime.ts";
+import AST_CONVERT_33 from "./controlflows/tryblock/catch/astconvert.ts";
+import      AST2JS_33 from "./controlflows/tryblock/catch/ast2js.ts";
+import AST_CONVERT_34 from "./controlflows/ternary/astconvert.ts";
+import      AST2JS_34 from "./controlflows/ternary/ast2js.ts";
+import AST_CONVERT_35 from "./controlflows/ifblock/astconvert.ts";
+import      AST2JS_35 from "./controlflows/ifblock/ast2js.ts";
+import AST_CONVERT_36 from "./controlflows/for/astconvert.ts";
+import      AST2JS_36 from "./controlflows/for/ast2js.ts";
+import AST_CONVERT_37 from "./comments/astconvert.ts";
+import      AST2JS_37 from "./comments/ast2js.ts";
+import AST_CONVERT_38 from "./class/classdef/astconvert.ts";
+import      AST2JS_38 from "./class/classdef/ast2js.ts";
+import AST_CONVERT_39 from "./body/astconvert.ts";
+import      AST2JS_39 from "./body/ast2js.ts";
 
 
 const MODULES = {
@@ -206,43 +206,43 @@ const MODULES = {
 		AST_CONVERT: AST_CONVERT_29,
 		     AST2JS:      AST2JS_29
 	},
-	"controlflows.while": {
+	"functions.args": {
 		AST_CONVERT: AST_CONVERT_30,
 		     AST2JS:      AST2JS_30
 	},
-	"controlflows.tryblock": {
+	"controlflows.while": {
 		AST_CONVERT: AST_CONVERT_31,
 		     AST2JS:      AST2JS_31
 	},
-	"controlflows.tryblock/try": {
+	"controlflows.tryblock": {
 		AST_CONVERT: AST_CONVERT_32,
 		     AST2JS:      AST2JS_32
 	},
-	"controlflows.tryblock/catchblock": {
+	"controlflows.tryblock/catch": {
 		AST_CONVERT: AST_CONVERT_33,
 		     AST2JS:      AST2JS_33
 	},
-	"controlflows.tryblock/catch": {
+	"controlflows.ternary": {
 		AST_CONVERT: AST_CONVERT_34,
 		     AST2JS:      AST2JS_34
 	},
-	"controlflows.ternary": {
+	"controlflows.ifblock": {
 		AST_CONVERT: AST_CONVERT_35,
 		     AST2JS:      AST2JS_35
 	},
-	"controlflows.ifblock": {
+	"controlflows.for": {
 		AST_CONVERT: AST_CONVERT_36,
 		     AST2JS:      AST2JS_36
 	},
-	"controlflows.for": {
+	"comments": {
 		AST_CONVERT: AST_CONVERT_37,
 		     AST2JS:      AST2JS_37
 	},
-	"comments": {
+	"class.classdef": {
 		AST_CONVERT: AST_CONVERT_38,
 		     AST2JS:      AST2JS_38
 	},
-	"class.classdef": {
+	"body": {
 		AST_CONVERT: AST_CONVERT_39,
 		     AST2JS:      AST2JS_39
 	},
@@ -256,7 +256,7 @@ Object.assign(RUNTIME, RUNTIME_9);
 Object.assign(RUNTIME, RUNTIME_16);
 Object.assign(RUNTIME, RUNTIME_21);
 Object.assign(RUNTIME, RUNTIME_26);
-Object.assign(RUNTIME, RUNTIME_31);
+Object.assign(RUNTIME, RUNTIME_32);
 
 
 export const _b_ = RUNTIME;
