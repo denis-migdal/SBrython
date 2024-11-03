@@ -123,5 +123,8 @@ export class Context {
                                                        : {...parent_context.local_symbols}
     }
     type;
+
+    parent_node_context?: ASTNode; 
+
     local_symbols: Record<string, STypeObj|null>;
 }

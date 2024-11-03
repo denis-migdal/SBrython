@@ -270,7 +270,7 @@
 *
 
 # basic test suite.issue 1721
-// decl order
+// no typehint in function arg
 *
 
 # basic test suite.various flavours of try / except / else / finally

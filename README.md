@@ -2,9 +2,6 @@
 
 ## Status
 
-=> += "".toString() makes things faster (wtf ??)
-
-
 [merged]
 Status         : SUCCESS
 Tested         : 167/1877 (1710 excluded) [27]
@@ -97,11 +94,48 @@ Brython: 1,1MB -> 208kB (x5.29) / 180 kB (x6.11)
 
 #### Operators
 
-    1. Refactor
-        (d) parse order
-            -> ignore function def (add to a context list)
-            -> parse them at the end or upon first call.
-            -> set fct type on first encountered return.
+    0.
+        -> new types (fcts)
+            -> write_symbol / write_call
+            -> generateFct(callback) helpers ?
+                -> __name__ / __class__ / __call__
+                    -> callable
+                    -> function
+                    -> class
+                -> idem class.
+                -> write_symbol: how ? (<- symbol ?) [could be meta?]
+            -> no needs for SType ? -> use local_symbols instead ?
+            -> genFct => len() / pow() / divmod()
+            -> list/tuple/dict/bytes/bytearray
+            -> add local_symbols (the types) to the generated AST (for imports)
+            -> class => is context.type really usefull
+                -> self context ? a type that is filled with class members ?
+                -> generate ASTNode variants or use value ?
+            -> type(x) => write_symbol => use a _r_.int => a symbol ?
+            -> jsop => write_binaryop version (replace old version ?)
+            -> redesign op. structures ?
+            -> (as any). => add facultative properties (op priority + as)
+                -> better convert system ?
+            -> args => really need fake node ?
+            -> 3 int strats : only number/only bigint/mix.
+                -> only number
+                    -> fast
+                    -> lost of prec (rare)
+                    -> good JS interact.
+                    -> can't distinguish from float runtime.
+                -> only bigint
+                    -> slower
+                    -> prec guaranteed
+                    -> may require explicit conversions when interacting with JS
+                    -> can distinguish runtime.
+                -> mixed
+                    -> middle
+                    -> prec guaranteed
+                    -> issue conversions -> defaults to bigint when interacting with JS.
+                        -> arg conversion when call...
+                    -> may distinguish runtime
+                -> evaluate perfs.
+
     2. Add builtin functions (builder) => no need to add them to SType.
         -> e.g. len() / use it to generate __class__ ?
     3. Classes def ?

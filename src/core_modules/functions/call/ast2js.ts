@@ -22,7 +22,7 @@ function print_obj(obj: Record<string, any>) {
 function join(data: any[], sep=", ") {
 
     if(data.length === 0)
-        return [[]];
+        return [[""]];
 
     const str = new Array(data.length+1);
     str[0] = "";

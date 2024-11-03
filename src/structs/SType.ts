@@ -1,3 +1,5 @@
+import { Context } from "py2ast";
+import { ASTNode } from "./ASTNode";
 
 export type STypeSubs = {
     //type       ?: string,
@@ -19,6 +21,9 @@ export type STypeFct = {
         idx_vararg : number;
         has_kw     : boolean;
         kwargs    ?: string;
+
+        // used to delay function body parsing in order to handle out of order decl.
+        generate   : undefined|( (node: any, astnode: ASTNode, context: Context) => void );
     } & STypeFctSubs;
 };
 

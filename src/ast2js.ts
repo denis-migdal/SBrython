@@ -96,19 +96,13 @@ export function w(...args: (Printable|ASTNode)[]) {
             continue;
         }
 
-        // @ts-ignore
-        arg.jscode = {
-            start: {
-                line: cursor.line,
-                col : jscode.length - cursor.line_offset
-            }
-        };
+        const start = jscode_cursor();
 
         arg.write!();
 
-        arg.jscode!.end = {
-            line: cursor.line,
-            col : jscode.length - cursor.line_offset
+        arg.jscode = {
+            start,
+            end: jscode_cursor()
         }
     }
 }

@@ -5,7 +5,6 @@ import { STypeFctSubs } from "structs/SType";
 export default function convert(node: any, context: Context) {
 
     const name = node.func.id;
-
     const fct_type = context.local_symbols[name]!;
     const ret_type = (fct_type.__call__ as STypeFctSubs).return_type();
 
