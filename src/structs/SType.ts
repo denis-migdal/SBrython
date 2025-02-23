@@ -1,6 +1,8 @@
 import { Context } from "py2ast";
 import { ASTNode } from "./ASTNode";
 
+/**/
+
 export type STypeSubs = {
     //type       ?: string,
     substitute ?: (...args: any[]) => any

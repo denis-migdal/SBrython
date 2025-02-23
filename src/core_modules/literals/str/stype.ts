@@ -1,10 +1,10 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 import { CMPOPS_LIST, genBinaryOps, genCmpOps} from "structs/BinaryOperators";
-import { STypeFctSubs, STypeObj } from "structs/SType";
+import { STypeFctSubs } from "structs/SType";
 import { addSType, SType_int, SType_jsint, SType_str } from "structs/STypes";
 
-const SType_type_str = addSType('type[str]', {
+export const SType_type_str = addSType('type[str]', {
     __call__: {
         //TODO...
         return_type: () => SType_str,
@@ -29,6 +29,13 @@ addSType('str', {
 
     // @ts-ignore
     __class__: SType_type_str,
+
+    __len__: {
+        return_type: () => SType_int,
+        substitute_call: (_) => {
+            return r`${_.children[1]}.length`;
+        }
+    },
 
     ...genCmpOps  (CMPOPS_LIST,
         [SType_str]),

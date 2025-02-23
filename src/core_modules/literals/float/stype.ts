@@ -4,7 +4,7 @@ import { STypeFctSubs } from "structs/SType";
 import { addSType, SType_bool, SType_float, SType_int, SType_jsint, SType_str } from "structs/STypes";
 
 
-const SType_type_float = addSType('type[float]', {
+export const SType_type_float = addSType('type[float]', {
     __call__: {
         //TODO...
         return_type: () => SType_float,

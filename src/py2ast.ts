@@ -4,9 +4,12 @@ declare var $B: any;
 import {ASTNode} from "./structs/ASTNode";
 
 import CORE_MODULES from "./core_modules/lists";
-import { STypeObj } from "structs/SType";
-import { SType_float, SType_int, SType_str } from "structs/STypes";
-
+import { SType, STypeFctSubs, STypeObj } from "structs/SType";
+import { SType_type_int } from "core_modules/literals/int/stype";
+import { SType_type_str } from "core_modules/literals/str/stype";
+import { SType_type_float } from "core_modules/literals/float/stype";
+import { SType_int } from "structs/STypes";
+import { w, wr } from "ast2js";
 
 export type AST = {
     body    : ASTNode,
@@ -46,20 +49,7 @@ export function py2ast(code: string, filename: string): AST {
 }
 
 export function convert_ast(ast: any): ASTNode {
-
-    const context = new Context();
-
-    //TODO: builtin_symbols
-    //TODO: fix types...
-
-    //@ts-ignore
-    context.local_symbols['int']   = SType_int  .__class__;
-    //@ts-ignore
-    context.local_symbols['str']   = SType_str  .__class__;
-    //@ts-ignore
-    context.local_symbols['float'] = SType_float.__class__;
-
-    return convert_node(ast.body, context);
+    return convert_node(ast.body, new Context() );
 }
 
 
@@ -115,16 +105,52 @@ export function list2astnode(node: any[]) {
 }
 
 export class Context {
-    constructor(type: "?"|"class"|"fct" = "?", parent_context: Context|null = null) {
-
-        this.type = type;
-
-        this.local_symbols = parent_context === null ? Object.create(null) 
-                                                       : {...parent_context.local_symbols}
+    constructor(type: "?"|"class"|"fct" = "?", parent_context: Context = RootContext) {
+        this.type = type; //TODO: remove
+        this.local_symbols = {...parent_context.local_symbols};
     }
-    type;
+    type; //TODO: remove
 
     parent_node_context?: ASTNode; 
 
     local_symbols: Record<string, STypeObj|null>;
 }
+
+const type_fct = {} /* fct class => type class */
+
+//TODO: move...
+//TODO: binary/unary
+//TODO: remove return_type (get from the __{name}__)
+function genUnaryOpFct(name: string, return_type: STypeObj) {
+    const opname = `__${name}__`;
+    return {
+        [name]: {
+            __class__: type_fct,
+            __name__ : name,
+            __call__ : {
+                //TODO: I need a self...
+                return_type    : () => return_type,
+                // not really :?
+                substitute_call: (call: ASTNode) => {
+                    const left = call.children[1];
+                    const method = left.result_type![opname] as STypeFctSubs;
+                    return method.substitute_call!(call);
+                }
+            }
+        }
+    }
+}
+
+// builtin symbols.
+// @ts-ignore
+const RootContext: Context = {
+    type: "?" as const,
+    local_symbols: {
+        int  : SType_type_int,
+        str  : SType_type_str,
+        float: SType_type_float,
+        ...genUnaryOpFct("len", SType_int)
+
+        // add functions like len() / pow() / divmod()
+    }
+} satisfies Context;

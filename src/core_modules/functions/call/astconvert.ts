@@ -6,6 +6,11 @@ export default function convert(node: any, context: Context) {
 
     const name = node.func.id;
     const fct_type = context.local_symbols[name]!;
+    if( fct_type === undefined ) {
+        console.warn(node);
+        console.warn(context.local_symbols);
+        throw new Error(`Function ${name} not defined`);
+    }
     const ret_type = (fct_type.__call__ as STypeFctSubs).return_type();
 
     return new ASTNode(node, "functions.call", ret_type, fct_type, [

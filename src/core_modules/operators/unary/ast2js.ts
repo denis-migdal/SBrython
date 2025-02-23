@@ -6,7 +6,7 @@ import { STypeFctSubs } from "structs/SType";
 
 export default function ast2js(this: ASTNode) {
 
-    let left  = this.children[0];
+    const left  = this.children[0];
 
     if( this.value === 'not')
         return wr( unary_jsop(this, '!', Int2Number(left, 'jsint') ) );

@@ -4,7 +4,7 @@ import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop
 import { STypeFctSubs } from "structs/SType";
 import { addSType, SType_bool, SType_float, SType_int, SType_jsint, SType_str } from "structs/STypes";
 
-const SType_type_int = addSType('type[int]', {
+export const SType_type_int = addSType('type[int]', {
     __call__: {
         //TODO...
         return_type: () => SType_int,

@@ -1,5 +1,12 @@
 # SimplerBrython
 
+f-string : https://github.com/brython-dev/brython/issues/2479
+
+https://denis-migdal.github.io/SimplerBrython/
+
+Time measure : https://github.com/brython-dev/brython/discussions/2509#discussioncomment-11157480
+
+
 ## Status
 
 [merged]
@@ -93,7 +100,75 @@ Brython: 1,1MB -> 208kB (x5.29) / 180 kB (x6.11)
 - special methods
 
 #### Operators
+    Done
+        -> add builtin functions (system, only len() for now).
+        -> Symbol (desc genJS) vs SType (desc type).
+            -> recursion, HELP
+            -> separate desc from meta
+            -> simplify code, different actions depending on the callable type.
+                -> op behave a little like a call (but fct doesn't truly exists).
+    TODO: SType refactor.
+        (1) use new SType for len() def/call.
+        (2) use new SType for function def/call.
+        (3) impl operators (then use them)
 
+        -> SType types in directories (?) [for now ?]
+            -> get is required due to circularity... (LOT of circularity...)
+            -> SType str/csnte/can change... (mainly __name__)
+            -> write_symbol : default - throw not implemented.
+
+        -> decorators : takes a method and return new thing.
+            -> @staticmethod => no self params
+            -> @classmethod  => self is klass instead of instance
+            -> default       => instance method.
+            -> @property
+
+        -> policy
+            -> instance methode    -> only on instance type.
+            -> static/class method -> only on klass type.
+
+            - function (klass) / method (instance).
+            - builtin_function_or_method / 
+        - type (circular) <- type <- int      klass <- int instance
+        - type (circular) <- type <- function klass <- foo instance
+        - { prop: Method|Attr }
+            - => write_symbol : where/how ?
+            - Symbol : {
+                - stype       : ()
+                - write_symbol: ()
+                - write_call ?: () => type.__call__ (?)
+                - call_info ?
+            }
+            - { __class__: { value: [], write_symbol: ()=> }  }
+        - func() <- Fct
+            -> __call__()           <- method
+        - Klass() <- Klass ? KlassType ?
+            -> __class__
+                -> __name__
+                -> .__call__() <- method
+                -> write_symbol() <- ?
+            -> __len__()            <- method
+        
+        1. SType refactor / helpers.
+            -> genFctBinaryOp()
+            -> method:
+                -> return_type + call_substitute...
+                -> prevent dbl search ?
+        2. Classes
+        3. other refactors
+        4. other classes
+        5. SType when import + brython interact
+        6. Doc + tools.
+        7. own parser/int strats/etc.
+
+    1. addFct(local, name, ret_type, callback )
+        -> { __class__ => fct class }
+        -> { __name__ }
+        -> {__call__} [3 new types : callable/Fct/FctType/Class/Type]
+            -> also write_call.
+            -> inside __class__ for STypeInt.
+        -> write_symbol?: inside __class__ (?) (for a=int)
+        -> pow() / divmod()
     0.
         -> new types (fcts)
             -> write_symbol / write_call
@@ -104,19 +179,24 @@ Brython: 1,1MB -> 208kB (x5.29) / 180 kB (x6.11)
                     -> class
                 -> idem class.
                 -> write_symbol: how ? (<- symbol ?) [could be meta?]
-            -> no needs for SType ? -> use local_symbols instead ?
             -> genFct => len() / pow() / divmod()
             -> list/tuple/dict/bytes/bytearray
-            -> add local_symbols (the types) to the generated AST (for imports)
-            -> class => is context.type really usefull
-                -> self context ? a type that is filled with class members ?
-                -> generate ASTNode variants or use value ?
-            -> type(x) => write_symbol => use a _r_.int => a symbol ?
-            -> jsop => write_binaryop version (replace old version ?)
-            -> redesign op. structures ?
-            -> (as any). => add facultative properties (op priority + as)
-                -> better convert system ?
-            -> args => really need fake node ?
+            -> local_symbols
+                -> no needs for SType ? -> use local_symbols instead ?
+                -> type(x) => write_symbol => use a _r_.int => a symbol ?
+                -> add local_symbols (the types) to the generated AST (for imports)
+            -> class
+                -> class => is context.type really usefull ?
+                    -> use parent_node_context ? (the self context ?)
+                -> class: self context ? a type that is filled with class members ?
+                -> fct vs method: generate ASTNode variants or use value ?
+            -> op.
+                -> jsop => write_binaryop version (replace old version ?)
+                -> redesign op. structures ?
+            -> ASTNode type
+                -> (as any). => add facultative properties (op priority + as)
+                    -> better convert system ?
+                -> args => really need fake node ?
             -> 3 int strats : only number/only bigint/mix.
                 -> only number
                     -> fast

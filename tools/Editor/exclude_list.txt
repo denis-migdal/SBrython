@@ -367,8 +367,8 @@
 *
 
 # basic test suite.strings
-// len()
-*
+// str.strip()
+41-43
 
 # basic test suite.enumerate
 *
