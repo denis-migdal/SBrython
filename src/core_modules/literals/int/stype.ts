@@ -1,28 +1,30 @@
 import { r } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, Number2Int, unary_jsop } from "structs/BinaryOperators";
+import { CONVERT_2INT, CONVERT_INT2FLOAT } from "structs/Converters";
+import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_IJ2INT, RET_INT, RET_INT2INT, RET_STR } from "structs/ReturnTypeFcts";
 import { STypeFctSubs } from "structs/SType";
-import { addSType, SType_bool, SType_float, SType_int, SType_jsint, SType_str } from "structs/STypes";
+import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_JSINT, STYPE_STR } from "structs/STypes";
 
 export const SType_type_int = addSType('type[int]', {
     __call__: {
         //TODO...
-        return_type: () => SType_int,
+        return_type: RET_INT,
         substitute_call: (node) => {
 
             const other = node.children[1];
             const other_type = other.result_type
 
             //TODO use their __int__ ?
-            if( other_type === SType_int )
+            if( other_type === STYPE_INT )
                 return other;
-            if( other_type === SType_jsint)
+            if( other_type === STYPE_JSINT)
                 return Number2Int(other);
-            if( other_type === SType_float )
+            if( other_type === STYPE_FLOAT )
                 return r`BigInt(Math.trunc(${other}))`;
 
             //TODO: power...
-            if( other_type === SType_str ) {
+            if( other_type === STYPE_STR ) {
 
                 //if( node.children.length === 3)
                 //    return r`BigInt(parseInt(${other}, ${node.children[2]}))`;
@@ -46,61 +48,58 @@ addSType('int', {
     __class__: SType_type_int,
 
     __str__: {
-        return_type: () => SType_str,
+        return_type: RET_STR,
         substitute_call(node) {
             return r`${node}.toString()`;
         }
     },
 
     __int__: {
-        return_type: () => SType_int,
+        return_type: RET_INT,
         substitute_call(node, self) {
             return id_jsop(node, self);
         }
     },
     /* */
-    ...genBinaryOps(SType_int,
-        [
+    ...genBinaryOps([
             // '**' => if "as float" could accept loss of precision.
             '**', '+', '-',
             '&', '|', '^', '>>', '<<'
         ],
-        [SType_int, SType_jsint],
+        RET_IJ2INT,
         {
-            convert_other: {'jsint': 'int'}
+            convert_other: CONVERT_2INT
         }
     ),
-    ...genBinaryOps(SType_int, ['*'], [SType_int],
+    ...genBinaryOps(['*'], RET_INT2INT,
         {
             substitute_call(node, a, b) {
-                const opti = (node as any).as === 'float';
 
-                if( opti ) {
+                if( node.result_type === STYPE_FLOAT )
                     // TODO: check if really interesting...
                     return binary_jsop(node, Int2Number(a), '*', Int2Number(b) );
-                }
                 
                 return binary_jsop(node, a, '*', b);
             },
         }
     ),
-    ...genBinaryOps(SType_float, ['/'], [SType_int, SType_jsint, SType_float],
+    ...genBinaryOps(['/'], RET_IJBF2FLOAT,
         {
-            convert_self : (s) => Int2Number(s, 'float'),
-            convert_other: {'int': 'float'}
+            convert_self : CONVERT_INT2FLOAT,
+            convert_other: CONVERT_INT2FLOAT
         }
     ),
-    ...genBinaryOps(SType_int, ['//'], [SType_int, SType_jsint],
+    ...genBinaryOps(['//'], RET_IJ2INT,
         {
-            convert_other: {"jsint": "int"},
+            convert_other  : CONVERT_2INT,
             substitute_call: (node: ASTNode, self: ASTNode, other: ASTNode) => {
                 return r`_b_.floordiv_int(${self}, ${other})`;
             },
         }
     ),
-    ...genBinaryOps(SType_int, ['%'], [SType_int, SType_jsint],
+    ...genBinaryOps(['%'], RET_IJ2INT,
         {
-            convert_other: {"jsint": "int"},
+            convert_other: CONVERT_2INT,
             substitute_call: (node: ASTNode, self: ASTNode, other: ASTNode) => {
                 // do not handle -0
                 return r`_b_.mod_int(${self}, ${other})`;
@@ -108,25 +107,19 @@ addSType('int', {
         }
     ),
 
-    ...genUnaryOps(SType_int,
-        ['u.-'],
+    ...genUnaryOps(['u.-'], RET_INT,
         {
             substitute_call: (node, a) => {
-                const opti = (node as any).as === 'real';
 
-                if( opti ) {
+                if( node.result_type === STYPE_FLOAT )
                     return unary_jsop(node, '-', Int2Number(a) );
-                }
                 
                 return unary_jsop(node, '-', a );
             },
         }
     ),
-    ...genUnaryOps(SType_int,
-        ['~'],
-    ),
-    ...genCmpOps(  CMPOPS_LIST,
-                   [SType_float, SType_int, SType_jsint, SType_bool] )
+    ...genUnaryOps( ['~'], RET_INT),
+    ...genCmpOps(  CMPOPS_LIST, RET_IJBF2BOOL)
     /* */
 
 });

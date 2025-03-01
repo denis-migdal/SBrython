@@ -292,6 +292,9 @@ function executeSBrython(code) {
         times[3] = globalThis.performance.now();
         sb = new SBrython();
         sb._b_.assert = (cond) => { if( ! cond ) {
+
+            console.warn("Assertion failed");
+
             const stack = new Error().stack;
 
             const stackline = parse_stack(stack, sb)[0];

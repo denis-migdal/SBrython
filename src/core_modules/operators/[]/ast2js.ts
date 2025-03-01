@@ -1,7 +1,7 @@
 import { wt } from "ast2js";
-import { ASTNode, CodePos } from "structs/ASTNode";
+import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
     
-    wt`${this.children[0]}[${this.children[1]}]`;
+    wt`${node.children[0]}[${node.children[1]}]`;
 }

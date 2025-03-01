@@ -1,10 +1,13 @@
 import { w, wt } from "ast2js";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    if( this.value[1] === undefined)
-        return w(this.value[0]);
+    const value = VALUES[node.id];
 
-    wt`${this.value[0]}: ${this.value[1]}`;
+    if( value[1] === undefined)
+        return w(value[0]);
+
+    wt`${value[0]}: ${value[1]}`;
 }

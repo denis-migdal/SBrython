@@ -1,13 +1,15 @@
 import { wr } from "ast2js";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFctSubs } from "structs/SType";
+import { STypes } from "structs/STypes";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    let left  = this.children[0];
-    let right = this.children[1];
+    let left  = node.children[0];
+    let right = node.children[1];
 
-    const method = left.result_type![this.value] as STypeFctSubs;
+    const method = STypes[left.result_type]![VALUES[node.id]] as STypeFctSubs;
 
-    wr( method.substitute_call!(this, left, right) );
+    wr( method.substitute_call!(node, left, right) );
 }

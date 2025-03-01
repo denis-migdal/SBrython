@@ -1,11 +1,36 @@
 # SimplerBrython
 
-f-string : https://github.com/brython-dev/brython/issues/2479
+-> SType : use symbols to not pollute ? /2 obj ?
 
-https://denis-migdal.github.io/SimplerBrython/
+TODO:
+- [ ] type system rewrite
+- [ ] restaure AST
+
+- [ ] module system rewrite : décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
+    - [ ] some values store in CHILDREN ?
+- [ ] operator system rewrite
+- [ ] write system rewrite (?)
+- [ ] functions args rewrite
+
+- [ ] optimize value usage
+    - can I merge some cols ?
+
+https://github.com/brython-dev/brython/issues/2545
+-> DOP for AST...
+    -> config : struct + max size
+        -> Array() first to test... [way less allocations/better GC ?]
+        -> re-use array for many scripts ?
+    -> TOKEN_TYPE + CH_START/VALUE_ID(long)/VALUE(number) + CH_END + EXPR_RESULT_TYPE_ID [4*TAG_ID+X]
+    -> sync wasm ?
+        => easily transferrable through sharedbuffer => kind of a prebuild ?
+
+====
 
 Time measure : https://github.com/brython-dev/brython/discussions/2509#discussioncomment-11157480
 
+f-string : https://github.com/brython-dev/brython/issues/2479
+
+https://denis-migdal.github.io/SimplerBrython/
 
 ## Status
 

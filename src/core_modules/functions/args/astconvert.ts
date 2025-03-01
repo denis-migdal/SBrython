@@ -1,13 +1,22 @@
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFct } from "structs/SType";
-import ast2js from "./ast2js";
+import { FUNCTIONS_ARGS } from "core_modules/lists";
+import { set_py_code, set_py_from_beg, set_py_from_end } from "ast2js";
+import { CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, VALUES } from "dop";
 
 //TODO: fake node...
 export default function convert() {
     // args node doesn't exist...
     return;
 }
+
+export const FUNCTIONS_ARGS_POSONLY = 0;
+export const FUNCTIONS_ARGS_KWARG   = 1;
+export const FUNCTIONS_ARGS_KWONLY  = 2;
+export const FUNCTIONS_ARGS_VARG    = 3;
+export const FUNCTIONS_ARGS_POS     = 4;
+
 
 convert.brython_name = "arguments";
 
@@ -36,8 +45,8 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     // posonly
     let doffset = pos_defaults.length - posonly.length - pos.length;
     for(let i = 0; i < posonly.length; ++i ) {
-        const arg = convert_arg(posonly[i], pos_defaults[i - doffset], "posonly", context);
-        context.local_symbols[arg.value] = arg.result_type;
+        const arg = convert_arg(posonly[i], pos_defaults[i - doffset], FUNCTIONS_ARGS_POSONLY, context);
+        context.local_symbols[posonly[i].arg] = arg.result_type;
         args[i] = arg;
     }
 
@@ -45,10 +54,12 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     let offset = posonly.length;
       doffset -= posonly.length;
     for(let i = 0; i < pos.length; ++i ) {
-        const arg = convert_arg(pos[i], pos_defaults[i - doffset], "pos", context);
-        context.local_symbols[arg.value] = arg.result_type;
+        const arg = convert_arg(pos[i], pos_defaults[i - doffset], FUNCTIONS_ARGS_POS, context);
+        
+        const name = pos[i].arg;
+        context.local_symbols[name] = arg.result_type;
+        args_names[offset] = name;
 
-        args_names[offset] = arg.value;
         args[offset++] = arg;
     }
 
@@ -58,8 +69,8 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     if( has_vararg ) {
         meta.idx_end_pos = Number.POSITIVE_INFINITY;
 
-        const arg = convert_arg(_args.vararg, undefined, "vararg", context);
-        context.local_symbols[arg.value] = arg.result_type;
+        const arg = convert_arg(_args.vararg, undefined, FUNCTIONS_ARGS_VARG, context);
+        context.local_symbols[_args.vararg.arg] = arg.result_type;
         args[offset++] = arg;
     } else {
         
@@ -76,10 +87,11 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
     if( cut_off === Number.POSITIVE_INFINITY)
         cut_off = meta.idx_vararg;
     for(let i = posonly.length; i < cut_off; ++i)
-        args_pos[args[i].value] = i;
+        args_pos[VALUES[args[i].id]] = i;
 
-    for(let i = cut_off; i < meta.idx_vararg; ++i)
-        args_pos[args[i].value] = -1;
+    const end = meta.idx_vararg - cut_off;
+    for(let i = 0; i < end; ++i)
+        args_pos[VALUES[args[i].id]] = -1;
 
     //TODO: idx_end_pos (if default and no idx_vararg)
 
@@ -91,20 +103,24 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
 
     doffset = kw_defaults.length - kwonly.length;
     for(let i = 0; i < kwonly.length; ++i ) {
-        const arg = convert_arg(kwonly[i], kw_defaults[i], "kwonly", context);
-        context.local_symbols[arg.value] = arg.result_type;
+        const arg = convert_arg(kwonly[i], kw_defaults[i], FUNCTIONS_ARGS_KWONLY, context);
+        const name = kwonly[i].arg;
 
-        args_pos[arg.value] = -1;
+        context.local_symbols[name] = arg.result_type;
+        args_pos[name] = -1;
+
         args[offset++] = arg;
     }
 
     // kwarg
     if( has_kwarg ) {
-        const arg = convert_arg(_args.kwarg, undefined, "kwarg", context);
-        context.local_symbols[arg.value] = arg.result_type;
+        const arg = convert_arg(_args.kwarg, undefined, FUNCTIONS_ARGS_KWARG, context);
+        const name = _args.kwarg.arg;
+
+        context.local_symbols[name] = arg.result_type;
         args[offset++] = arg;
 
-        meta.kwargs = arg.value;
+        meta.kwargs = name;
     }
 
     //TODO...
@@ -113,36 +129,31 @@ export function convert_args(node: any, SType_fct: STypeFct, context: Context) {
         _args = _args.slice(1);
     */
 
-    let virt_node: any;
+    //TODO...
+
+    const ast = new ASTNode(FUNCTIONS_ARGS, 0, args);
+    
+    ast.type_id = FUNCTIONS_ARGS;
+    VALUES[ast.id] = SType_fct;
+    
+    const py_offset = 4*ast.id;
+
     if( args.length !== 0) {
 
-        const start = args[0]            .pycode.start;
-        const end   = args[args.length-1].pycode.end;
-
-        virt_node = {
-            lineno        : start.line,
-            col_offset    : start.col,
-            end_lineno    : end.line,
-            end_col_offset: end.col
-        };
+        set_py_from_beg( 4*args[0].id            , py_offset );
+        set_py_from_end( 4*args[args.length-1].id, py_offset );
 
     } else {
         // an estimation...
         const col = node.col_offset + 4 + node.name.length + 1;
 
-        virt_node = {
-                lineno    : node.lineno,
-            end_lineno    : node.lineno,
-                col_offset: col,
-            end_col_offset: col
-        }
+        PY_CODE[ py_offset + CODE_BEG_LINE ] = PY_CODE[ py_offset + CODE_END_LINE ] = node.lineno;
+        PY_CODE[ py_offset + CODE_BEG_COL  ] = PY_CODE[ py_offset + CODE_END_COL  ] = col;
     }
 
-    const astnode = new ASTNode(virt_node, "args", null, SType_fct, args);
-    astnode.write = ast2js;
-    return astnode;
+    return ast;
 }
-export function convert_arg(node: any, defval: any, type:string, context: Context) {
+export function convert_arg(node: any, defval: any, type:number, context: Context) {
 
     let result_type = node.annotation?.id;
     let children = new Array<ASTNode>();
@@ -158,5 +169,11 @@ export function convert_arg(node: any, defval: any, type:string, context: Contex
         }
     }
 
-    return new ASTNode(node, `arg.${type}`, result_type, node.arg, children);
+    const ast = new ASTNode(type, result_type, children);
+
+    VALUES[ast.id] = node.arg;
+
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }

@@ -1,22 +1,18 @@
-import { wt } from "ast2js";
+import { w, wt } from "ast2js";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
-import { SType_int } from "structs/STypes";
+import { STYPE_INT } from "structs/STypes";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    let suffix = "";
-    let target = (this as any).as;
+    let value = VALUES[node.id];
 
-    let value = this.value;
-
-    if(target === "float") {
-        if( this.result_type === SType_int )
-            value = Number(value); // remove useless precision.
+    if( node.result_type === STYPE_INT ) {
+        wt`${value}n`;
+        return;
     }
-    else if( target === "int" || this.result_type === SType_int )
-        // if already bigint do not cast into jsint (loss of precision).
-        suffix = "n";
+    if( typeof value === "bigint" )
+        value = Number(value); // remove useless precision.
 
-    // 1e+54 should had be stored as bigint.
-    wt`${value}${suffix}`;
+    w(value);
 }

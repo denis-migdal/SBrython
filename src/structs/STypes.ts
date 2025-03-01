@@ -1,19 +1,34 @@
 import { STypeObj } from "./SType";
 
-const _name2SType: Record<string,STypeObj> = {}
+export const STypes  = new Array<STypeObj>();
+const STypename2id: Record<string, number> = {};
 
-export function getSType<T extends STypeObj>(name: string): T {
-    return (_name2SType[name] ??= {__name__: name}) as T;
+export function getSTypeFromName<T extends STypeObj>(name: string): T {
+    return STypes[getSTypeID(name)] as T;
+}
+
+export function getSTypeID(name: string): number {
+
+    let id = STypename2id[name];
+    if( id === undefined ) {
+        id = STypename2id[name] = STypes.length;
+        STypes[id] = {__name__: name};
+    }
+
+    return id;
 }
 
 export function addSType(name: string, type: Omit<STypeObj, '__name__'>) {
-    return Object.assign( getSType(name), type );
+
+    const id = getSTypeID(name);
+    Object.assign( STypes[id], type );
+    return id;
 }
 
-export const SType_int                = getSType("int");
-export const SType_jsint              = getSType("jsint");
-export const SType_float              = getSType("float");
-export const SType_bool               = getSType("bool");
-export const SType_str                = getSType("str");
-export const SType_NoneType           = getSType("NoneType");
-export const SType_NotImplementedType = getSType("NotImplementedType");
+export const STYPE_NONETYPE           = getSTypeID("NoneType"); // 0...
+export const STYPE_INT                = getSTypeID("int");
+export const STYPE_JSINT              = getSTypeID("jsint");
+export const STYPE_BOOL               = getSTypeID("bool");
+export const STYPE_FLOAT              = getSTypeID("float");
+export const STYPE_STR                = getSTypeID("str");
+export const STYPE_NOT_IMPLEMENTED    = getSTypeID("NotImplementedType");

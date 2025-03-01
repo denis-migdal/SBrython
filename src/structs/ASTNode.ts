@@ -1,42 +1,22 @@
 import { STypeObj } from "./SType";
 
-export type CodePos = {
-    line: number,
-    col : number
-}
-
-export type CodeRange = {
-    start: CodePos,
-    end  : CodePos
-}
-
 export class ASTNode {
 
-	type    : string;
-	value   : any;
-	children: ASTNode[] = [];
-	result_type: STypeObj|null = null;
+	static NEXT_AST_NODE_ID = 0;
 
-    pycode: CodeRange;
-    jscode?: CodeRange;
+	id         : number;
+	type_id    : number; // node_type_id (!!!)
+	result_type: number = 0; //TODO: number then type system...
 
-	write?: (this: ASTNode) => void;
+	// soon ^^
+	children: ASTNode[] = []; // use id....
 
-	constructor(brython_node: any, type: string, result_type: STypeObj|null, _value: any = null, children: ASTNode[] = []) {
+	constructor(type_id: number, result_type: number = 0, children: ASTNode[] = []) {
 
-		this.type   = type;
+		this.id = ASTNode.NEXT_AST_NODE_ID++;
+		this.type_id = type_id;
 		this.result_type = result_type;
-		this.value  = _value;
+		
 		this.children = children!;
-		this.pycode = {
-			start: {
-				line: brython_node.lineno,
-				col : brython_node.col_offset
-			},
-			end: {
-				line: brython_node.end_lineno,
-				col : brython_node.end_col_offset
-			}
-		}
 	}
 }

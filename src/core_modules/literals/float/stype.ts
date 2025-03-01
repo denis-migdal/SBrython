@@ -1,31 +1,37 @@
 import { r } from "ast2js";
+import { LITERALS_STR } from "core_modules/lists";
+import { VALUES } from "dop";
 import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number } from "structs/BinaryOperators";
+import { CONVERT_INT2FLOAT } from "structs/Converters";
+import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_FLOAT, RET_STR } from "structs/ReturnTypeFcts";
 import { STypeFctSubs } from "structs/SType";
-import { addSType, SType_bool, SType_float, SType_int, SType_jsint, SType_str } from "structs/STypes";
+import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_STR } from "structs/STypes";
 
 
 export const SType_type_float = addSType('type[float]', {
     __call__: {
         //TODO...
-        return_type: () => SType_float,
+        return_type: RET_FLOAT,
         substitute_call: (node) => {
 
             const other = node.children[1];
             const other_type = other.result_type
 
             //TODO use their __int__ ?
-            if( other_type === SType_int )
+            if( other_type === STYPE_INT )
                 return Int2Number(other);
-            if( other_type === SType_float || other_type === SType_jsint)
+            if( other_type === STYPE_FLOAT || other_type === STYPE_INT)
                 return other_type;
 
             //TODO: power...
-            if( other_type === SType_str ) {
+            if( other_type === STYPE_STR ) {
 
-                if( other.type === "literals.str" ) {
-                    if( other.value === "inf" || other.value === "infinity" )
+                const other_value = VALUES[other.id];
+
+                if( other.type_id === LITERALS_STR ) {
+                    if( other_value === "inf" || other_value === "infinity" )
                         return "Number.POSITIVE_INFINITY";
-                    if( other.value === "-inf"|| other.value === "-infinity")
+                    if( other_value === "-inf"|| other_value === "-infinity")
                         return "Number.NEGATIVE_INFINITY";
                 }
 
@@ -50,42 +56,33 @@ addSType('float', {
     __class__: SType_type_float,
 
     __str__: {
-        return_type: () => SType_str,
+        return_type: RET_STR,
         substitute_call(node) {
             return r`_b_.float2str(${node})`;
         }
     },
     
-    ...genBinaryOps(SType_float,
-                    ['**', '*', '/', '+', '-'],
-                    [SType_float, SType_int, SType_jsint, SType_bool],
+    ...genBinaryOps(['**', '*', '/', '+', '-'], RET_IJBF2FLOAT,
                     {
-                        convert_other: {'int': 'float'}
+                        convert_other: CONVERT_INT2FLOAT
                     }
     ),
-    ...genBinaryOps(SType_float,
-        ['//'],
-        [SType_float, SType_int, SType_jsint, SType_bool],
+    ...genBinaryOps(['//'], RET_IJBF2FLOAT,
         {
-            convert_other: {'int': 'float'},
+            convert_other: CONVERT_INT2FLOAT,
             substitute_call(node, self, other) {
                 return r`_b_.floordiv_float(${self}, ${other})`;
             },
         }
     ),
-    ...genBinaryOps(SType_float,
-        ['%'],
-        [SType_float, SType_int, SType_jsint, SType_bool],
+    ...genBinaryOps(['%'], RET_IJBF2FLOAT,
         {
-            convert_other: {'int': 'float'},
+            convert_other: CONVERT_INT2FLOAT,
             substitute_call(node, self, other) {
                 return r`_b_.mod_float(${self}, ${other})`;
             },
         }
     ),
-    ...genUnaryOps(SType_float, ['u.-']),
-    ...genCmpOps  (CMPOPS_LIST,
-                   [SType_float, SType_int, SType_jsint, SType_bool]),
+    ...genUnaryOps(['u.-']    , RET_FLOAT),
+    ...genCmpOps  (CMPOPS_LIST, RET_IJBF2BOOL),
 });
-
-export default SType_float;

@@ -1,15 +1,15 @@
 import { w } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
     w("[");
 
-    if( this.children.length > 0 )
-        w(this.children[0]);
+    if( node.children.length > 0 )
+        w(node.children[0]);
 
-    for(let i = 1; i < this.children.length; ++i)
-        w(", ", this.children[i]);
+    for(let i = 1; i < node.children.length; ++i)
+        w(", ", node.children[i]);
 
     w("])");
 }

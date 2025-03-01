@@ -1,29 +1,27 @@
+import { set_py_code } from "ast2js";
+import { CONTROLFLOWS_FOR } from "core_modules/lists";
+import { VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { SType_int } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
+    if( node.iter.constructor.$name === "Call" && node.iter.func.id === "range")
+        return;
+
     const target = node.target.id;
-    context.local_symbols[target] = null; //TODO
+    context.local_symbols[target] = 0; //TODO
 
-    if( node.iter.constructor.$name === "Call" && node.iter.func.id === "range") {
-
-        // TODO: jsint opti if this.value not used...
-        context.local_symbols[node.value] = SType_int;
-
-        return new ASTNode(node, "controlflows.for(range)", null, target, [
-            ... node.iter.args.map( (n:any) => convert_node(n, context) ),
-            convert_node(node.body, context)
-        ]);
-
-    }
-
-    //TODO: get type...
-    return new ASTNode(node, "controlflows.for", null, target, [
+    const ast = new ASTNode(CONTROLFLOWS_FOR, 0, [
         convert_node(node.iter, context),
         convert_node(node.body, context)
     ]);
+
+    VALUES[ast.id] = target;
+
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "For";

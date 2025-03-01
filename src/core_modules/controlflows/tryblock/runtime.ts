@@ -1,4 +1,6 @@
+import { SYMBOL } from "core_modules/lists";
 import Py_Exception from "core_runtime/Exceptions/Exception";
+import { VALUES } from "dop";
 import { SBrython } from "runtime";
 import { ASTNode } from "structs/ASTNode";
 
@@ -9,6 +11,8 @@ function filter_stack(stack: string[]) {
 //TODO: use ~=sourcemap...
 function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: number): null|ASTNode {
 
+  //TODO...
+  /*
   for(let i = 0; i < nodes.length; ++i) {
 
       if( nodes[i].jscode!.start.line > line
@@ -24,6 +28,7 @@ function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: numbe
           return nodes[i];
       }
   }
+*/
 
   return null; //throw new Error("node not found");
 }
@@ -71,8 +76,8 @@ export function parse_stack(stack: any, sb: SBrython): StackLine[] {
         //TODO: extract filename.
         const ast = sb.getASTFor("sbrython_editor.js");
         const node = find_astnode_from_jscode_pos(ast.body.children, line, col)!;
-        if(node.type === "symbol")
-          col += node.value.length; // V8 gives first character of the symbol name when FF gives "("...
+        if(node.type_id === SYMBOL)
+          col += VALUES[node.id].length; // V8 gives first character of the symbol name when FF gives "("...
 
       } else {
         let pos = _.indexOf('@');
@@ -92,7 +97,8 @@ function debug_print_exception(err: Py_Exception, sb: SBrython) {
     const stack = parse_stack( (err as any)._raw_err_.stack, sb);
     const nodes = stack2astnodes(stack, sb);
     //TODO: convert stack...
-    const stack_str = stack.map( (l,i) => `File "[file]", line ${nodes[i].pycode.start.line}, in ${stack[i][0]}`);
+    // nodes[i].pycode.start.line
+    const stack_str = stack.map( (l,i) => `File "[file]", line ${0}, in ${stack[i][0]}`);
 
     let exception_str = 
 `Traceback (most recent call last):

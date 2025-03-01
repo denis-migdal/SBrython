@@ -14,7 +14,11 @@ function getModules(path) {
 		const filepath = files[i];
 		const pos = filepath.lastIndexOf("/");
 
-		const dir  = filepath.slice(0, pos).replace("/", ".");
+		const dir  = filepath.slice(0, pos).toUpperCase()
+										   .replaceAll("/", "_")
+										   .replaceAll('-', '_')
+										   .replaceAll('[]', '_BRACKETS')
+										   .replaceAll('=', '_EQ');
 		const file = filepath.slice(pos+1).slice(0,-3);
 
 		modules[dir] ??= {};
@@ -45,21 +49,28 @@ function importModules(modules) {
 
 	result += "\n\n";
 
-	result += "const MODULES = {\n";
 	module_id = 0;
-	for(let module_name in modules) {
+	for(let module_name in modules)
+		result += `export const ${module_name} = ${module_id++};\n`;
 
-		result +=
-`	"${module_name}": {
-		AST_CONVERT: AST_CONVERT_${module_id},
-		     AST2JS:      AST2JS_${module_id}
-	},\n`;
-		++module_id;
-	}
-	result += "}\n\n";
+	result += "\n";
 
-	result += "export default MODULES;\n";
-	result += "\n\n";
+	result += "export const AST_CONVERT = [\n"
+
+	module_id = 0;
+	for(let module_name in modules)
+		result += `\tAST_CONVERT_${module_id++},\n`;
+
+	result += "]\n\n";
+
+
+	result += "export const AST2JS = [\n"
+
+	module_id = 0;
+	for(let module_name in modules)
+		result += `\tAST2JS_${module_id++},\n`;
+
+	result += "]\n\n";
 
 	result += "const RUNTIME = {};\n";
 	module_id = 0;

@@ -1,6 +1,9 @@
+import { set_py_code } from "ast2js";
+import { LITERALS_INT } from "core_modules/lists";
+import { VALUES } from "dop";
 import { Context } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
-import { SType_int, SType_jsint } from "structs/STypes";
+import { STYPE_INT, STYPE_JSINT } from "structs/STypes";
 
 export default function convert(node: any, _context: Context) {
 
@@ -12,9 +15,14 @@ export default function convert(node: any, _context: Context) {
     if( typeof value !== "number" && typeof value !== "bigint" )
         return;
 
-    const real_type = typeof value !== "number" ? SType_int : SType_jsint;
+    const real_type = typeof value !== "number" ? STYPE_INT : STYPE_JSINT;
 
-    return new ASTNode(node, "literals.int", real_type, value);
+    const ast = new ASTNode(LITERALS_INT, real_type);
+    
+    VALUES[ast.id] = value;
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "Constant";

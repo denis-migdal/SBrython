@@ -1,12 +1,12 @@
 import { NL, wt } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
     // else is handled by tryblock
 
-    if(this.children.length === 1)
-        return wt`{${this.children[0]},${NL}}`;
+    if(node.children.length === 1)
+        return wt`{${node.children[0]},${NL}}`;
 
-    wt`if(${this.children[0]}){${this.children[1]}${NL}}`;
+    wt`if(${node.children[0]}){${node.children[1]}${NL}}`;
 }

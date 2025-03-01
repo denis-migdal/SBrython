@@ -1,11 +1,12 @@
 import { NL, w, wt } from "ast2js";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    const name = this.value;
-    const args = this.children[0];
-    const body = this.children[1];
+    const name = VALUES[node.id];
+    const args = node.children[0];
+    const body = node.children[1];
 
     wt`function ${name}(${args}){${body}${NL}}`;
     //w('function ', name, '(', args, '){', body, NL, '}');

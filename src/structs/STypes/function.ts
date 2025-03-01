@@ -2,6 +2,7 @@ import { ASTNode } from "structs/ASTNode";
 import { define, NOT_IMPLEMENTED, SType_Unknown, Symbl, Symbol_function, Symbol_function_type, Symbol_NOT_IMPLEMENTED } from ".";
 import { SType_Callable, Symbol_Callable } from "./callable";
 import { SType_function_type } from "./function_type";
+import { STypes } from "structs/STypes";
 
 export interface SType_function extends SType_Callable {
     __name__ : Symbl<SType_Unknown>
@@ -49,7 +50,7 @@ function genFctUnaryOp<T extends string[]>(...names: T): Record<T[number], FctUn
                 //TODO: .stype.
                 //TODO: reverse order... => no need for return, we can detect it.
                 //TODO: return_type ?    => may need to call twice when binary_op ?
-                return call.children[1].result_type![`__${name}__`] as any;
+                return STypes[call.children[1].result_type]![`__${name}__`] as any;
             },
             write_symbol: NOT_IMPLEMENTED,
             write_call  : NOT_IMPLEMENTED

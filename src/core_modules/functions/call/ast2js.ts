@@ -1,6 +1,9 @@
 import { r, wr } from "ast2js";
+import { FUNCTIONS_CALL_KEYWORD } from "core_modules/lists";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFct } from "structs/SType";
+import { STypes } from "structs/STypes";
 
 function print_obj(obj: Record<string, any>) {
 
@@ -36,11 +39,11 @@ function join(data: any[], sep=", ") {
 
 export function default_call(node: ASTNode) {
 
-    const meta = (node.value as STypeFct).__call__;
+    const meta = (VALUES[node.id] as STypeFct).__call__;
 
     let kw_pos = node.children.length;
     for(let i = 1; i < node.children.length; ++i)
-        if(node.children[i].type === "functions.keyword") {
+        if(node.children[i].type_id === FUNCTIONS_CALL_KEYWORD) {
             kw_pos = i;
             break;
         }
@@ -90,7 +93,7 @@ export function default_call(node: ASTNode) {
     for(let i = kw_pos; i < node.children.length; ++i) {
 
         const arg  = node.children[i];
-        const name = arg.value;
+        const name = VALUES[arg.id];
         const idx  = args_pos[ name ];
 
         if( idx >= 0 ) {
@@ -126,7 +129,6 @@ export function default_call(node: ASTNode) {
     return r`${node.children[0]}(${join(pos)})`; // args ?
 }
 
-export default function ast2js(this: ASTNode) {
-
-    wr( (this.value as STypeFct).__call__.substitute_call!(this) );
+export default function ast2js(node: ASTNode) {
+    wr( (VALUES[node.id] as STypeFct).__call__.substitute_call!(node) );
 }

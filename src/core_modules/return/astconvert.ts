@@ -1,12 +1,14 @@
+import { set_py_code } from "ast2js";
+import { RETURN } from "core_modules/lists";
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFct } from "structs/SType";
-import { SType_NoneType } from "structs/STypes";
+import { STYPE_NONETYPE, STypes } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
     // context.parent_node_context
-    let result_type = SType_NoneType;
+    let result_type = STYPE_NONETYPE;
     let children    = undefined;
     
     if(node.value !== undefined) {
@@ -15,11 +17,15 @@ export default function convert(node: any, context: Context) {
         children    = [expr];
     }
 
-    const meta = (context.parent_node_context!.result_type! as STypeFct ).__call__;
+    const meta = (STypes[context.parent_node_context!.result_type] as STypeFct).__call__;
     if( meta.return_type === undefined )
         meta.return_type = () => result_type;
     
-    return new ASTNode(node, "keywords.return", result_type, null, children);
+    const ast = new ASTNode(RETURN, result_type, children);
+        
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "Return";

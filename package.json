@@ -5,6 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "build": "clear ; webpack --no-watch --mode=development",
+    "build-prod": "clear ; webpack --no-watch --mode=production",
     "watch": "clear ; webpack --watch    --mode=development"
   },
   "author": "",

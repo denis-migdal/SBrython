@@ -1,11 +1,17 @@
+import { set_py_code } from "ast2js";
+import { LITERALS_F_STRING_FORMATTEDVALUE } from "core_modules/lists";
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 
 export default function convert(node: any, context: Context) {
 
-    return new ASTNode(node, "literals.f-string.FormattedValue", null, null, [
+    const ast = new ASTNode(LITERALS_F_STRING_FORMATTEDVALUE, 0, [
         convert_node(node.value, context)
     ]);
+        
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "FormattedValue";

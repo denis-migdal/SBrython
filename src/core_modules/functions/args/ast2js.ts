@@ -1,14 +1,16 @@
-import { jscode_cursor, w, wr, wt } from "ast2js";
+import { set_js_cursor, w, wr, wt } from "ast2js";
+import { CODE_END, VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 import { binary_jsop, Number2Int } from "structs/BinaryOperators";
 import { STypeFct } from "structs/SType";
-import { SType_int } from "structs/STypes";
+import { STYPE_INT, STYPE_JSINT } from "structs/STypes";
+import { FUNCTIONS_ARGS_KWARG, FUNCTIONS_ARGS_VARG } from "./astconvert";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
     
-    const args      = this;
+    const args      = node;
     const _args     = args.children;
-    const SType_fct = args.value! as STypeFct;
+    const SType_fct = VALUES[args.id]! as STypeFct;
 
     const meta = SType_fct.__call__;
 
@@ -37,28 +39,28 @@ export default function ast2js(this: ASTNode) {
 
 function write_arg(node: ASTNode) {
     
-    const start = jscode_cursor();
+    const offset = 4*node.id;
+    set_js_cursor(offset + CODE_END);
 
-    if( node.type === "arg.vararg" ) {
+    const name = VALUES[node.id];
+
+    if( node.type_id === FUNCTIONS_ARGS_VARG ) {
         if( (node as any).last)
-            wt`...${node.value}`;
+            wt`...${name}`;
         else
-            wr( binary_jsop(node, node.value, '=', "[]") );
-    } else if( node.type === "arg.kwarg" ) {
-        wr( binary_jsop(node, node.value, '=', "{}") );
+            wr( binary_jsop(node, name, '=', "[]") );
+    } else if( node.type_id === FUNCTIONS_ARGS_KWARG ) {
+        wr( binary_jsop(node, name, '=', "{}") );
     } else if(node.children.length === 1 ) {
 
         let value: any = node.children[0];
-        if( value.result_type === 'jsint' && node.result_type === SType_int)
+        if( value.result_type === STYPE_JSINT && node.result_type === STYPE_INT)
             value = Number2Int(value);
 
-        wr( binary_jsop(node, node.value, '=', value) );
+        wr( binary_jsop(node, name, '=', value) );
     }else {
-        w(node.value);
+        w(name);
     }
 
-    node.jscode = {
-        start: start,
-        end  : jscode_cursor()
-    }
+    set_js_cursor(offset + CODE_END);
 }

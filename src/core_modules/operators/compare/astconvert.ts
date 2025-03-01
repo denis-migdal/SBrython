@@ -1,12 +1,15 @@
+import { set_py_code } from "ast2js";
+import { OPERATORS_COMPARE } from "core_modules/lists";
+import { VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { bname2pyname } from "structs/BinaryOperators";
-import { SType_bool } from "structs/STypes";
+import { STYPE_BOOL } from "structs/STypes";
 
 export default function convert(node: any, context: Context) {
 
     const ops = node.ops.map( (e: any) => {
-        const op = (bname2pyname as any)[e.constructor.$name];
+        const op = bname2pyname[e.constructor.$name as keyof typeof bname2pyname];
         if( op === undefined)
             throw new Error(`${e.constructor.$name} not implemented!`);
         return op;
@@ -15,12 +18,18 @@ export default function convert(node: any, context: Context) {
     const left   = convert_node(node.left, context );
     const rights = node.comparators.map( (n:any) => convert_node(n, context) );
 
-    return new ASTNode(node, `operators.compare`, SType_bool, ops,
+    const ast = new ASTNode(OPERATORS_COMPARE, STYPE_BOOL,
         [
             left,
             ...rights,
         ]
     );
+
+    VALUES[ast.id] = ops;
+        
+    set_py_code(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "Compare";

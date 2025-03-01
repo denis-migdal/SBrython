@@ -1,17 +1,20 @@
-import { w, wr } from "ast2js";
+import { wr } from "ast2js";
+import { VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
 import { Int2Number, unary_jsop } from "structs/BinaryOperators";
 import { STypeFctSubs } from "structs/SType";
+import { STYPE_JSINT, STypes } from "structs/STypes";
 
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    const left  = this.children[0];
+    const left  = node.children[0];
+    const value = VALUES[node.id];
 
-    if( this.value === 'not')
-        return wr( unary_jsop(this, '!', Int2Number(left, 'jsint') ) );
+    if( value === 'not')
+        return wr( unary_jsop(node, '!', Int2Number(left, STYPE_JSINT) ) );
 
-    const method = left.result_type![this.value] as STypeFctSubs;
+    const method = STypes[left.result_type!][value] as STypeFctSubs;
 
-    wr( method.substitute_call!(this, left) );
+    wr( method.substitute_call!(node, left) );
 }

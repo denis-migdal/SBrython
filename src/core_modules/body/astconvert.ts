@@ -1,4 +1,6 @@
-import { Context, convert_node, list2astnode } from "py2ast";
+import { set_py_code_from_list } from "ast2js";
+import { BODY } from "core_modules/lists";
+import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
 import { STypeFct } from "structs/SType";
 
@@ -17,7 +19,11 @@ export default function convert(node: any, context: Context) {
             meta.return_type(); // meh.
     }
 
-    return new ASTNode(list2astnode(node), "body", null, null, lines);
+    const ast = new ASTNode(BODY, 0, lines);
+
+    set_py_code_from_list(4*ast.id, node);
+
+    return ast;
 }
 
 convert.brython_name = "Body";

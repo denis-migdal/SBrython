@@ -1,10 +1,10 @@
 import { NL, wt } from "ast2js";
 import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
-    const cond = this.children[0];
-    const body = this.children[1];
+    const cond = node.children[0];
+    const body = node.children[1];
 
     wt`while(${cond}){${body}${NL}}}`;
 }

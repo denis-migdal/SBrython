@@ -1,25 +1,25 @@
-import { jscode_cursor, w } from "ast2js";
+import { set_js_cursor, w } from "ast2js";
+import { LITERALS_F_STRING_FORMATTEDVALUE } from "core_modules/lists";
+import { CODE_BEG, CODE_END, VALUES } from "dop";
 import { ASTNode } from "structs/ASTNode";
-import { SType_str } from "structs/STypes";
+import { STYPE_STR } from "structs/STypes";
 
-export default function ast2js(this: ASTNode) {
+export default function ast2js(node: ASTNode) {
 
     w("`");
 
-    for(let child of this.children) {
+    for(let child of node.children) {
 
-        if( child.result_type === SType_str) {
+        if( child.result_type === STYPE_STR) {
 
-            const start = jscode_cursor();
+            const offset = 4*child.id;
+            set_js_cursor(offset + CODE_BEG);
 
-            w(child.value);
+            w(VALUES[child.id]);
 
-            child.jscode = {
-                start,
-                end: jscode_cursor()
-            };
+            set_js_cursor(offset + CODE_END);
 
-        } else if(child.type === "literals.f-string.FormattedValue") {
+        } else if(child.type_id === LITERALS_F_STRING_FORMATTEDVALUE) {
             w(child);
         } else
             throw new Error("unsupported");
