@@ -1,17 +1,13 @@
-import { set_py_code } from "ast2js";
 import { KEYWORDS_RAISE } from "core_modules/lists";
+import { addChild, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(KEYWORDS_RAISE, 0, [
-        convert_node(node.exc, context)
-    ]);
-    
-    set_py_code(4*ast.id, node);
+    setType(dst, KEYWORDS_RAISE);
+    const coffset = addChild(dst, 1);
+    convert_node(coffset, node.exc, context);
 
-    return ast;
 }
 
 convert.brython_name = "Raise";

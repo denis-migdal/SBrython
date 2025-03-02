@@ -1,20 +1,14 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS__BRACKETS } from "core_modules/lists";
+import { addChild, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(OPERATORS__BRACKETS, 0,
-        [
-            convert_node(node.value, context),
-            convert_node(node.slice, context)
-        ]
-    );
-        
-    set_py_code(4*ast.id, node);
+    setType(dst, OPERATORS__BRACKETS);
+    const coffset = addChild(dst, 2);
 
-    return ast;
+    convert_node(coffset,   node.value, context),
+    convert_node(coffset+1, node.slice, context)
 }
 
 convert.brython_name = ["Subscript"];

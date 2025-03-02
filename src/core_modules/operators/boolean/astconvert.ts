@@ -1,28 +1,24 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS_BOOLEAN } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, resultType, setResultType, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
 const bname2jsop = {
     'And': '&&',
     'Or' : '||'
 };
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    let children = node.values.map( (n:any) => convert_node(n, context ) );
+    setType(dst, OPERATORS_BOOLEAN);
+    const nbChildren = node.values.length;
+    const coffset    = addChild(dst, nbChildren);
 
-    const op   = bname2jsop[node.op.constructor.$name as keyof typeof bname2jsop];
-    const type = children[0].result_type;
+    for(let i = 0; i < nbChildren; ++i)
+        convert_node(i + coffset, node.values[i], context )
 
-    const ast = new ASTNode(OPERATORS_BOOLEAN, type, children);
+    setResultType(dst, resultType(coffset) );
     
-    VALUES[ast.id] = op;
-
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    VALUES[dst] = bname2jsop[node.op.constructor.$name as keyof typeof bname2jsop];
 }
 
 convert.brython_name = ["BoolOp"];

@@ -1,12 +1,14 @@
 import { NL, wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
+
+    const coffset    = firstChild(node);
+    const nbChildren = nbChild(node);
 
     // else is handled by tryblock
+    if(nbChildren === 1)
+        return wt`{${coffset}${NL}}`;
 
-    if(node.children.length === 1)
-        return wt`{${node.children[0]},${NL}}`;
-
-    wt`if(${node.children[0]}){${node.children[1]}${NL}}`;
+    wt`if(${coffset+1}){${coffset}${NL}}`;
 }

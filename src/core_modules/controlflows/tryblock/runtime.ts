@@ -1,15 +1,14 @@
 import { SYMBOL } from "core_modules/lists";
 import Py_Exception from "core_runtime/Exceptions/Exception";
-import { VALUES } from "dop";
+import { type, VALUES } from "dop";
 import { SBrython } from "runtime";
-import { ASTNode } from "structs/ASTNode";
 
 function filter_stack(stack: string[]) {
   return stack.filter( e => e.includes('brython_') ); //TODO improves...
 }
 
 //TODO: use ~=sourcemap...
-function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: number): null|ASTNode {
+function find_astnode_from_jscode_pos(nodes: any, line: number, col: number): null|number {
 
   //TODO...
   /*
@@ -33,15 +32,15 @@ function find_astnode_from_jscode_pos(nodes: ASTNode[], line: number, col: numbe
   return null; //throw new Error("node not found");
 }
 
-export function stackline2astnode(stackline: StackLine, sb: SBrython): ASTNode {
+export function stackline2astnode(stackline: StackLine, sb: SBrython): number {
   const ast = sb.getASTFor("sbrython_editor.js");
-  return find_astnode_from_jscode_pos(ast.body.children, stackline[1], stackline[2])!;
+  return find_astnode_from_jscode_pos(ast.nodes, stackline[1], stackline[2])!;
 }
 
 export type StackLine = [string, number, number];
 
 //TODO: convert
-export function stack2astnodes(stack: StackLine[], sb: SBrython): ASTNode[] {
+export function stack2astnodes(stack: StackLine[], sb: SBrython): number[] {
   return stack.map( e => stackline2astnode(e, sb) );
 }
 
@@ -75,9 +74,9 @@ export function parse_stack(stack: any, sb: SBrython): StackLine[] {
 
         //TODO: extract filename.
         const ast = sb.getASTFor("sbrython_editor.js");
-        const node = find_astnode_from_jscode_pos(ast.body.children, line, col)!;
-        if(node.type_id === SYMBOL)
-          col += VALUES[node.id].length; // V8 gives first character of the symbol name when FF gives "("...
+        const node = find_astnode_from_jscode_pos(ast.nodes, line, col)!;
+        if( type(node) === SYMBOL)
+          col += VALUES[node].length; // V8 gives first character of the symbol name when FF gives "("...
 
       } else {
         let pos = _.indexOf('@');

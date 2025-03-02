@@ -1,7 +1,6 @@
 import { wt } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, VALUES } from "dop";
 
-export default function ast2js(node: ASTNode) {
-    wt`${node.children[0]}.${VALUES[node.id]}`;
+export default function ast2js(node: number) {
+    wt`${firstChild(node)}.${VALUES[node]}`;
 }

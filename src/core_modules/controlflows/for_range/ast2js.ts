@@ -1,23 +1,26 @@
 import { NL, wt } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild, VALUES } from "dop";
 import { Number2Int } from "structs/BinaryOperators";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    const idx  = VALUES[node.id];
-    const body = node.children[node.children.length-1];
+    const idx  = VALUES[node];
 
-    let beg : string|ASTNode|any  = "0n";
-    let incr: string|ASTNode|any  = "1n";
-    let end  = Number2Int(node.children[0]);
+    const body       = firstChild(node);
+    const nbChildren = nbChild(node);
 
-    if( node.children.length > 2) {
-        beg = Number2Int(node.children[0]);
-        end = Number2Int(node.children[1]);
+    let beg : string|number|any  = "0n";
+    let incr: string|number|any  = "1n";
+
+    let end = Number2Int(body+1);
+
+    if( nbChildren > 2) {
+        beg = end;
+        end = Number2Int(body+1);
     }
-    if( node.children.length > 3)
-        incr = Number2Int(node.children[2]);
+
+    if( nbChildren === 4)
+        incr = Number2Int(body+2);
 
     return wt`for(var ${idx} = ${beg}; ${idx} < ${end}; ${idx} += ${incr}){${body}${NL}}`;
 }

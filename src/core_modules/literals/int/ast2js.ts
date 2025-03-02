@@ -1,18 +1,19 @@
 import { w, wt } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { resultType, VALUES } from "dop";
 import { STYPE_INT } from "structs/STypes";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    let value = VALUES[node.id];
+    let value = VALUES[node];
 
-    if( node.result_type === STYPE_INT ) {
-        wt`${value}n`;
+    if( resultType(node) === STYPE_INT ) {
+        // force str write (else might assume this is an AST node ID)...
+        w(`${value}n`); 
         return;
     }
     if( typeof value === "bigint" )
         value = Number(value); // remove useless precision.
 
-    w(value);
+    // force str write (else might assume this is an AST node ID)...
+    w(`${value}`);
 }

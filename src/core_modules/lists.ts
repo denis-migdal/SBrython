@@ -129,7 +129,9 @@ export const CONTROLFLOWS_FOR = 38;
 export const CLASS_CLASSDEF = 39;
 export const BODY = 40;
 
-export const AST_CONVERT = [
+import type {T_ASTCONVERT, T_AST2JS} from './'
+
+export const AST_CONVERT: T_ASTCONVERT[] = [
 	AST_CONVERT_0,
 	AST_CONVERT_1,
 	AST_CONVERT_2,
@@ -173,7 +175,7 @@ export const AST_CONVERT = [
 	AST_CONVERT_40,
 ]
 
-export const AST2JS = [
+export const AST2JS: T_AST2JS[] = [
 	AST2JS_0,
 	AST2JS_1,
 	AST2JS_2,

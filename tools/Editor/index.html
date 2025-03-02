@@ -279,7 +279,7 @@ function executeSBrython(code) {
 
             times[1] = globalThis.performance.now();
             ast = {
-                body: convert_ast(_ast),
+                nodes: convert_ast(_ast),
                 filename
             }
         } else {

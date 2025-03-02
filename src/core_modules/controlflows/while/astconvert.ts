@@ -1,18 +1,15 @@
-import { set_py_code } from "ast2js";
 import { CONTROLFLOWS_WHILE } from "core_modules/lists";
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { addChild, setType } from "dop";
+import { Context, convert_body, convert_node } from "py2ast";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(CONTROLFLOWS_WHILE, 0, [
-        convert_node(node.test, context),
-        convert_node(node.body, context)
-    ]);
+    setType(dst, CONTROLFLOWS_WHILE);
+    const coffset = addChild(dst, 2);
 
-    set_py_code(4*ast.id, node);
+    convert_node(coffset  , node.test, context);
+    convert_body(coffset+1, node.body, context);
 
-    return ast;
 }
 
 convert.brython_name = "While";

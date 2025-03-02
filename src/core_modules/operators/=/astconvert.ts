@@ -1,22 +1,26 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS__EQ, SYMBOL } from "core_modules/lists";
+import { addChild, resultType, setResultType, setType, type } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { getSTypeID, STYPE_INT, STYPE_JSINT } from "structs/STypes";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context): false|void {
 
     const isMultiTarget = "targets" in node;
     const targets = isMultiTarget ? node.targets : [node.target];
 
     if(    context.type !== "class"
         && targets[0].constructor.$name === "Name"
-        && !(targets[0].value in context.local_symbols)
+        && !(targets[0].id in context.local_symbols)
     )
-        return;
+        return false;
 
-    const right = convert_node(node.value, context);
-    let right_type = right.result_type;
+    setType(dst, OPERATORS__EQ);
+
+    const nbChildren = targets.length + 1;
+    const coffset = addChild(dst, nbChildren);
+
+    convert_node(coffset, node.value, context); // right
+    let rtype = resultType(coffset);
 
     let result_type = null;
 
@@ -24,47 +28,38 @@ export default function convert(node: any, context: Context) {
     if( annotation !== undefined)
         result_type = getSTypeID(annotation);
 
+    if( result_type !== null && result_type !== rtype )
+        console.warn("Wrong result_type");
 
-    if( result_type !== null && result_type !== right_type ) {
-            console.warn("Wrong result_type");
-    }
     if( result_type === null ) {
-        result_type = right_type;
-        if( right_type === STYPE_JSINT)
+        result_type = rtype;
+        if( rtype === STYPE_JSINT)
             result_type = STYPE_INT; // prevents issues.
             //TODO: only if assign...
     }
 
-    const lefts = targets.map( (n:any) => {
+    setResultType(dst, result_type);
 
-        const left  = convert_node(n, context );
+    for(let i = 1; i < nbChildren; ++i) {
 
+        convert_node(coffset+i, targets[i-1], context );
+        context.local_symbols[targets[i-1].id] = result_type;
+
+/*
         // could be improved I guess.
-        if( left.type_id === SYMBOL) {
+        if( type(i+coffset) === SYMBOL) {
     
             // if exists, ensure type.
-            const lsym = context.local_symbols[n.id];
-            if( lsym !== undefined ) {
-                const left_type = lsym;
-                if( left_type !== null && right_type !== left_type)
+            const ltype = context.local_symbols[i+coffset];
+            if( ltype !== undefined ) {
+                if( ltype !== 0 && rtype !== ltype)
                     {}//console.warn("Wrong result_type");
     
                 // annotation_type
             }
         }
-
-        return left;
-    });
-
-    const ast = new ASTNode(OPERATORS__EQ, result_type,
-        [
-            ...lefts,
-            right,
-        ]
-    );    
-    set_py_code(4*ast.id, node);
-
-    return ast;
+*/
+    }
 }
 
 convert.brython_name = ["Assign", "AnnAssign"];

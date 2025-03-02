@@ -1,4 +1,3 @@
-import { ASTNode } from "structs/ASTNode";
 import type { SType, SType_Unknown, Symbl } from "./";
 
 export interface SType_Callable extends SType {
@@ -6,6 +5,6 @@ export interface SType_Callable extends SType {
 }
 
 export interface Symbol_Callable<T extends SType_Callable> extends Symbl<T> {
-    write_call : (call: ASTNode) => void;
-    getCallType: (this: SType, call: ASTNode) => Symbol_Callable<T>;
+    write_call : (call: number) => void;
+    getCallType: (this: SType, call: number) => Symbol_Callable<T>;
 }

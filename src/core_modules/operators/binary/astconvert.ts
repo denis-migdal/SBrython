@@ -1,56 +1,49 @@
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { Context, convert_node, swapASTNodes } from "py2ast";
 import { STypeFctSubs } from "structs/SType";
 import { bname2pyname, reversed_operator } from "structs/BinaryOperators";
 import { STYPE_NOT_IMPLEMENTED, STypes } from "structs/STypes";
-import { set_py_code } from "ast2js";
 import { OPERATORS_BINARY } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, resultType, setResultType, setType, VALUES } from "dop";
 
-export default function convert(node: any, context: Context) {
-
-    let left  = convert_node(node.left , context );
-    let right = convert_node(node.right, context);
+export default function convert(dst: number, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-
     if( op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
-    }        
+    }
 
+    setType(dst, OPERATORS_BINARY);
+
+    const coffset = addChild(dst, 2);
+    convert_node(coffset  , node.left , context); // left
+    convert_node(coffset+1, node.right, context); // right
+
+    const ltype = resultType(coffset);
+    const rtype = resultType(coffset+1);
 
     let type = STYPE_NOT_IMPLEMENTED;
-    let method = STypes[left.result_type]?.[op] as STypeFctSubs;
+    let method = STypes[ltype]?.[op] as STypeFctSubs;
 
     if( method !== undefined )
-        type = method.return_type(right.result_type!);
+        type = method.return_type(rtype);
 
     // try reversed operator
     if( type === STYPE_NOT_IMPLEMENTED) {
         op     = reversed_operator(op as Parameters<typeof reversed_operator>[0]);
-        method = STypes[right.result_type]?.[op] as STypeFctSubs;
+        method = STypes[rtype]?.[op] as STypeFctSubs;
         if( method !== undefined)
-            type   = method.return_type(left.result_type!);
+            type   = method.return_type(ltype!);
 
         if( type === STYPE_NOT_IMPLEMENTED)
-            throw new Error(`${right.result_type} ${op} ${left.result_type} NOT IMPLEMENTED!`);
+            throw new Error(`${rtype} ${op} ${ltype} NOT IMPLEMENTED!`);
 
-        [left, right] = [right, left];
+        swapASTNodes(coffset, coffset+1); // costly, use 2 ast2js instead ?
     }
 
-    const ast = new ASTNode(OPERATORS_BINARY, type,
-        [
-            left,
-            right
-        ]
-    );
+    VALUES[dst] = op;
 
-    VALUES[ast.id] = op;
-        
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    setResultType(dst, type);
 }
 
 convert.brython_name = ["BinOp"];

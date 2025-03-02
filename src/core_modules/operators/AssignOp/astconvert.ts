@@ -1,34 +1,24 @@
-import { set_py_code } from "ast2js";
-import { OPERATORS_ASSIGNOP, OPERATORS_BINARY } from "core_modules/lists";
-import { VALUES } from "dop";
+import { OPERATORS_ASSIGNOP } from "core_modules/lists";
+import { addChild, resultType, setResultType, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { bname2pyname } from "structs/BinaryOperators";
 
-export default function convert(node: any, context: Context) {
-
-    let left  = convert_node(node.target , context );
-    let right = convert_node(node.value, context);
+export default function convert(dst: number, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-
     if( op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
-    }        
+    }
+    VALUES[dst] = op;
 
-    const ast = new ASTNode(OPERATORS_ASSIGNOP, left.result_type,
-        [
-            left,
-            right
-        ]
-    );
+    setType(dst, OPERATORS_ASSIGNOP);
+    const coffset = addChild(dst, 2);
 
-    VALUES[ast.id] = op;
-        
-    set_py_code(4*ast.id, node);
+    convert_node(coffset,   node.target, context);
+    convert_node(coffset+1, node.value,  context);
 
-    return ast;
+    setResultType(dst, resultType(coffset));
 }
 
 convert.brython_name = ["AugAssign"];

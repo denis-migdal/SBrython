@@ -1,12 +1,9 @@
 # SimplerBrython
 
--> op priority
--> .first for args conversions.
-
 TODO:
+- [ ] restaure Editor features
 - [ ] type system rewrite
     - [ ] use symbols to not pollute ?
-- [ ] restaure Editor features
 - [ ] operator system rewrite
 - [ ] write system rewrite (?)
     - [ ] do not store lines, get lines once full JS generated.
@@ -20,13 +17,6 @@ TODO:
 - [ ] functions args rewrite
 
 https://github.com/brython-dev/brython/issues/2545
--> DOP for AST...
-    -> config : struct + max size
-        -> Array() first to test... [way less allocations/better GC ?]
-        -> re-use array for many scripts ?
-    -> TOKEN_TYPE + CH_START/VALUE_ID(long)/VALUE(number) + CH_END + EXPR_RESULT_TYPE_ID [4*TAG_ID+X]
-    -> sync wasm ?
-        => easily transferrable through sharedbuffer => kind of a prebuild ?
 
 ====
 

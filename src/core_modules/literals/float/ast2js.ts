@@ -1,7 +1,8 @@
 import { w } from "ast2js";
 import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
 
-export default function ast2js(node: ASTNode) {
-    w(VALUES[node.id]);
+export default function ast2js(node: number) {
+
+    // force str write (else might assume this is an AST node ID)...
+    w(`${VALUES[node]}`);
 }

@@ -1,20 +1,22 @@
 import { w, wt } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild, VALUES } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
     w("const {");
 
-    for(let i = 0; i < node.children.length; ++i) {
+    const coffset = firstChild(node);
+    const nbChildren = nbChild(node);
+
+    for(let i = 0; i < nbChildren; ++i) {
         if( i !== 0)
             w(", ");
-        w(node.children[i]);
+        w(i + coffset);
     }
 
     w('} = ');
 
-    const value = VALUES[node.id];
+    const value = VALUES[node];
     
     if(value === null)
         w("__SBRYTHON__.getModules()");

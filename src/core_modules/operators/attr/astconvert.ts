@@ -1,22 +1,15 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS_ATTR } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
     
-    const ast = new ASTNode(OPERATORS_ATTR, 0,
-        [
-            convert_node(node.value, context)
-        ]
-    );
+    setType(dst, OPERATORS_ATTR);
+    const coffset = addChild(dst, 1);
 
-    VALUES[ast.id] = node.attr;
-        
-    set_py_code(4*ast.id, node);
+    convert_node(coffset, node.value, context);
 
-    return ast;
+    VALUES[dst] = node.attr;
 }
 
 convert.brython_name = ["Attribute"];

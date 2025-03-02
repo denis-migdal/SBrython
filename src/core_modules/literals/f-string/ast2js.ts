@@ -1,28 +1,36 @@
 import { set_js_cursor, w } from "ast2js";
 import { LITERALS_F_STRING_FORMATTEDVALUE } from "core_modules/lists";
-import { CODE_BEG, CODE_END, VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "dop";
 import { STYPE_STR } from "structs/STypes";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
     w("`");
 
-    for(let child of node.children) {
+    const coffset    = firstChild(node);
+    const nbChildren = nbChild(node);
 
-        if( child.result_type === STYPE_STR) {
+    for(let i = coffset; i < nbChildren + coffset; ++i) {
 
-            const offset = 4*child.id;
+        if( resultType(i) === STYPE_STR) {
+
+            const offset = 4*i;
+
+            // we write the children directly...
             set_js_cursor(offset + CODE_BEG);
-
-            w(VALUES[child.id]);
-
+            w(VALUES[i]);
             set_js_cursor(offset + CODE_END);
 
-        } else if(child.type_id === LITERALS_F_STRING_FORMATTEDVALUE) {
-            w(child);
-        } else
-            throw new Error("unsupported");
+            continue;
+
+        }
+        
+        if( type(i) === LITERALS_F_STRING_FORMATTEDVALUE) {
+            w(i);
+            continue;
+        }
+        
+        throw new Error("unsupported");
     }
 
     w("`");

@@ -1,20 +1,17 @@
-import { set_py_code } from "ast2js";
 import { KEYWORDS_IMPORT } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(KEYWORDS_IMPORT, 0,
-        node.names.map( (n:any) => convert_node(n, context) )
-    );
+    setType(dst, KEYWORDS_IMPORT);
+    const nbChildren = node.names.length;
+    const coffset    = addChild(dst, nbChildren);
 
-    VALUES[ast.id = node.module];
+    for(let i = 0; i < nbChildren; ++i)
+        convert_node(i + coffset, node.names[i], context);
 
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    VALUES[dst] = node.module;
 }
 
 convert.brython_name = ["Import", "ImportFrom"];

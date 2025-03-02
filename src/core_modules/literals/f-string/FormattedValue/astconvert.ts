@@ -1,17 +1,13 @@
-import { set_py_code } from "ast2js";
 import { LITERALS_F_STRING_FORMATTEDVALUE } from "core_modules/lists";
+import { addChild, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(LITERALS_F_STRING_FORMATTEDVALUE, 0, [
-        convert_node(node.value, context)
-    ]);
-        
-    set_py_code(4*ast.id, node);
+    setType(dst, LITERALS_F_STRING_FORMATTEDVALUE);
+    const coffset = addChild(dst, 1);
 
-    return ast;
+    convert_node(coffset, node.value, context);
 }
 
 convert.brython_name = "FormattedValue";

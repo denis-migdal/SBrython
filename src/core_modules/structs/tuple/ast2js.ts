@@ -1,15 +1,18 @@
 import { w } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
     w("Object.freeze([");
 
-    if( node.children.length > 0 )
-        w(node.children[0]);
+    const nbChildren = nbChild(node);
+    const coffset    = firstChild(node);
 
-    for(let i = 1; i < node.children.length; ++i)
-        w(", ", node.children[i]);
+    if( nbChildren > 0 )
+        w(coffset);
+
+    for(let i = 1; i < nbChildren; ++i)
+        w(", ", i + coffset);
 
     w("])");
 }

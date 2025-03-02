@@ -1,13 +1,10 @@
-import { NL, w, wt } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { NL, wt } from "ast2js";
+import { firstChild, VALUES } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    const name = VALUES[node.id];
-    const args = node.children[0];
-    const body = node.children[1];
+    const name = VALUES[node];
+    const coffset = firstChild(node);
 
-    wt`function ${name}(${args}){${body}${NL}}`;
-    //w('function ', name, '(', args, '){', body, NL, '}');
+    wt`function ${name}(${coffset}){${coffset+1}${NL}}`;
 }

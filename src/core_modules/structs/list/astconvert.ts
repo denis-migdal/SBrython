@@ -1,16 +1,15 @@
-import { set_py_code } from "ast2js";
 import { STRUCTS_LIST } from "core_modules/lists";
+import { addChild, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
-    
-    const ast = new ASTNode(STRUCTS_LIST, 0, 
-        node.elts.map( (n: any) => convert_node(n, context) )
-    );    
-    set_py_code(4*ast.id, node);
+export default function convert(dst: number, node: any, context: Context) {
 
-    return ast;
+    setType(dst, STRUCTS_LIST);
+    const nbChildren = node.elts.length;
+    const coffset = addChild(dst, nbChildren);
+
+    for(let i = 0; i < nbChildren; ++i)
+        convert_node(i + coffset, node.elts[i], context);
 }
 
 convert.brython_name = "List";

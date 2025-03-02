@@ -1,28 +1,27 @@
 import { w, wr } from "ast2js";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, resultType, VALUES } from "dop";
 import { binary_jsop, reversed_operator } from "structs/BinaryOperators";
 import { STypeFctSubs } from "structs/SType";
 import { STYPE_NOT_IMPLEMENTED, STypes } from "structs/STypes";
 
 
-function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right: ASTNode) {
+function find_and_call_substitute(node: number, left:number, op: string, right: number) {
     
     let reversed = false;
-    const rtype = right.result_type;
-    const ltype = left.result_type;
+    const rtype = resultType(right);
+    const ltype = resultType(left);
 
     let type = STYPE_NOT_IMPLEMENTED;
-    let method = STypes[left.result_type]?.[op] as STypeFctSubs;
+    let method = STypes[ltype]?.[op] as STypeFctSubs;
     if( method !== undefined )
-        type = method.return_type(right.result_type!);
+        type = method.return_type(rtype!);
 
     if( type === STYPE_NOT_IMPLEMENTED) {
 
         op     = reversed_operator(op as Parameters<typeof reversed_operator>[0]);
-        method = STypes[right.result_type]?.[op] as STypeFctSubs;
+        method = STypes[rtype]?.[op] as STypeFctSubs;
         if( method !== undefined )
-            type   = method.return_type(left.result_type!);
+            type   = method.return_type(ltype!);
         
         if( type === STYPE_NOT_IMPLEMENTED) {
             if( op !== '__eq__' && op !== '__ne__' )
@@ -40,17 +39,19 @@ function find_and_call_substitute(node: ASTNode, left:ASTNode, op: string, right
     return method.substitute_call!(node, left, right, reversed);
 }
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
     
-    const value = VALUES[node.id];
+    const value = VALUES[node];
+
+    const coffset    = firstChild(node);
 
     for(let i = 0; i < value.length; ++i) {
         if( i !== 0 )
             w(' && ');
 
         const op    = value[i];
-        const left  = node.children[i];
-        const right = node.children[i+1];
+        const left  = i+coffset;
+        const right = i+1+coffset;
 
         if( op === 'is' ) {
             wr( binary_jsop(node, left, '===', right) );

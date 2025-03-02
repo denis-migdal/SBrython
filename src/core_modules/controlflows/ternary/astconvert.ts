@@ -1,23 +1,17 @@
-import { set_py_code } from "ast2js";
 import { CONTROLFLOWS_TERNARY } from "core_modules/lists";
+import { addChild, resultType, setResultType, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const cond       = convert_node(node.test, context);
-    const body_true  = convert_node(node.body, context);
-    const body_false = convert_node(node.orelse, context);
+    const coffset = addChild(dst, 3);
 
-    const ast = new ASTNode(CONTROLFLOWS_TERNARY, body_true.result_type, [
-        cond,
-        body_true,
-        body_false
-    ]);
+    convert_node(coffset  , node.test  , context);
+    convert_node(coffset+1, node.body  , context); // true
+    convert_node(coffset+2, node.orelse, context); // false
 
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    setType(dst , CONTROLFLOWS_TERNARY);
+    setResultType(dst, resultType(coffset+1));
 }
 
 convert.brython_name = "IfExp";

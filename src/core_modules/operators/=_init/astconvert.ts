@@ -1,22 +1,25 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS__EQ_INIT } from "core_modules/lists";
+import { addChild, resultType, setResultType, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { getSTypeID, STYPE_INT, STYPE_JSINT } from "structs/STypes";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context): false|void {
 
     const isMultiTarget = "targets" in node;
     const targets = isMultiTarget ? node.targets : [node.target];
 
     if(    context.type === "class"
         || targets[0].constructor.$name !== "Name"
-        || targets[0].value in context.local_symbols
+        || targets[0].id in context.local_symbols
     )
-        return;
+        return false;
 
-    const right = convert_node(node.value, context);
-    let right_type = right.result_type;
+    setType(dst, OPERATORS__EQ_INIT);
+    const nbChildren = targets.length + 1;
+    const coffset = addChild(dst, nbChildren);
+
+    convert_node(coffset, node.value, context); // right
+    let rtype = resultType(coffset);
 
     let result_type = null;
 
@@ -25,33 +28,22 @@ export default function convert(node: any, context: Context) {
         result_type = getSTypeID(annotation);
 
 
-    if( result_type !== null && result_type !== right_type ) {
+    if( result_type !== null && result_type !== rtype )
             console.warn("Wrong result_type");
-    }
+
     if( result_type === null ) {
-        result_type = right_type;
-        if( right_type === STYPE_JSINT)
+        result_type = rtype;
+        if( rtype === STYPE_JSINT)
             result_type = STYPE_INT; // prevents issues.
             //TODO: only if assign...
     }
 
-    const lefts = targets.map( (n:any) => {
+    setResultType(dst, result_type);
 
-        const left  = convert_node(n, context );
-        context.local_symbols[n.id] = result_type;
-
-        return left;
-    });
-
-    const ast = new ASTNode(OPERATORS__EQ_INIT, result_type,
-        [
-            ...lefts,
-            right,
-        ]
-    );    
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    for(let i = 1; i < nbChildren; ++i) {
+        convert_node(coffset+i, targets[i-1], context );
+        context.local_symbols[targets[i-1].id] = result_type;
+    }
 }
 
 convert.brython_name = ["Assign", "AnnAssign"];

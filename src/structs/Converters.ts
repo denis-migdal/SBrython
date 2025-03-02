@@ -1,28 +1,15 @@
-import { VALUES } from "dop";
-import { ASTNode } from "./ASTNode";
+import { resultType } from "dop";
 import { Int2Number, Number2Int } from "./BinaryOperators";
-import { STYPE_FLOAT, STYPE_INT, STYPE_JSINT } from "./STypes";
+import { STYPE_INT } from "./STypes";
 
 type Printable = { toString(): string };
 
-export type Converter = (node: ASTNode) => ASTNode | [TemplateStringsArray, ...(ASTNode | Printable)[]];
+export type Converter = (node: number) => number | [TemplateStringsArray, ...(number | Printable)[]];
 
-export const NOCONVERT = (node: ASTNode) => node;
+export const NOCONVERT = (node: number) => node;
 
-export const CONVERT_INT2FLOAT = (node: ASTNode) => {
-
-    if( node.result_type === STYPE_INT )
-        return Int2Number(node, STYPE_FLOAT);
-
-    return node; // already a number...
-}
-
-export const CONVERT_2INT = (node: ASTNode) => {
-    //if( node.result_type === STYPE_INT )
-    //    return node;
-
-    return Number2Int(node);
-}
+export const CONVERT_INT2FLOAT = Int2Number;
+export const CONVERT_2INT      = Number2Int;
 
 export function generateConvert(convert: number[]) {
 
@@ -30,8 +17,8 @@ export function generateConvert(convert: number[]) {
     for(let i = 0; i < convert.length; i+=2)
         table[convert[i]] = convert[i+1];
 
-    return (node: ASTNode) => {
-        const src    = node.result_type;
+    return (node: number) => {
+        const src    = resultType(node);
         const target = table[src];
         if( target === undefined )
             return node;

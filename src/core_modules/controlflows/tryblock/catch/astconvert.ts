@@ -1,24 +1,21 @@
-import { set_py_code } from "ast2js";
 import { CONTROLFLOWS_TRYBLOCK_CATCH } from "core_modules/lists";
-import { VALUES } from "dop";
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { addChild, setType, VALUES } from "dop";
+import { Context, convert_body, convert_node } from "py2ast";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    let children;
-    if( node.type !== undefined) {
-        children = [convert_node(node.type, context), convert_node(node.body, context)]
-    } else {
-        children = [ convert_node(node.body, context) ];
-    }
+    let nbChildren = 1;
+    if( node.type !== undefined )
+        nbChildren = 2;
 
-    const ast = new ASTNode(CONTROLFLOWS_TRYBLOCK_CATCH, 0, children);
+    setType(dst, CONTROLFLOWS_TRYBLOCK_CATCH);
+    const coffset = addChild(dst, nbChildren);
+
+    convert_body(coffset, node.body, context);
+    if( nbChildren === 2)
+        convert_node(coffset+1, node.type, context);
     
-    VALUES[ast.id] = node.name;
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    VALUES[dst] = node.name;
 }
 
 convert.brython_name = "ExceptHandler";

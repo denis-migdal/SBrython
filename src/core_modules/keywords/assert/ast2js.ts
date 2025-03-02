@@ -1,7 +1,7 @@
 import { wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    return wt`_b_.assert(${node.children[0]})`;
+    return wt`_b_.assert(${firstChild(node)})`;
 }

@@ -1,22 +1,17 @@
-import { set_py_code } from "ast2js";
 import { LITERALS_STR } from "core_modules/lists";
-import { VALUES } from "dop";
+import { setResultType, setType, VALUES } from "dop";
 import { Context } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { STYPE_STR } from "structs/STypes";
 
-export default function convert(node: any, _context: Context) {
+export default function convert(dst: number, node: any, _context: Context): false|void {
 
     if( typeof node.value !== "string")
-        return;
+        return false;
 
-    const ast = new ASTNode(LITERALS_STR, STYPE_STR);
+    setType(dst, LITERALS_STR);
+    setResultType(dst, STYPE_STR);
 
-    VALUES[ast.id] = node.value;
-
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    VALUES[dst] = node.value;
 }
 
 convert.brython_name = "Constant";

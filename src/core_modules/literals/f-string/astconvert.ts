@@ -1,17 +1,16 @@
-import { set_py_code } from "ast2js";
 import { LITERALS_F_STRING } from "core_modules/lists";
+import { addChild, setType } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
-    
-    const ast = new ASTNode(LITERALS_F_STRING, 0, [
-        ...node.values.map( (e:any) => convert_node(e, context) )
-    ]);
-        
-    set_py_code(4*ast.id, node);
+export default function convert(dst: number, node: any, context: Context) {
 
-    return ast;
+    setType(dst, LITERALS_F_STRING);
+
+    const nbChildren = node.values.length;
+    const coffset    = addChild(dst, nbChildren);
+
+    for(let i = 0; i < nbChildren; ++i)
+        convert_node(i + coffset, node.values[i], context);
 }
 
 convert.brython_name = "JoinedStr";

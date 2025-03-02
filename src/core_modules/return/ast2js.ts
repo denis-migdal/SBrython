@@ -1,10 +1,12 @@
 import { w, wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    if( node.children.length === 0)
+    const coffset = firstChild(node);
+
+    if( coffset === 0)
         return w("return null");
 
-    return wt`return ${node.children[0]}`;
+    return wt`return ${coffset}`;
 }

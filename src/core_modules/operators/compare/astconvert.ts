@@ -1,12 +1,10 @@
-import { set_py_code } from "ast2js";
 import { OPERATORS_COMPARE } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, setResultType, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { bname2pyname } from "structs/BinaryOperators";
 import { STYPE_BOOL } from "structs/STypes";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
     const ops = node.ops.map( (e: any) => {
         const op = bname2pyname[e.constructor.$name as keyof typeof bname2pyname];
@@ -14,22 +12,16 @@ export default function convert(node: any, context: Context) {
             throw new Error(`${e.constructor.$name} not implemented!`);
         return op;
     });
+    VALUES[dst] = ops;
 
-    const left   = convert_node(node.left, context );
-    const rights = node.comparators.map( (n:any) => convert_node(n, context) );
+    setType(dst, OPERATORS_COMPARE);
+    setResultType(dst, STYPE_BOOL);
+    const nbChildren = node.comparators.length + 1;
+    const coffset = addChild(dst, nbChildren);
 
-    const ast = new ASTNode(OPERATORS_COMPARE, STYPE_BOOL,
-        [
-            left,
-            ...rights,
-        ]
-    );
-
-    VALUES[ast.id] = ops;
-        
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    convert_node(coffset, node.left, context );
+    for(let i = 1 ; i < nbChildren; ++i)
+        convert_node(i + coffset, node.comparators[i-1], context);
 }
 
 convert.brython_name = "Compare";

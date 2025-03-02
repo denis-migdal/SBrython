@@ -1,4 +1,4 @@
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, resultType } from "dop";
 import { define, NOT_IMPLEMENTED, SType_Unknown, Symbl, Symbol_function, Symbol_function_type, Symbol_NOT_IMPLEMENTED } from ".";
 import { SType_Callable, Symbol_Callable } from "./callable";
 import { SType_function_type } from "./function_type";
@@ -38,7 +38,7 @@ type FctUnaryOp = typeof Symbol_function;
 function genFctUnaryOp<T extends string[]>(...names: T): Record<T[number], FctUnaryOp> {
     let result = {} as Record<T[number], FctUnaryOp>;
 
-    for(let name of names) {
+    for(const name of names) {
         result[name as T[number]] = {
             stype       : {
                 __name__ : Symbol_NOT_IMPLEMENTED, // constant, equal name...
@@ -46,11 +46,11 @@ function genFctUnaryOp<T extends string[]>(...names: T): Record<T[number], FctUn
                 __call__ : Symbol_NOT_IMPLEMENTED
             },
 
-            getCallType : function (this: any, call: ASTNode) {
+            getCallType : function (this: any, call: number) {
                 //TODO: .stype.
                 //TODO: reverse order... => no need for return, we can detect it.
                 //TODO: return_type ?    => may need to call twice when binary_op ?
-                return STypes[call.children[1].result_type]![`__${name}__`] as any;
+                return STypes[resultType(firstChild(call)+1)]![`__${name}__`] as any;
             },
             write_symbol: NOT_IMPLEMENTED,
             write_call  : NOT_IMPLEMENTED

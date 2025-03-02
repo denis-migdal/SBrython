@@ -1,17 +1,59 @@
 // Brython must be imported before.
 declare var $B: any;
 
-import {ASTNode} from "./structs/ASTNode";
-
 import { AST_CONVERT } from "./core_modules/lists";
 import { STypeFctSubs } from "structs/SType";
-import { addSType, getSTypeID, STYPE_FLOAT, STYPE_INT, STYPE_STR, STypes } from "structs/STypes";
-import dop_reset from "dop";
+import { addSType, getSTypeID, STypes } from "structs/STypes";
+import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, VALUES} from "dop";
 import { RET_INT, RETURN_TYPE_FCT } from "structs/ReturnTypeFcts";
 
 export type AST = {
-    body    : ASTNode,
+    nodes   : typeof ASTNODES,
     filename: string
+}
+
+export function printNode(id: number) {
+    console.warn({
+        type     : ASTNODES[ASTNODE_SIZE*id+ASTNODE_TYPE_ID],
+        ret_type : STypes[ASTNODES[ASTNODE_SIZE*id+ASTNODE_RESULT_TYPE]],
+        value    : VALUES[id],
+    });
+}
+
+export function set_py_code(id: number, brython_node: any) {
+
+    const offset = 4*id;
+    PY_CODE[ offset + CODE_BEG_LINE ] = brython_node.lineno;
+    PY_CODE[ offset + CODE_BEG_COL  ] = brython_node.col_offset;
+    PY_CODE[ offset + CODE_END_LINE ] = brython_node.end_lineno;
+    PY_CODE[ offset + CODE_END_COL  ] = brython_node.end_col_offset;
+}
+
+export function set_py_code_from_list(id: number, brython_node: any) {
+
+    const offset = 4*id;
+
+    const beg = brython_node[0];
+    const end = brython_node[brython_node.length-1];
+
+    PY_CODE[ offset + CODE_BEG_LINE ] = beg.lineno;
+    PY_CODE[ offset + CODE_BEG_COL  ] = beg.col_offset;
+    PY_CODE[ offset + CODE_END_LINE ] = end.end_lineno;
+    PY_CODE[ offset + CODE_END_COL  ] = end.end_col_offset;
+}
+
+
+export function set_py_from_beg_end( src: number, dst_beg: number, dst_end: number ) {
+
+    const src_offset = 4*src;
+    const beg_offset = 4*dst_beg;
+    const end_offset = 4*dst_end + 2;
+
+    PY_CODE[ src_offset + CODE_BEG_LINE ] = PY_CODE[ beg_offset + CODE_LINE ];
+    PY_CODE[ src_offset + CODE_BEG_COL  ] = PY_CODE[ beg_offset + CODE_COL  ];
+
+    PY_CODE[ src_offset + CODE_END_LINE ] = PY_CODE[ end_offset + CODE_LINE ];
+    PY_CODE[ src_offset + CODE_END_COL  ] = PY_CODE[ end_offset + CODE_COL  ];
 }
 
 const modules: Record<string, number[]> = {}
@@ -29,27 +71,31 @@ for(let i = 0 ; i < AST_CONVERT.length; ++i) {
             names = [module.brython_name as string]
     }
 
-    for(let name of names)
+    for(const name of names)
         (modules[name] ??= []).push(i);
 }
 
 export function py2ast(code: string, filename: string): AST {
 
     const parser = new $B.Parser(code, filename, 'file');
-	const _ast = $B._PyPegen.run_parser(parser);
+	const _ast   = $B._PyPegen.run_parser(parser);
     //console.log("AST", _ast);
+    
+    const nodes = convert_ast(_ast)
 
 	return {
-        body: convert_ast(_ast),
+        nodes, //TODO: slice
         filename
     }
 }
 
-export function convert_ast(ast: any): ASTNode {
+export function convert_ast(ast: any) {
 
     dop_reset();
 
-    const result = convert_node(ast.body, new Context() );
+    convert_body(createASTNode(), ast.body, new Context() );
+
+    return ASTNODES;
 
     /*function count(node: ASTNode) {
 
@@ -59,8 +105,6 @@ export function convert_ast(ast: any): ASTNode {
         return sum;
     }
     console.warn( count(result) );*/
-
-    return result;
 }
 
 
@@ -73,7 +117,41 @@ function getNodeType(brython_node: any): string {
     return brython_node.constructor.$name;
 }
 
-export function convert_node(brython_node: any, context: Context): ASTNode {
+export function swapASTNodes(a: number, b: number ) {
+
+    const ao = ASTNODE_SIZE * a;
+    const bo = ASTNODE_SIZE * b;
+
+    let t:any;
+    for(let i = 0; i < ASTNODE_SIZE; ++i) {
+        t = ASTNODES[ao+i];
+        ASTNODES[ao+i] = ASTNODES[bo+i];
+        ASTNODES[bo+i] = t;
+    }
+
+    const ap = 4*a;
+    const bp = 4*b;
+    for(let i = 0; i < 4; ++i) {
+        t = PY_CODE[ap+i];
+        PY_CODE[ap+i] = PY_CODE[bp+i];
+        PY_CODE[bp+i] = t;
+    }
+
+    t = VALUES[a];
+    VALUES[a] = VALUES[b];
+    VALUES[b] = t;
+
+}
+
+const body = modules.Body[0]
+
+export function convert_body(id: number, brython_node: any, context: Context) {
+
+    AST_CONVERT[body]    (id, brython_node, context);
+    set_py_code_from_list(id, brython_node);
+}
+
+export function convert_node(id: number, brython_node: any, context: Context) {
 
     let name = getNodeType(brython_node);
 
@@ -92,14 +170,13 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     }
 
     // we may have many modules for the same node type.
-    for(let i = 0; i < candidates.length; ++i) {
-        const result = AST_CONVERT[candidates[i]](brython_node, context);
-        if(result !== undefined) {
-            //const ID = candidates[i];
-            //result.type_id = ID;
-            return result;
+    for(let i = 0; i < candidates.length; ++i)
+        if( AST_CONVERT[candidates[i]](id, brython_node, context) !== false) {
+
+            set_py_code(id, brython_node);
+
+            return;
         }
-    }
 
     console.error(brython_node);
     throw new Error(`Unsupported node ${name} at ${brython_node.lineno}:${brython_node.col_offset}`);
@@ -111,11 +188,10 @@ export class Context {
         this.local_symbols = {...parent_context.local_symbols};
     }
 
-    type; //TODO: remove
-
-    parent_node_context?: ASTNode; 
-
     local_symbols: Record<string, number>;
+    parent_node_context?: number; 
+
+    type; //TODO: remove
 }
 
 const type_fct = {} /* fct class => type class */
@@ -132,9 +208,9 @@ function genUnaryOpFct(name: string, return_type: RETURN_TYPE_FCT) {
             //TODO: I need a self...
             return_type    : return_type,
             // not really :?
-            substitute_call: (call: ASTNode) => {
-                const left = call.children[1];
-                const method = STypes[left.result_type]![opname] as STypeFctSubs;
+            substitute_call: (call: number) => {
+                const left   = firstChild(call)+1;
+                const method = STypes[resultType(left)]![opname] as STypeFctSubs;
                 return method.substitute_call!(call);
             }
         }

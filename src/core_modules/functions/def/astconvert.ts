@@ -1,29 +1,33 @@
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
-import { STypeFct, STypeObj } from "structs/SType";
+import { Context, convert_body, convert_node } from "py2ast";
+import { STypeFct } from "structs/SType";
 import { getSTypeID, STypes } from "structs/STypes";
 import { default_call } from "../call/ast2js";
 import { convert_args } from "../args/astconvert";
-import { set_py_code } from "ast2js";
 import { FUNCTIONS_DEF } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, resultType, setResultType, setType, VALUES } from "dop";
 
 // required as some symbols may have been declared out of order
 // (not only for return type computation)
-function generate(node: any, astnode: ASTNode, context: Context) {
+function generate(dst: number, node: any, context: Context) {
+
+    const rtype   = resultType(dst);
+    const coffset = addChild(dst, 2);
 
     // fuck...
-    const stype   = STypes[astnode.result_type] as STypeFct;
+    const stype   = STypes[rtype] as STypeFct;
     const meta    = stype.__call__;
 
     // new context for the function local variables
     context = new Context("fct", context);
-    context.parent_node_context = astnode; // <- here
+    context.parent_node_context = dst; // <- here
 
     // fake the node... => better doing here to not have context issues.
-    const args = convert_args(node, stype, context);
-    for(let arg of args.children)
-        context.local_symbols[VALUES[arg.id]] = arg.result_type;
+    convert_args(coffset, node, stype, context);
+    // already done in convert_args
+    /* const c_offset  = firstChild(coffset);
+    const c_end     = c_offset + nbChild(coffset);
+    for(let i = c_offset; i < c_end; ++i)
+        context.local_symbols[VALUES[i]] = resultType(i);*/
 
     // tell body this function has been generated.
     meta.generate = undefined;
@@ -37,14 +41,10 @@ function generate(node: any, astnode: ASTNode, context: Context) {
         meta.return_type = () => fct_return_type!;
     }
 
-    // convert body
-    astnode.children = [
-        args,
-        convert_node(node.body, context)
-    ];
+    convert_body(coffset+1, node.body, context);
 }
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
     //const isMethod = context.type === "class";
 
@@ -58,7 +58,7 @@ export default function convert(node: any, context: Context) {
             has_kw         : false,
             generate,
             return_type    : () => {
-                generate(node, ast, context); // should be the new context
+                generate(dst, node, context); // should be the new context
                 return SType_fct.__call__.return_type();
             },
             substitute_call: default_call
@@ -71,7 +71,6 @@ export default function convert(node: any, context: Context) {
     //if( ! isMethod ) {
     // if method add to self_context.symbols ?
     context.local_symbols[node.name] = STypeID;
-
 
     // implicit return...
     const last_type   = node.body[node.body.length-1].constructor.$name;
@@ -89,13 +88,10 @@ export default function convert(node: any, context: Context) {
         node.body.push( fake_node );
     }
 
-    const ast = new ASTNode(FUNCTIONS_DEF, STypeID);
+    setType      (dst, FUNCTIONS_DEF);
+    setResultType(dst, STypeID);
 
-    VALUES[ast.id] = node.name;
-
-    set_py_code(4*ast.id, node);
-    
-    return ast;
+    VALUES[dst] = node.name;
 }
 
 convert.brython_name = "FunctionDef";

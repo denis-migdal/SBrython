@@ -1,15 +1,11 @@
-import { set_py_code } from "ast2js";
 import { KEYWORDS_CONTINUE } from "core_modules/lists";
+import { setType } from "dop";
 import { Context } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const ast = new ASTNode(KEYWORDS_CONTINUE, 0);
+    setType(dst, KEYWORDS_CONTINUE);
 
-    set_py_code(4*ast.id, node);
-
-    return ast;
 }
 
 convert.brython_name = "Continue";

@@ -1,21 +1,21 @@
 import { r } from "ast2js";
 import { LITERALS_STR } from "core_modules/lists";
-import { VALUES } from "dop";
+import { firstChild, resultType, type, VALUES } from "dop";
 import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number } from "structs/BinaryOperators";
 import { CONVERT_INT2FLOAT } from "structs/Converters";
 import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_FLOAT, RET_STR } from "structs/ReturnTypeFcts";
 import { STypeFctSubs } from "structs/SType";
-import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_STR } from "structs/STypes";
+import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_STR, STypes } from "structs/STypes";
 
 
 export const SType_type_float = addSType('type[float]', {
     __call__: {
         //TODO...
         return_type: RET_FLOAT,
-        substitute_call: (node) => {
+        substitute_call: (node: number) => {
 
-            const other = node.children[1];
-            const other_type = other.result_type
+            const other = firstChild(node)+1;
+            const other_type = resultType(other);
 
             //TODO use their __int__ ?
             if( other_type === STYPE_INT )
@@ -26,9 +26,9 @@ export const SType_type_float = addSType('type[float]', {
             //TODO: power...
             if( other_type === STYPE_STR ) {
 
-                const other_value = VALUES[other.id];
+                const other_value = VALUES[other];
 
-                if( other.type_id === LITERALS_STR ) {
+                if( type(other) === LITERALS_STR ) {
                     if( other_value === "inf" || other_value === "infinity" )
                         return "Number.POSITIVE_INFINITY";
                     if( other_value === "-inf"|| other_value === "-infinity")
@@ -42,9 +42,10 @@ export const SType_type_float = addSType('type[float]', {
                 return r`parseFloat(${other})`; //, ${node.children[2]}))`; 
             }
 
-            const method = other.result_type?.__int__ as STypeFctSubs;
+            const otype = STypes[other_type];
+            const method = otype?.__int__ as STypeFctSubs;
             if( method === undefined )
-                throw new Error(`${other.result_type.__name__}.__int__ not defined`);
+                throw new Error(`${otype.__name__}.__int__ not defined`);
             return method.substitute_call!(node, other);
         }
     }

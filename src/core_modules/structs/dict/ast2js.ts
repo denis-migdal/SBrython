@@ -1,15 +1,18 @@
 import { w, wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
     w('{');
 
-    if( node.children.length > 0 )
-        wt`${node.children[0]}: ${node.children[1]}`;
+    const nbChildren = nbChild(node);
+    const coffset    = firstChild(node);
 
-    for(let i = 2; i < node.children.length; i+=2)
-        wt`, ${node.children[i]}: ${node.children[i+1]}`;
+    if( nbChildren > 0 )
+        wt`${coffset}: ${coffset+1}`;
+
+    for(let i = 2; i < nbChildren; i+=2)
+        wt`, ${i+coffset}: ${i+1+coffset}`;
 
     w('}');
 }

@@ -1,7 +1,6 @@
 import { AST2JS } from "core_modules/lists";
-import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, PY_CODE } from "dop";
+import { ARRAY_TYPE, CODE_BEG, CODE_COL, CODE_END, CODE_LINE, JS_CODE, type } from "dop";
 import { AST } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
 export const CURSOR = new ARRAY_TYPE(2);
 
@@ -10,37 +9,6 @@ export let jscode: string;
 export function set_js_cursor(idx: number) {
     JS_CODE[idx + CODE_LINE] = CURSOR[CODE_LINE];
     JS_CODE[idx + CODE_COL ] = jscode!.length - CURSOR[CODE_COL];
-}
-
-export function set_py_code_from_list(offset: number, brython_node: any) {
-
-    const beg = brython_node[0];
-    const end = brython_node[brython_node.length-1];
-
-    PY_CODE[ offset + CODE_BEG_LINE ] = beg.lineno;
-    PY_CODE[ offset + CODE_BEG_COL  ] = beg.col_offset;
-    PY_CODE[ offset + CODE_END_LINE ] = end.end_lineno;
-    PY_CODE[ offset + CODE_END_COL  ] = end.end_col_offset;
-}
-
-
-export function set_py_from_beg( src_offset: number, dst_offset: number ) {
-
-    PY_CODE[ src_offset + CODE_BEG_LINE ] = PY_CODE[ dst_offset + CODE_BEG_LINE ];
-    PY_CODE[ src_offset + CODE_BEG_COL  ] = PY_CODE[ dst_offset + CODE_BEG_COL  ];
-}
-export function set_py_from_end( src_offset: number, dst_offset: number ) {
-
-    PY_CODE[ src_offset + CODE_END_LINE ] = PY_CODE[ dst_offset + CODE_END_LINE ];
-    PY_CODE[ src_offset + CODE_END_COL  ] = PY_CODE[ dst_offset + CODE_END_COL  ];
-}
-
-export function set_py_code(offset: number, brython_node: any) {
-
-    PY_CODE[ offset + CODE_BEG_LINE ] = brython_node.lineno;
-    PY_CODE[ offset + CODE_BEG_COL  ] = brython_node.col_offset;
-    PY_CODE[ offset + CODE_END_LINE ] = brython_node.end_lineno;
-    PY_CODE[ offset + CODE_END_COL  ] = brython_node.end_col_offset;
 }
 
 function new_jscode(filename: string) {
@@ -94,19 +62,20 @@ export const BE = {
 }
 
 // transforms into a template string
-export function r(...args: [TemplateStringsArray, ...(Printable|ASTNode)[]]) {
+export function r(...args: [TemplateStringsArray, ...(Printable|number)[]]) {
     return args;
 }
 
 // write a template string
-export function wr(args: [TemplateStringsArray, ...(Printable|ASTNode)[]]) {
+export function wr(args: [TemplateStringsArray, ...(Printable|number)[]]) {
     if( typeof args === "string")
         return w(args);
     return wt(...args);
 }
 
+
 // write with template string wt``
-export function wt(str: TemplateStringsArray, ...args: (Printable|ASTNode)[]) {
+export function wt(str: TemplateStringsArray, ...args: (Printable|number)[]) {
     
     for(let i = 0; i < args.length; ++i) {
         jscode += str[i];
@@ -117,7 +86,7 @@ export function wt(str: TemplateStringsArray, ...args: (Printable|ASTNode)[]) {
 }
 
 // generic write ?
-export function w(...args: (Printable|ASTNode)[]) {
+export function w(...args: (Printable|number)[]) {
 
     for(let i = 0; i < args.length; ++i) {
 
@@ -128,7 +97,7 @@ export function w(...args: (Printable|ASTNode)[]) {
             continue;
         }
 
-        if( ! (arg instanceof ASTNode) ) {
+        if( typeof arg !== "number" ) {
 
             if( arg === undefined )
                 arg = "undefined";
@@ -139,10 +108,10 @@ export function w(...args: (Printable|ASTNode)[]) {
             continue;
         }
 
-        const offset = 4*arg.id;
+        const offset = 4*arg;
         
         set_js_cursor(offset + CODE_BEG);
-        AST2JS[arg.type_id!](arg);
+        AST2JS[type(arg)!](arg);
         set_js_cursor(offset + CODE_END)
     }
 }
@@ -151,7 +120,7 @@ export function ast2js(ast: AST) {
 
     new_jscode(ast.filename);
 
-    w(ast.body);
+    w(0);
 
     // TODO: better export strategy (?)
     jscode += `\nconst __exported__ = {};\n`;

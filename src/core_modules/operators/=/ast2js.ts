@@ -1,20 +1,19 @@
 import { w, wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild, resultType } from "dop";
 import { Number2Int } from "structs/BinaryOperators";
 import { STYPE_INT, STYPE_JSINT } from "structs/STypes";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
     
-    w(node.children[0]);
+    const nbChildren = nbChild(node);
+    const coffset    = firstChild(node);
     
-    for(let i = 1; i < node.children.length - 1; ++i)
-        wt` = ${node.children[i]}`;
+    for(let i = 1; i < nbChildren; ++i)
+        wt`${i+coffset} = `;
 
-    const right_node = node.children[node.children.length-1];
-    let rchild: any = right_node;
+    let rchild: any = coffset;
+    if( resultType(coffset) === STYPE_JSINT && resultType(node) === STYPE_INT )
+        rchild = Number2Int(coffset);
 
-    if( right_node.result_type === STYPE_JSINT && node.result_type === STYPE_INT )
-        rchild = Number2Int(right_node);
-
-    wt` = ${rchild}`;
+    w(rchild);
 }

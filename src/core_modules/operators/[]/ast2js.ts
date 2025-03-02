@@ -1,7 +1,9 @@
 import { wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
     
-    wt`${node.children[0]}[${node.children[1]}]`;
+    const coffset = firstChild(node);
+
+    wt`${coffset}[${coffset+1}]`;
 }

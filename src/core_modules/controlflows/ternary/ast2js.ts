@@ -1,11 +1,9 @@
 import { wt } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild } from "dop";
 
-export default function ast2js(node: ASTNode) {
+export default function ast2js(node: number) {
 
-    const cond     = node.children[0];
-    const if_true  = node.children[1];
-    const if_false = node.children[2];
+    const coffset = firstChild(node);
 
-    wt`(${cond} ? ${if_true} : ${if_false})`;
+    wt`(${coffset} ? ${coffset+1} : ${coffset+2})`;
 }

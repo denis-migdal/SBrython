@@ -1,35 +1,46 @@
-import { set_py_code } from "ast2js";
 import { CONTROLFLOWS_IFBLOCK } from "core_modules/lists";
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { addChild, setType } from "dop";
+import { Context, convert_body, convert_node } from "py2ast";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
+
+    let childCount = 2;
+
+    let cur = node;
+    while( "orelse" in cur && cur.orelse.length === 1 ) {
+
+        if( ! ("test" in cur.orelse[0]) ) { // final else
+            ++childCount;
+            break;
+        }
+        cur = cur.orelse[0];
+        childCount += 2;
+    }
+
+    setType(dst, CONTROLFLOWS_IFBLOCK);
+    let coffset = addChild(dst, childCount);
 
     // if
-    const children = [
-        convert_node(node.test, context),
-        convert_node(node.body, context)
-    ];
+    convert_node(coffset++, node.test, context);
+    convert_body(coffset++, node.body, context);
 
     // else if
-    let cur = node;
-    while( "orelse" in cur && cur.orelse.length === 1 && "test" in cur.orelse[0]) {
+    cur = node;
+    while( "orelse" in cur && cur.orelse.length === 1 ) {
+
+        // cur.orelse[0] is the body
+        if( ! ("test" in cur.orelse[0]) ) { // final else
+            convert_node(coffset, cur.orelse, context)
+            break;
+        }
+
         cur = cur.orelse[0];
 
-        children.push(
-            convert_node(cur.test, context),
-            convert_node(cur.body, context)
-        )
+        convert_node(coffset++, cur.test, context);
+        convert_body(coffset++, cur.body, context);
+
+        childCount += 2;
     }
-    // else
-    if( "orelse" in cur && cur.orelse.length !== 0 )
-        children.push( convert_node(cur.orelse, context) );
-
-    const ast = new ASTNode(CONTROLFLOWS_IFBLOCK, 0, children);
-
-    set_py_code(4*ast.id, node);
-
-    return ast;
 }
 
 convert.brython_name = "If";

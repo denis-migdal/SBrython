@@ -1,23 +1,20 @@
-import { set_py_code } from "ast2js";
 import { CONTROLFLOWS_TRYBLOCK } from "core_modules/lists";
-import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { addChild, setType } from "dop";
+import { Context, convert_body, convert_node } from "py2ast";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const children = new Array<ASTNode>(node.handlers.length+1);
+    const nbChildren = node.handlers.length+1;
+
+    setType(dst, CONTROLFLOWS_TRYBLOCK);
+    const coffset = addChild(dst, nbChildren)
 
     // try body
-    children[0] = convert_node(node.body, context);
+    convert_body(coffset, node.body, context);
 
-    for(let i = 0; i < node.handlers; ++i)
-        children[i+1] = convert_node(node.handlers[i], context);
+    for(let i = 1; i < nbChildren; ++i)
+        convert_node(i+coffset, node.handlers[i-1], context);
 
-    const ast = new ASTNode(CONTROLFLOWS_TRYBLOCK, 0, children);
-
-    set_py_code(4*ast.id, node);
-
-    return ast;
 }
 
 convert.brython_name = "Try";

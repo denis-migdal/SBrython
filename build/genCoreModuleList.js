@@ -54,8 +54,9 @@ function importModules(modules) {
 		result += `export const ${module_name} = ${module_id++};\n`;
 
 	result += "\n";
+	result += "import type {T_ASTCONVERT, T_AST2JS} from './'\n\n";
 
-	result += "export const AST_CONVERT = [\n"
+	result += "export const AST_CONVERT: T_ASTCONVERT[] = [\n"
 
 	module_id = 0;
 	for(let module_name in modules)
@@ -64,7 +65,7 @@ function importModules(modules) {
 	result += "]\n\n";
 
 
-	result += "export const AST2JS = [\n"
+	result += "export const AST2JS: T_AST2JS[] = [\n"
 
 	module_id = 0;
 	for(let module_name in modules)

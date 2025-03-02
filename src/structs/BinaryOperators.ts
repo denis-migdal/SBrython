@@ -1,9 +1,8 @@
 import { r } from "ast2js";
-import { ASTNode } from "./ASTNode";
 import { STypeFctSubs } from "./SType";
 import { STYPE_FLOAT, STYPE_INT, STYPE_JSINT} from "./STypes";
 import { LITERALS_INT } from "core_modules/lists";
-import { VALUES } from "dop";
+import { firstChild, nbChild, parentOPPrio, resultType, setParentOPPrio, setResultType, type, VALUES } from "dop";
 import { Converter, NOCONVERT } from "./Converters";
 import { RETURN_TYPE_FCT } from "./ReturnTypeFcts";
 
@@ -285,32 +284,34 @@ class
 - sizeof
 */
 
-export function Int2Number(a: ASTNode, target = STYPE_FLOAT) {
+export function Int2Number(a: number, target = STYPE_FLOAT) {
 
-    if( a.result_type === STYPE_JSINT)
+    if( resultType(a) !== STYPE_INT) // already a number
         return a;
 
-    if( a.type_id === LITERALS_INT) {
+    if( type(a) === LITERALS_INT) {
         // if bigint can't safely convert to JSINT.
         if( target === STYPE_FLOAT )
-            a.result_type = STYPE_JSINT;
+            setResultType(a, STYPE_JSINT);
         return a;
     }
 
-    const a_value = VALUES[a.id];
+    const a_value = VALUES[a];
+
+    const coffset = firstChild(a);
 
     if( a_value === '__mul__' || a_value === '__rmul__' ) {
-        const ltype = a.children[0].result_type;
-        const rtype = a.children[1].result_type;
+        const ltype = resultType(coffset);
+        const rtype = resultType(coffset+1);
         if(    (ltype === STYPE_INT || ltype === STYPE_JSINT)
             && (rtype === STYPE_INT || rtype === STYPE_JSINT)
         ) {
-            a.result_type = target;
+            setResultType(a, target);
             return a;
         }
     }
-    if( a_value === '__neg__' && a.children[0].result_type === STYPE_INT) {
-        a.result_type = target;
+    if( a_value === '__neg__' && resultType(coffset) === STYPE_INT) {
+        setResultType(a, target);
         return a;
     }
     if( target === STYPE_FLOAT )
@@ -320,17 +321,17 @@ export function Int2Number(a: ASTNode, target = STYPE_FLOAT) {
     return a;
 }
 
-export function Number2Int(a: ASTNode) {
+export function Number2Int(a: number) {
 
-    if( a.result_type === STYPE_INT)
+    if( resultType(a) === STYPE_INT)
         return a;
 
-    if( a.type_id === LITERALS_INT) {
-        a.result_type = STYPE_INT; // force bigint convertion
+    if( type(a) === LITERALS_INT) {
+        setResultType(a, STYPE_INT); // force bigint convertion
         return a;
     }
-    if( VALUES[a.id] === '__neg__' && a.children[0].result_type === STYPE_JSINT) {
-        a.result_type = STYPE_INT;
+    if( VALUES[a] === '__neg__' && resultType(firstChild(a)) === STYPE_JSINT) {
+        setResultType(a, STYPE_INT);
         return a;
     }
 
@@ -341,7 +342,7 @@ let JSOperatorsPriority: Record<string, number> = {};
 for(let i = 0; i < JSOperators.length; ++i) {
 
     const priority = i;
-    for(let op of JSOperators[i])
+    for(const op of JSOperators[i])
         JSOperatorsPriority[op] = priority;
 
 }
@@ -353,22 +354,22 @@ export function reversed_operator<T extends keyof typeof BinaryOperators>(op: T)
 const LEFT  = 1;
 const RIGHT = 2;
 
-export function multi_jsop(node: ASTNode, op: string, ...values: ASTNode[]) {
+export function multi_jsop(node: number, op: string ) {
 
-    const first    = values[0];
+    const first      = firstChild(node);
+    const nbChildren = nbChild(node); 
 
     const prio   = JSOperatorsPriority[op];
     const p_prio = JSOperatorsPriority[op];
 
-    if(first instanceof ASTNode)
-        first.parent_op_priority = prio;
+    setParentOPPrio(first, prio);
 
-    for(let i = 1; i < values.length; ++i)
-        values[i].parent_op_priority = prio + 1;
+    for(let i = 1; i < nbChildren; ++i)
+        setParentOPPrio( first + i, prio + 1 );
 
     let result = r`${first}`;
-    for(let i = 1; i < values.length; ++i)
-        result = r`${result} && ${values[i]}`; //TODO: better...
+    for(let i = 1; i < nbChildren; ++i)
+        result = r`${result} && ${first + i}`; //TODO: better...
 
     if( p_prio < prio )
         result = r`(${result})`;
@@ -378,23 +379,23 @@ export function multi_jsop(node: ASTNode, op: string, ...values: ASTNode[]) {
 
 // null operation, the node has the same priority as his father.
 // 2*int(1+1) => 2*(1+1)
-export function id_jsop(node: ASTNode, a: ASTNode) {
+export function id_jsop(node: number, a: number) { // TODO remove arg ?
 
-    a.parent_op_priority = node.parent_op_priority;
+    setParentOPPrio( a, parentOPPrio(node) );
 
     return r`${a}`;
 }
 
-export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNode|any) {
+export function binary_jsop(node: number, a: number|any, op: string, b: number|any) {
 
     const   prio = JSOperatorsPriority[op];
-    const p_prio = node.parent_op_priority;
+    const p_prio = parentOPPrio(node);
 
-    if(a instanceof ASTNode)
-        a.parent_op_priority = prio;
+    if(typeof a === "number")
+        setParentOPPrio(a, prio);
 
-    if(b instanceof ASTNode)
-        b.parent_op_priority = prio + 1;
+    if(typeof b === "number")
+        setParentOPPrio(b, prio);
 
     let cmp = r`${a}${op}${b}`;
     // if father has more prio, add parenthesis.
@@ -405,7 +406,7 @@ export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNod
 }
 
 
-export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any) {
+export function unary_jsop(node: number, op: string, a: number|any) {
 
     let rop = op;
     if( rop === '-')
@@ -413,10 +414,10 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any) {
 
     // unary JS Op prio list (?)
     const prio   = JSOperatorsPriority[rop];
-    const p_prio = node.parent_op_priority;
+    const p_prio = parentOPPrio(node);
 
-    if(a instanceof ASTNode)
-        a.parent_op_priority = prio;
+    if(typeof a === "number")
+        setParentOPPrio(a, prio);
 
     let cmp = r`${op}${a}`;
     // if father has more prio, add parenthesis.
@@ -430,7 +431,7 @@ export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any) {
 
 type GenUnaryOps_Opts = {
     convert_self    ?: Converter,
-    substitute_call ?: (node: ASTNode, a: ASTNode) => any
+    substitute_call ?: (node: number, a: number) => any
 };
 
 
@@ -450,7 +451,7 @@ export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
         if( op === 'u.-')
             op = '-';
 
-        substitute_call ??= (node: ASTNode, self: ASTNode) => {
+        substitute_call ??= (node: number, self: number) => {
             return unary_jsop(node, op, convert_self(self) );
         };
 
@@ -466,7 +467,7 @@ export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
 type GenBinaryOps_Opts = {
     convert_other   ?: Converter,
     convert_self    ?: Converter,
-    substitute_call ?: (node: ASTNode, self: ASTNode|any, other: ASTNode|any) => any
+    substitute_call ?: (node: number, self: number|any, other: number|any) => any
 };
 
 export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
@@ -485,22 +486,22 @@ export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
         if( op === '//')
             op = '/';
 
-        let cs  = (node: ASTNode, self: ASTNode, other: ASTNode) => {
+        let cs  = (node: number, self: number, other: number) => {
             return binary_jsop(node, convert_self(self), op, convert_other(other) );
         }
 
-        let rcs = (node: ASTNode, self: ASTNode, other: ASTNode) => {
+        let rcs = (node: number, self: number, other: number) => {
             return binary_jsop(node, convert_other(other), op, convert_self(self) );
         }
 
         if( substitute_call !== undefined ) {
 
-            cs  = (node: ASTNode, self: ASTNode, o: ASTNode) => {
+            cs  = (node: number, self: number, o: number) => {
                 return substitute_call(node, convert_self(self), convert_other(o) );
             };
         
             // same_order ? fct : 
-            rcs = (node: ASTNode, self: ASTNode, o: ASTNode) => {
+            rcs = (node: number, self: number, o: number) => {
                 return substitute_call(node, convert_other(o), convert_self(self) );
             };
         }
@@ -516,9 +517,9 @@ export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
         if( convert_self === NOCONVERT && substitute_call === undefined)
             result[`__i${pyop}__`] = {
                 return_type,
-                substitute_call: (node: ASTNode, self: ASTNode, other: ASTNode) => {
+                substitute_call: (node: number, self: number, other: number) => {
                     
-                    const other_value = VALUES[other.id];
+                    const other_value = VALUES[other];
 
                     if( op === '+' && other_value === 1)
                         return unary_jsop(node, '++', self);
@@ -554,11 +555,11 @@ export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
 
     let result: Record<string, STypeFctSubs> = {};
 
-    for(let op of ops) {
+    for(const op of ops) {
 
         const pyop = jsop2pyop[op];
 
-        let cs  = (node: ASTNode, self: ASTNode, other: ASTNode, reversed: boolean) => {
+        let cs  = (node: number, self: number, other: number, reversed: boolean) => {
 
             let cop = op;
 
@@ -570,7 +571,7 @@ export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
             }
 
             if( cop[0] === '=' || cop[0] === '!' ) {
-                if( self.result_type === other.result_type)
+                if( resultType(self) === resultType(other) )
                     cop = cop + '=';
             }
 
@@ -579,7 +580,7 @@ export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
 
         if( substitute_call !== undefined ) {
 
-            cs  = (node: ASTNode, self: ASTNode, o: ASTNode, reversed: boolean) => {
+            cs  = (node: number, self: number, o: number, _: boolean) => {
                 return substitute_call(node, convert_self(self), convert_other(o) ); //TODO...
             };
         }

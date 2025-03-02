@@ -1,9 +1,7 @@
 import { r, wr } from "ast2js";
 import { FUNCTIONS_CALL_KEYWORD } from "core_modules/lists";
-import { VALUES } from "dop";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, nbChild, type, VALUES } from "dop";
 import { STypeFct } from "structs/SType";
-import { STypes } from "structs/STypes";
 
 function print_obj(obj: Record<string, any>) {
 
@@ -37,13 +35,16 @@ function join(data: any[], sep=", ") {
     return [str, ...data];
 }
 
-export function default_call(node: ASTNode) {
+export function default_call(node: number) {
 
-    const meta = (VALUES[node.id] as STypeFct).__call__;
+    const meta = (VALUES[node] as STypeFct).__call__;
 
-    let kw_pos = node.children.length;
-    for(let i = 1; i < node.children.length; ++i)
-        if(node.children[i].type_id === FUNCTIONS_CALL_KEYWORD) {
+    const coffset    = firstChild(node);
+    const nbChildren = nbChild(node);
+
+    let kw_pos = nbChildren;
+    for(let i = 1; i < nbChildren; ++i)
+        if( type( i + coffset) === FUNCTIONS_CALL_KEYWORD) {
             kw_pos = i;
             break;
         }
@@ -57,8 +58,8 @@ export function default_call(node: ASTNode) {
         pos_size = meta.idx_vararg+2;
     let pos = new Array(pos_size);
     
-    const kw    : Record<string, ASTNode> = {};
-    const kwargs: Record<string, ASTNode> = {};
+    const kw    : Record<string, number> = {};
+    const kwargs: Record<string, number> = {};
 
     let has_kw = false;
 
@@ -67,20 +68,38 @@ export function default_call(node: ASTNode) {
         const cutoff = Math.min(kw_pos, meta.idx_vararg);
 
         for(let i = 1; i < cutoff; ++i)
-            pos[i-1] = node.children[i];
+            pos[i-1] = i + coffset;
 
-        if( meta.idx_vararg+1 !== kw_pos )
-            pos[meta.idx_vararg] = join(["[", join(node.children.slice(meta.idx_vararg+1,kw_pos)), "]"], "");
+        const varg_start = meta.idx_vararg+1;
+        const varg_nb = kw_pos - varg_start;
+        if( varg_nb !== 0 ) {
+
+            // template string... [ [..str], ...idx ]
+            // => [ (a), (b), (c), (d) ] ...
+            let str = new Array(varg_nb + 1);
+            let idx = new Array(varg_nb + 1);
+
+            str[0]       = "[";
+
+            idx[0]       = str;
+            idx[1]       = coffset + varg_start;
+            for(let i = 1; i < varg_nb; ++i) {
+                str[i]  = ", ";
+                idx[i+1]= coffset + varg_start + i;
+            }
+
+            str[varg_nb] = "]"; // prevents sparse array ?
+        }
     } else {
 
         const cutoff = Math.min(kw_pos, nb_pos+1);
 
         for(let i = 1; i < cutoff; ++i)
-            pos[i-1] = node.children[i];
+            pos[i-1] = i + coffset;
 
         const args_names = meta.args_names;
         for(let i = cutoff; i < kw_pos; ++i)
-            kw[ args_names[i-1] ] = node.children[i];
+            kw[ args_names[i-1] ] = i + coffset;
 
         has_kw = cutoff !== kw_pos;
     }
@@ -90,10 +109,10 @@ export function default_call(node: ASTNode) {
     const args_pos = meta.args_pos;
     
 
-    for(let i = kw_pos; i < node.children.length; ++i) {
+    for(let i = kw_pos; i < nbChildren; ++i) {
 
-        const arg  = node.children[i];
-        const name = VALUES[arg.id];
+        const arg  = i + coffset;
+        const name = VALUES[arg];
         const idx  = args_pos[ name ];
 
         if( idx >= 0 ) {
@@ -126,9 +145,9 @@ export function default_call(node: ASTNode) {
             --pos.length;
     }
 
-    return r`${node.children[0]}(${join(pos)})`; // args ?
+    return r`${coffset}(${join(pos)})`; // args ?
 }
 
-export default function ast2js(node: ASTNode) {
-    wr( (VALUES[node.id] as STypeFct).__call__.substitute_call!(node) );
+export default function ast2js(node: number) {
+    wr( (VALUES[node] as STypeFct).__call__.substitute_call!(node) );
 }

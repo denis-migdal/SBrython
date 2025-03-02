@@ -1,5 +1,5 @@
 import { r } from "ast2js";
-import { ASTNode } from "structs/ASTNode";
+import { firstChild, resultType } from "dop";
 import { CMPOPS_LIST, genBinaryOps, genCmpOps} from "structs/BinaryOperators";
 import { CONVERT_INT2FLOAT } from "structs/Converters";
 import { RET_IJ2STR, RET_INT, RET_STR, RET_STR2BOOL, RET_STR2STR } from "structs/ReturnTypeFcts";
@@ -12,16 +12,16 @@ export const SType_type_str = addSType('type[str]', {
         return_type: RET_STR,
         substitute_call: (node) => {
 
-            const other = node.children[1];
-            const other_type = other.result_type
+            const other = firstChild(node)+1;
+            const other_type = resultType(other);
 
             //TODO use their __int__ ?
-            if( other_type === RET_STR )
+            if( other_type === STYPE_STR )
                 return other;
 
-            const method = STypes[other.result_type]?.__str__ as STypeFctSubs;
+            const method = STypes[other_type]?.__str__ as STypeFctSubs;
             if( method === undefined )
-                throw new Error(`${STypes[other.result_type].__name__}.__str__ not defined`);
+                throw new Error(`${STypes[other_type].__name__}.__str__ not defined`);
             return method.substitute_call!(other);
         }
     }
@@ -35,7 +35,7 @@ addSType('str', {
     __len__: {
         return_type: RET_INT,
         substitute_call: (_) => {
-            return r`${_.children[1]}.length`;
+            return r`${firstChild(_) + 1}.length`;
         }
     },
 
@@ -44,9 +44,9 @@ addSType('str', {
     ...genBinaryOps(["*"]      , RET_IJ2STR,
         {
             convert_other  : CONVERT_INT2FLOAT,
-            substitute_call: (node: ASTNode, a: ASTNode, b: ASTNode) => {
+            substitute_call: (node: number, a: number, b: number) => {
                 
-                if( a.result_type !== STYPE_STR )
+                if( resultType(a) !== STYPE_STR )
                     [a,b] = [b,a];
 
                 return r`${a}.repeat(${b})`;

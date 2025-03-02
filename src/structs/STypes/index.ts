@@ -1,4 +1,3 @@
-import { ASTNode } from "structs/ASTNode";
 import { SType_type } from "./type";
 import { Symbol_Callable } from "./callable";
 import { SType_function_type } from "./function_type";
@@ -13,7 +12,7 @@ export interface SType {
 // avoid name collision with Symbol
 export interface Symbl<T extends SType> {
     stype       : T;
-    write_symbol: (node: ASTNode) => void;
+    write_symbol: (node: number) => void;
 }
 
 /** helpers **/
@@ -24,7 +23,7 @@ export function define<T extends Object>(target: T, definition: T) {
     Object.assign(target, definition);
 }
 
-export const NOT_IMPLEMENTED: (call: ASTNode) => any = (call: ASTNode) => {
+export const NOT_IMPLEMENTED: (call: number) => any = (call: number) => {
     console.warn(call);
     throw new Error('Not implemented');
 };

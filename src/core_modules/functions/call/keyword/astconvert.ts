@@ -1,23 +1,16 @@
-import { set_py_code } from "ast2js";
 import { FUNCTIONS_CALL_KEYWORD } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, resultType, setResultType, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
-    const value    = convert_node(node.value, context )
-    const ret_type = value.result_type;
+    setType(dst, FUNCTIONS_CALL_KEYWORD);
 
-    const ast = new ASTNode(FUNCTIONS_CALL_KEYWORD, ret_type, [
-        value
-    ]);
+    const coffset = addChild(dst, 1);
+    convert_node (coffset, node.value, context )
+    setResultType(dst, resultType(coffset));
 
-    VALUES[ast.id] = node.arg;
-
-    set_py_code(4*ast.id, node);
-
-    return ast;
+    VALUES[dst] = node.arg;
 }
 
 convert.brython_name = "keyword";

@@ -1,12 +1,10 @@
-import { set_py_code } from "ast2js";
 import { FUNCTIONS_CALL } from "core_modules/lists";
-import { VALUES } from "dop";
+import { addChild, setResultType, setType, VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
 import { STypeFctSubs } from "structs/SType";
 import { STypes } from "structs/STypes";
 
-export default function convert(node: any, context: Context) {
+export default function convert(dst: number, node: any, context: Context) {
 
     const name = node.func.id;
     const fct_type = context.local_symbols[name]!;
@@ -19,18 +17,18 @@ export default function convert(node: any, context: Context) {
     const fct = STypes[fct_type];
     const ret_type = (fct.__call__ as STypeFctSubs).return_type();
 
-    const ast = new ASTNode( FUNCTIONS_CALL, ret_type, [
-        convert_node(node.func, context ),
-        ...node.args    .map( (e:any) => convert_node(e, context) ),
-        ...node.keywords.map( (e:any) => convert_node(e, context) )
-            // requires keyword node...
-    ]);
+    setType      (dst, FUNCTIONS_CALL);
+    setResultType(dst, ret_type);
+    let coffset = addChild(dst, 1 + node.args.length + node.keywords.length);
 
-    VALUES[ast.id] = fct;
+    convert_node(coffset++, node.func, context );
 
-    set_py_code(4*ast.id, node);
+    for(let i = 0; i < node.args.length; ++i)
+        convert_node(coffset++, node.args[i], context );
+    for(let i = 0; i < node.keywords.length; ++i)
+        convert_node(coffset++, node.keywords[i], context );
 
-    return ast;
+    VALUES[dst] = fct;
 }
 
 convert.brython_name = "Call";
