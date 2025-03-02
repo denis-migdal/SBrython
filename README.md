@@ -1,19 +1,23 @@
 # SimplerBrython
 
--> SType : use symbols to not pollute ? /2 obj ?
+-> op priority
+-> .first for args conversions.
 
 TODO:
 - [ ] type system rewrite
-- [ ] restaure AST
-
-- [ ] module system rewrite : décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
-    - [ ] some values store in CHILDREN ?
+    - [ ] use symbols to not pollute ?
+- [ ] restaure Editor features
 - [ ] operator system rewrite
 - [ ] write system rewrite (?)
-- [ ] functions args rewrite
+    - [ ] do not store lines, get lines once full JS generated.
+    - [ ] w do not accept r`` (?) => use another or spread ? (reduce nbrs of conditions).
+- [ ] module system rewrite
+    - [ ] décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
 
 - [ ] optimize value usage
     - can I merge some cols ?
+    - [ ] some values store in CHILDREN ?
+- [ ] functions args rewrite
 
 https://github.com/brython-dev/brython/issues/2545
 -> DOP for AST...

@@ -95,8 +95,8 @@ export function convert_node(brython_node: any, context: Context): ASTNode {
     for(let i = 0; i < candidates.length; ++i) {
         const result = AST_CONVERT[candidates[i]](brython_node, context);
         if(result !== undefined) {
-            const ID = candidates[i];
-            result.type_id = ID;
+            //const ID = candidates[i];
+            //result.type_id = ID;
             return result;
         }
     }

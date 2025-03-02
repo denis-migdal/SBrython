@@ -7,6 +7,7 @@ export class ASTNode {
 	id         : number;
 	type_id    : number; // node_type_id (!!!)
 	result_type: number = 0; //TODO: number then type system...
+	parent_op_priority: number = 0;
 
 	// soon ^^
 	children: ASTNode[] = []; // use id....

@@ -27,17 +27,16 @@ export default function ast2js(node: ASTNode) {
 
         if( kw_start === i)
             w("{");
-        if( i === meta.idx_vararg && i === _args.length-1 )
-            (_args[i] as any).last = true;
 
-        write_arg(_args[i]);
+        const isLast = i === meta.idx_vararg && i === _args.length-1;
+        write_arg(_args[i], isLast);
     }
 
     if( kw_start < _args.length)
         w('} = {}');
 }
 
-function write_arg(node: ASTNode) {
+function write_arg(node: ASTNode, isLast: boolean) {
     
     const offset = 4*node.id;
     set_js_cursor(offset + CODE_END);
@@ -45,7 +44,7 @@ function write_arg(node: ASTNode) {
     const name = VALUES[node.id];
 
     if( node.type_id === FUNCTIONS_ARGS_VARG ) {
-        if( (node as any).last)
+        if( isLast )
             wt`...${name}`;
         else
             wr( binary_jsop(node, name, '=', "[]") );

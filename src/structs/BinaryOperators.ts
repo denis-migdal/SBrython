@@ -40,6 +40,7 @@ export const bname2pyname = {
     "LShift"  : "__lshift__",
 }
 
+// adds r except eq/ne/(l/g)(t/e)
 export const BinaryOperators = {
     '__pow__'     : '__rpow__',
     '__mul__'     : '__rmul__',
@@ -66,6 +67,7 @@ export const BinaryOperators = {
     '__rshift__' : '__rrshift__',
 }
 
+// adds i
 export const AssignOperators = {
     '__pow__'     : '__ipow__',
     '__mul__'     : '__imul__',
@@ -113,21 +115,22 @@ export const jsop2pyop = {
 // TODO: unary op too...
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table
+// bigger = more priority (0 by default).
 export const JSOperators = [
-    ['!', '++', '--', '~', 'u.-'],
-    ['**'], // right to left !
-    ['*', '/', '%'], // Python also has //
-    ['+', '-'],
-    ['<<', '>>', '>>>'], //TODO
-    ['<', '<=', '>=', '>'],
-    ['==', '!=', '===', '!=='],
-    ['&'],  //TODO
-    ['^'],  //TODO
-    ['|'],  //TODO
-    ['&&'], //TODO
+    [],
+    ['='], /* et tous les dérivés */ // right to left !
     ['||', '??'],
-    ['='] /* et tous les dérivés */ // right to left !
-    // etc.
+    ['&&'], //TODO
+    ['|'],  //TODO
+    ['^'],  //TODO
+    ['&'],  //TODO
+    ['==', '!=', '===', '!=='],
+    ['<', '<=', '>=', '>'],
+    ['<<', '>>', '>>>'], //TODO
+    ['+', '-'],
+    ['*', '/', '%'], // Python also has //
+    ['**'],          // right to left !
+    ['!', '++', '--', '~', 'u.-'],
 ];
 
 /*
@@ -282,7 +285,6 @@ class
 - sizeof
 */
 
-
 export function Int2Number(a: ASTNode, target = STYPE_FLOAT) {
 
     if( a.result_type === STYPE_JSINT)
@@ -338,7 +340,7 @@ export function Number2Int(a: ASTNode) {
 let JSOperatorsPriority: Record<string, number> = {};
 for(let i = 0; i < JSOperators.length; ++i) {
 
-    const priority = JSOperators.length - i;
+    const priority = i;
     for(let op of JSOperators[i])
         JSOperatorsPriority[op] = priority;
 
@@ -353,41 +355,23 @@ const RIGHT = 2;
 
 export function multi_jsop(node: ASTNode, op: string, ...values: ASTNode[]) {
 
-    const first = values[0];
-    if(first instanceof ASTNode) {
-        (first as any).parent_op = op;
-        (first as any).parent_op_dir = LEFT;
-    }
+    const first    = values[0];
 
-    for(let i = 1; i < values.length-1; ++i) {
-        const value = values[i];
-        if(value instanceof ASTNode) {
-            (value as any).parent_op = op;
-            (value as any).parent_op_dir = LEFT|RIGHT;
-        }
-    }
+    const prio   = JSOperatorsPriority[op];
+    const p_prio = JSOperatorsPriority[op];
 
-    const last = values[values.length-1];
-    if(last instanceof ASTNode) {
-        (last as any).parent_op = op;
-        (last as any).parent_op_dir = RIGHT;
-    }
+    if(first instanceof ASTNode)
+        first.parent_op_priority = prio;
+
+    for(let i = 1; i < values.length; ++i)
+        values[i].parent_op_priority = prio + 1;
 
     let result = r`${first}`;
     for(let i = 1; i < values.length; ++i)
-        result = r`${result} && ${values[i]}`;
+        result = r`${result} && ${values[i]}`; //TODO: better...
 
-    if( "parent_op" in node ) {
-
-        let direction       = (node as any).parent_op_dir;
-        let cur_priority    = JSOperatorsPriority[op];
-        let parent_priority = JSOperatorsPriority[node.parent_op as any];
-
-        if( parent_priority > cur_priority 
-            || (parent_priority === cur_priority && (direction & RIGHT) )
-        )
-            result = r`(${result})`;
-    }
+    if( p_prio < prio )
+        result = r`(${result})`;
 
     return result;
 }
@@ -396,68 +380,50 @@ export function multi_jsop(node: ASTNode, op: string, ...values: ASTNode[]) {
 // 2*int(1+1) => 2*(1+1)
 export function id_jsop(node: ASTNode, a: ASTNode) {
 
-    //if(a instanceof ASTNode) {
-        (a as any).parent_op     = (node as any).parent_op;
-        (a as any).parent_op_dir = (node as any).parent_op_dir;
-    //}
+    a.parent_op_priority = node.parent_op_priority;
 
     return r`${a}`;
 }
 
-export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNode|any, check_priority = true) {
+export function binary_jsop(node: ASTNode, a: ASTNode|any, op: string, b: ASTNode|any) {
 
-    if(a instanceof ASTNode) {
-        (a as any).parent_op = op;
-        (a as any).parent_op_dir = LEFT;
-    }
+    const   prio = JSOperatorsPriority[op];
+    const p_prio = node.parent_op_priority;
 
-    if(b instanceof ASTNode) {
-        (b as any).parent_op = op;
-        (b as any).parent_op_dir = RIGHT;
-    }
+    if(a instanceof ASTNode)
+        a.parent_op_priority = prio;
 
-    let result = r`${a}${op}${b}`;
+    if(b instanceof ASTNode)
+        b.parent_op_priority = prio + 1;
 
-    if( check_priority && "parent_op" in node ) {
+    let cmp = r`${a}${op}${b}`;
+    // if father has more prio, add parenthesis.
+    if( p_prio > prio )
+        cmp = r`(${cmp})`;
 
-        let direction       = (node as any).parent_op_dir;
-        let cur_priority    = JSOperatorsPriority[op];
-        let parent_priority = JSOperatorsPriority[node.parent_op as any];
-
-        if( parent_priority > cur_priority 
-            || (parent_priority === cur_priority && (direction & RIGHT) )
-        )
-            result = r`(${result})`;
-    }
-
-    return result;
+    return cmp;
 }
 
 
-export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any, check_priority = true) {
+export function unary_jsop(node: ASTNode, op: string, a: ASTNode|any) {
 
-    let result = r`${op}${a}`;
+    let rop = op;
+    if( rop === '-')
+        rop = 'u.-';
 
-    if(op === '-')
-        op = 'u.-';
+    // unary JS Op prio list (?)
+    const prio   = JSOperatorsPriority[rop];
+    const p_prio = node.parent_op_priority;
 
-    if(a instanceof ASTNode) {
-        (a as any).parent_op = op;
-        (a as any).parent_op_dir = RIGHT;
-    }
+    if(a instanceof ASTNode)
+        a.parent_op_priority = prio;
 
+    let cmp = r`${op}${a}`;
+    // if father has more prio, add parenthesis.
+    if( p_prio > prio )
+        cmp = r`(${cmp})`;
 
-    if( check_priority && "parent_op" in node ) {
-
-        let direction       = (node as any).parent_op_dir;
-        let cur_priority    = JSOperatorsPriority[op];
-        let parent_priority = JSOperatorsPriority[node.parent_op as any];
-
-        if( (direction & LEFT) && parent_priority > cur_priority )
-            result = r`(${result})`;
-    }
-
-    return result;
+    return cmp;
 }
 
 

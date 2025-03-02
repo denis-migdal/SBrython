@@ -1,5 +1,5 @@
 import { set_py_code } from "ast2js";
-import { OPERATORS_BINARY } from "core_modules/lists";
+import { OPERATORS_ASSIGNOP, OPERATORS_BINARY } from "core_modules/lists";
 import { VALUES } from "dop";
 import { Context, convert_node } from "py2ast";
 import { ASTNode } from "structs/ASTNode";
@@ -17,7 +17,7 @@ export default function convert(node: any, context: Context) {
         throw new Error("not implemented");
     }        
 
-    const ast = new ASTNode(OPERATORS_BINARY, left.result_type,
+    const ast = new ASTNode(OPERATORS_ASSIGNOP, left.result_type,
         [
             left,
             right
