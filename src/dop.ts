@@ -1,5 +1,6 @@
 export const ARRAY_TYPE   = Float64Array;
-const MAX_NB_ASTNODES = 105;
+const ELEM_SIZE = 8;
+const MAX_NB_ASTNODES = 105 /** * 20 /**/; // when merged
 
 export const CODE_LINE = 0;
 export const CODE_COL  = 1;
@@ -53,7 +54,7 @@ export const ASTNODE_NB_CHILDREN        = 3; // set if unknown nb children
 export const ASTNODE_RESULT_TYPE        = 4; // set if expr.
 export const ASTNODE_SIZE               = 5;
 
-const BUFFER_SIZE = ASTNODE_SIZE * 8 * MAX_NB_ASTNODES;
+const BUFFER_SIZE = ASTNODE_SIZE * ELEM_SIZE * MAX_NB_ASTNODES;
 // @ts-ignore
 const BUFFER = new ArrayBuffer(BUFFER_SIZE, {maxByteLength: BUFFER_SIZE});
 

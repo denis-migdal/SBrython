@@ -1,58 +1,80 @@
 # SimplerBrython
 
+1. Update Webpack framework
+2. stats
+3. migdal.ovh links/hostname
+4. retaure editor.
+
 TODO:
-- [ ] restaure Editor features
-- [ ] type system rewrite
-    - [ ] use symbols to not pollute ?
-- [ ] operator system rewrite
-- [ ] write system rewrite (?)
-    - [ ] do not store lines, get lines once full JS generated.
-    - [ ] w do not accept r`` (?) => use another or spread ? (reduce nbrs of conditions).
+- [ ] Production mode with switch (-> use brython.min.js)
+    - [ ] update Webpack framework ??
+    - [ ] https://webpack.js.org/plugins/define-plugin/
+    - [ ] https://webpack.js.org/plugins/define-plugin/#runtime-values-via-runtimevalue
+    - [ ] https://github.com/fregante/webext-detect/issues/12
+    - [ ] produce 2JS files (x2 dev&prod... => needs a flag...)
+        - [ ] return an array of configurations and set DefinePlugin per each
+        - [ ] https://remarkablemark.org/blog/2017/01/25/webpack-global-constants/
+    - [ ] Put optionnal checks into [dev mode only]
+    - [ ] JS/PY code positions [dev mode only]
+    - [ ] npm stats command... (+ test zip)
+    - [ ] do not indent
+    - [ ] documenter !
+    - [ ] migdal.ovh links + hostname...
+    https://stackoverflow.com/questions/45776264/remove-some-code-lines-in-production-distribution-files
+- [ ] Restaure Editor
+    - [ ] BUG stats : miss exec time...
+    - [ ] Move into different files + source map outside file...
+    - [ ] BUG FIX (test if works) - https://github.com/brython-dev/brython/issues/2479
+    - [ ] Stats
+        - [ ] Repeat + ignore Py2AST step (?) + average + predownload
+        - [ ] Better time metrics
+        - [ ] Speed metrics
+        - [ ] Files stats (file size/tokens/ast nodes).
+        - [ ] Export ?
+        https://github.com/brython-dev/brython/discussions/2509#discussioncomment-11157480
+
 - [ ] module system rewrite
     - [ ] décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
+        - [ ] ASTConv : name is Bry name(s) / (idx | idx => handler ?).
+        - [ ] AST2JS  : by hands (?) -too much OP-
+        - [ ] documenter !
+    - [ ] operator system rewrite (do not store op in VALUES!)
 
-- [ ] optimize value usage
-    - can I merge some cols ?
-    - [ ] some values store in CHILDREN ?
-- [ ] functions args rewrite
+- [ ] optimize value usage
+    - [ ] opts (ofc) (<- ???)
+    - [ ] some values store in CHILDREN ? => test perfs other arrays first (float32/int32)
+        - INT/FLOAT/BOOL/FCT/FCT CALL
+    - [ ] replace some values_str by child ast node symbols... (perte 9*8=54bytes/symb mais non-sparse array...) => another tokenizer => ptr to thingy.
 
-https://github.com/brython-dev/brython/issues/2545
+- [ ] type system rewrite
+    - [ ] use symbols to not pollute ?
+    - [ ] write system rewrite (?) [wait for new Symbols]
+        - [ ] do not store lines, get lines once full JS generated.
+        - [ ] w do not accept r`` (?) => use another or spread ? (reduce nbrs of conditions).
+            - [ ] w_str(1) / w_node(1) / w_sn(str, node, str, node) (do I need w_ns ?).
+            - BB() / BE() + w_BR()
+            - [ ] avoid Number2Int => BigInt(X) or Number(x) => w_x() ?
 
+- [ ] functions args rewrite (?)
+
+- write in a stack, then write final str (prevents recursivity ?)
+    [s1, n1, s2]       -> consume... (reverse order for better array)
+    [s3, n2, (s4, s2)] -> needs to reserve space... + merge final str?
+    -> ??? // if (n1) idx_ptr => "empty spaces after consumption..."...
+
+1. AST2JS
+2. tokens2AST
+3. tokenizer
+=> WASM output too (?)
+    https://webassembly.github.io/spec/core/binary/index.html
+    
 ====
-
-Time measure : https://github.com/brython-dev/brython/discussions/2509#discussioncomment-11157480
 
 f-string : https://github.com/brython-dev/brython/issues/2479
 
 https://denis-migdal.github.io/SimplerBrython/
 
 ## Status
-
-[merged]
-Status         : SUCCESS
-Tested         : 167/1877 (1710 excluded) [27]
-Code size      : x 1.05/-4.63% (x 8.36/-88.04%)
-Executed in    : 48.640ms (x 1.24/-19.55%)
-    Runtime    :  1.480ms (x15.36/-93.49%)
-        genFct :  0.560ms (x 2.61/-61.64%)
-        exeFct :  0.920ms (x 7.76/-87.11%)
-    Py2JS      : 48.080ms (x 1.23/-18.51%)
-        Py2AST : 42.920ms
-        ASTConv:  2.660ms
-        AST2JS :  2.500ms (x 6.43/-84.45%)
-
-[unmerged]
-Status         : SUCCESS
-Tested         : 167/1877 (1710 excluded) [27]
-Code size      : x 0.90/+10.72% (x 6.72/-85.11%)
-Executed in    : 40.020ms (x 1.43/-30.08%)
-    Runtime    :  2.560ms (x 4.08/-75.51%)
-        genFct :  2.180ms (x 1.96/-49.07%)
-        exeFct :  0.380ms (x12.16/-91.77%)
-    Py2JS      : 37.840ms (x 1.40/-28.55%)
-        Py2AST : 32.200ms
-        ASTConv:  3.260ms
-        AST2JS :  2.380ms (x 8.72/-88.54%)
 
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=all
 https://denis-migdal.github.io/SimplerBrython/tools/Editor/index.html?test=brython
@@ -68,9 +90,9 @@ find ./src/core_runtime -print0 | du --files0-from=- -hs --apparent-size
 
 - py2js + runtime (without py2AST) (deadcode ?)
 
-(lot of webpack junks)
+(lot of webpack junks) [ +prod ]
 head -n -1 dist/dev/index.js | wc -c
-<204.47kB
+<253kB
 
 Target: ~500kB ?
     => more features = bigger lib size.
@@ -633,8 +655,6 @@ Principle
     -> ?
 - Type checker/setter after AST build.
 
-- associer gauche ou droite ?
-
 main_body
     - parseToken()
         - if/etc. => parse other token.
@@ -766,8 +786,6 @@ main_body
 
 ## Misc
 
-Bugs (Brython)
-    - [ ] https://github.com/brython-dev/brython/issues/2479
 
 Info (TODO)
     - [ ] assert if variable is dict: ({}).__proto__ === Object.prototype or undefined

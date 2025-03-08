@@ -4,7 +4,7 @@ import { getSTypeID, STypes } from "structs/STypes";
 import { default_call } from "../call/ast2js";
 import { convert_args } from "../args/astconvert";
 import { FUNCTIONS_DEF } from "core_modules/lists";
-import { addChild, resultType, setResultType, setType, VALUES } from "dop";
+import { addChild, nbChild, resultType, setResultType, setType, VALUES } from "dop";
 
 // required as some symbols may have been declared out of order
 // (not only for return type computation)

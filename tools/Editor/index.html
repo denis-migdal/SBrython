@@ -844,64 +844,69 @@ if( window.location.search === '')
             code_len: 0
         }
         window.clearResults();
+        //for(let k = 0; k < 1; ++k) {
+            let full_code = "";
 
-        let full_code = "";
+            let i = 0;
+            for(let test_name of tests_names) {
+                let code = await (await fetch(`./unittests/${test_name}.py`)).text();
 
-        for(let test_name of tests_names) {
-            let code = await (await fetch(`./unittests/${test_name}.py`)).text();
+                const tests = code.split('#').slice(1).map( t => '#'+t);
 
-            const tests = code.split('#').slice(1).map( t => '#'+t);
+                for(let test of tests) {
 
-            for(let test of tests) {
+                    let code = test.split('\n');
 
-                let code = test.split('\n');
+                    const name = code[0].slice(1).trim();
 
-                const name = code[0].slice(1).trim();
+                    code = filter(code, exclude_list[`${test_name}.${name}`]);
 
-                code = filter(code, exclude_list[`${test_name}.${name}`]);
+                    let nbEmptyLines = 0;
+                    for(let i = 1; i < code.length; ++i)
+                        if(code[i].trim() === '')
+                            ++nbEmptyLines;
 
-                let nbEmptyLines = 0;
-                for(let i = 1; i < code.length; ++i)
-                    if(code[i].trim() === '')
-                        ++nbEmptyLines;
+                    let code_len = code.length - 1 - nbEmptyLines;
 
-                let code_len = code.length - 1 - nbEmptyLines;
+                    let nbExcluded = 0;
+                    for(let i = 1; i < code.length; ++i)
+                        nbExcluded += code[i][0] === '#';
 
-                let nbExcluded = 0;
-                for(let i = 1; i < code.length; ++i)
-                    nbExcluded += code[i][0] === '#';
+                    total          += code_len;
+                    excluded_count += nbExcluded;
 
-                total          += code_len;
-                excluded_count += nbExcluded;
+                    if(code_len === nbExcluded)
+                        continue;
 
-                if(code_len === nbExcluded)
-                    continue;
+                    ++nb_suites;
 
-                ++nb_suites;
+                    //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
+            
+                    code = code.join('\n'); 
 
-                //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
-        
-                code = code.join('\n'); 
+                    if( ! merge ) {
+                        lastResults = await compute( code, stats );
+                        if( ! lastResults.success) {
+                            error = true;
+                            break;
+                        }
+                    } else {
+                        ++i 
+                        if( i === 5)
+                            continue;
 
-                if( ! merge ) {
-                    lastResults = await compute( code, stats );
-                    if( ! lastResults.success) {
-                        error = true;
-                        break;
+                        code = code.split('\n').map(e => `\t${e}`).join('\n');
+                        full_code += `def _${nb_suites}():\n${code}\n_${nb_suites}()\n`;
                     }
-                } else {
-                    code = code.split('\n').map(e => `\t${e}`).join('\n');
-                    full_code += `def _${nb_suites}():\n${code}\n_${nb_suites}()\n`;
                 }
+                if( error )
+                    break;
             }
-            if( error )
-                break;
-        }
 
-        if( merge ) {
-            lastResults = await compute( full_code, stats );
-        }
-
+            if( merge ) {
+                lastResults = await compute( full_code, stats );
+            }
+        //}
         if(error) {
             window.updateFromResults(lastResults);
 

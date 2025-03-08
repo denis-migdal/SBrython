@@ -6,6 +6,21 @@ import { firstChild, nbChild, parentOPPrio, resultType, setParentOPPrio, setResu
 import { Converter, NOCONVERT } from "./Converters";
 import { RETURN_TYPE_FCT } from "./ReturnTypeFcts";
 
+// current
+    // astname => pyname (bname2pyname)
+    // pyname => r.pyname (BinaryOperators) - adds r except eq/ne/(l/g)(t/e)
+    // pyname => a.pyname (AssignOperators) - adds "i"
+    // jsname => pyname (jsop2pyop)
+// astname => IDX => Py name (?) [needs py name as it is on its SType...]
+    // AST Type ID = OP_IDX + CSNTE ?
+    // reverse/assign/JS_OP_IDX = IDX + CSNTE ?
+    // remove jsname => pyname (use CSNTE + reuse lists).
+
+// current
+    // a op b js cmp => b op a js cmp (reverse) [with the operator was reversed]
+    // js op => priority (JSOperatorsPriority) ! u.- (for unary -)
+// use JSOP_IDX => get reversed + priority + jssymb ?
+
 export const bname2pyname = {
     "USub": "__neg__",
     "Not" : "not",
@@ -39,7 +54,6 @@ export const bname2pyname = {
     "LShift"  : "__lshift__",
 }
 
-// adds r except eq/ne/(l/g)(t/e)
 export const BinaryOperators = {
     '__pow__'     : '__rpow__',
     '__mul__'     : '__rmul__',

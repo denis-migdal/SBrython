@@ -1,0 +1,83 @@
+[
+    TYPE
+    RESULT+OP_PRIO
+    CH_BEG
+    CH_END
+]
+
+export const SYMBOL = 0;
+    [STR_VALUE, RESULT]
+export const STRUCTS_TUPLE/STRUCTS_LIST/STRUCTS_DICT = 1/2/3;
+    [X_CHILD]
+export const RETURN = 4;
+    [RESULT + 01_CHILD]
+export const PASS = 5;
+    []
+export const OPERATORS_UNARY = 6;
+    [OP_VALUE 1_CHILD RESULT_TYPE]
+export const OPERATORS_COMPARE = 7;
+    [VALUE_LIST_OF_OPS RESULT X_CHILD]
+export const OPERATORS_BOOLEAN = 8;
+    [OP_VALUE XCHILD??]
+export const OPERATORS_BINARY = 9;
+    [OP_VALUE 2_CHILD RESULT]
+export const OPERATORS_ATTR = 10;
+    [VALUE_STR 1_CHILD]
+export const OPERATORS__BRACKETS = 11;
+    [2_CHILD]
+export const OPERATORS_ASSIGNOP = 12;
+    [OP_VALUE 2_CHILD RESULT]
+export const OPERATORS__EQ_INIT = 13;
+    [RESULT X_CHILD]
+export const OPERATORS__EQ = 14;
+    [RESULT X_CHILD]
+export const LITERALS_STR = 15;
+    [RESULT + VALUE]
+export const LITERALS_INT = 16;
+    [RESULT + VALUE] => may be stored in another COL
+export const LITERALS_FLOAT = 17;
+    [RESULT + VALUE] => may be stored in another COL
+export const LITERALS_F_STRING = 18;
+    [RESULT + X_CHILD]
+export const LITERALS_F_STRING_FORMATTEDVALUE = 19;
+    [1_CHILD]
+export const LITERALS_BOOL = 20;
+    [RESULT + VALUE] => can be stored
+export const LITERALS_NONE = 21;
+    [RESULT]
+export const KEYWORDS_RAISE = 22;
+    [1CHILD]
+export const KEYWORDS_IMPORT = 23;
+    [VALUES_STR + X_CHILD]
+export const KEYWORDS_IMPORT_ALIAS = 24;
+    [VALUES[2]]
+export const KEYWORDS_CONTINUE = 25;
+export const KEYWORDS_BREAK = 26;
+export const KEYWORDS_ASSERT = 27;
+export const FUNCTIONS_DEF = 28;
+    [RESULT+VALUE_STR] => store name in type INFO ?
+export const FUNCTIONS_CALL = 29;
+    [RESULT+VALUES(SType?)] => can be stored
+export const FUNCTIONS_CALL_KEYWORD = 30;
+    [RESULT+VALUE_STR+1_CHILD]
+export const FUNCTIONS_ARGS = 31;
+    []
+ARG: [VALUE_STR+RESULT+01_CHILD]
+export const CONTROLFLOWS_WHILE = 32;
+    [2_CHILD]
+export const CONTROLFLOWS_TRYBLOCK = 33;
+    [X_CHILD]
+export const CONTROLFLOWS_TRYBLOCK_CATCH = 34;
+    [VALUE_STR 12_CHILD ]
+export const CONTROLFLOWS_TERNARY = 35;
+    [RESULT 3_CHILD]
+export const CONTROLFLOWS_IFBLOCK = 36;
+    [X_CHILD]
+export const CONTROLFLOWS_FOR_RANGE = 37;
+    [VALUE_STR 234_CHILD]
+export const CONTROLFLOWS_FOR = 38;
+    [VALUE_STR 2_CHILD]
+export const CLASS_CLASSDEF = 39;
+    [VALUE_STR X_CHILD]
+export const BODY = 40;
+    [X_CHILD]

@@ -1,5 +1,5 @@
 import { BODY } from "core_modules/lists";
-import { addChild, setType } from "dop";
+import { addChild, setType, type } from "dop";
 import { Context, convert_node } from "py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {
