@@ -1,7 +1,7 @@
-import { OPERATORS__EQ_INIT } from "core_modules/lists";
-import { addChild, resultType, setResultType, setType } from "dop";
-import { Context, convert_node } from "py2ast";
-import { getSTypeID, STYPE_INT, STYPE_JSINT } from "structs/STypes";
+import { OPERATORS__EQ_INIT } from "@SBrython/core_modules/lists";
+import { addChild, resultType, setResultType, setType } from "@SBrython/dop";
+import { Context, convert_node } from "@SBrython/py2ast";
+import { getSTypeID, STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, context: Context): false|void {
 

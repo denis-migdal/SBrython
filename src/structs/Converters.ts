@@ -1,4 +1,4 @@
-import { resultType } from "dop";
+import { resultType } from "@SBrython/dop";
 import { Int2Number, Number2Int } from "./BinaryOperators";
 import { STYPE_INT } from "./STypes";
 

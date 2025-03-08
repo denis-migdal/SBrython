@@ -1,6 +1,6 @@
-import { w, wt } from "ast2js";
-import { resultType, VALUES } from "dop";
-import { STYPE_INT } from "structs/STypes";
+import { w } from "@SBrython/ast2js";
+import { resultType, VALUES } from "@SBrython/dop";
+import { STYPE_INT } from "@SBrython/structs/STypes";
 
 export default function ast2js(node: number) {
 

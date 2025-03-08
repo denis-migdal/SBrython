@@ -1,10 +1,10 @@
-import { Context, convert_body, convert_node } from "py2ast";
-import { STypeFct } from "structs/SType";
-import { getSTypeID, STypes } from "structs/STypes";
+import { Context, convert_body } from "@SBrython/py2ast";
+import { STypeFct } from "@SBrython/structs/SType";
+import { getSTypeID, STypes } from "@SBrython/structs/STypes";
 import { default_call } from "../call/ast2js";
 import { convert_args } from "../args/astconvert";
-import { FUNCTIONS_DEF } from "core_modules/lists";
-import { addChild, nbChild, resultType, setResultType, setType, VALUES } from "dop";
+import { FUNCTIONS_DEF } from "@SBrython/core_modules/lists";
+import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
 
 // required as some symbols may have been declared out of order
 // (not only for return type computation)

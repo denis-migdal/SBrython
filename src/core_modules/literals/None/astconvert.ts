@@ -1,7 +1,7 @@
-import { LITERALS_NONE } from "core_modules/lists";
-import { setResultType, setType } from "dop";
-import { Context } from "py2ast";
-import { STYPE_NONETYPE } from "structs/STypes";
+import { LITERALS_NONE } from "@SBrython/core_modules/lists";
+import { setResultType, setType } from "@SBrython/dop";
+import { Context } from "@SBrython/py2ast";
+import { STYPE_NONETYPE } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, _context: Context): false|void {
 

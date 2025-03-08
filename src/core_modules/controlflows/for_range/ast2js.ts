@@ -1,6 +1,6 @@
-import { NL, wt } from "ast2js";
-import { firstChild, nbChild, VALUES } from "dop";
-import { Number2Int } from "structs/BinaryOperators";
+import { NL, wt } from "@SBrython/ast2js";
+import { firstChild, nbChild, VALUES } from "@SBrython/dop";
+import { Number2Int } from "@SBrython/structs/BinaryOperators";
 
 export default function ast2js(node: number) {
 

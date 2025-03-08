@@ -1,6 +1,6 @@
-import { CONTROLFLOWS_TERNARY } from "core_modules/lists";
-import { addChild, resultType, setResultType, setType } from "dop";
-import { Context, convert_node } from "py2ast";
+import { CONTROLFLOWS_TERNARY } from "@SBrython/core_modules/lists";
+import { addChild, resultType, setResultType, setType } from "@SBrython/dop";
+import { Context, convert_node } from "@SBrython/py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {
 

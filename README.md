@@ -1,9 +1,16 @@
-# SimplerBrython
+<div align="center">
+  <h1>SBrython</h1>
 
-1. Update Webpack framework
+  <p>[Project description</p>
+</div>
+
+## SimplerBrython
+
+/Editor/?test=brython
+
 2. stats
 3. migdal.ovh links/hostname
-4. retaure editor.
+4. retaure editor + list generation (?)
 
 TODO:
 - [ ] Production mode with switch (-> use brython.min.js)

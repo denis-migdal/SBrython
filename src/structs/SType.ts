@@ -1,4 +1,4 @@
-import { Context } from "py2ast";
+import { Context } from "@SBrython/py2ast";
 
 /**/
 

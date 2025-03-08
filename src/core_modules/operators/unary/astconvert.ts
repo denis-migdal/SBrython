@@ -1,9 +1,9 @@
-import { Context, convert_node } from "py2ast";
-import { STypeFctSubs } from "structs/SType";
-import { bname2pyname } from "structs/BinaryOperators";
-import { STYPE_BOOL, STYPE_NOT_IMPLEMENTED, STypes } from "structs/STypes";
-import { OPERATORS_UNARY } from "core_modules/lists";
-import { addChild, resultType, setResultType, setType, VALUES } from "dop";
+import { Context, convert_node } from "@SBrython/py2ast";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { bname2pyname } from "@SBrython/structs/BinaryOperators";
+import { STYPE_BOOL, STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
+import { OPERATORS_UNARY } from "@SBrython/core_modules/lists";
+import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
 
 export default function convert(dst: number, node: any, context: Context) {
 

@@ -1,7 +1,7 @@
-import { LITERALS_STR } from "core_modules/lists";
-import { setResultType, setType, VALUES } from "dop";
-import { Context } from "py2ast";
-import { STYPE_STR } from "structs/STypes";
+import { LITERALS_STR } from "@SBrython/core_modules/lists";
+import { setResultType, setType, VALUES } from "@SBrython/dop";
+import { Context } from "@SBrython/py2ast";
+import { STYPE_STR } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, _context: Context): false|void {
 

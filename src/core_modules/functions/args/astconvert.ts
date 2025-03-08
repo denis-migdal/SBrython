@@ -1,8 +1,8 @@
-import { Context, convert_node, set_py_code, set_py_from_beg_end } from "py2ast";
-import { STypeFct } from "structs/SType";
-import { FUNCTIONS_ARGS } from "core_modules/lists";
-import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, VALUES } from "dop";
-import { STYPE_INT, STYPE_JSINT } from "structs/STypes";
+import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBrython/py2ast";
+import { STypeFct } from "@SBrython/structs/SType";
+import { FUNCTIONS_ARGS } from "@SBrython/core_modules/lists";
+import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
+import { STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
 
 //TODO: fake node...
 export default function convert() {

@@ -1,3 +1,3 @@
-import { addSType } from "structs/STypes";
+import { addSType } from "@SBrython/structs/STypes";
 
 addSType('NoneType', {});

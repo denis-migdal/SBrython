@@ -1,9 +1,9 @@
-import { r } from "ast2js";
-import { resultType } from "dop";
-import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number, Number2Int, unary_jsop } from "structs/BinaryOperators";
-import { CONVERT_2INT, CONVERT_INT2FLOAT } from "structs/Converters";
-import { RET_IJ2INT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_INT, RET_JSINT, RET_JSINT2JSINT } from "structs/ReturnTypeFcts";
-import { addSType, STYPE_FLOAT, STYPE_INT } from "structs/STypes";
+import { r } from "@SBrython/ast2js";
+import { resultType } from "@SBrython/dop";
+import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number, Number2Int, unary_jsop } from "@SBrython/structs/BinaryOperators";
+import { CONVERT_2INT, CONVERT_INT2FLOAT } from "@SBrython/structs/Converters";
+import { RET_IJ2INT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_INT, RET_JSINT, RET_JSINT2JSINT } from "@SBrython/structs/ReturnTypeFcts";
+import { addSType, STYPE_FLOAT, STYPE_INT } from "@SBrython/structs/STypes";
 
 addSType('jsint', {
 

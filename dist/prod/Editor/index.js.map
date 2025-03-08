@@ -1,0 +1,1 @@
+{"version":3,"file":"Editor/index.js","mappings":"qFAAe,G","sources":["webpack://sbrython/./src/pages/Editor/index.html"],"sourcesContent":["export default __webpack_public_path__ + \"Editor/index.html\";"],"names":[],"sourceRoot":""}

@@ -1,8 +1,8 @@
-import { firstChild, resultType } from "dop";
+import { firstChild, resultType } from "@SBrython/dop";
 import { define, NOT_IMPLEMENTED, SType_Unknown, Symbl, Symbol_function, Symbol_function_type, Symbol_NOT_IMPLEMENTED } from ".";
 import { SType_Callable, Symbol_Callable } from "./callable";
 import { SType_function_type } from "./function_type";
-import { STypes } from "structs/STypes";
+import { STypes } from "@SBrython/structs/STypes";
 
 export interface SType_function extends SType_Callable {
     __name__ : Symbl<SType_Unknown>

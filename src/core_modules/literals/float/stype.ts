@@ -1,11 +1,11 @@
-import { r } from "ast2js";
-import { LITERALS_STR } from "core_modules/lists";
-import { firstChild, resultType, type, VALUES } from "dop";
-import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number } from "structs/BinaryOperators";
-import { CONVERT_INT2FLOAT } from "structs/Converters";
-import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_FLOAT, RET_STR } from "structs/ReturnTypeFcts";
-import { STypeFctSubs } from "structs/SType";
-import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_STR, STypes } from "structs/STypes";
+import { r } from "@SBrython/ast2js";
+import { LITERALS_STR } from "@SBrython/core_modules/lists";
+import { firstChild, resultType, type, VALUES } from "@SBrython/dop";
+import { CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, Int2Number } from "@SBrython/structs/BinaryOperators";
+import { CONVERT_INT2FLOAT } from "@SBrython/structs/Converters";
+import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_FLOAT, RET_STR } from "@SBrython/structs/ReturnTypeFcts";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_STR, STypes } from "@SBrython/structs/STypes";
 
 
 export const SType_type_float = addSType('type[float]', {

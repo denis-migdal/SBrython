@@ -1,6 +1,6 @@
-import { AST2JS } from "core_modules/lists";
-import { ARRAY_TYPE, ASTNODES, CODE_BEG, CODE_COL, CODE_END, CODE_LINE, JS_CODE, type } from "dop";
-import { AST } from "py2ast";
+import { AST2JS } from "@SBrython/core_modules/lists";
+import { ARRAY_TYPE, CODE_BEG, CODE_COL, CODE_END, CODE_LINE, JS_CODE, type } from "@SBrython/dop";
+import { AST } from "@SBrython/py2ast";
 
 export const CURSOR = new ARRAY_TYPE(2);
 

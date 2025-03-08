@@ -1,6 +1,6 @@
-import { CONTROLFLOWS_WHILE } from "core_modules/lists";
-import { addChild, setType } from "dop";
-import { Context, convert_body, convert_node } from "py2ast";
+import { CONTROLFLOWS_WHILE } from "@SBrython/core_modules/lists";
+import { addChild, setType } from "@SBrython/dop";
+import { Context, convert_body, convert_node } from "@SBrython/py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {
 

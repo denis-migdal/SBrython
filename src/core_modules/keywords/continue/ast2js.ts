@@ -1,4 +1,4 @@
-import { w } from "ast2js";
+import { w } from "@SBrython/ast2js";
 
 export default function ast2js(node: number) {
     w("continue");

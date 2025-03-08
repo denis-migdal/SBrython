@@ -2,10 +2,10 @@
 declare var $B: any;
 
 import { AST_CONVERT } from "./core_modules/lists";
-import { STypeFctSubs } from "structs/SType";
-import { addSType, getSTypeID, STypes } from "structs/STypes";
-import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, VALUES} from "dop";
-import { RET_INT, RETURN_TYPE_FCT } from "structs/ReturnTypeFcts";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { addSType, getSTypeID, STypes } from "@SBrython/structs/STypes";
+import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, VALUES} from "@SBrython/dop";
+import { RET_INT, RETURN_TYPE_FCT } from "@SBrython/structs/ReturnTypeFcts";
 
 export type AST = {
     nodes   : typeof ASTNODES,

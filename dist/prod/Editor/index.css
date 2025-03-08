@@ -1,0 +1,76 @@
+
+body {
+    width: 100vw;
+    height: 100vh;
+    margin:0px;
+}
+
+.success {
+    background-color: LightGreen;
+}
+.error {
+    background-color: OrangeRed;
+}
+
+.editor {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    /*
+    display: flex;
+    align-items: flex-start;
+    align-content: stretch;*/
+    gap: 10px;
+
+    & > div {
+
+        min-height: 0;
+        /*flex: 1 1 0px;*/
+
+        & > strong {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        & > pre {
+            border : 1px solid black;
+            display: block;
+            padding: 15px;
+            margin: 0px;
+
+            height: calc(100% - 1.5rem - 30px);
+            overflow-y: auto;
+
+            & > div {
+                min-height: 1rem;
+            }
+        }
+
+        & > textarea {
+            width: 100%;
+            padding: 15px;
+
+            height: calc(100% - 3.5rem);
+            overflow-y: auto;
+        }
+    }
+
+    & * > *:not(textarea) {
+        border: 1px solid transparent;
+    }
+
+    & .highlight {
+        background-color: yellow;
+
+        & > * {
+            background-color: orange;
+            border: 1px solid black;
+        }
+    }
+}
+
+/*# sourceMappingURL=index.css.map*/

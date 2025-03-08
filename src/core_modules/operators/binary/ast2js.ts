@@ -1,7 +1,7 @@
-import { wr } from "ast2js";
-import { firstChild, resultType, VALUES } from "dop";
-import { STypeFctSubs } from "structs/SType";
-import { STypes } from "structs/STypes";
+import { wr } from "@SBrython/ast2js";
+import { firstChild, resultType, VALUES } from "@SBrython/dop";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { STypes } from "@SBrython/structs/STypes";
 
 export default function ast2js(node: number) {
 

@@ -1,7 +1,7 @@
-import { CLASS_CLASSDEF } from "core_modules/lists";
-import { addChild, setType, VALUES } from "dop";
-import { Context, convert_body, convert_node } from "py2ast";
-import { getSTypeID } from "structs/STypes";
+import { CLASS_CLASSDEF } from "@SBrython/core_modules/lists";
+import { addChild, setType, VALUES } from "@SBrython/dop";
+import { Context, convert_body, convert_node } from "@SBrython/py2ast";
+import { getSTypeID } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, context: Context) {
 

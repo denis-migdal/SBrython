@@ -1,10 +1,10 @@
-import { r } from "ast2js";
-import { firstChild, resultType } from "dop";
-import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, Number2Int, unary_jsop } from "structs/BinaryOperators";
-import { CONVERT_2INT, CONVERT_INT2FLOAT } from "structs/Converters";
-import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_IJ2INT, RET_INT, RET_INT2INT, RET_STR } from "structs/ReturnTypeFcts";
-import { STypeFctSubs } from "structs/SType";
-import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_JSINT, STYPE_STR, STypes } from "structs/STypes";
+import { r } from "@SBrython/ast2js";
+import { firstChild, resultType } from "@SBrython/dop";
+import { binary_jsop, CMPOPS_LIST, genBinaryOps, genCmpOps, genUnaryOps, id_jsop, Int2Number, Number2Int, unary_jsop } from "@SBrython/structs/BinaryOperators";
+import { CONVERT_2INT, CONVERT_INT2FLOAT } from "@SBrython/structs/Converters";
+import { RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_IJ2INT, RET_INT, RET_INT2INT, RET_STR } from "@SBrython/structs/ReturnTypeFcts";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { addSType, STYPE_FLOAT, STYPE_INT, STYPE_JSINT, STYPE_STR, STypes } from "@SBrython/structs/STypes";
 
 export const SType_type_int = addSType('type[int]', {
     __call__: {

@@ -1,10 +1,10 @@
-import { r } from "ast2js";
-import { firstChild, resultType } from "dop";
-import { CMPOPS_LIST, genBinaryOps, genCmpOps} from "structs/BinaryOperators";
-import { CONVERT_INT2FLOAT } from "structs/Converters";
-import { RET_IJ2STR, RET_INT, RET_STR, RET_STR2BOOL, RET_STR2STR } from "structs/ReturnTypeFcts";
-import { STypeFctSubs } from "structs/SType";
-import { addSType, STYPE_STR, STypes } from "structs/STypes";
+import { r } from "@SBrython/ast2js";
+import { firstChild, resultType } from "@SBrython/dop";
+import { CMPOPS_LIST, genBinaryOps, genCmpOps} from "@SBrython/structs/BinaryOperators";
+import { CONVERT_INT2FLOAT } from "@SBrython/structs/Converters";
+import { RET_IJ2STR, RET_INT, RET_STR, RET_STR2BOOL, RET_STR2STR } from "@SBrython/structs/ReturnTypeFcts";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { addSType, STYPE_STR, STypes } from "@SBrython/structs/STypes";
 
 export const SType_type_str = addSType('type[str]', {
     __call__: {

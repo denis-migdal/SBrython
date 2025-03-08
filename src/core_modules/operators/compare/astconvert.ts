@@ -1,8 +1,8 @@
-import { OPERATORS_COMPARE } from "core_modules/lists";
-import { addChild, setResultType, setType, VALUES } from "dop";
-import { Context, convert_node } from "py2ast";
-import { bname2pyname } from "structs/BinaryOperators";
-import { STYPE_BOOL } from "structs/STypes";
+import { OPERATORS_COMPARE } from "@SBrython/core_modules/lists";
+import { addChild, setResultType, setType, VALUES } from "@SBrython/dop";
+import { Context, convert_node } from "@SBrython/py2ast";
+import { bname2pyname } from "@SBrython/structs/BinaryOperators";
+import { STYPE_BOOL } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, context: Context) {
 

@@ -1,6 +1,6 @@
-import { STRUCTS_TUPLE } from "core_modules/lists";
-import { addChild, setType } from "dop";
-import { Context, convert_node } from "py2ast";
+import { STRUCTS_TUPLE } from "@SBrython/core_modules/lists";
+import { addChild, setType } from "@SBrython/dop";
+import { Context, convert_node } from "@SBrython/py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {
     

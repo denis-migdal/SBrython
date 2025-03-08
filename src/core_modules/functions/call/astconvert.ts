@@ -1,8 +1,8 @@
-import { FUNCTIONS_CALL } from "core_modules/lists";
-import { addChild, setResultType, setType, VALUES } from "dop";
-import { Context, convert_node } from "py2ast";
-import { STypeFctSubs } from "structs/SType";
-import { STypes } from "structs/STypes";
+import { FUNCTIONS_CALL } from "@SBrython/core_modules/lists";
+import { addChild, setResultType, setType, VALUES } from "@SBrython/dop";
+import { Context, convert_node } from "@SBrython/py2ast";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { STypes } from "@SBrython/structs/STypes";
 
 export default function convert(dst: number, node: any, context: Context) {
 

@@ -1,8 +1,8 @@
-import { set_js_cursor, w, wr, wt } from "ast2js";
-import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "dop";
-import { binary_jsop, Number2Int } from "structs/BinaryOperators";
-import { STypeFct } from "structs/SType";
-import { STYPE_JSINT } from "structs/STypes";
+import { set_js_cursor, w, wr, wt } from "@SBrython/ast2js";
+import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
+import { binary_jsop, Number2Int } from "@SBrython/structs/BinaryOperators";
+import { STypeFct } from "@SBrython/structs/SType";
+import { STYPE_JSINT } from "@SBrython/structs/STypes";
 import { FUNCTIONS_ARGS_KWARG, FUNCTIONS_ARGS_VARG } from "./astconvert";
 
 export default function ast2js(node: number) {

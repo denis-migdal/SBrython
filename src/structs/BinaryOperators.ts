@@ -1,8 +1,8 @@
-import { r } from "ast2js";
+import { r } from "@SBrython/ast2js";
 import { STypeFctSubs } from "./SType";
 import { STYPE_FLOAT, STYPE_INT, STYPE_JSINT} from "./STypes";
-import { LITERALS_INT } from "core_modules/lists";
-import { firstChild, nbChild, parentOPPrio, resultType, setParentOPPrio, setResultType, type, VALUES } from "dop";
+import { LITERALS_INT } from "@SBrython/core_modules/lists";
+import { firstChild, nbChild, parentOPPrio, resultType, setParentOPPrio, setResultType, type, VALUES } from "@SBrython/dop";
 import { Converter, NOCONVERT } from "./Converters";
 import { RETURN_TYPE_FCT } from "./ReturnTypeFcts";
 

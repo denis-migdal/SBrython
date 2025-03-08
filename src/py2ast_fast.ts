@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { AST } from "py2ast";
-import { ASTNode } from "structs/ASTNode";
+import { AST } from "@SBrython/py2ast";
+import { ASTNode } from "@SBrython/structs/ASTNode";
 import CORE_MODULES from "./core_modules/lists";
 
 type Cursor = {

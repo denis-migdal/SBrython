@@ -1,6 +1,6 @@
-import RUNTIME_0 from "./object.ts";
-import RUNTIME_1 from "./Exceptions/JSException.ts";
-import RUNTIME_2 from "./Exceptions/Exception.ts";
+import RUNTIME_0 from "./object";
+import RUNTIME_1 from "./Exceptions/JSException";
+import RUNTIME_2 from "./Exceptions/Exception";
 
 
 const RUNTIME = {

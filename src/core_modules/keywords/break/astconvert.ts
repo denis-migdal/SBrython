@@ -1,6 +1,6 @@
-import { KEYWORDS_BREAK } from "core_modules/lists";
-import { setType } from "dop";
-import { Context } from "py2ast";
+import { KEYWORDS_BREAK } from "@SBrython/core_modules/lists";
+import { setType } from "@SBrython/dop";
+import { Context } from "@SBrython/py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {
     

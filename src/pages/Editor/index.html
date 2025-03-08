@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Editor</title>
+        <link rel="stylesheet" href="./index.css"/>
+    </head>
+<body>
+
+<script src="/assets/brython.min.js"></script>
+
+<div class="editor">
+    <div>
+        <strong>Input</strong>
+        <textarea id="python" spellcheck="false"></textarea>
+    </div>
+    <div>
+        <strong>Output (SBryton)</strong>
+        <pre class="output_sbrython"></pre>
+    </div>
+    <div>
+        <strong>Output (Brython)</strong>
+        <pre class="output_brython"></pre>
+    </div>
+    <div>
+        <strong>Python code</strong>
+        <pre class="python_ouput"></pre>
+    </div>
+    <div>
+        <strong>Generated AST</strong>
+        <pre id="ast"></pre>
+    </div>
+    <div>
+        <strong>Generated JS code</strong>
+        <pre id="js"></pre>
+    </div>
+</div>
+
+<script type="module">
+    import {py2ast, ast2js, convert_ast, py2ast_fast, parse_stack, stackline2astnode, SBrython} from "/libs/SBrython-dev/index.js";
+
+    const SHOW_CODE_NODE_BEFORE_PRINT = false;
+
+window.onerror = (...args) => {
+	console.log(args);
+	// msg
+	// stack
+	// 
+}
+
+//const $B = __BRYTHON__
+
+const python_input = document.querySelector("#python");
+const python_output = document.querySelector(".python_ouput");
+const ast_output = document.querySelector("#ast");
+const js_output = document.querySelector("#js");
+
+python_input.value = localStorage.getItem('sbrython_code') ?? "";
+
+python_input.addEventListener('keydown', (ev) => {
+
+if(ev.code === "Tab") {
+        ev.preventDefault();
+
+        let beg = python_input.selectionStart;
+        let end = python_input.selectionEnd;
+
+        const txt = python_input.value;
+        const preText  = txt.slice(0  , beg);
+        const postText = txt.slice(end, txt.length);
+
+        python_input.value = preText + "    " + postText; // input tab key
+        
+        const pos = beg+4;
+        python_input.setSelectionRange(pos, pos);
+    }
+});
+
+
+const sbrython_output = document.querySelector(".output_sbrython");
+const  brython_output = document.querySelector(".output_brython");
+
+let prev_highlighted = null;
+
+function highlight(target) {
+
+    if( prev_highlighted === target)
+        return;
+    if( prev_highlighted !== null) {
+
+        for(let gui_elem of prev_highlighted.$gui_elems)
+            gui_elem?.classList.remove("highlight");
+        prev_highlighted = null;
+    }
+
+    const $node = target.$node;
+    if( $node === undefined)
+        return;
+
+    prev_highlighted = $node;
+    for(let gui_elem of $node.$gui_elems)
+        gui_elem?.classList.add("highlight");
+}
+
+brython_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+sbrython_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+
+ast_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+python_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+js_output.addEventListener("mouseover", ev => {
+    highlight(ev.target);
+})
+
+function executeBrython(code) {
+
+    const filename = "sbrython_editor.js";
+    const output = [];
+    window.write = function(txt) {
+
+        if( Array.isArray(txt) ) // clone to prevent update issues...
+            txt = [...txt];
+
+        output.push([txt, new Error().stack]);
+    };
+
+    let error = null;
+    let jscode = '';
+    let times = new Array(4).fill(NaN);
+    try {
+        times[0] = globalThis.performance.now();
+        jscode = $B.pythonToJS(code);
+        /*
+        const filename = "filename";
+        const parser = new $B.Parser(code, filename, 'file');
+	    const _ast = $B._PyPegen.run_parser(parser);
+        step1 = globalThis.performance.now();
+
+        var imported;
+        var future = $B.future_features(_ast, filename)
+        var symtable = $B._PySymtable_Build(_ast, filename, future)
+        var js_obj = $B.js_from_root({ast: _ast,
+                                    symtable,
+                                    filename,
+                                    src: code,
+                                    imported})
+        js_code2 = js_obj.js
+        */
+        times[1] = globalThis.performance.now();
+        const fct = new Function(jscode); //TODO args
+        times[2] = globalThis.performance.now();
+        fct();
+        times[3] = globalThis.performance.now();
+
+    } catch(e) {
+        console.error(e);
+        error = e;
+    }
+
+    return {
+        output,
+        times,
+        //ast,
+        jscode,
+        pycode: code,
+        error
+    };
+}
+
+function executeSBrython(code) {
+
+    const filename = "sbrython_editor.js";
+    
+    const output = [];
+    window.write = function(txt) {
+
+        if( Array.isArray(txt) ) // clone to prevent update issues...
+            txt = [...txt];
+
+        output.push([txt, new Error().stack]);
+    };
+
+    let jscode = "";
+    let ast = [];
+    let sb = null;
+
+    let times = new Array(6).fill(NaN);
+
+    let error = null;
+
+    try {
+        times[0] = globalThis.performance.now();
+        if( true ) {
+            //ast = py2ast( code );
+            const parser = new $B.Parser(code, filename, 'file');
+            const _ast = $B._PyPegen.run_parser(parser);
+
+            times[1] = globalThis.performance.now();
+            ast = {
+                nodes: convert_ast(_ast),
+                filename
+            }
+        } else {
+            //ast = py2ast_fast(code);
+            //times[1] = globalThis.performance.now();
+        }
+
+        times[2] = globalThis.performance.now();
+        jscode = ast2js(ast);
+        times[3] = globalThis.performance.now();
+        sb = new SBrython();
+        sb._b_.assert = (cond) => { if( ! cond ) {
+
+            console.warn("Assertion failed");
+
+            const stack = new Error().stack;
+
+            const stackline = parse_stack(stack, sb)[0];
+            const node = stackline2astnode(stackline, sb);
+
+            output.push([`[Assertion failed as line ${node.pycode.start.line}]`, stack]);
+        } };
+        const fct = sb.buildModule(jscode, ast);
+        times[4] = globalThis.performance.now();
+        fct(sb);
+        times[5] = globalThis.performance.now();
+    } catch(e) {
+        console.error(e);
+        error = e;
+    }
+
+    return {
+        output,
+        times,
+        ast,
+        jscode,
+        pycode: code,
+        engine: sb,
+        error
+    };
+}
+function areOutputEquals(brython_result, sbrython_result, lines) {
+
+    let equals = true;
+
+    function isNone(value) {
+        return (typeof value === "object")
+        && "__class__" in value
+        && value.__class__.__qualname__ === "NoneType";
+    }
+
+    let max_id = Math.max(brython_result.length, sbrython_result.length);
+
+    for(let i = 0; i < max_id; ++i) {
+
+        lines[i] = true;
+        if( i >= brython_result.length || i >= sbrython_result.length ) {
+            lines[i] = false;
+            equals   = false;
+            continue;
+        }
+        
+        const bval  =  brython_result[i][0];
+        const sbval = sbrython_result[i][0];
+
+        if( `${bval}` !== `${sbval}` )
+            lines[i] = false;
+
+        if( typeof sbval !== typeof bval ) {
+
+            if( typeof sbval !== "bigint" || typeof bval !== "number")
+                lines[i] = false;
+        }
+
+        if( ( sbval === null || sbval === undefined)
+            && isNone(bval) )
+            lines[i] = true;
+
+        //if( ! line_equals )
+        //    console.warn( typeof sbrython_result[i].raw, typeof brython_result[i].raw )
+
+        if( ! lines[i] )
+            equals = false;
+    }
+
+    return equals;
+}
+
+function execute(code) {
+
+    const brython = executeBrython(code);
+    const sbrython= executeSBrython(code);
+
+    const lines_equals = [];
+    const success = areOutputEquals(brython.output, sbrython.output, lines_equals) && brython.error === null && sbrython.error === null;
+
+    return {
+         brython,
+        sbrython,
+        success,
+        lines_equals
+    };
+}
+
+function tsdiff(times, a, b) {
+    return (times[a]-times[b]).toFixed(3).padStart(6) + "ms";
+}
+function tdiff(times, a, b) {
+    return times[a]-times[b];
+}
+
+function updateBrythonFromResults({pycode, output, times, jscode}) {
+
+    let brython_result = output.map( e => {
+            const div = document.createElement('div')
+            div.textContent = `${e[0]}`;
+            div.raw = e[0];
+            div.stack = e[1]
+            return div;
+        });
+
+    brython_output.replaceChildren(
+            ...brython_result,
+`**code size   ${rdiff(pycode.length, jscode.length)}**
+**Executed in: ${tsdiff(times, 2, 0)}**
+    **Runtime: ${tsdiff(times, 3, 1)}**
+        **genFct: ${tsdiff(times, 2, 1)}**
+        **exeFct: ${tsdiff(times, 3, 2)}**
+    **Py2JS  : ${tsdiff(times, 1, 0)}**`
+    );
+
+    return brython_result;
+}
+
+function rdiff(js, py) {
+    const nb = (100 * py / js - 100).toFixed(2);
+    return `x${(js/py).toFixed(2).padStart(5)}/${nb > 0 ? '+' : ''}${nb.padStart(5)}%`;
+}
+
+function updateSBrythonFromResults({pycode, output, times, jscode, error}) {
+
+    let sbrython_result = output.map( e => {
+                const div = document.createElement('div')
+                div.textContent = `${e[0]}`;
+                div.raw = e[0];
+                div.stack = e[1];
+                return div;
+            });
+
+    let prefix = '';
+    if(error !== null)
+        prefix = error.toString() + '\n';
+
+    sbrython_output.replaceChildren(
+        ...sbrython_result,
+`${prefix}**Code size  : ${rdiff(pycode.length, jscode.length)}**
+**Executed in    : ${tsdiff(times, 4, 0)}**
+    **Runtime    : ${tsdiff(times, 5, 3)}**
+        **genFct : ${tsdiff(times, 4, 3)}**
+        **exeFct : ${tsdiff(times, 5, 4)}**
+    **Py2JS      : ${tsdiff(times, 3, 0)}**
+        **Py2AST : ${tsdiff(times, 1, 0)}**
+        **ASTConv: ${tsdiff(times, 2, 1)}**
+        **AST2JS : ${tsdiff(times, 3, 2)}**`
+        );
+
+    return sbrython_result;
+}
+
+function updateFromResults(results) {
+
+    const {sbrython, brython} = results;
+
+    // code...
+    // python_input.value = sbrython.pycode;
+
+    // SBrython
+    const sbrython_results = updateSBrythonFromResults(sbrython);
+
+    // Brython
+    const  brython_results = updateBrythonFromResults(brython);
+
+    // both
+    const ast = sbrython.ast;
+    try {
+    	print_js( sbrython.jscode, ast );
+    } catch(e) { console.warn(e); }
+    try {
+        print_python( sbrython.pycode, ast );
+    } catch(e) { console.warn(e); }
+    try {
+        print_ast( ast );
+    } catch(e) { console.warn(e); }
+
+    try {
+        print_errors(results, brython_results, sbrython_results);
+    } catch(e) { console.warn(e); }
+}
+
+function clearResults() {
+
+    //python_input.value = "";
+
+    sbrython_output.textContent = "";
+     brython_output.textContent = "";
+
+    js_output    .textContent = "";
+    python_output.textContent = "";
+    ast_output   .textContent = "";
+
+    sbrython_output.classList.remove("success");
+    sbrython_output.classList.remove("error");
+}
+
+function update() {
+
+	const code = python_input.value;
+    localStorage.setItem('sbrython_code', code);
+
+    clearResults();
+    const result = execute(code);
+    updateFromResults(result);
+}
+
+window.rdiff = rdiff;
+window.tdiff = tdiff;
+window.tsdiff= tsdiff;
+window.execute = execute;
+window.clearResults = clearResults;
+window.updateFromResults = updateFromResults;
+
+function print_errors({success, sbrython, lines_equals}, brython_result, sbrython_result) {
+
+    const sb = sbrython.engine;
+
+    for(let i = 0; i < lines_equals.length; ++i) {
+
+        // stack trace.
+        if( i < sbrython_result.length ) {
+            const stackline = parse_stack(sbrython_result[i].stack, sb)[0];
+            const node = stackline2astnode(stackline, sb);
+            node.$gui_elems.push( sbrython_result[i], brython_result[i] );
+            sbrython_result[i].$node = node;
+
+            if( i < brython_result.length )
+                brython_result[i].$node = node;
+        }
+
+        const line_class = lines_equals[i] ? "success" : "error";
+
+        if( i < sbrython_result.length )
+            sbrython_result[i].classList.add(line_class);
+
+        if( i <  brython_result.length )
+             brython_result[i].classList.add(line_class);
+    }
+
+    sbrython_output.classList.add(success ? "success" : "error");
+}
+
+function print_node(node) {
+    const html_bloc = document.createElement("div");
+    html_bloc.$node = node;
+    node.$gui_elems ??= [];
+    node.$gui_elems.push( html_bloc );
+
+    html_bloc.textContent = node.type;
+    if( node.value != null)
+        html_bloc.textContent += `:${node.value}`;
+    if( node.result_type !== null) {
+
+        let name = node.result_type?.__name__;
+        if(name === "function") {
+            name += ` () -> ${node.result_type.__call__.return_type()?.__name__}`;
+        }
+
+        let as_type = "";
+        if( node.as !== undefined )
+            as_type = ` as ${node.as}`;
+        html_bloc.textContent += ` (${name}${as_type})`;
+    }
+
+	for(let child of node.children) {
+        const html_child = print_node(child);
+        html_child.style.setProperty("margin-left", "20px");
+        html_bloc.append( html_child );
+    }
+
+	return html_bloc;
+}
+
+function print_ast(_ast) {
+
+    const ast = _ast.body.children;
+
+    const nodes = ast.map( node => {
+
+        const line = document.createElement("div");
+
+        const lineno = document.createElement('span');
+        lineno.textContent = `${node.pycode.start.line}:`;
+
+        lineno.style.setProperty("vertical-align", "top");
+        lineno.style.setProperty("font-weight", "bold");
+    
+        line.append(lineno);
+
+        const html = print_node(node);
+        html.style.setProperty("display", "inline-block");
+        line.append(html);
+
+
+        return line;
+    });
+	ast_output.replaceChildren( ...nodes )
+
+}
+
+function code_idx(code, {line, col}) {
+
+    if(line === 1)
+        return col;
+
+    let cur = 0;
+    let cur_line = 1;
+    while( cur < code.length) {
+        if( code[cur] === '\n' ) {
+            ++cur_line;
+            if( line === cur_line ) {
+                ++cur;
+                break;
+            }
+        }
+        ++cur;
+    }
+
+    return cur + col;
+}
+
+function slice_code(code, start_or_pos, end = null) {
+
+    let start = start_or_pos;
+    if(end === null) {
+        ({start, end} = start_or_pos);
+    }
+
+    let beg_idx = code_idx(code, start);
+    let end_idx = code_idx(code,  end);
+
+    return code.slice( beg_idx, end_idx );
+}
+
+function print_code_node(node, code, type) {
+    
+    if( SHOW_CODE_NODE_BEFORE_PRINT)
+        console.log("N", node);
+
+    const html_bloc = document.createElement("span");
+
+    html_bloc.$node = node;
+    node.$gui_elems ??= [];
+    node.$gui_elems.push( html_bloc );
+
+    let children = node.children.filter( (a) => a[type] !== undefined )
+                                .sort( (a,b) => {
+        
+        if( a[type].start.line === b[type].start.line) {
+            return a[type].start.col - b[type].start.col;
+        }
+
+        return a[type].start.line - b[type].start.line;
+    });
+
+    let subparts = new Array(children.length * 2 + 1);
+    let cursor = node[type].start;
+    let offset = 0;
+
+    for(let i = 0; i < children.length; ++i) {
+        const ctype = children[i][type];
+        if( ctype === undefined )
+            continue;
+        subparts[offset++] = slice_code(code, cursor, ctype.start);
+        subparts[offset++] = print_code_node(children[i], code, type);
+        cursor = children[i][type].end;
+    }
+    subparts[offset++] = slice_code(code, cursor, node[type].end);
+
+    html_bloc.append(...subparts);
+
+    return html_bloc;
+}
+
+// pycode or jscode
+function print_code(code, _ast, type) {
+
+    const ast = _ast.body.children;
+
+    const nodes = ast.map( node => {
+
+        const line = document.createElement("div");
+
+        const lineno = document.createElement('span');
+        lineno.textContent = `${ node.pycode.start.line }:`;
+
+        lineno.style.setProperty("vertical-align", "top");
+        lineno.style.setProperty("font-weight", "bold");
+    
+        line.append(lineno);
+
+        //TODO: slice_code_here
+        const html = print_code_node(node, code, type);
+        html.style.setProperty("display", "inline-block");
+        line.append(html);
+
+        //if(node.type !== "functions.def") //TODO...
+        //    line.append(";");
+
+        return line;
+    });
+
+    return nodes;
+}
+
+function print_python(pycode, ast) {
+	python_output.replaceChildren( ...print_code(pycode, ast, "pycode") )
+}
+
+function print_js(jscode, ast) {
+	js_output.replaceChildren( ...print_code(jscode, ast, "jscode") )
+}
+
+python_input.addEventListener("input",
+							  () => update() )
+
+if( window.location.search === '')
+    update();
+
+</script>
+
+<script type="module">
+
+    async function compute(code, stats) {
+        
+        const result = window.execute(code);
+        
+        stats.code_len += code.length;
+
+        stats. brython.code_len += result. brython.jscode.length;
+        stats.sbrython.code_len += result.sbrython.jscode.length;
+
+        for(let i = 1; i < stats.brython.times.length; ++i) {
+            stats.brython.times[i] += result.brython.times[i] - result.brython.times[0];
+        }
+
+        for(let i = 1; i < stats.sbrython.times.length; ++i){
+            stats.sbrython.times[i] += result.sbrython.times[i] - result.sbrython.times[0];
+        }
+        return result
+    }
+
+    function filter(code, list) {
+
+        list ??= [];
+        
+        let result = code.map( (l, idx) => {
+            idx = idx + 1 + 2;
+            let excluded = list.find( (v) => {
+                if( v === '*')
+                    return true;
+                if( idx === v)
+                    return true;
+                if( Array.isArray(v) && v[0] <= idx && v[1] >= idx)
+                    return true;
+            }) !== undefined;
+            
+            if( excluded )
+                return `# ${l}`;
+            return l;
+        });
+
+        return result;
+    }
+
+    (async () => {
+    
+        // numbers
+        const search = new URLSearchParams( location.search );
+        const test_name = search.get("test");
+        const merge     = search.get("merge") === "true" ? true : false;
+    
+        if( test_name === null)
+            return;
+    
+        let exclude_list = await (await fetch('/assets/exclude_list.txt')).text();
+        exclude_list = Object.fromEntries( exclude_list.split('#').slice(0).map(e => {
+
+            let lines = e.split('\n');
+            let name = lines[0].slice(1);
+
+            let exclude = lines.slice(1).filter(e => e[0] !== '/' && e.length !== 0).map( e => {
+                e = e.split('-');
+                if( e.length === 1) {
+                    if( e[0] === '*')
+                        return e[0];
+                    return parseInt(e[0]);
+                }
+                return [parseInt(e[0]), parseInt(e[1])]
+            });
+
+            return [name, exclude];
+        }) );
+
+        let total = 0;
+        let excluded_count = 0;
+        let nb_suites = 0;
+
+        let tests_names  = [test_name];
+        if( test_name === 'all' || 'brython')
+            tests_names = ['basic test suite', 'numbers'];
+        if( test_name === 'all')
+            tests_names.push(...['test']);
+
+        // 'classes' => after some basic types/operators...
+
+        // lists
+        // dicts
+        // sets
+        // exceptions
+        // strings
+
+        // string methods
+        // f-string
+        // generators
+        // imports
+
+        // print
+        // iterators
+        // files open_read
+        // bytes
+        // decorators
+        // descriptors
+        // exec_eval
+        // pattern matching
+        // string format
+
+        // reflected_methods
+        // special methods
+        // memoryview
+        // javascript objects
+
+        let error = false;
+        let lastResults;
+        let stats = {
+            brython: {
+                code_len: 0,
+                times: new Array(4).fill(0)
+            },
+            sbrython: {
+                code_len: 0,
+                times: new Array(6).fill(0)
+            },
+            code_len: 0
+        }
+        window.clearResults();
+        //for(let k = 0; k < 1; ++k) {
+            let full_code = "";
+
+            let i = 0;
+            for(let test_name of tests_names) {
+                let code = await (await fetch(`/assets/unittests/${test_name}.py`)).text();
+
+                const tests = code.split('#').slice(1).map( t => '#'+t);
+
+                for(let test of tests) {
+
+                    let code = test.split('\n');
+
+                    const name = code[0].slice(1).trim();
+
+                    code = filter(code, exclude_list[`${test_name}.${name}`]);
+
+                    let nbEmptyLines = 0;
+                    for(let i = 1; i < code.length; ++i)
+                        if(code[i].trim() === '')
+                            ++nbEmptyLines;
+
+                    let code_len = code.length - 1 - nbEmptyLines;
+
+                    let nbExcluded = 0;
+                    for(let i = 1; i < code.length; ++i)
+                        nbExcluded += code[i][0] === '#';
+
+                    total          += code_len;
+                    excluded_count += nbExcluded;
+
+                    if(code_len === nbExcluded)
+                        continue;
+
+                    ++nb_suites;
+
+                    //code = [`from browser import window as _w_;\nwrite = _w_.write;`, ...code];
+            
+                    code = code.join('\n'); 
+
+                    if( ! merge ) {
+                        lastResults = await compute( code, stats );
+                        if( ! lastResults.success) {
+                            error = true;
+                            break;
+                        }
+                    } else {
+                        ++i 
+                        if( i === 5)
+                            continue;
+
+                        code = code.split('\n').map(e => `\t${e}`).join('\n');
+                        full_code += `def _${nb_suites}():\n${code}\n_${nb_suites}()\n`;
+                    }
+                }
+                if( error )
+                    break;
+            }
+
+            if( merge ) {
+                lastResults = await compute( full_code, stats );
+            }
+        //}
+        if(error) {
+            window.updateFromResults(lastResults);
+
+            const python_input = document.querySelector('#python');
+            python_input.value = lastResults.sbrython.pycode;
+
+            return;
+        }
+        // if( error )
+
+        const python_input = document.querySelector('#python');
+        python_input.value = "";
+
+        const result_sbrython = document.querySelector('.output_sbrython');
+        const result_brython  = document.querySelector('.output_brython');
+
+        const btimes = stats.brython.times;
+        const sbtimes = stats.sbrython.times;
+
+        const code_size = true ? rdiff(stats.code_len, stats.sbrython.code_len) : '        ';
+
+        result_sbrython.textContent = 
+`Status         : ${error ? 'FAILED' : 'SUCCESS'}
+Tested         : ${total-excluded_count}/${total} (${excluded_count} excluded) [${nb_suites}]
+Code size      : ${code_size} (${rdiff(stats.brython.code_len, stats.sbrython.code_len)})
+Executed in    : ${tsdiff(sbtimes, 4, 0)} (${rdiff(tdiff(btimes, 2, 0), tdiff(sbtimes, 4, 0))})
+    Runtime    : ${tsdiff(sbtimes, 5, 3)} (${rdiff(tdiff(btimes, 3, 1), tdiff(sbtimes, 4, 3))})
+        genFct : ${tsdiff(sbtimes, 4, 3)} (${rdiff(tdiff(btimes, 2, 1), tdiff(sbtimes, 4, 3))})
+        exeFct : ${tsdiff(sbtimes, 5, 4)} (${rdiff(tdiff(btimes, 3, 2), tdiff(sbtimes, 5, 4))})
+    Py2JS      : ${tsdiff(sbtimes, 3, 0)} (${rdiff(tdiff(btimes, 1, 0), tdiff(sbtimes, 3, 0))})
+        Py2AST : ${tsdiff(sbtimes, 1, 0)}
+        ASTConv: ${tsdiff(sbtimes, 2, 1)}
+        AST2JS : ${tsdiff(sbtimes, 3, 2)} (${rdiff(tdiff(btimes, 1, 0) - tdiff(sbtimes, 1, 0), tdiff(sbtimes, 3, 2))})`
+
+    result_sbrython.classList.add('success');
+
+    result_brython.textContent = 
+`**Code size  : ${rdiff(stats.code_len, stats.brython.code_len)}**
+**Executed in: ${tsdiff(btimes, 2, 0)}**
+    **Runtime: ${tsdiff(btimes, 3, 1)}**
+        **genFct: ${tsdiff(btimes, 2, 1)}**
+        **exeFct: ${tsdiff(btimes, 3, 2)}**
+    **Py2JS  : ${tsdiff(btimes, 1, 0)}**`
+
+    })();
+    </script>
+</body>
+</html>

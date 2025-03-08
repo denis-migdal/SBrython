@@ -1,7 +1,7 @@
 import _r_ from "../../core_runtime/lists";
-import { Context } from "py2ast";
-import { SYMBOL } from "core_modules/lists";
-import { setResultType, setType, VALUES } from "dop";
+import { Context } from "@SBrython/py2ast";
+import { SYMBOL } from "@SBrython/core_modules/lists";
+import { setResultType, setType, VALUES } from "@SBrython/dop";
 
 function isClass(_: unknown) {
     // from https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript

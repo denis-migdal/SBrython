@@ -1,5 +1,5 @@
-import { BB, BE, NL, w } from "ast2js";
-import { firstChild, nbChild } from "dop";
+import { BB, BE, NL, w } from "@SBrython/ast2js";
+import { firstChild, nbChild } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
 

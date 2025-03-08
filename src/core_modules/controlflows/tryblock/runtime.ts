@@ -1,7 +1,7 @@
-import { SYMBOL } from "core_modules/lists";
-import Py_Exception from "core_runtime/Exceptions/Exception";
-import { type, VALUES } from "dop";
-import { SBrython } from "runtime";
+import { SYMBOL } from "@SBrython/core_modules/lists";
+import Py_Exception from "@SBrython/core_runtime/Exceptions/Exception";
+import { type, VALUES } from "@SBrython/dop";
+import { SBrython } from "@SBrython/runtime";
 
 function filter_stack(stack: string[]) {
   return stack.filter( e => e.includes('brython_') ); //TODO improves...

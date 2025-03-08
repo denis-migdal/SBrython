@@ -1,8 +1,8 @@
-import { wr } from "ast2js";
-import { firstChild, resultType, VALUES } from "dop";
-import { AssignOperators } from "structs/BinaryOperators";
-import { STypeFctSubs } from "structs/SType";
-import { STYPE_NOT_IMPLEMENTED, STypes } from "structs/STypes";
+import { wr } from "@SBrython/ast2js";
+import { firstChild, resultType, VALUES } from "@SBrython/dop";
+import { AssignOperators } from "@SBrython/structs/BinaryOperators";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
 
 export default function ast2js(node: number) {
 

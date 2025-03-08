@@ -1,7 +1,7 @@
-import { w, wt } from "ast2js";
-import { firstChild, nbChild, resultType } from "dop";
-import { Number2Int } from "structs/BinaryOperators";
-import { STYPE_INT, STYPE_JSINT } from "structs/STypes";
+import { w, wt } from "@SBrython/ast2js";
+import { firstChild, nbChild, resultType } from "@SBrython/dop";
+import { Number2Int } from "@SBrython/structs/BinaryOperators";
+import { STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
 
 export default function ast2js(node: number) {
     

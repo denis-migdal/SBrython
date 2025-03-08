@@ -1,7 +1,7 @@
-import { r, wr } from "ast2js";
-import { FUNCTIONS_CALL_KEYWORD } from "core_modules/lists";
-import { firstChild, nbChild, type, VALUES } from "dop";
-import { STypeFct } from "structs/SType";
+import { r, wr } from "@SBrython/ast2js";
+import { FUNCTIONS_CALL_KEYWORD } from "@SBrython/core_modules/lists";
+import { firstChild, nbChild, type, VALUES } from "@SBrython/dop";
+import { STypeFct } from "@SBrython/structs/SType";
 
 function print_obj(obj: Record<string, any>) {
 

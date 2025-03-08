@@ -1,3 +1,6 @@
 [submodule "brython"]
 	path = brython
 	url = git@github.com:brython-dev/brython.git
+[submodule "build/WebpackFramework"]
+	path = build/WebpackFramework
+	url = git@github.com:denis-migdal/Webpack-Framework.git

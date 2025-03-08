@@ -1,4 +1,4 @@
-import { Context } from "py2ast";
+import { Context } from "@SBrython/py2ast";
 
 export type T_AST2JS     = (id: number) => void;
 export type T_ASTCONVERT = (dst: number, src: any, context: Context) => false|void;

@@ -1,8 +1,8 @@
-import { w, wr } from "ast2js";
-import { firstChild, resultType, VALUES } from "dop";
-import { binary_jsop, reversed_operator } from "structs/BinaryOperators";
-import { STypeFctSubs } from "structs/SType";
-import { STYPE_NOT_IMPLEMENTED, STypes } from "structs/STypes";
+import { w, wr } from "@SBrython/ast2js";
+import { firstChild, resultType, VALUES } from "@SBrython/dop";
+import { binary_jsop, reversed_operator } from "@SBrython/structs/BinaryOperators";
+import { STypeFctSubs } from "@SBrython/structs/SType";
+import { STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
 
 
 function find_and_call_substitute(node: number, left:number, op: string, right: number) {

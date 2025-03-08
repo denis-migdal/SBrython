@@ -1,4 +1,4 @@
-import { AST } from "py2ast";
+import { AST } from "@SBrython/py2ast";
 
 import {default as _r_} from "./core_runtime/lists";
 import {_b_} from "./core_modules/lists";
