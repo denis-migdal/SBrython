@@ -6,12 +6,11 @@
 
 ## SimplerBrython
 
-/Editor/?test=brython
+https://sbrython.migdal.ovh/Editor/?test=brython
 
-1. migdal.ovh links/hostname / flow...
-2. convert nb to real names + tested stats
-3. make depends on LISS library (2x)
-4. list.ts generation (?)
+1. convert nb to real names + tested stats
+2. make depends on library (2x)
+3. list.ts generation (?)
 
 TODO:
 - [ ] Production mode with switch (-> use brython.min.js)
