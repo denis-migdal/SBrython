@@ -20,6 +20,21 @@ export function printNode(id: number) {
     });
 }
 
+export function buildPyCode(id: number) {
+    const offset = 4*id;
+
+    return {
+        start: {
+            line: PY_CODE[ offset + CODE_BEG_LINE ],
+            col : PY_CODE[ offset + CODE_BEG_COL  ]
+        },
+        end  : {
+            line: PY_CODE[ offset + CODE_END_LINE ],
+            col : PY_CODE[ offset + CODE_END_COL  ]
+        }
+    };
+}
+
 export function set_py_code(id: number, brython_node: any) {
 
     const offset = 4*id;

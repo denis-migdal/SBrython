@@ -1,5 +1,5 @@
 import { AST2JS } from "@SBrython/core_modules/lists";
-import { ARRAY_TYPE, CODE_BEG, CODE_COL, CODE_END, CODE_LINE, JS_CODE, type } from "@SBrython/dop";
+import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, type } from "@SBrython/dop";
 import { AST } from "@SBrython/py2ast";
 
 export const CURSOR = new ARRAY_TYPE(2);
@@ -9,6 +9,22 @@ export let jscode: string;
 export function set_js_cursor(idx: number) {
     JS_CODE[idx + CODE_LINE] = CURSOR[CODE_LINE];
     JS_CODE[idx + CODE_COL ] = jscode!.length - CURSOR[CODE_COL];
+}
+
+
+export function buildPyCode(id: number) {
+    const offset = 4*id;
+
+    return {
+        start: {
+            line: JS_CODE[ offset + CODE_BEG_LINE ],
+            col : JS_CODE[ offset + CODE_BEG_COL  ]
+        },
+        end  : {
+            line: JS_CODE[ offset + CODE_END_LINE ],
+            col : JS_CODE[ offset + CODE_END_COL  ]
+        }
+    };
 }
 
 function new_jscode(filename: string) {

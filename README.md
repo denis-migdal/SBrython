@@ -8,13 +8,13 @@
 
 /Editor/?test=brython
 
-2. stats
-3. migdal.ovh links/hostname
-4. retaure editor + list generation (?)
+1. migdal.ovh links/hostname / flow...
+2. convert nb to real names + tested stats
+3. make depends on LISS library (2x)
+4. list.ts generation (?)
 
 TODO:
 - [ ] Production mode with switch (-> use brython.min.js)
-    - [ ] update Webpack framework ??
     - [ ] https://webpack.js.org/plugins/define-plugin/
     - [ ] https://webpack.js.org/plugins/define-plugin/#runtime-values-via-runtimevalue
     - [ ] https://github.com/fregante/webext-detect/issues/12
@@ -23,21 +23,14 @@ TODO:
         - [ ] https://remarkablemark.org/blog/2017/01/25/webpack-global-constants/
     - [ ] Put optionnal checks into [dev mode only]
     - [ ] JS/PY code positions [dev mode only]
-    - [ ] npm stats command... (+ test zip)
     - [ ] do not indent
     - [ ] documenter !
     - [ ] migdal.ovh links + hostname...
     https://stackoverflow.com/questions/45776264/remove-some-code-lines-in-production-distribution-files
 - [ ] Restaure Editor
-    - [ ] BUG stats : miss exec time...
-    - [ ] Move into different files + source map outside file...
+    - [ ] Move into different files...
     - [ ] BUG FIX (test if works) - https://github.com/brython-dev/brython/issues/2479
     - [ ] Stats
-        - [ ] Repeat + ignore Py2AST step (?) + average + predownload
-        - [ ] Better time metrics
-        - [ ] Speed metrics
-        - [ ] Files stats (file size/tokens/ast nodes).
-        - [ ] Export ?
         https://github.com/brython-dev/brython/discussions/2509#discussioncomment-11157480
 
 - [ ] module system rewrite

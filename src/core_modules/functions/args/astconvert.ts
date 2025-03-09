@@ -1,7 +1,7 @@
 import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBrython/py2ast";
 import { STypeFct } from "@SBrython/structs/SType";
 import { FUNCTIONS_ARGS } from "@SBrython/core_modules/lists";
-import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
+import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, type, VALUES } from "@SBrython/dop";
 import { STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
 
 //TODO: fake node...
@@ -37,6 +37,7 @@ export function convert_args(dst: number, node: any, SType_fct: STypeFct, contex
                      + +has_kwarg;
 
     setType(dst, FUNCTIONS_ARGS);
+
     const coffset = addChild(dst, total_args); // args
 
     const pos_defaults = node.args.defaults;

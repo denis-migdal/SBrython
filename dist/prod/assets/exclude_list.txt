@@ -9,7 +9,7 @@
 8
 29
 // __abs__ __ceil__ __mod__
-34-40
+36-42
 
 # numbers.long integers
 // Math.pi 
@@ -408,7 +408,7 @@
 *
 # numbers.issue 1511
 // math.isnan
-7-8
+8-9
 
 # numbers.issue 2058
 // hash()

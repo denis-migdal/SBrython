@@ -1,5 +1,3 @@
-from tester import assert_raises
-
 # numbers
 assert 2 + 2 == 4
 assert (50 - 5 * 6) / 4 == 5.0
