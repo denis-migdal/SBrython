@@ -33,7 +33,5 @@ export default function generateSBrython(_ast: string, results: SubResults) {
     results.times[results.offset++] += t0 - beg;
     results.times[results.offset++] += t1 - t0;
 
-    console.warn(jscode)
-
     return jscode;
 }

@@ -119,16 +119,6 @@ export function convert_ast(ast: any) {
     console.warn( count(result) );*/
 }
 
-
-function getNodeType(brython_node: any): string {
-
-    // likely a body.
-    if( Array.isArray(brython_node) )
-        return "Body";
-
-    return brython_node.constructor.$name;
-}
-
 //TODO: use firstChild + nextSibling instead of nbChild
 export function swapASTNodes(a: number, b: number ) {
 
@@ -168,12 +158,7 @@ export function convert_body(id: number, brython_node: any, context: Context) {
 
 export function convert_node(id: number, brython_node: any, context: Context) {
 
-    let name = getNodeType(brython_node);
-
-    if(name === "Expr") {
-        brython_node = brython_node.value;
-        name = getNodeType(brython_node);
-    }
+    const name = brython_node.constructor.$name;
 
     const candidates = modules[name];
 
@@ -181,7 +166,7 @@ export function convert_node(id: number, brython_node: any, context: Context) {
         console.warn("Module not registered:", name);
         console.warn(`at ${brython_node.lineno}:${brython_node.col_offset}`);
         console.log( brython_node );
-        name = "null"
+        throw new Error("nok");
     }
 
     //TODO: rewrite system

@@ -12,29 +12,19 @@ https://sbrython.migdal.ovh/Editor/?test=brython
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
 Executed in    :  2.654s [-15.67%]  44.340ms
     PY2JS      :  2.575s [- 5.58%]  43.020ms
-        py2ast :  2.247s [   =   ]  37.540ms
-        astProc:  0.190s [x  1.24]   3.180ms -> 2.740ms
-        ast2js :  0.138s [-57.88%]   2.300ms -> 2.000ms
+        py2ast :  2.247s [   =   ]  37.540ms    __DEBUG__  py2ast cond. 
+        astProc:  0.190s [x  1.24]   3.180ms -> 2.740ms -> 2.340ms
+        ast2js :  0.138s [-57.88%]   2.300ms -> 2.000ms -> 1.980ms
     RUNTIME    :  0.079s [-81.20%]   1.320ms
         genFct :  0.024s [-60.78%]   0.400ms
         exeFct :  0.055s [-84.67%]   0.920ms
 
 TODO:
 
--> likely a body => is it currently used?
--> Expr          => Expr node ? [parent ???]
-
-- [ ] Production mode
-    - [ ] Rewrite JS code position for dev mode (fix editor) 
-        - [ ] BUG FIX (test if works) - https://github.com/brython-dev/brython/issues/2479
-    - [ ] documenter !
-        - [ ] indentation
-        - [ ] optionnal checks (core_modules)
-        - [ ] JS/PY code positions
-- [ ] Restaure Editor
-    - [ ] Tests stats (#lines + excluded)
 
 - [ ] module system rewrite
+    -> likely a body => is it currently used?
+    -> Expr          => Expr node ? [parent ???]
     - [ ] décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
         - [ ] ASTConv : name is Bry name(s) / (idx | idx => handler ?).
         - [ ] AST2JS  : by hands (?) -too much OP-
@@ -42,6 +32,14 @@ TODO:
         - [ ] documenter !
         - [ ] list generation (redo)
     - [ ] operator system rewrite (do not store op in VALUES!)
+
+- [ ] Restaure Editor
+    - [ ] Tests stats (#lines + excluded)
+- [ ] documenter !
+    - [ ] Production mode
+        - [ ] indentation
+        - [ ] optionnal checks (core_modules)
+        - [ ] JS/PY code positions
 
 - [ ] optimize value usage
     - [ ] operations (ofc)

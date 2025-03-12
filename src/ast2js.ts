@@ -15,9 +15,7 @@ export function set_js_cursor(idx: number) {
 
 export function buildJSCode(id: number) {
     const offset = 4*id;
-
-    console.warn(id, JS_CODE[ offset + CODE_BEG_LINE ], JS_CODE );
-
+    
     return {
         start: {
             line: JS_CODE[ offset + CODE_BEG_LINE ],
