@@ -323,8 +323,6 @@ function print_ast(ast: NODE) {
         return line;
     });
 
-    console.warn(nodes, ast);
-
 	ast_output.replaceChildren( ...nodes )
 
 }

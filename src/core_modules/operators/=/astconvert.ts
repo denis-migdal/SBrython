@@ -28,7 +28,7 @@ export default function convert(dst: number, node: any, context: Context): false
     if( annotation !== undefined)
         result_type = getSTypeID(annotation);
 
-    if( result_type !== null && result_type !== rtype )
+    if( __DEBUG__ && result_type !== null && result_type !== rtype )
         console.warn("Wrong result_type");
 
     if( result_type === null ) {

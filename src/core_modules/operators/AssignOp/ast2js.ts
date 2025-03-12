@@ -17,7 +17,7 @@ export default function ast2js(node: number) {
         type = method.return_type(resultType(coffset+1)!);
 
     // try a = a + b
-    if( type === STYPE_NOT_IMPLEMENTED) {
+    if( __DEBUG__ && type === STYPE_NOT_IMPLEMENTED) {
         throw new Error(`${resultType(coffset+1)} ${op}= ${resultType(coffset)} NOT IMPLEMENTED!`);
         /*
         op     = reversed_operator(op);

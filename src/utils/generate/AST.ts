@@ -16,9 +16,7 @@ export default function buildAST(code: string, results: Results) {
 
     // tokens count
     const tokens = $B.tokenizer(code, '_');
-
-    //console.warn(tokens);
-
+    
     results.nb_tokens += tokens.length;
 
     return _ast;

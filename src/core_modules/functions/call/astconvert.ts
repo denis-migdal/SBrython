@@ -8,7 +8,7 @@ export default function convert(dst: number, node: any, context: Context) {
 
     const name = node.func.id;
     const fct_type = context.local_symbols[name]!;
-    if( fct_type === undefined ) {
+    if( __DEBUG__ && fct_type === undefined ) {
         console.warn(node);
         console.warn(context.local_symbols);
         throw new Error(`Function ${name} not defined`);

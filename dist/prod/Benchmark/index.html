@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Benchmark</title>
+        <link rel="stylesheet" href="./index.css"/>
+        <script src="/assets/brython.min.js"></script>
+        <script src="/skeleton/index.js" type="module"></script>
+        <script src="./index.js" type="module"></script>
+    </head>
+    <body>
+    <div class="editor">
+            <div>
+                <strong>Input</strong>
+                <textarea id="python" spellcheck="false"></textarea>
+            </div>
+            <div>
+                <strong>Output (SBryton)</strong>
+                <pre class="sbrython_output"></pre>
+            </div>
+            <div>
+                <strong>Output (Brython)</strong>
+                <pre class="brython_output"></pre>
+            </div>
+            <div>
+                <strong>Python code</strong>
+                <pre class="python_ouput"></pre>
+            </div>
+            <div>
+                <strong>Generated AST</strong>
+                <pre id="ast"></pre>
+            </div>
+            <div>
+                <strong>Generated JS code</strong>
+                <pre id="js"></pre>
+            </div>
+        </div>
+    </body>
+</html>

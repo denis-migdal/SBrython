@@ -1,6 +1,3 @@
-// Brython must be imported before.
-declare var $B: any;
-
 import { AST_CONVERT } from "./core_modules/lists";
 import { STypeFctSubs } from "@SBrython/structs/SType";
 import { addSType, getSTypeID, STypes } from "@SBrython/structs/STypes";
@@ -132,6 +129,7 @@ function getNodeType(brython_node: any): string {
     return brython_node.constructor.$name;
 }
 
+//TODO: use firstChild + nextSibling instead of nbChild
 export function swapASTNodes(a: number, b: number ) {
 
     const ao = ASTNODE_SIZE * a;
@@ -144,12 +142,14 @@ export function swapASTNodes(a: number, b: number ) {
         ASTNODES[bo+i] = t;
     }
 
-    const ap = 4*a;
-    const bp = 4*b;
-    for(let i = 0; i < 4; ++i) {
-        t = PY_CODE[ap+i];
-        PY_CODE[ap+i] = PY_CODE[bp+i];
-        PY_CODE[bp+i] = t;
+    if( __DEBUG__ ) {
+        const ap = 4*a;
+        const bp = 4*b;
+        for(let i = 0; i < 4; ++i) {
+            t = PY_CODE[ap+i];
+            PY_CODE[ap+i] = PY_CODE[bp+i];
+            PY_CODE[bp+i] = t;
+        }
     }
 
     t = VALUES[a];
@@ -163,7 +163,7 @@ const body = modules.Body[0]
 export function convert_body(id: number, brython_node: any, context: Context) {
 
     AST_CONVERT[body]    (id, brython_node, context);
-    set_py_code_from_list(id, brython_node);
+    if(__DEBUG__) set_py_code_from_list(id, brython_node);
 }
 
 export function convert_node(id: number, brython_node: any, context: Context) {
@@ -177,18 +177,20 @@ export function convert_node(id: number, brython_node: any, context: Context) {
 
     const candidates = modules[name];
 
-    if( candidates === undefined ) {
+    if( __DEBUG__ && candidates === undefined ) {
         console.warn("Module not registered:", name);
         console.warn(`at ${brython_node.lineno}:${brython_node.col_offset}`);
         console.log( brython_node );
         name = "null"
     }
 
+    //TODO: rewrite system
+
     // we may have many modules for the same node type.
     for(let i = 0; i < candidates.length; ++i)
         if( AST_CONVERT[candidates[i]](id, brython_node, context) !== false) {
 
-            set_py_code(id, brython_node);
+            if( __DEBUG__ ) set_py_code(id, brython_node);
 
             return;
         }

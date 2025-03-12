@@ -1,4 +1,5 @@
 function assert(cond: boolean) {
+    //TODO: if __DEBUG__
     if( cond )
         return;
 

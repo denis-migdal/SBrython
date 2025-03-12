@@ -17,9 +17,9 @@ export default function ast2js(node: number) {
             const offset = 4*i;
 
             // we write the children directly...
-            set_js_cursor(offset + CODE_BEG);
+            if(__DEBUG__) set_js_cursor(offset + CODE_BEG);
             w(VALUES[i]);
-            set_js_cursor(offset + CODE_END);
+            if(__DEBUG__) set_js_cursor(offset + CODE_END);
 
             continue;
 

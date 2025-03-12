@@ -20,7 +20,7 @@ export const SType_type_str = addSType('type[str]', {
                 return other;
 
             const method = STypes[other_type]?.__str__ as STypeFctSubs;
-            if( method === undefined )
+            if( __DEBUG__ && method === undefined )
                 throw new Error(`${STypes[other_type].__name__}.__str__ not defined`);
             return method.substitute_call!(other);
         }

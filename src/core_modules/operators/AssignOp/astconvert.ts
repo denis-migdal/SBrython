@@ -6,7 +6,7 @@ import { bname2pyname } from "@SBrython/structs/BinaryOperators";
 export default function convert(dst: number, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-    if( op === undefined) {
+    if( __DEBUG__ && op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
     }

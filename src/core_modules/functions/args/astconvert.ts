@@ -129,17 +129,19 @@ export function convert_args(dst: number, node: any, SType_fct: STypeFct, contex
 
     VALUES[dst] = SType_fct;
     
-    if( total_args !== 0) {
+    if( __DEBUG__ ) {
+        if( total_args !== 0) {
 
-        set_py_from_beg_end(dst, coffset, coffset + total_args - 1);
+            set_py_from_beg_end(dst, coffset, coffset + total_args - 1);
 
-    } else {
-        // an estimation...
-        const col = node.col_offset + 4 + node.name.length + 1;
+        } else {
+            // an estimation...
+            const col = node.col_offset + 4 + node.name.length + 1;
 
-        const py_offset = 4*dst;
-        PY_CODE[ py_offset + CODE_BEG_LINE ] = PY_CODE[ py_offset + CODE_END_LINE ] = node.lineno;
-        PY_CODE[ py_offset + CODE_BEG_COL  ] = PY_CODE[ py_offset + CODE_END_COL  ] = col;
+            const py_offset = 4*dst;
+            PY_CODE[ py_offset + CODE_BEG_LINE ] = PY_CODE[ py_offset + CODE_END_LINE ] = node.lineno;
+            PY_CODE[ py_offset + CODE_BEG_COL  ] = PY_CODE[ py_offset + CODE_END_COL  ] = col;
+        }
     }
 }
 export function convert_arg(dst: number, node: any, defval: any, type:number, context: Context) {
@@ -167,5 +169,5 @@ export function convert_arg(dst: number, node: any, defval: any, type:number, co
     VALUES[dst] = name;
     context.local_symbols[name] = result_type;
 
-    set_py_code(dst, node);
+    if( __DEBUG__) set_py_code(dst, node);
 }

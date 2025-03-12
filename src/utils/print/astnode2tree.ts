@@ -1,4 +1,5 @@
 import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
+import { buildJSCode } from "@SBrython/ast2js";
 import { buildPyCode } from "@SBrython/py2ast";
 
 type CodePos = {
@@ -28,7 +29,7 @@ export default function astnode2tree(id = 0): NODE {
         type: ''+type(id), // TODO convert
         result_type: ''+resultType(id), // TODO convert
         value      : VALUES[id],
-        jscode  : buildPyCode(id),
+        jscode  : buildJSCode(id),
         pycode  : buildPyCode(id),
         children: Array.from({length: nbChild(id)}, (_,i) => astnode2tree(coffset+i) )
     };

@@ -24,7 +24,7 @@ function find_and_call_substitute(node: number, left:number, op: string, right: 
             type   = method.return_type(ltype!);
         
         if( type === STYPE_NOT_IMPLEMENTED) {
-            if( op !== '__eq__' && op !== '__ne__' )
+            if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' )
                 throw new Error(`${ltype} ${op} ${rtype} not implemented!`);
 
             const jsop = op === '__eq__' ? '===' : '!==';

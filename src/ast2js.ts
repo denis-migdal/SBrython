@@ -2,7 +2,8 @@ import { AST2JS } from "@SBrython/core_modules/lists";
 import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, type } from "@SBrython/dop";
 import { AST } from "@SBrython/py2ast";
 
-export const CURSOR = new ARRAY_TYPE(2);
+//TODO...
+export const CURSOR = __DEBUG__ ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
 export let jscode: string;
 
@@ -12,8 +13,10 @@ export function set_js_cursor(idx: number) {
 }
 
 
-export function buildPyCode(id: number) {
+export function buildJSCode(id: number) {
     const offset = 4*id;
+
+    console.warn(id, JS_CODE[ offset + CODE_BEG_LINE ], JS_CODE );
 
     return {
         start: {
@@ -32,8 +35,10 @@ function new_jscode(filename: string) {
     jscode  = `//# sourceURL=${filename}\n`;
     jscode += `const {_r_, _b_} = __SBRYTHON__;\n`;
 
-    CURSOR[CODE_LINE] = 3;
-    CURSOR[CODE_COL] = jscode.length;
+    if(__DEBUG__) {
+        CURSOR[CODE_LINE] = 3;
+        CURSOR[CODE_COL] = jscode.length;
+    }
 }
 
 type Printable = {toString(): string};
@@ -60,20 +65,32 @@ const indents = [
 export const NL = {
     toString: function() {
 
-        ++CURSOR[CODE_LINE];
-        CURSOR[CODE_COL] = jscode.length + 1;
+        if( __DEBUG__ ) {
+            ++CURSOR[CODE_LINE];
+            CURSOR[CODE_COL] = jscode.length + 1;
 
-        return "\n" + indents[cur_indent_level];
+            return "\n" + indents[cur_indent_level];
+        } else {
+            return "\n";
+        }
     }
 }
 export const BB = {
     toString: function() {
-        return indents[++cur_indent_level];
+        if(__DEBUG__) {
+            return indents[++cur_indent_level];
+        } else {
+            return "";
+        }
     }
 }
 export const BE = {
     toString: function() {
-        return indents[--cur_indent_level];
+        if(__DEBUG__) {
+            return indents[--cur_indent_level];
+        } else {
+            return "";
+        }
     }
 }
 
@@ -126,9 +143,11 @@ export function w(...args: (Printable|number)[]) {
 
         const offset = 4*arg;
         
-        set_js_cursor(offset + CODE_BEG);
+        if( __DEBUG__ )
+            set_js_cursor(offset + CODE_BEG);
         AST2JS[type(arg)!](arg);
-        set_js_cursor(offset + CODE_END)
+        if( __DEBUG__ )
+            set_js_cursor(offset + CODE_END)
     }
 }
 

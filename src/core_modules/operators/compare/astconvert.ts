@@ -8,7 +8,7 @@ export default function convert(dst: number, node: any, context: Context) {
 
     const ops = node.ops.map( (e: any) => {
         const op = bname2pyname[e.constructor.$name as keyof typeof bname2pyname];
-        if( op === undefined)
+        if( __DEBUG__ && op === undefined)
             throw new Error(`${e.constructor.$name} not implemented!`);
         return op;
     });

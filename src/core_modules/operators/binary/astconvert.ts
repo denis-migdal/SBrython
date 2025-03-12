@@ -8,7 +8,7 @@ import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/
 export default function convert(dst: number, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-    if( op === undefined) {
+    if( __DEBUG__ && op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
     }
@@ -35,7 +35,7 @@ export default function convert(dst: number, node: any, context: Context) {
         if( method !== undefined)
             type   = method.return_type(ltype!);
 
-        if( type === STYPE_NOT_IMPLEMENTED)
+        if( __DEBUG__ && type === STYPE_NOT_IMPLEMENTED)
             throw new Error(`${rtype} ${op} ${ltype} NOT IMPLEMENTED!`);
 
         swapASTNodes(coffset, coffset+1); // costly, use 2 ast2js instead ?

@@ -8,7 +8,7 @@ export default function convert(dst: number, node: any, context: Context) {
     context.local_symbols[node.name] = getSTypeID(node.name);
     context = new Context("class", context);
 
-    if( node.bases.length > 1)
+    if( __DEBUG__ && node.bases.length > 1)
         throw new Error('Not implemented');
 
     setType(dst , CLASS_CLASSDEF);

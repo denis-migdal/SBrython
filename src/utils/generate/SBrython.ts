@@ -1,6 +1,5 @@
 import {py2ast, convert_ast} from "@SBrython/py2ast";
 import {ast2js} from "@SBrython/ast2js";
-import {py2ast as py2ast_fast} from "@SBrython/py2ast_fast";
 import {SBrython, _b_, _r_} from "@SBrython/runtime";
 
 // declare all builtin types...
@@ -33,6 +32,8 @@ export default function generateSBrython(_ast: string, results: SubResults) {
     //results.times[results.offset++] += t1 - beg; // total
     results.times[results.offset++] += t0 - beg;
     results.times[results.offset++] += t1 - t0;
+
+    console.warn(jscode)
 
     return jscode;
 }

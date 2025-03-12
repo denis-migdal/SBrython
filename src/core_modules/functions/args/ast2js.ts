@@ -39,7 +39,7 @@ export default function ast2js(node: number) {
 function write_arg(node: number, isLast: boolean) {
     
     const offset = 4*node;
-    set_js_cursor(offset + CODE_BEG);
+    if( __DEBUG__ ) set_js_cursor(offset + CODE_BEG);
 
     const name = VALUES[node];
     const type_id = type(node);
@@ -62,5 +62,5 @@ function write_arg(node: number, isLast: boolean) {
         w(name);
     }
 
-    set_js_cursor(offset + CODE_END);
+    if( __DEBUG__ ) set_js_cursor(offset + CODE_END);
 }

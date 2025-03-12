@@ -35,7 +35,7 @@ export const SType_type_int = addSType('type[int]', {
 
             const otype = STypes[other_type];
             const method = otype?.__int__ as STypeFctSubs;
-            if( method === undefined )
+            if( __DEBUG__ && method === undefined )
                 throw new Error(`${otype.__name__}.__int__ not defined`);
             return method.substitute_call!(node, other);
         }

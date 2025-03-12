@@ -11,8 +11,8 @@ export const CODE_BEG_COL  = CODE_BEG + CODE_COL;
 export const CODE_END_LINE = CODE_END + CODE_LINE;
 export const CODE_END_COL  = CODE_END + CODE_COL;
 
-export const PY_CODE = new ARRAY_TYPE(4*MAX_NB_ASTNODES);
-export const JS_CODE = new ARRAY_TYPE(4*MAX_NB_ASTNODES);
+export const PY_CODE = __DEBUG__ ? new ARRAY_TYPE(4*MAX_NB_ASTNODES) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
+export const JS_CODE = __DEBUG__ ? new ARRAY_TYPE(4*MAX_NB_ASTNODES) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
 //TODO: indirection ou par ID...
 export const VALUES = new Array<any>();
