@@ -150,9 +150,13 @@ export function swapASTNodes(a: number, b: number ) {
 
 const body = modules.Body[0]
 
+import BRY2SBRY from "./bry2sbry/list";
+import Body from "./bry2sbry/Body";
+
 export function convert_body(id: number, brython_node: any, context: Context) {
 
-    AST_CONVERT[body]    (id, brython_node, context);
+    Body(id, brython_node, context);
+
     if(__DEBUG__) set_py_code_from_list(id, brython_node);
 }
 

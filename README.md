@@ -23,15 +23,19 @@ TODO:
 
 
 - [ ] module system rewrite
-    -> likely a body => is it currently used?
-    -> Expr          => Expr node ? [parent ???]
-    - [ ] décorreler ASTConv et AST2JS. Only one ASTConv for one Brython node type.
-        - [ ] ASTConv : name is Bry name(s) / (idx | idx => handler ?).
-        - [ ] AST2JS  : by hands (?) -too much OP-
+    - [ ] bry2sbry => $name as file name
+            => generate {} with dynamic imports ?
+            => vs array (?)
+        -> verif generated code...
+        -> merge some files...
+    - [ ] AST2JS: [] ?
         - [ ] IDX to name (for dev mode -> cf Editor)
-        - [ ] documenter !
-        - [ ] list generation (redo)
+            - [ ] decl cstes => map to files...
+        - [ ] by hands (?) -too much OP-
+    - [ ] documenter !
     - [ ] operator system rewrite (do not store op in VALUES!)
+
+- [ ] Webpack merge module : avoid circular deps (?)
 
 - [ ] Restaure Editor
     - [ ] Tests stats (#lines + excluded)

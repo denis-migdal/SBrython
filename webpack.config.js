@@ -1,6 +1,7 @@
 import webpack from 'webpack';
 
 import buildConfigs from "./build/WebpackFramework/index.js";
+import genBry2SBry  from "./build/genBry2SBry.js";
 
 export default async function(...args) {
 	
@@ -15,13 +16,23 @@ export default async function(...args) {
 	const entries = await cfg_debug.entry();
 	cfg_debug.entry = entries;
 
-	console.warn(Object.keys(entries));
-	console.warn(entries.main);
-
 	const Benchmark = entries.Benchmark;
 	delete entries.Benchmark;
 
 	cfg.plugins = [...cfg_debug.plugins];
+
+	// only require it once.
+	cfg_debug.plugins.push({
+		apply: (compiler) => {
+			compiler.hooks.compile.tap("MyPlugin_compile", async () => {
+				await genBry2SBry();
+				//genCoreModuleList();
+				//genCoreRuntimeList();
+			});
+		},
+	});
+
+
 	cfg.entry   = {
 		skeleton: entries.skeleton,
 		Benchmark
