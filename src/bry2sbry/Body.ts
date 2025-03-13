@@ -1,5 +1,5 @@
 import { BODY } from "@SBrython/core_modules/lists";
-import { addChild, setType, type } from "@SBrython/dop";
+import { addChild, setType } from "@SBrython/dop";
 import { Context, convert_node } from "@SBrython/py2ast";
 
 export default function convert(dst: number, node: any, context: Context) {

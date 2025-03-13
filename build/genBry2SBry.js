@@ -33,7 +33,7 @@ function importModules(modules) {
     result += "export default {\n";
 
     for(let key in modules)
-        result += `\t${key}: (await import("${modules[key]}")).default,\n`;
+        result += `\t${key}: require("${modules[key]}").default,\n`;
 
     result += "}";
 

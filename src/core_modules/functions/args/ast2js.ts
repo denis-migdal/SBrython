@@ -3,7 +3,7 @@ import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } fro
 import { binary_jsop, Number2Int } from "@SBrython/structs/BinaryOperators";
 import { STypeFct } from "@SBrython/structs/SType";
 import { STYPE_JSINT } from "@SBrython/structs/STypes";
-import { FUNCTIONS_ARGS_KWARG, FUNCTIONS_ARGS_VARG } from "./astconvert";
+import { FUNCTIONS_ARGS_KWARG, FUNCTIONS_ARGS_VARG } from "@SBrython/bry2sbry/functions/Args";
 
 export default function ast2js(node: number) {
     

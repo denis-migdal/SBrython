@@ -12,9 +12,9 @@ https://sbrython.migdal.ovh/Editor/?test=brython
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
 Executed in    :  2.654s [-15.67%]  44.340ms
     PY2JS      :  2.575s [- 5.58%]  43.020ms
-        py2ast :  2.247s [   =   ]  37.540ms    __DEBUG__  py2ast cond. 
-        astProc:  0.190s [x  1.24]   3.180ms -> 2.740ms -> 2.340ms
-        ast2js :  0.138s [-57.88%]   2.300ms -> 2.000ms -> 1.980ms
+        py2ast :  2.247s [   =   ]  37.540ms    __DEBUG__  py2ast cond.    bry2sbry
+        astProc:  0.190s [x  1.24]   3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms
+        ast2js :  0.138s [-57.88%]   2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms
     RUNTIME    :  0.079s [-81.20%]   1.320ms
         genFct :  0.024s [-60.78%]   0.400ms
         exeFct :  0.055s [-84.67%]   0.920ms
@@ -23,11 +23,6 @@ TODO:
 
 
 - [ ] module system rewrite
-    - [ ] bry2sbry => $name as file name
-            => generate {} with dynamic imports ?
-            => vs array (?)
-        -> verif generated code...
-        -> merge some files...
     - [ ] AST2JS: [] ?
         - [ ] IDX to name (for dev mode -> cf Editor)
             - [ ] decl cstes => map to files...
