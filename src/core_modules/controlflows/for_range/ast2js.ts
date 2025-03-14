@@ -1,6 +1,6 @@
 import { NL, wt } from "@SBrython/ast2js";
 import { firstChild, nbChild, VALUES } from "@SBrython/dop";
-import { Number2Int } from "@SBrython/structs/BinaryOperators";
+import { Number2Int } from "@SBrython/structs/Converters";
 
 export default function ast2js(node: number) {
 
@@ -22,5 +22,6 @@ export default function ast2js(node: number) {
     if( nbChildren === 4)
         incr = Number2Int(body+2);
 
+    //TODO...
     return wt`for(var ${idx} = ${beg}; ${idx} < ${end}; ${idx} += ${incr}){${body}${NL}}`;
 }

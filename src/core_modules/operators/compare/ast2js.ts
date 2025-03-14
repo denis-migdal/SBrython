@@ -1,42 +1,47 @@
-import { w, wr } from "@SBrython/ast2js";
+import { w } from "@SBrython/ast2js";
 import { firstChild, resultType, VALUES } from "@SBrython/dop";
-import { binary_jsop, reversed_operator } from "@SBrython/structs/BinaryOperators";
-import { STypeFctSubs } from "@SBrython/structs/SType";
-import { STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
+import { reversed_operator } from "@SBrython/structs/BinaryOperators";
+import { write_binary_jsop } from "@SBrython/structs/operators/binary";
+import { TYPEID_NotImplementedType } from "@SBrython/types";
 
+import Types from "@SBrython/types/list";
+import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/types/utils/types";
 
-function find_and_call_substitute(node: number, left:number, op: string, right: number) {
+function find_and_write_call(node: number, left:number, op: string, right: number) {
     
     let reversed = false;
     const rtype = resultType(right);
     const ltype = resultType(left);
 
-    let type = STYPE_NOT_IMPLEMENTED;
-    let method = STypes[ltype]?.[op] as STypeFctSubs;
-    if( method !== undefined )
-        type = method.return_type(rtype!);
+    let type = TYPEID_NotImplementedType;
 
-    if( type === STYPE_NOT_IMPLEMENTED) {
+    let method = Types[ltype][op] as Fct;
+    if( method !== undefined )
+        type = method[RETURN_TYPE](rtype!);
+
+    if( type === TYPEID_NotImplementedType) {
 
         op     = reversed_operator(op as Parameters<typeof reversed_operator>[0]);
-        method = STypes[rtype]?.[op] as STypeFctSubs;
+        method = Types[rtype][op] as Fct;
         if( method !== undefined )
-            type   = method.return_type(ltype!);
+            type   = method[RETURN_TYPE](ltype!);
         
-        if( type === STYPE_NOT_IMPLEMENTED) {
+        if( type === TYPEID_NotImplementedType) {
             if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' )
                 throw new Error(`${ltype} ${op} ${rtype} not implemented!`);
 
             const jsop = op === '__eq__' ? '===' : '!==';
 
-            return binary_jsop(node, left, jsop, right);
+            write_binary_jsop(node, left, jsop, right);
+
+            return;
         }
 
         reversed = true;
         [left, right] = [right, left];
     }
 
-    return method.substitute_call!(node, left, right, reversed);
+    method[WRITE_CALL]!(node, left, right, reversed);
 }
 
 export default function ast2js(node: number) {
@@ -54,14 +59,14 @@ export default function ast2js(node: number) {
         const right = i+1+coffset;
 
         if( op === 'is' ) {
-            wr( binary_jsop(node, left, '===', right) );
+            write_binary_jsop(node, left, '===', right);
             continue;
         }
         if( op === 'is not' ) {
-            wr( binary_jsop(node, left, '!==', right) );
+            write_binary_jsop(node, left, '!==', right);
             continue;
         }
         
-        wr( find_and_call_substitute(node, left, op, right) );
+        find_and_write_call(node, left, op, right);
     }
 }

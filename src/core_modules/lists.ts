@@ -45,6 +45,9 @@ import      AST2JS_38 from "./controlflows/for/ast2js";
 import      AST2JS_39 from "./class/classdef/ast2js";
 import      AST2JS_40 from "./body/ast2js";
 
+import      AST2JS_41 from "./to_bigint/ast2js";
+import      AST2JS_42 from "./to_number/ast2js";
+
 
 export const SYMBOL = 0;
 export const STRUCTS_TUPLE = 1;
@@ -88,7 +91,10 @@ export const CONTROLFLOWS_FOR = 38;
 export const CLASS_CLASSDEF = 39;
 export const BODY = 40;
 
-import type {T_ASTCONVERT, T_AST2JS} from './'
+export const TO_BIGINT = 41;
+export const TO_NUMBER = 42;
+
+import type {T_AST2JS} from './'
 
 export const AST2JS: T_AST2JS[] = [
 	AST2JS_0,
@@ -132,6 +138,8 @@ export const AST2JS: T_AST2JS[] = [
 	AST2JS_38,
 	AST2JS_39,
 	AST2JS_40,
+	AST2JS_41,
+	AST2JS_42,
 ]
 
 const RUNTIME = {};

@@ -16,6 +16,7 @@ export default function convert(dst: number, node: any, context: Context) {
         value = 'this'; //TODO type of current context ! -> self in local_symbols ?
     else if( value in context.local_symbols)
         result_type = context.local_symbols[value];
+
     /*
         //TODO globalSymbols
     else if(value in _r_) {

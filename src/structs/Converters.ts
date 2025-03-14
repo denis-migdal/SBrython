@@ -1,34 +1,73 @@
-import { resultType } from "@SBrython/dop";
-import { Int2Number, Number2Int } from "./BinaryOperators";
-import { STYPE_INT } from "./STypes";
+import { createASTNode, firstChild, resultType, setFirstChild, setResultType, setType, type, VALUES } from "@SBrython/dop";
+import { LITERALS_INT, TO_BIGINT, TO_NUMBER } from "@SBrython/core_modules/lists";
+import { TYPEID_float, TYPEID_int, TYPEID_jsint } from "@SBrython/types";
 
-type Printable = { toString(): string };
-
-export type Converter = (node: number) => number | [TemplateStringsArray, ...(number | Printable)[]];
+export type Converter = (node: number) => number;
 
 export const NOCONVERT = (node: number) => node;
 
 export const CONVERT_INT2FLOAT = Int2Number;
 export const CONVERT_2INT      = Number2Int;
 
-export function generateConvert(convert: number[]) {
+export function Int2Number(a: number, target = TYPEID_float) {
 
-    const table = new Array<number>();
-    for(let i = 0; i < convert.length; i+=2)
-        table[convert[i]] = convert[i+1];
+    if( resultType(a) !== TYPEID_int) // already a number
+        return a;
 
-    return (node: number) => {
-        const src    = resultType(node);
-        const target = table[src];
-        if( target === undefined )
-            return node;
+    if( type(a) === LITERALS_INT) {
+        // if bigint can't safely convert to JSINT.
+        if( target === TYPEID_float )
+            setResultType(a, TYPEID_jsint);
+        return a;
+    }
 
-        //TODO: improve:
-        if( src === STYPE_INT)
-            return Int2Number(node, target);
-        if( target === STYPE_INT )
-            return Number2Int(node);
+    const a_value = VALUES[a];
 
-        throw new Error("Unfound conversion");
-    };
+    const coffset = firstChild(a);
+
+    if( a_value === '__mul__' || a_value === '__rmul__' ) {
+        const ltype = resultType(coffset);
+        const rtype = resultType(coffset+1);
+        if(    (ltype === TYPEID_int || ltype === TYPEID_jsint)
+            && (rtype === TYPEID_int || rtype === TYPEID_jsint)
+        ) {
+            setResultType(a, target);
+            return a;
+        }
+    }
+    if( a_value === '__neg__' && resultType(coffset) === TYPEID_int) {
+        setResultType(a, target);
+        return a;
+    }
+
+    if( target !== TYPEID_float )
+        // int -> jsint cast is facultative...
+        return a;
+
+    const idx = createASTNode();
+    setType(idx, TO_NUMBER);
+    setFirstChild(idx, a);
+
+    return idx;
+}
+
+export function Number2Int(a: number) {
+
+    if( resultType(a) === TYPEID_int)
+        return a;
+
+    if( type(a) === LITERALS_INT) {
+        setResultType(a, TYPEID_int); // force bigint convertion
+        return a;
+    }
+    if( VALUES[a] === '__neg__' && resultType(firstChild(a)) === TYPEID_jsint) {
+        setResultType(a, TYPEID_int);
+        return a;
+    }
+
+    const idx = createASTNode();
+    setType(idx, TO_BIGINT);
+    setFirstChild(idx, a);
+
+    return idx;
 }

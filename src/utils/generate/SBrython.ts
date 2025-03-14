@@ -3,7 +3,7 @@ import {ast2js} from "@SBrython/ast2js";
 import {SBrython, _b_, _r_} from "@SBrython/runtime";
 
 // declare all builtin types...
-import '@SBrython/structs/STypeBuiltin';
+//import '@SBrython/structs/STypeBuiltin';
 
 // ^ TODO: move out...
 

@@ -1,9 +1,9 @@
 import { FUNCTIONS_CALL } from "@SBrython/core_modules/lists";
 import { addChild, setResultType, setType, VALUES } from "@SBrython/dop";
-import { Context, convert_node, set_py_code_from_list } from "@SBrython/py2ast";
-import { STypeFctSubs } from "@SBrython/structs/SType";
-import { STypes } from "@SBrython/structs/STypes";
+import { Context, convert_node, set_py_code, set_py_code_from_list } from "@SBrython/py2ast";
+import Types from "@SBrython/types/list";
 import keyword from "./keyword";
+import { Fct, RETURN_TYPE } from "@SBrython/types/utils/types";
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -15,8 +15,8 @@ export default function convert(dst: number, node: any, context: Context) {
         throw new Error(`Function ${name} not defined`);
     }
 
-    const fct = STypes[fct_type];
-    const ret_type = (fct.__call__ as STypeFctSubs).return_type();
+    const fct = Types[fct_type];
+    const ret_type = (fct.__call__ as Fct)[RETURN_TYPE]();
 
     setType      (dst, FUNCTIONS_CALL);
     setResultType(dst, ret_type);
@@ -29,7 +29,7 @@ export default function convert(dst: number, node: any, context: Context) {
 
     for(let i = 0; i < node.keywords.length; ++i) {
         keyword(coffset, node.keywords[i], context );
-        if(__DEBUG__) set_py_code_from_list(coffset, node.keywords[i]);
+        if(__DEBUG__) set_py_code(coffset, node.keywords[i]);
         ++coffset;
     }
 

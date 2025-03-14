@@ -45,7 +45,7 @@ let indent = "    ";
 let cur_indent_level = 0;
 //let cur_indent = "";
 
-const indents = [
+const indents = __DEBUG__ ? [
     "",
     "",
     indent,
@@ -58,7 +58,7 @@ const indents = [
     indent+=indent,
     indent+=indent,
     indent+=indent,
-]
+] : null;
 
 export const NL = {
     toString: function() {
@@ -67,7 +67,7 @@ export const NL = {
             ++CURSOR[CODE_LINE];
             CURSOR[CODE_COL] = jscode.length + 1;
 
-            return "\n" + indents[cur_indent_level];
+            return "\n" + indents![cur_indent_level];
         } else {
             return "\n";
         }
@@ -76,7 +76,7 @@ export const NL = {
 export const BB = {
     toString: function() {
         if(__DEBUG__) {
-            return indents[++cur_indent_level];
+            return indents![++cur_indent_level];
         } else {
             return "";
         }
@@ -85,12 +85,46 @@ export const BB = {
 export const BE = {
     toString: function() {
         if(__DEBUG__) {
-            return indents[--cur_indent_level];
+            return indents![--cur_indent_level];
         } else {
             return "";
         }
     }
 }
+
+// =======================================================================
+
+export function w_str(str: string) {
+    jscode += str;
+}
+export function w_node(node: number) {
+    if( __DEBUG__ ) set_js_cursor(4*node + CODE_BEG);
+    AST2JS[type(node)!](node);
+    if( __DEBUG__ ) set_js_cursor(4*node + CODE_END);
+}
+
+type W_SNS = [string, number, string]
+    | [string, number, string, number, string]
+    | [string, number, string, number, string, number, string]
+    | [string, number, string, number, string, number, string, number, string];
+
+export function w_sns(...args: W_SNS) { //TODO: alternate
+
+    jscode += args[0];
+
+    for(let i = 1; i < args.length; i+=2) {
+
+        const node = args[i] as number;
+
+        if( __DEBUG__ ) set_js_cursor(4*node + CODE_BEG);
+        AST2JS[type(node)!](node);
+        if( __DEBUG__ ) set_js_cursor(4*node + CODE_END);
+
+        jscode += args[i+1];
+    }
+}
+
+// =======================================================================
 
 // transforms into a template string
 export function r(...args: [TemplateStringsArray, ...(Printable|number)[]]) {
@@ -140,12 +174,9 @@ export function w(...args: (Printable|number)[]) {
         }
 
         const offset = 4*arg;
-        
-        if( __DEBUG__ )
-            set_js_cursor(offset + CODE_BEG);
+        if( __DEBUG__ ) set_js_cursor(offset + CODE_BEG);
         AST2JS[type(arg)!](arg);
-        if( __DEBUG__ )
-            set_js_cursor(offset + CODE_END)
+        if( __DEBUG__ ) set_js_cursor(offset + CODE_END)
     }
 }
 

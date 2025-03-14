@@ -1,7 +1,7 @@
 import { w, wt } from "@SBrython/ast2js";
 import { firstChild, nbChild, resultType } from "@SBrython/dop";
-import { Number2Int } from "@SBrython/structs/BinaryOperators";
-import { STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
+import { Number2Int } from "@SBrython/structs/Converters";
+import { TYPEID_int, TYPEID_jsint } from "@SBrython/types";
 
 export default function ast2js(node: number) {
     
@@ -12,7 +12,7 @@ export default function ast2js(node: number) {
         wt`${i+coffset} = `;
 
     let rchild: any = coffset;
-    if( resultType(coffset) === STYPE_JSINT && resultType(node) === STYPE_INT )
+    if( resultType(coffset) === TYPEID_jsint && resultType(node) === TYPEID_int )
         rchild = Number2Int(coffset);
 
     w(rchild);

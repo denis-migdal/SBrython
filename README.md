@@ -12,42 +12,53 @@ https://sbrython.migdal.ovh/Editor/?test=brython
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
 Executed in    :  2.654s [-15.67%]  44.340ms
     PY2JS      :  2.575s [- 5.58%]  43.020ms
-        py2ast :  2.247s [   =   ]  37.540ms    __DEBUG__  py2ast cond.    bry2sbry
-        astProc:  0.190s [x  1.24]   3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms
-        ast2js :  0.138s [-57.88%]   2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms
+        py2ast :  2.247s [   =   ]  37.540ms
+        astProc:  0.190s [x  1.24]   3.180ms
+        ast2js :  0.138s [-57.88%]   2.300ms
     RUNTIME    :  0.079s [-81.20%]   1.320ms
         genFct :  0.024s [-60.78%]   0.400ms
         exeFct :  0.055s [-84.67%]   0.920ms
 
-TODO:
 
+           __DEBUG__  py2ast cond.    bry2sbry    (type system+write system)
+3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.160ms
+2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 2.000ms
+
+(type system+write system) => may have desoptimized args writting (hard...)
+
++ some logical fixes
+-> cleaner code + more easier to extend to be more python-compliant.
+Limits : type unions/deduction + unknown type (bigger runtime) + (?)
+
+TODO:
+- problème : fct call disappeared...
+
+-> then
+    -> .js lib for prod... (to measure size...)
+    -> new write system everywhere
+    -> new ast2js directory...
+    -> new op system...
+        - compare operator : reversed => handle it in ast2js ???
+    -> show node type in thingy... (when new AST)
+
+- conversions -> write fct with prio instead of converter ? (2 extra args ? meh)
 
 - [ ] module system rewrite
+    - [ ] types directory
+        - [ ] new write system...
+        - [ ] generate one write_js_op per operator ???
+        - [ ] id 2 name for Editor... (already possible...)
+        - [ ] ! do NOT confuse instance & types...
+        - [ ] => [TypeID symbol]
     - [ ] AST2JS: [] ?
         - [ ] IDX to name (for dev mode -> cf Editor)
             - [ ] decl cstes => map to files...
         - [ ] by hands (?) -too much OP-
-    - [ ] documenter !
+        - [ ] write system changes...
     - [ ] operator system rewrite (do not store op in VALUES!)
-
-- [ ] Webpack merge module : avoid circular deps (?)
-
-- [ ] Restaure Editor
-    - [ ] Tests stats (#lines + excluded)
-- [ ] documenter !
-    - [ ] Production mode
-        - [ ] indentation
-        - [ ] optionnal checks (core_modules)
-        - [ ] JS/PY code positions
-
-- [ ] optimize value usage
-    - [ ] operations (ofc)
-    - [ ] some values store in CHILDREN ? => test perfs other arrays first (float32/int32)
-        - INT/FLOAT/BOOL/FCT/FCT CALL
-    - [ ] replace some values_str by child ast node symbols... (perte 9*8=54bytes/symb mais non-sparse array...) => another tokenizer => ptr to thingy.
+    - [ ] documenter !
 
 - [ ] type system rewrite
-    - [ ] use symbols to not pollute ?
     - [ ] write system rewrite (?) [wait for new Symbols]
         - [ ] do not store lines, get lines once full JS generated.
         - [ ] w do not accept r`` (?) => use another or spread ? (reduce nbrs of conditions).
@@ -55,12 +66,29 @@ TODO:
             - BB() / BE() + w_BR()
             - [ ] avoid Number2Int => BigInt(X) or Number(x) => w_x() ?
 
-- [ ] functions args rewrite (?)
+- [ ] optimize value usage
+    - [ ] operations (ofc)
+    - [ ] some values store in CHILDREN ?
+        - FCT DEF  ? => use Type ID... (can extract name from it)
+        - FCT CALL ? => use Type ID... (can extract type from it)
+            /!\ fct ptr (how to implement it ???)
+    - [ ] when parser :
+        - BOOL : 2 values ?
+        - INT/FLOAT
+        - [ ] replace some values_str by name child ast node (some str ID)?
 
-- write in a stack, then write final str (prevents recursivity ?)
-    [s1, n1, s2]       -> consume... (reverse order for better array)
-    [s3, n2, (s4, s2)] -> needs to reserve space... + merge final str?
-    -> ??? // if (n1) idx_ptr => "empty spaces after consumption..."...
+
+- [ ] documenter !
+    - [ ] Production mode
+        - [ ] indentation
+        - [ ] optionnal checks (core_modules)
+        - [ ] JS/PY code positions
+    - [ ] bry2sbry
+- [ ] Restaure Editor
+    - [ ] Tests stats (#lines + excluded)
+- [ ] Webpack merge module : avoid circular deps (?)
+
+- [ ] functions args rewrite (?)
 
 - [ ] ?
     - [ ] make pages/Editor depends on library (2x) ?

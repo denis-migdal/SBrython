@@ -2,7 +2,7 @@ import Body from "@SBrython/bry2sbry/Body";
 import { CONTROLFLOWS_FOR, CONTROLFLOWS_FOR_RANGE } from "@SBrython/core_modules/lists";
 import { addChild, setType, VALUES } from "@SBrython/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/py2ast";
-import { STYPE_INT } from "@SBrython/structs/STypes";
+import { TYPEID_int } from "@SBrython/types";
 
 export default function convert(dst: number, node: any, context: Context): false|void {
 
@@ -25,7 +25,7 @@ export default function convert(dst: number, node: any, context: Context): false
         return;
     }
 
-    context.local_symbols[node.value] = STYPE_INT;
+    context.local_symbols[node.value] = TYPEID_int;
     // TODO: jsint opti if this.value not used...
 
     const args = node.iter.args;

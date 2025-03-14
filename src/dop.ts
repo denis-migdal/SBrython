@@ -76,10 +76,19 @@ export function parentOPPrio(node: number) {
     return ASTNODES[node * ASTNODE_SIZE + ASTNODE_PARENT_OP_PRIORITY];
 }
 
+export function setFirstChild(parent: number, value: number) {
+    return ASTNODES[parent * ASTNODE_SIZE + ASTNODE_CHILDREN_START] = value;
+}
 export function setType(node: number, value: number) {
     return ASTNODES[node * ASTNODE_SIZE + ASTNODE_TYPE_ID] = value;
 }
 export function setResultType(node: number, value: number) {
+
+    if( Number.isNaN( Number(value) ) ) {
+        console.warn(value);
+        throw new Error("??");
+    }
+
     ASTNODES[node * ASTNODE_SIZE + ASTNODE_RESULT_TYPE] = value;
 }
 export function setParentOPPrio(node: number, value: number) {

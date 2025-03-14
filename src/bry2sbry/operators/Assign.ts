@@ -1,7 +1,7 @@
 import { OPERATORS__EQ, OPERATORS__EQ_INIT } from "@SBrython/core_modules/lists";
 import { addChild, resultType, setResultType, setType, type } from "@SBrython/dop";
 import { Context, convert_node } from "@SBrython/py2ast";
-import { getSTypeID, STYPE_INT, STYPE_JSINT } from "@SBrython/structs/STypes";
+import { TYPEID_int, TYPEID_jsint } from "@SBrython/types";
 
 export default function convert(dst: number, node: any, context: Context): false|void {
 
@@ -30,15 +30,15 @@ export default function convert(dst: number, node: any, context: Context): false
 
     const annotation = node.annotation?.id;
     if( annotation !== undefined)
-        result_type = getSTypeID(annotation);
+        result_type = context.local_symbols[annotation]; //?
 
     if( __DEBUG__ && result_type !== null && result_type !== rtype )
         console.warn("Wrong result_type");
 
     if( result_type === null ) {
         result_type = rtype;
-        if( rtype === STYPE_JSINT)
-            result_type = STYPE_INT; // prevents issues.
+        if( rtype === TYPEID_jsint)
+            result_type = TYPEID_int; // prevents issues.
             //TODO: only if assign...
     }
 
@@ -49,7 +49,6 @@ export default function convert(dst: number, node: any, context: Context): false
         convert_node(coffset+i, targets[i-1], context );
         context.local_symbols[targets[i-1].id] = result_type;
     }
-
 }
 
 // ["Assign", "AnnAssign"];

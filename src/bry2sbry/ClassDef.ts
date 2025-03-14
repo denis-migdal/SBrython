@@ -2,11 +2,11 @@ import Body from "@SBrython/bry2sbry/Body";
 import { CLASS_CLASSDEF } from "@SBrython/core_modules/lists";
 import { addChild, setType, VALUES } from "@SBrython/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/py2ast";
-import { getSTypeID } from "@SBrython/structs/STypes";
+import { addType } from "@SBrython/types/utils/addType";
 
 export default function convert(dst: number, node: any, context: Context) {
 
-    context.local_symbols[node.name] = getSTypeID(node.name);
+    context.local_symbols[node.name] = addType(node.name, {});
     context = new Context("class", context);
 
     if( __DEBUG__ && node.bases.length > 1)

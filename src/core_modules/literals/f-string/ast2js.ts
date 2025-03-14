@@ -1,7 +1,7 @@
 import { set_js_cursor, w } from "@SBrython/ast2js";
 import { LITERALS_F_STRING_FORMATTEDVALUE } from "@SBrython/core_modules/lists";
 import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
-import { STYPE_STR } from "@SBrython/structs/STypes";
+import { TYPEID_str } from "@SBrython/types";
 
 export default function ast2js(node: number) {
 
@@ -12,7 +12,7 @@ export default function ast2js(node: number) {
 
     for(let i = coffset; i < nbChildren + coffset; ++i) {
 
-        if( resultType(i) === STYPE_STR) {
+        if( resultType(i) === TYPEID_str) {
 
             const offset = 4*i;
 

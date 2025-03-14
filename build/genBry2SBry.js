@@ -1,7 +1,5 @@
-import fs   from 'fs/promises';
+import save from "./save.js";
 import {glob} from 'glob';
-
-const encoder = new TextEncoder();
 
 async function getModules(path) {
 
@@ -12,7 +10,7 @@ async function getModules(path) {
     for(let i = 0; i < files.length; ++i) {
         const filepath = files[i];
 
-        if(filepath === "list.ts")
+        if(filepath === "list.ts" || filepath === "index.ts" || filepath === "index.js")
             continue;
 
         const pos = filepath.lastIndexOf("/");
@@ -28,9 +26,7 @@ async function getModules(path) {
 
 function importModules(modules) {
 
-    let result = "";
-
-    result += "export default {\n";
+    let result = "export default {\n";
 
     for(let key in modules)
         result += `\t${key}: require("${modules[key]}").default,\n`;
@@ -40,25 +36,9 @@ function importModules(modules) {
     return result;
 }
 
-async function save(dirpath, content) {
-    const path = `${dirpath}/list.ts`;
-
-    const file = await fs.open(path, "a+");
-
-    const size = (await file.stat()).size;
-    const file_changed = size !== content.length;
-
-    if( file_changed ) {
-        if( size )
-            await file.truncate();
-        await file.write( encoder.encode(content), {position: 0}); // ftruncate doesn't reset position...
-    }
-    await file.close();
-}
-
 async function generateList(path) {
 
-    await save(path, importModules( await getModules(path) ));
+    await save(`${path}/list.ts`, importModules( await getModules(path) ));
 }
 
 export default async function genBry2SBry() {

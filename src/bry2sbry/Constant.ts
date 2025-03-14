@@ -1,7 +1,7 @@
 import { LITERALS_BOOL, LITERALS_FLOAT, LITERALS_INT, LITERALS_NONE, LITERALS_STR } from "@SBrython/core_modules/lists";
 import { setResultType, setType, VALUES } from "@SBrython/dop";
 import { Context } from "@SBrython/py2ast";
-import { STYPE_BOOL, STYPE_FLOAT, STYPE_INT, STYPE_JSINT, STYPE_NONETYPE, STYPE_STR } from "@SBrython/structs/STypes";
+import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NoneType, TYPEID_str } from "@SBrython/types";
 
 export default function convert(dst: number, node: any, _context: Context): false|void {
 
@@ -14,7 +14,7 @@ export default function convert(dst: number, node: any, _context: Context): fals
         if( vtype === "boolean" ) {
 
             setType      (dst, LITERALS_BOOL);
-            setResultType(dst, STYPE_BOOL);
+            setResultType(dst, TYPEID_bool);
             
             VALUES[dst] = value; // TODO: 2 types instead of one ?
 
@@ -24,7 +24,7 @@ export default function convert(dst: number, node: any, _context: Context): fals
         if( vtype === "string") {
         
             setType      (dst, LITERALS_STR);
-            setResultType(dst, STYPE_STR);
+            setResultType(dst, TYPEID_str);
         
             VALUES[dst] = value;
 
@@ -37,7 +37,7 @@ export default function convert(dst: number, node: any, _context: Context): fals
         if( qname === "float") {
         
             setType      (dst, LITERALS_FLOAT);
-            setResultType(dst, STYPE_FLOAT);
+            setResultType(dst, TYPEID_float);
             
             VALUES[dst] = value.value;
 
@@ -47,7 +47,7 @@ export default function convert(dst: number, node: any, _context: Context): fals
         if( qname === "NoneType" ) {
         
             setType      (dst, LITERALS_NONE);
-            setResultType(dst, STYPE_NONETYPE);
+            setResultType(dst, TYPEID_NoneType);
 
             return;
         }
@@ -59,10 +59,10 @@ export default function convert(dst: number, node: any, _context: Context): fals
     setType      (dst, LITERALS_INT);
 
     if( qname === "int" ) { // bigint
-        setResultType(dst, STYPE_INT);
+        setResultType(dst, TYPEID_int);
         VALUES[dst] = value.value;
     } else {
-        setResultType(dst, STYPE_JSINT);
+        setResultType(dst, TYPEID_jsint);
         VALUES[dst] = value;
     }
 }

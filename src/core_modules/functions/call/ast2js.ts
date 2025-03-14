@@ -1,153 +1,145 @@
-import { r, wr } from "@SBrython/ast2js";
+import { r, w_node, w_sns, w_str } from "@SBrython/ast2js";
 import { FUNCTIONS_CALL_KEYWORD } from "@SBrython/core_modules/lists";
 import { firstChild, nbChild, type, VALUES } from "@SBrython/dop";
-import { STypeFct } from "@SBrython/structs/SType";
-
-function print_obj(obj: Record<string, any>) {
-
-    const keys = Object.keys(obj);
-    if(keys.length === 0)
-        return [[]];
-
-    const str = new Array(keys.length+1);
-    str[0] = `{${keys[0]}: `;
-    let i;
-    for(i = 1; i < keys.length; ++i)
-        str[i]  = `, ${keys[i]}: `;
-
-    str[i] = "}";
-
-    return [str, ...Object.values(obj)];
-}
-
-function join(data: any[], sep=", ") {
-
-    if(data.length === 0)
-        return [[""]];
-
-    const str = new Array(data.length+1);
-    str[0] = "";
-    let i;
-    for(i = 1; i < data.length; ++i)
-        str[i] = sep;
-    str[i] = "";
-
-    return [str, ...data];
-}
+import { ARGS_INFO, Callable, Fct, WRITE_CALL } from "@SBrython/types/utils/types";
 
 export function default_call(node: number) {
 
-    const meta = (VALUES[node] as STypeFct).__call__;
+    const meta = (VALUES[node] as Callable).__call__[ARGS_INFO];
 
     const coffset    = firstChild(node);
     const nbChildren = nbChild(node);
 
-    let kw_pos = nbChildren;
-    for(let i = 1; i < nbChildren; ++i)
-        if( type( i + coffset) === FUNCTIONS_CALL_KEYWORD) {
-            kw_pos = i;
+    w_node(coffset);
+    w_str('(');
+
+    const nb_call_args = nbChildren - 1; // could have short if nb_call_args = 0...
+    const call_args_offset  = coffset + 1;
+
+    // nb_pos_call
+    let nb_pos_call = nb_call_args;
+    for(let i = 0; i < nb_call_args; ++i)
+        if( type( i + call_args_offset) === FUNCTIONS_CALL_KEYWORD) {
+            nb_pos_call = i;
             break;
         }
 
-    let nb_pos = meta.idx_end_pos;
-    if( nb_pos === Number.POSITIVE_INFINITY)
-        nb_pos = Math.max(meta.idx_vararg, kw_pos-1);
+    // 1) Consume call pos (nb_pos_call) until max_pos
+    let max_pos = meta.idx_end_pos;
+    const vararg_array = max_pos === Number.POSITIVE_INFINITY && meta.has_kw;
+    if( vararg_array )
+        max_pos = meta.idx_vararg; // vararg_array + max_pos: can be precomputed ?
 
-    let pos_size = nb_pos+1;
-    if( meta.has_kw && meta.idx_end_pos === Number.POSITIVE_INFINITY )
-        pos_size = meta.idx_vararg+2;
-    let pos = new Array(pos_size);
-    
+    const cutoff = Math.min(nb_pos_call, max_pos);
+    for(let i = 0; i < cutoff; ++i) {
+        w_node(i + coffset + 1);
+        w_str(", ");
+    }
+
     const kw    : Record<string, number> = {};
     const kwargs: Record<string, number> = {};
 
-    let has_kw = false;
+    let call_has_kw     = false;
+    let call_has_kwargs = false;
 
-    if( meta.has_kw && meta.idx_end_pos === Number.POSITIVE_INFINITY ) {
+    const pos        = new Array(Math.max(meta.idx_vararg - cutoff,0));
 
-        const cutoff = Math.min(kw_pos, meta.idx_vararg);
+    // 2) If (...pos, [vargars], ...)
+    if(vararg_array) {
+        const varg_start = meta.idx_vararg;
+        const varg_nb    = nb_pos_call - varg_start;
 
-        for(let i = 1; i < cutoff; ++i)
-            pos[i-1] = i + coffset;
+        if( varg_nb > 0 ) { // we have varargs to write...
 
-        const varg_start = meta.idx_vararg+1;
-        const varg_nb = kw_pos - varg_start;
-        if( varg_nb !== 0 ) {
+            w_str("[");
 
-            // template string... [ [..str], ...idx ]
-            // => [ (a), (b), (c), (d) ] ...
-            let str = new Array(varg_nb + 1);
-            let idx = new Array(varg_nb + 1);
-
-            str[0]       = "[";
-
-            idx[0]       = str;
-            idx[1]       = coffset + varg_start;
+            w_node(varg_start + call_args_offset);
+            
             for(let i = 1; i < varg_nb; ++i) {
-                str[i]  = ", ";
-                idx[i+1]= coffset + varg_start + i;
+                w_str(", ");
+                w_node(i + varg_start + call_args_offset );
             }
 
-            str[varg_nb] = "]"; // prevents sparse array ?
+            w_str("]");
         }
     } else {
-
-        const cutoff = Math.min(kw_pos, nb_pos+1);
-
-        for(let i = 1; i < cutoff; ++i)
-            pos[i-1] = i + coffset;
-
+        // WHY ???
         const args_names = meta.args_names;
-        for(let i = cutoff; i < kw_pos; ++i)
+        for(let i = cutoff; i < nb_pos_call; ++i)
             kw[ args_names[i-1] ] = i + coffset;
 
-        has_kw = cutoff !== kw_pos;
+        call_has_kw = cutoff !== nb_pos_call;
     }
-
-    let has_kwargs = false;
-
+    // 3) process call kw...
     const args_pos = meta.args_pos;
-    
 
-    for(let i = kw_pos; i < nbChildren; ++i) {
+    for(let i = nb_pos_call; i < nb_call_args; ++i) {
 
         const arg  = i + coffset;
         const name = VALUES[arg];
         const idx  = args_pos[ name ];
 
-        if( idx >= 0 ) {
-            pos[idx] = arg;
+        if( idx >= 0 ) { // pos args given by kw...
+            pos[idx - cutoff] = arg;
             continue;
         }
 
-        has_kw = true;
+        call_has_kw = true;
 
         if( idx === -1)
             kw[name] = arg;
         else {
             kwargs[name] = arg;
-            has_kwargs = true;
+            call_has_kwargs = true;
         }
     }
 
-    let obj: Record<string, any> = kw;
-    //TODO: only the ones at -1...
-    if( has_kwargs && ! meta.has_kw ){
-        obj = kwargs;
-    } else if( has_kwargs ) {
-        obj[meta.kwargs!] = print_obj(kwargs);
+    // do not print useless "undefined"
+    if( !call_has_kw && ! call_has_kwargs ) {
+        let i;
+        for(i = pos.length - 1; i >= 0; --i) {
+            if( pos[i] !== undefined)
+                break;
+        }
+        pos.length = i+1;
     }
 
-    if( has_kw )
-        pos[pos.length-1] = print_obj(obj);
-    else {
-        while(pos.length > 0 && pos[pos.length-1] === undefined)
-            --pos.length;
+    // write pos given by call kw...
+    for(let i = 0; i < pos.length; ++i) {
+        const arg = pos[i];
+        if( arg === undefined )
+            w_str("undefined, ");
+        else {
+            w_node(arg);
+            w_str(", ");
+        }
     }
 
-    return r`${coffset}(${join(pos)})`; // args ?
+    if( call_has_kw ) {
+        w_str("{");
+        for(let key in kw)
+            w_sns(`${key}: `, kw[key], ", ");
+
+        if( call_has_kwargs ) {
+            w_str(`${meta.kwargs}: {`);
+            for(let key in kwargs)
+                w_sns(`${key}: `, kwargs[key], ", ");
+            w_str("}");
+        }
+
+        w_str("},");
+    }
+
+    if( ! meta.has_kw && call_has_kwargs ) {
+        w_str(`{`);
+        for(let key in kwargs)
+            w_sns(`${key}: `, kwargs[key], ", ");
+        w_str("}");
+    }
+
+    w_str(')');
 }
 
 export default function ast2js(node: number) {
-    wr( (VALUES[node] as STypeFct).__call__.substitute_call!(node) );
+    (VALUES[node] as Callable).__call__[WRITE_CALL]!(node);
 }

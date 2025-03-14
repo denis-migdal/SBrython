@@ -1,11 +1,12 @@
 import { Context, set_py_code_from_list } from "@SBrython/py2ast";
-import { STypeFct } from "@SBrython/structs/SType";
-import { getSTypeID, STypes } from "@SBrython/structs/STypes";
 import { default_call } from "@SBrython/core_modules/functions/call/ast2js";
 import { convert_args } from "./Args";
 import { FUNCTIONS_DEF } from "@SBrython/core_modules/lists";
 import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
 import Body from "@SBrython/bry2sbry/Body";
+
+import Types from "@SBrython/types/list";
+import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "@SBrython/types/utils/types";
 
 const FAKE_RETURN_NODE = {
     constructor: {
@@ -21,8 +22,9 @@ function generate(dst: number, node: any, context: Context) {
     const coffset = addChild(dst, 2);
 
     // fuck...
-    const stype   = STypes[rtype] as STypeFct;
-    const meta    = stype.__call__;
+    const stype   = Types[rtype] as Callable;
+    const call    = stype.__call__;
+    const meta    = call[ARGS_INFO];
 
     // new context for the function local variables
     context = new Context("fct", context);
@@ -39,13 +41,13 @@ function generate(dst: number, node: any, context: Context) {
     // tell body this function has been generated.
     meta.generate = undefined;
     // prevents recursive calls or reaffectation.
-    meta.return_type = undefined as any;
+    call[RETURN_TYPE] = undefined as any;
 
     const annotation = node.returns?.id;
     if( annotation !== undefined ) {
-        let fct_return_type = getSTypeID(annotation);
+        let fct_return_type = context.local_symbols[annotation]; // ?
         // force the type.
-        meta.return_type = () => fct_return_type!;
+        call[RETURN_TYPE] = () => fct_return_type!;
     }
 
     // implicit return...
@@ -76,25 +78,28 @@ export default function convert(dst: number, node: any, context: Context) {
 
     //const isMethod = context.type === "class";
 
-    const SType_fct: STypeFct = {
+    const SType_fct: Callable = {
         __name__: "function",
         __call__: {
-            args_names     : new Array(node.args.args.length+node.args.posonlyargs.length),
-            args_pos       : {},
-            idx_end_pos    : -1,
-            idx_vararg     : -1,
-            has_kw         : false,
-            generate,
-            return_type    : () => {
+            [RETURN_TYPE]: () => {
                 generate(dst, node, context); // should be the new context
-                return SType_fct.__call__.return_type();
+                return SType_fct.__call__[RETURN_TYPE]();
             },
-            substitute_call: default_call
+            [WRITE_CALL]: default_call,
+            [ARGS_INFO]: {
+                //TODO...
+                args_names     : new Array(node.args.args.length+node.args.posonlyargs.length),
+                args_pos       : {},
+                idx_end_pos    : -1,
+                idx_vararg     : -1,
+                has_kw         : false,
+                generate,
+            }
         }
     }
 
-    const STypeID = STypes.length;
-    STypes[STypeID] = SType_fct;
+    const STypeID = Types.length;
+    Types[STypeID] = SType_fct;
 
     //if( ! isMethod ) {
     // if method add to self_context.symbols ?

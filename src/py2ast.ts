@@ -1,10 +1,14 @@
-import { STypeFctSubs } from "@SBrython/structs/SType";
-import { addSType, getSTypeID, STypes } from "@SBrython/structs/STypes";
-import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, VALUES} from "@SBrython/dop";
+import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, type, VALUES} from "@SBrython/dop";
 import { RET_INT, RETURN_TYPE_FCT } from "@SBrython/structs/ReturnTypeFcts";
 
 import BRY2SBRY from "./bry2sbry/list";
 import Body from "./bry2sbry/Body";
+import { method_wrapper } from "./types/utils/methods";
+import { addType } from "./types/utils/addType";
+import { TYPEID_type_float_, TYPEID_type_int_, TYPEID_type_str_ } from "./types";
+
+import Types from "@SBrython/types/list";
+import { WRITE_CALL } from "./types/utils/types";
 
 export type AST = {
     nodes   : typeof ASTNODES,
@@ -12,9 +16,10 @@ export type AST = {
 }
 
 export function printNode(id: number) {
+
     console.warn({
-        type     : ASTNODES[ASTNODE_SIZE*id+ASTNODE_TYPE_ID],
-        ret_type : STypes[ASTNODES[ASTNODE_SIZE*id+ASTNODE_RESULT_TYPE]],
+        type     : type(id),
+        ret_type : Types[resultType(id)].__name__,
         value    : VALUES[id],
     });
 }
@@ -173,31 +178,23 @@ function genUnaryOpFct(name: string, return_type: RETURN_TYPE_FCT) {
     return {
         __class__: type_fct,
         __name__ : name,
-        __call__ : {
-            //TODO: I need a self...
-            return_type    : return_type,
-            // not really :?
-            substitute_call: (call: number) => {
-                const left   = firstChild(call)+1;
-                const method = STypes[resultType(left)]![opname] as STypeFctSubs;
-                return method.substitute_call!(call);
-            }
-        }
+        __call__ : method_wrapper(return_type, (call: number) => {
+            const left   = firstChild(call)+1;
+            const method = Types[resultType(left)]![opname];
+            return method[WRITE_CALL](call);
+        })
     }
 }
-
-//TODO: not a type !!!
-const len = addSType("len", genUnaryOpFct("len", RET_INT));
 
 // builtin symbols.
 // @ts-ignore
 const RootContext: Context = {
     type: "?" as const,
     local_symbols: {
-        int  : getSTypeID('type[int]'),
-        str  : getSTypeID('type[str]'),
-        float: getSTypeID('type[float]'),
-        len,
+        int  : TYPEID_type_int_,
+        str  : TYPEID_type_str_,
+        float: TYPEID_type_float_,
+        len  : addType("len", genUnaryOpFct("len", RET_INT)) //TODO...
 
         // add functions like len() / pow() / divmod()
     }

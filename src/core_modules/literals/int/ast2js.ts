@@ -1,12 +1,12 @@
 import { w } from "@SBrython/ast2js";
 import { resultType, VALUES } from "@SBrython/dop";
-import { STYPE_INT } from "@SBrython/structs/STypes";
+import { TYPEID_int } from "@SBrython/types";
 
 export default function ast2js(node: number) {
 
     let value = VALUES[node];
 
-    if( resultType(node) === STYPE_INT ) {
+    if( resultType(node) === TYPEID_int ) {
         // force str write (else might assume this is an AST node ID)...
         w(`${value}n`); 
         return;

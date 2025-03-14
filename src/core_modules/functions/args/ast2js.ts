@@ -1,18 +1,18 @@
-import { set_js_cursor, w, wr, wt } from "@SBrython/ast2js";
+import { set_js_cursor, w_node, w_str } from "@SBrython/ast2js";
 import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
-import { binary_jsop, Number2Int } from "@SBrython/structs/BinaryOperators";
-import { STypeFct } from "@SBrython/structs/SType";
-import { STYPE_JSINT } from "@SBrython/structs/STypes";
 import { FUNCTIONS_ARGS_KWARG, FUNCTIONS_ARGS_VARG } from "@SBrython/bry2sbry/functions/Args";
+import { TYPEID_jsint } from "@SBrython/types";
+import { Number2Int } from "@SBrython/structs/Converters";
+import { ARGS_INFO, Callable } from "@SBrython/types/utils/types";
 
 export default function ast2js(node: number) {
     
     const coffset    = firstChild(node);
     const nbChildren = nbChild(node);
 
-    const SType_fct = VALUES[node]! as STypeFct;
+    const SType_fct = VALUES[node]! as Callable;
 
-    const meta = SType_fct.__call__;
+    const meta = SType_fct.__call__[ARGS_INFO];
 
     let kw_start = meta.idx_end_pos;
     if( kw_start === Number.POSITIVE_INFINITY )
@@ -23,17 +23,17 @@ export default function ast2js(node: number) {
     
     for(let i = 0 ; i < nbChildren ; ++i) {
         if( i !== 0)
-            w(", ");
+            w_str(", ");
 
         if( kw_start === i)
-            w("{");
+            w_str("{");
 
         const isLast = i === meta.idx_vararg && i === nbChildren-1;
         write_arg(i + coffset, isLast);
     }
 
     if( kw_start < nbChildren)
-        w('} = {}');
+        w_str('} = {}');
 }
 
 function write_arg(node: number, isLast: boolean) {
@@ -46,20 +46,21 @@ function write_arg(node: number, isLast: boolean) {
 
     if( type_id === FUNCTIONS_ARGS_VARG ) {
         if( isLast )
-            wt`...${name}`;
+            w_str(`...${name}`);
         else
-            wr( binary_jsop(node, name, '=', "[]") );
+            w_str(`${name} = []`);
     } else if( type_id === FUNCTIONS_ARGS_KWARG ) {
-        wr( binary_jsop(node, name, '=', "{}") );
+        w_str(`${name} = {}`);
     } else if( nbChild(node) === 1 ) {
 
         let defval: any = firstChild(node);
-        if( resultType(defval) === STYPE_JSINT )
+        if( resultType(defval) === TYPEID_jsint )
             defval = Number2Int(defval);
 
-        wr( binary_jsop(node, name, '=', defval) );
+        w_str(`${name} = `);
+        w_node(defval);
     }else {
-        w(name);
+        w_str(name);
     }
 
     if( __DEBUG__ ) set_js_cursor(offset + CODE_END);

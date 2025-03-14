@@ -2,7 +2,7 @@ import { OPERATORS_COMPARE } from "@SBrython/core_modules/lists";
 import { addChild, setResultType, setType, VALUES } from "@SBrython/dop";
 import { Context, convert_node } from "@SBrython/py2ast";
 import { bname2pyname } from "@SBrython/structs/BinaryOperators";
-import { STYPE_BOOL } from "@SBrython/structs/STypes";
+import { TYPEID_bool } from "@SBrython/types";
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -21,7 +21,7 @@ export default function convert(dst: number, node: any, context: Context) {
     VALUES[dst] = ops;
 
     setType(dst, OPERATORS_COMPARE);
-    setResultType(dst, STYPE_BOOL);
+    setResultType(dst, TYPEID_bool);
     const nbChildren = node.comparators.length + 1;
     const coffset = addChild(dst, nbChildren);
 

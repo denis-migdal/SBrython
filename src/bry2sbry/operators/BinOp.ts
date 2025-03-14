@@ -1,9 +1,10 @@
 import { Context, convert_node, swapASTNodes } from "@SBrython/py2ast";
-import { STypeFctSubs } from "@SBrython/structs/SType";
 import { bname2pyname, reversed_operator } from "@SBrython/structs/BinaryOperators";
-import { STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
 import { OPERATORS_BINARY } from "@SBrython/core_modules/lists";
 import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
+import { TYPEID_NotImplementedType } from "@SBrython/types";
+import Types from "@SBrython/types/list";
+import { Fct, RETURN_TYPE } from "@SBrython/types/utils/types";
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -22,21 +23,23 @@ export default function convert(dst: number, node: any, context: Context) {
     const ltype = resultType(coffset);
     const rtype = resultType(coffset+1);
 
-    let type = STYPE_NOT_IMPLEMENTED;
-    let method = STypes[ltype]?.[op] as STypeFctSubs;
+    let type = TYPEID_NotImplementedType;
+    let method = Types[ltype][op] as Fct;
 
     if( method !== undefined )
-        type = method.return_type(rtype);
+        type = method[RETURN_TYPE](rtype);
 
     // try reversed operator
-    if( type === STYPE_NOT_IMPLEMENTED) {
+    if( type === TYPEID_NotImplementedType) {
         op     = reversed_operator(op as Parameters<typeof reversed_operator>[0]);
-        method = STypes[rtype]?.[op] as STypeFctSubs;
+        
+        method = Types[rtype][op] as Fct;
         if( method !== undefined)
-            type   = method.return_type(ltype!);
+            type   = method[RETURN_TYPE](ltype!);
 
-        if( __DEBUG__ && type === STYPE_NOT_IMPLEMENTED)
-            throw new Error(`${rtype} ${op} ${ltype} NOT IMPLEMENTED!`);
+        if( __DEBUG__ && type === TYPEID_NotImplementedType) {
+            throw new Error(`${Types[rtype].__name__} ${op} ${Types[ltype].__name__} NOT IMPLEMENTED!`);
+        }
 
         swapASTNodes(coffset, coffset+1); // costly, use 2 ast2js instead ?
     }

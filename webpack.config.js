@@ -2,6 +2,7 @@ import webpack from 'webpack';
 
 import buildConfigs from "./build/WebpackFramework/index.js";
 import genBry2SBry  from "./build/genBry2SBry.js";
+import genTypes     from "./build/genTypes.js";
 
 export default async function(...args) {
 	
@@ -25,7 +26,10 @@ export default async function(...args) {
 	cfg_debug.plugins.push({
 		apply: (compiler) => {
 			compiler.hooks.compile.tap("MyPlugin_compile", async () => {
-				await genBry2SBry();
+				await Promise.all([
+					genBry2SBry(),
+					genTypes(),
+				]);
 				//genCoreModuleList();
 				//genCoreRuntimeList();
 			});

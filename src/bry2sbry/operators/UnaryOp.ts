@@ -1,9 +1,10 @@
 import { Context, convert_node } from "@SBrython/py2ast";
-import { STypeFctSubs } from "@SBrython/structs/SType";
 import { bname2pyname } from "@SBrython/structs/BinaryOperators";
-import { STYPE_BOOL, STYPE_NOT_IMPLEMENTED, STypes } from "@SBrython/structs/STypes";
 import { OPERATORS_UNARY } from "@SBrython/core_modules/lists";
 import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/dop";
+import { TYPEID_bool, TYPEID_int, TYPEID_NotImplementedType } from "@SBrython/types";
+import Types from "@SBrython/types/list";
+import { Fct, RETURN_TYPE } from "@SBrython/types/utils/types";
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -21,20 +22,21 @@ export default function convert(dst: number, node: any, context: Context) {
 
     VALUES[dst] = op;
 
-    if( op === 'not') {
-
-        setResultType(dst, STYPE_BOOL);
+    if( op === 'not') { // logical not
+        setResultType(dst, TYPEID_bool);
         return;
     }
 
-    let type = STYPE_NOT_IMPLEMENTED;
-    let method = STypes[resultType(coffset)]?.[op] as STypeFctSubs;
+    let type = TYPEID_NotImplementedType;
+    let method = Types[resultType(coffset)][op] as Fct;
 
     if( method !== undefined )
-        type = method.return_type();
+        type = method[RETURN_TYPE]();
 
-    if( __DEBUG__ && type === STYPE_NOT_IMPLEMENTED)
-        throw new Error(`${op} ${resultType(coffset)} NOT IMPLEMENTED!`);
+    if( __DEBUG__ && type === TYPEID_NotImplementedType) {
+        console.warn(Types[resultType(coffset)].__name__);
+        throw new Error(`${op} ${Types[resultType(coffset)].__name__} NOT IMPLEMENTED!`);
+    }
 
     setResultType(dst, type);
 }

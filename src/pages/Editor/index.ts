@@ -72,7 +72,12 @@ function oneTimeExec(fullcode: string) {
     clearResults();
 
     generate(fullcode, results);
-    execute(results);
+
+    try {
+        execute(results);
+    } catch(e) {
+        console.warn(e);
+    }
 
     //TODO: AST+code trees...
 
@@ -356,12 +361,15 @@ function startTests(test_name: string, merge: boolean) {
         for(let j = 0; j < subtests.length; ++j) {
 
             ++id;
-            if( id === 5 )
-                continue;
 
             if( subtests[j] === "")
                 continue;
-        
+       
+            if( id === 5) { // || id > 121) {
+                //console.warn("ignored", id);
+                continue;
+            }
+            
             const indented_code = subtests[j].split('\n').map(e => `\t${e}`).join('\n');
             fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
         }
@@ -375,6 +383,7 @@ function startTests(test_name: string, merge: boolean) {
     */
 
     generate(fullcode, results);
+
     execute(results);
     
     //TODO

@@ -1,12 +1,11 @@
-import { wr } from "@SBrython/ast2js";
 import { firstChild, resultType, VALUES } from "@SBrython/dop";
-import { STypeFctSubs } from "@SBrython/structs/SType";
-import { STypes } from "@SBrython/structs/STypes";
+import Types from "@SBrython/types/list";
+import { WRITE_CALL } from "@SBrython/types/utils/types";
 
 export default function ast2js(node: number) {
 
     const coffset = firstChild(node);
     
-    const method = STypes[resultType(coffset)]![VALUES[node]] as STypeFctSubs;
-    wr( method.substitute_call!(node, coffset, coffset+1) );
+    const method = Types[resultType(coffset)]![VALUES[node]];
+    method[WRITE_CALL]!(node, coffset, coffset+1);
 }

@@ -2,6 +2,8 @@ import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
 import { buildJSCode } from "@SBrython/ast2js";
 import { buildPyCode } from "@SBrython/py2ast";
 
+import Types from "@SBrython/types/list";
+
 type CodePos = {
     line: number,
     col : number
@@ -27,7 +29,7 @@ export default function astnode2tree(id = 0): NODE {
 
     return {
         type: ''+type(id), // TODO convert
-        result_type: ''+resultType(id), // TODO convert
+        result_type: Types[resultType(id)]?.__name__,
         value      : VALUES[id],
         jscode  : buildJSCode(id),
         pycode  : buildPyCode(id),

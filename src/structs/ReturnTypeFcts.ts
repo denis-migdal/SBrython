@@ -1,58 +1,59 @@
-import { STYPE_NOT_IMPLEMENTED, STYPE_BOOL, STYPE_FLOAT, STYPE_INT, STYPE_STR, STYPE_JSINT } from "./STypes";
+import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType, TYPEID_str } from "@SBrython/types";
 
 export type RETURN_TYPE_FCT = (o: number) => number;
 
 export function RET_IJBF2BOOL(o: number) {
-    if( STYPE_INT <= o && o <= STYPE_FLOAT)
-        return STYPE_BOOL;
-    return STYPE_NOT_IMPLEMENTED;
+    if( TYPEID_int <= o && o <= TYPEID_float)
+        return TYPEID_bool;
+    return TYPEID_NotImplementedType;
 }
 
 export function RET_IJBF2FLOAT(o: number) {
-    if( STYPE_INT <= o && o <= STYPE_FLOAT)
-        return STYPE_FLOAT;
-    return STYPE_NOT_IMPLEMENTED;
+    if( TYPEID_int <= o && o <= TYPEID_float)
+        return TYPEID_float;
+    return TYPEID_NotImplementedType;
 }
 
 export function RET_JSINT2JSINT(o: number) {
-    if( o === STYPE_JSINT)
-        return STYPE_JSINT;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_jsint)
+        return TYPEID_jsint;
+    return TYPEID_NotImplementedType;
+}
+
+export function RET_IJB2INT(o: number) {
+    if( o >= TYPEID_int && o <= TYPEID_bool)
+        return TYPEID_int;
+    return TYPEID_NotImplementedType;
 }
 
 export function RET_IJ2INT(o: number) {
-    if( o === STYPE_INT || o === STYPE_JSINT)
-        return STYPE_INT;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_int || o === TYPEID_jsint)
+        return TYPEID_int;
+    return TYPEID_NotImplementedType;
 }
 export function RET_INT2INT(o: number) {
-    if( o === STYPE_INT)
-        return STYPE_INT;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_int)
+        return TYPEID_int;
+    return TYPEID_NotImplementedType;
 }
 
 export function RET_STR2BOOL(o: number) {
-    if( o === STYPE_STR )
-        return STYPE_BOOL;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_str )
+        return TYPEID_bool;
+    return TYPEID_NotImplementedType;
 }
 export function RET_STR2STR(o: number) {
-    if( o === STYPE_STR )
-        return STYPE_STR;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_str )
+        return TYPEID_str;
+    return TYPEID_NotImplementedType;
 }
 export function RET_IJ2STR(o: number) {
-    if( o === STYPE_INT || o === STYPE_JSINT )
-        return STYPE_STR;
-    return STYPE_NOT_IMPLEMENTED;
+    if( o === TYPEID_int || o === TYPEID_jsint )
+        return TYPEID_str;
+    return TYPEID_NotImplementedType;
 }
 
-export function RET_FLOAT(_: number) { return STYPE_FLOAT; }
-export function RET_INT  (_: number) { return STYPE_INT;   }
-export function RET_JSINT(_: number) { return STYPE_JSINT; }
-export function RET_STR  (_: number) { return STYPE_STR;   }
-
-//TODO...
-export function generate_return_type() {
-
-}
+export function RET_FLOAT(_: number) { return TYPEID_float; }
+export function RET_INT  (_: number) { return TYPEID_int;   }
+export function RET_JSINT(_: number) { return TYPEID_jsint; }
+export function RET_STR  (_: number) { return TYPEID_str;   }
