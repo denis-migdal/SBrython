@@ -1,5 +1,5 @@
-import { r } from "@SBrython/ast2js";
-import { firstChild, nbChild, parentOPPrio, setParentOPPrio } from "@SBrython/dop";
+import { w_node, w_str } from "@SBrython/ast2js";
+import { firstChild, nbChild, setParentOPPrio } from "@SBrython/dop";
 
 // current
     // astname => pyname (bname2pyname)
@@ -312,7 +312,7 @@ export function reversed_operator<T extends keyof typeof BinaryOperators>(op: T)
 const LEFT  = 1;
 const RIGHT = 2;
 
-export function multi_jsop(node: number, op: string ) {
+export function write_multi_jsop(node: number, op: string ) {
 
     const first      = firstChild(node);
     const nbChildren = nbChild(node); 
@@ -325,14 +325,19 @@ export function multi_jsop(node: number, op: string ) {
     for(let i = 1; i < nbChildren; ++i)
         setParentOPPrio( first + i, prio + 1 );
 
-    let result = r`${first}`;
-    for(let i = 1; i < nbChildren; ++i)
-        result = r`${result} && ${first + i}`; //TODO: better...
+    const parenthesis = p_prio < prio;
+    if( parenthesis )
+        w_str("(");
 
-    if( p_prio < prio )
-        result = r`(${result})`;
+    w_node(first);
 
-    return result;
+    for(let i = 1; i < nbChildren; ++i) {
+        w_str(' && ');
+        w_node(first+1);
+    }
+
+    if( parenthesis )
+        w_str(")");
 }
 
 export const CMPOPS_LIST = ['==', '!=', '>', '<', '>=', '<='] as const;

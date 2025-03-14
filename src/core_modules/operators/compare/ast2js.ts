@@ -1,4 +1,4 @@
-import { w } from "@SBrython/ast2js";
+import { w_str } from "@SBrython/ast2js";
 import { firstChild, resultType, VALUES } from "@SBrython/dop";
 import { reversed_operator } from "@SBrython/structs/BinaryOperators";
 import { write_binary_jsop } from "@SBrython/structs/operators/binary";
@@ -52,7 +52,7 @@ export default function ast2js(node: number) {
 
     for(let i = 0; i < value.length; ++i) {
         if( i !== 0 )
-            w(' && ');
+            w_str(' && ');
 
         const op    = value[i];
         const left  = i+coffset;

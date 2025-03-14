@@ -1,5 +1,5 @@
-import { w } from "@SBrython/ast2js";
+import { w_str } from "@SBrython/ast2js";
 
 export default function ast2js(node: number) {
-    w("null");
+    w_str("null");
 }

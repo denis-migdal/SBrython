@@ -1,15 +1,17 @@
-import { NL, wt } from "@SBrython/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/ast2js";
 import { firstChild, nbChild, VALUES } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
 
-    let base: string|number = "_r_.object";
-
     const body       = firstChild(node);
     const nbChildren = nbChild(node);
 
-    if( nbChildren === 2)
-        base = body+1;
+    w_str(`class ${VALUES[node]} extends `);
 
-    wt`class ${VALUES[node]} extends ${base} {${body}${NL}}`;
+    if( nbChildren === 2)
+        w_node(body+1);
+    else
+        w_str("_r_.object");
+
+    w_sns("{", body, "}");
 }

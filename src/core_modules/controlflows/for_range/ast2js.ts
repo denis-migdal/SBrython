@@ -1,4 +1,4 @@
-import { NL, wt } from "@SBrython/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/ast2js";
 import { firstChild, nbChild, VALUES } from "@SBrython/dop";
 import { Number2Int } from "@SBrython/structs/Converters";
 
@@ -9,19 +9,26 @@ export default function ast2js(node: number) {
     const body       = firstChild(node);
     const nbChildren = nbChild(node);
 
-    let beg : string|number|any  = "0n";
-    let incr: string|number|any  = "1n";
-
     let end = Number2Int(body+1);
 
+    w_str(`for(var ${idx} = `);
+
     if( nbChildren > 2) {
-        beg = end;
+
+        w_node(end); // finally it was beg
         end = Number2Int(body+1);
+
+    } else {
+        w_str("0n");
     }
 
-    if( nbChildren === 4)
-        incr = Number2Int(body+2);
+    w_sns(`; ${idx} < `, end, `; ${idx} += `);
 
-    //TODO...
-    return wt`for(var ${idx} = ${beg}; ${idx} < ${end}; ${idx} += ${incr}){${body}${NL}}`;
+    if( nbChildren === 4) {
+        w_node( Number2Int(body+2) );
+    } else {
+        w_str("1n");
+    }
+
+    w_sns("){", body, "}");
 }

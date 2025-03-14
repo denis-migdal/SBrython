@@ -1,12 +1,12 @@
-import { w } from "@SBrython/ast2js";
+import { w_str } from "@SBrython/ast2js";
 import { VALUES } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
 
     const value = VALUES[node];
     
-    w(value[0])
+    w_str(value[0])
 
     if( value[1] !== undefined)
-        w(": ", value[1]);
+        w_str(": " + value[1]);
 }

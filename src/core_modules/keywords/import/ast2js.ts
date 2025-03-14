@@ -1,25 +1,23 @@
-import { w, wt } from "@SBrython/ast2js";
+import { w_node, w_str } from "@SBrython/ast2js";
 import { firstChild, nbChild, VALUES } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
 
-    w("const {");
+    w_str("const {");
 
     const coffset = firstChild(node);
     const nbChildren = nbChild(node);
 
     for(let i = 0; i < nbChildren; ++i) {
-        if( i !== 0)
-            w(", ");
-        w(i + coffset);
+        w_node(i + coffset); w_str(", ");
     }
 
-    w('} = ');
+    w_str('} = ');
 
     const value = VALUES[node];
     
     if(value === null)
-        w("__SBRYTHON__.getModules()");
+        w_str("__SBRYTHON__.getModules()");
     else
-        wt`__SBRYTHON__.getModule("${value}")`;
+        w_str(`__SBRYTHON__.getModule("${value}")`);
 }

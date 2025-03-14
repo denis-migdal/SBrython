@@ -1,4 +1,4 @@
-import { r, w_node, w_sns, w_str } from "@SBrython/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/ast2js";
 import { FUNCTIONS_CALL_KEYWORD } from "@SBrython/core_modules/lists";
 import { firstChild, nbChild, type, VALUES } from "@SBrython/dop";
 import { ARGS_INFO, Callable, Fct, WRITE_CALL } from "@SBrython/types/utils/types";

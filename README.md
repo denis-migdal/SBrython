@@ -21,62 +21,26 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 
 
            __DEBUG__  py2ast cond.    bry2sbry    (type system+write system)
-3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.160ms
-2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 2.000ms
-
-(type system+write system) => may have desoptimized args writting (hard...)
+3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.060ms
+2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms
 
 + some logical fixes
 -> cleaner code + more easier to extend to be more python-compliant.
 Limits : type unions/deduction + unknown type (bigger runtime) + (?)
 
+- when parser
+    -> values store
+    -> fcts args
+
 TODO:
-- problème : fct call disappeared...
-
--> then
-    -> .js lib for prod... (to measure size...)
-    -> new write system everywhere
-    -> new ast2js directory...
-    -> new op system...
-        - compare operator : reversed => handle it in ast2js ???
-    -> show node type in thingy... (when new AST)
-
-- conversions -> write fct with prio instead of converter ? (2 extra args ? meh)
-
 - [ ] module system rewrite
-    - [ ] types directory
-        - [ ] new write system...
-        - [ ] generate one write_js_op per operator ???
-        - [ ] id 2 name for Editor... (already possible...)
-        - [ ] ! do NOT confuse instance & types...
-        - [ ] => [TypeID symbol]
     - [ ] AST2JS: [] ?
         - [ ] IDX to name (for dev mode -> cf Editor)
             - [ ] decl cstes => map to files...
         - [ ] by hands (?) -too much OP-
-        - [ ] write system changes...
-    - [ ] operator system rewrite (do not store op in VALUES!)
+    - [ ] operator system rewrite (do not store op in VALUES!) [ou after ?]
+        - compare operator : reversed => handle it in ast2js ???
     - [ ] documenter !
-
-- [ ] type system rewrite
-    - [ ] write system rewrite (?) [wait for new Symbols]
-        - [ ] do not store lines, get lines once full JS generated.
-        - [ ] w do not accept r`` (?) => use another or spread ? (reduce nbrs of conditions).
-            - [ ] w_str(1) / w_node(1) / w_sn(str, node, str, node) (do I need w_ns ?).
-            - BB() / BE() + w_BR()
-            - [ ] avoid Number2Int => BigInt(X) or Number(x) => w_x() ?
-
-- [ ] optimize value usage
-    - [ ] operations (ofc)
-    - [ ] some values store in CHILDREN ?
-        - FCT DEF  ? => use Type ID... (can extract name from it)
-        - FCT CALL ? => use Type ID... (can extract type from it)
-            /!\ fct ptr (how to implement it ???)
-    - [ ] when parser :
-        - BOOL : 2 values ?
-        - INT/FLOAT
-        - [ ] replace some values_str by name child ast node (some str ID)?
-
 
 - [ ] documenter !
     - [ ] Production mode
@@ -84,16 +48,11 @@ TODO:
         - [ ] optionnal checks (core_modules)
         - [ ] JS/PY code positions
     - [ ] bry2sbry
-- [ ] Restaure Editor
-    - [ ] Tests stats (#lines + excluded)
 - [ ] Webpack merge module : avoid circular deps (?)
 
-- [ ] functions args rewrite (?)
-
-- [ ] ?
+- [ ] Restaure Editor
+    - [ ] Tests stats (#lines + excluded)
     - [ ] make pages/Editor depends on library (2x) ?
-    - [ ] Terser : not properly inlined ??? constant ???
-    - [ ] Dev mode only: asserts / __debug__ false
 
 1. AST2JS
 2. tokens2AST
@@ -103,6 +62,10 @@ TODO:
 => AoT WASM output => https://webassembly.github.io/spec/core/binary/index.html
     => easier than to write it directly in binary.
 => TS output ?
+
+- [ ] ?
+    - [ ] Terser : not properly inlined ??? constant ???
+    - [ ] Dev mode only: asserts / __debug__ false
 
 ==== PARSER ====
 
@@ -119,6 +82,21 @@ TODO:
 - string parsing.
 - numbers
 - ()
+
+
+- [ ] functions args rewrite (?)
+    -> precompute some vals
+    -> better algo ?
+    -> opti call args parsing... (write_call => depends on fct shape ?)
+- [ ] optimize value usage (when parser)
+    - [ ] some values store in CHILDREN ?
+        - FCT DEF  ? => use Type ID... (can extract name from it)
+        - FCT CALL ? => use Type ID... (can extract type from it)
+            /!\ fct ptr (how to implement it ???)
+        - BOOL : 2 values ?
+        - INT/FLOAT
+        - [ ] replace some values_str by name child ast node (some str ID)?
+
 
 ====
 

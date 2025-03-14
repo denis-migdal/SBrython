@@ -39,14 +39,11 @@ function new_jscode(filename: string) {
     }
 }
 
-type Printable = {toString(): string};
-
 let indent = "    ";
-let cur_indent_level = 0;
+let cur_indent_level = -1;
 //let cur_indent = "";
 
 const indents = __DEBUG__ ? [
-    "",
     "",
     indent,
     indent+=indent,
@@ -60,36 +57,23 @@ const indents = __DEBUG__ ? [
     indent+=indent,
 ] : null;
 
-export const NL = {
-    toString: function() {
+export function w_NL() {
 
-        if( __DEBUG__ ) {
-            ++CURSOR[CODE_LINE];
-            CURSOR[CODE_COL] = jscode.length + 1;
+    jscode += "\n";
 
-            return "\n" + indents![cur_indent_level];
-        } else {
-            return "\n";
-        }
+    if( __DEBUG__ ) {
+        ++CURSOR[CODE_LINE];
+        CURSOR[CODE_COL] = jscode.length;
+
+        jscode += indents![cur_indent_level];
     }
 }
-export const BB = {
-    toString: function() {
-        if(__DEBUG__) {
-            return indents![++cur_indent_level];
-        } else {
-            return "";
-        }
-    }
+export function BB() {
+    ++cur_indent_level;
 }
-export const BE = {
-    toString: function() {
-        if(__DEBUG__) {
-            return indents![--cur_indent_level];
-        } else {
-            return "";
-        }
-    }
+
+export function BE() {
+    --cur_indent_level;
 }
 
 // =======================================================================
@@ -126,65 +110,11 @@ export function w_sns(...args: W_SNS) { //TODO: alternate
 
 // =======================================================================
 
-// transforms into a template string
-export function r(...args: [TemplateStringsArray, ...(Printable|number)[]]) {
-    return args;
-}
-
-// write a template string
-export function wr(args: [TemplateStringsArray, ...(Printable|number)[]]) {
-    if( typeof args === "string")
-        return w(args);
-    return wt(...args);
-}
-
-
-// write with template string wt``
-export function wt(str: TemplateStringsArray, ...args: (Printable|number)[]) {
-    
-    for(let i = 0; i < args.length; ++i) {
-        jscode += str[i];
-        w(args[i]);
-    }
-
-    jscode += str[args.length];
-}
-
-// generic write ?
-export function w(...args: (Printable|number)[]) {
-
-    for(let i = 0; i < args.length; ++i) {
-
-        let arg = args[i];
-
-        if( Array.isArray(arg) ) { // likely a r``
-            wr(arg as Parameters<typeof wr>[0]);
-            continue;
-        }
-
-        if( typeof arg !== "number" ) {
-
-            if( arg === undefined )
-                arg = "undefined";
-            if( arg === null )
-                arg = "null";
-
-            jscode += arg.toString();
-            continue;
-        }
-
-        const offset = 4*arg;
-        if( __DEBUG__ ) set_js_cursor(offset + CODE_BEG);
-        AST2JS[type(arg)!](arg);
-        if( __DEBUG__ ) set_js_cursor(offset + CODE_END)
-    }
-}
-
 export function ast2js(ast: AST) {
 
     new_jscode(ast.filename);
 
-    w(0);
+    w_node(0);
 
     // TODO: better export strategy (?)
     jscode += `\nconst __exported__ = {};\n`;

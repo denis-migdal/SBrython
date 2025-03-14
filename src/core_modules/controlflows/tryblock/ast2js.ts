@@ -1,4 +1,4 @@
-import { BB, BE, NL, w, wt } from "@SBrython/ast2js";
+import { BB, BE, w_NL, w_node, w_sns, w_str } from "@SBrython/ast2js";
 import { firstChild, nbChild } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
@@ -6,21 +6,25 @@ export default function ast2js(node: number) {
     const coffset    = firstChild(node);
     const nbChildren = nbChild(node);
 
-    wt`try {${coffset}${NL}}`;
-    wt`catch(_raw_err_){${BB}${NL}`;
+    w_sns("try {", coffset, "} catch(_raw_err_){");
+    BB();
+    w_NL();
 
-        w("const _err_ = _b_.get_py_exception(_raw_err_, __SBRYTHON__)");
+        w_str("const _err_ = _b_.get_py_exception(_raw_err_, __SBRYTHON__)");
 
         if( nbChildren > 1)
-            w( 1+coffset );
+            w_node( 1+coffset );
 
-        for(let i = 2; i < nbChildren; ++i)
-            w(NL, "else ", i + coffset );
+        for(let i = 2; i < nbChildren; ++i) {
+            w_NL(); w_str("else "); w_node(i + coffset);
+        }
 
-        // not a catch all...
-        if( nbChild(coffset + nbChildren-1) !== 1)
-            w(NL, "else { throw _raw_err_ }");
+        // no "catch all" clause...
+        if( nbChild(coffset + nbChildren-1) !== 1) {
+            w_NL();
+            w_str("else { throw _raw_err_ }");
+        }
 
-    w(BE, NL);
-
+    BE();
+    //w_NL(); - no needs ?
 }

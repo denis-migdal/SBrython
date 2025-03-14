@@ -1,4 +1,4 @@
-import dop_reset, {ASTNODE_RESULT_TYPE, ASTNODE_SIZE, ASTNODE_TYPE_ID, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, type, VALUES} from "@SBrython/dop";
+import dop_reset, {ASTNODE_SIZE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, firstChild, PY_CODE, resultType, type, VALUES} from "@SBrython/dop";
 import { RET_INT, RETURN_TYPE_FCT } from "@SBrython/structs/ReturnTypeFcts";
 
 import BRY2SBRY from "./bry2sbry/list";

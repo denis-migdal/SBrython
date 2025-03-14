@@ -1,18 +1,17 @@
-import { w } from "@SBrython/ast2js";
+import { w_node, w_str } from "@SBrython/ast2js";
 import { firstChild, nbChild } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
 
-    w("[");
+    w_str("[");
 
     const nbChildren = nbChild(node);
     const coffset    = firstChild(node);
     
-    if( nbChildren > 0 )
-        w(coffset);
+    for(let i = 0; i < nbChildren; ++i) {
+        w_node(i + coffset);
+        w_str(", ");
+    }
 
-    for(let i = 1; i < nbChildren; ++i)
-        w(", ", i + coffset);
-
-    w("])");
+    w_str("]");
 }

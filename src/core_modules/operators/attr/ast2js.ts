@@ -1,6 +1,6 @@
-import { wt } from "@SBrython/ast2js";
+import { w_node, w_str } from "@SBrython/ast2js";
 import { firstChild, VALUES } from "@SBrython/dop";
 
 export default function ast2js(node: number) {
-    wt`${firstChild(node)}.${VALUES[node]}`;
+    w_node(firstChild(node)); w_str(`.${VALUES[node]}`);
 }
