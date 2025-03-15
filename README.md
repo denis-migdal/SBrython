@@ -19,28 +19,11 @@ Executed in    :  2.654s [-15.67%]  44.340ms
         genFct :  0.024s [-60.78%]   0.400ms
         exeFct :  0.055s [-84.67%]   0.920ms
 
-
            __DEBUG__  py2ast cond.    bry2sbry    (type system+write system)
-3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.060ms
-2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms
-
-+ some logical fixes
--> cleaner code + more easier to extend to be more python-compliant.
-Limits : type unions/deduction + unknown type (bigger runtime) + (?)
-
-- when parser
-    -> values store
-    -> fcts args
+3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.060ms (1.22x)
+2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms (3.43x)
 
 TODO:
-- [ ] module system rewrite
-    - [ ] AST2JS: [] ?
-        - [ ] IDX to name (for dev mode -> cf Editor)
-            - [ ] decl cstes => map to files...
-        - [ ] by hands (?) -too much OP-
-    - [ ] operator system rewrite (do not store op in VALUES!) [ou after ?]
-        - compare operator : reversed => handle it in ast2js ???
-    - [ ] documenter !
 
 - [ ] documenter !
     - [ ] Production mode
@@ -57,6 +40,7 @@ TODO:
 1. AST2JS
 2. tokens2AST
 3. tokenizer
+4. limits : type unions/deduction + unknown type (bigger runtime) + (?)
 => WASM version for some steps ? (webpack loader ???)
     => if you want perfs => go AoT...
 => AoT WASM output => https://webassembly.github.io/spec/core/binary/index.html
@@ -64,10 +48,10 @@ TODO:
 => TS output ?
 
 - [ ] ?
-    - [ ] Terser : not properly inlined ??? constant ???
+    - [ ] Terser : not properly inlined ??? constant ???
     - [ ] Dev mode only: asserts / __debug__ false
 
-==== PARSER ====
+## PARSER
 
 - firstChild (ptr)
 - nextSibling (ptr) instead of nbChild()
@@ -83,11 +67,14 @@ TODO:
 - numbers
 - ()
 
+### Once parser done
 
 - [ ] functions args rewrite (?)
     -> precompute some vals
     -> better algo ?
     -> opti call args parsing... (write_call => depends on fct shape ?)
+- [ ] operator system rewrite (do not store op in VALUES!) [ou after ?]
+    - compare operator : reversed => handle it in ast2js ???
 - [ ] optimize value usage (when parser)
     - [ ] some values store in CHILDREN ?
         - FCT DEF  ? => use Type ID... (can extract name from it)
@@ -97,22 +84,63 @@ TODO:
         - INT/FLOAT
         - [ ] replace some values_str by name child ast node (some str ID)?
 
+## Roadmap
 
-====
+### Current unit test file
 
-f-string : https://github.com/brython-dev/brython/issues/2479
+Tot (149)
 
-https://denis-migdal.github.io/SimplerBrython/
+(??)
+- op (??)
+- = (10)
+- << (2)
 
-## Status
+(??)
+- bool() (2)
+- str() (5)
+- float() (7)
+    - infinity() (3)
+- int() (13)
 
-### Library size
+- abs()    (3)
+- pow()    (7)
+- divmod() (2)
 
-- Runtime stats...
+- type(2)
+- isinstance (5)
+- complex (12)
 
-### Roadmap
+(19)
+- except (5)
+- assertRaises (4)
+- assert raise (10)
 
-#### Unit tests
+-> int()
+-> float()
+-> divmod()
+-> pow()
+-> round()
+
+x types...
+-> list/tuple/range
+-> set/frozenset / dict
+-> bytes/bytearray/memoryview
+
+-> in / not in
+-> []
+-> len() / min() / max() / .count() / .index()
+
+-> bit_length() + bit_count() + to_bytes() + from_bytes() + hash()
+-> complex + complex() + conjugate()
+
+-> math.XXX
+
+-> print
+
+-> https://docs.python.org/3/library/functions.html#callable
+cf binaryop file...
+
+### Unit tests
 
 -> scroll bottom...
 
@@ -147,129 +175,41 @@ https://denis-migdal.github.io/SimplerBrython/
 - reflected_methods
 - special methods
 
-#### Operators
-    Done
-        -> add builtin functions (system, only len() for now).
-        -> Symbol (desc genJS) vs SType (desc type).
-            -> recursion, HELP
-            -> separate desc from meta
-            -> simplify code, different actions depending on the callable type.
-                -> op behave a little like a call (but fct doesn't truly exists).
-    TODO: SType refactor.
-        (1) use new SType for len() def/call.
-        (2) use new SType for function def/call.
-        (3) impl operators (then use them)
+### Operators
 
-        -> SType types in directories (?) [for now ?]
-            -> get is required due to circularity... (LOT of circularity...)
-            -> SType str/csnte/can change... (mainly __name__)
-            -> write_symbol : default - throw not implemented.
-
+    -> add builtin functions (system, only len() for now).
+    -> klass
         -> decorators : takes a method and return new thing.
             -> @staticmethod => no self params
             -> @classmethod  => self is klass instead of instance
             -> default       => instance method.
             -> @property
-
         -> policy
             -> instance methode    -> only on instance type.
             -> static/class method -> only on klass type.
 
             - function (klass) / method (instance).
-            - builtin_function_or_method / 
-        - type (circular) <- type <- int      klass <- int instance
-        - type (circular) <- type <- function klass <- foo instance
-        - { prop: Method|Attr }
-            - => write_symbol : where/how ?
-            - Symbol : {
-                - stype       : ()
-                - write_symbol: ()
-                - write_call ?: () => type.__call__ (?)
-                - call_info ?
-            }
-            - { __class__: { value: [], write_symbol: ()=> }  }
-        - func() <- Fct
-            -> __call__()           <- method
-        - Klass() <- Klass ? KlassType ?
-            -> __class__
-                -> __name__
-                -> .__call__() <- method
-                -> write_symbol() <- ?
-            -> __len__()            <- method
-        
-        1. SType refactor / helpers.
-            -> genFctBinaryOp()
-            -> method:
-                -> return_type + call_substitute...
-                -> prevent dbl search ?
+            - builtin_function_or_method /
+
         2. Classes
-        3. other refactors
-        4. other classes
-        5. SType when import + brython interact
+        5. Types when import + brython interact
         6. Doc + tools.
         7. own parser/int strats/etc.
 
-    1. addFct(local, name, ret_type, callback )
-        -> { __class__ => fct class }
-        -> { __name__ }
-        -> {__call__} [3 new types : callable/Fct/FctType/Class/Type]
-            -> also write_call.
-            -> inside __class__ for STypeInt.
-        -> write_symbol?: inside __class__ (?) (for a=int)
         -> pow() / divmod()
-    0.
         -> new types (fcts)
-            -> write_symbol / write_call
-            -> generateFct(callback) helpers ?
-                -> __name__ / __class__ / __call__
-                    -> callable
-                    -> function
-                    -> class
-                -> idem class.
-                -> write_symbol: how ? (<- symbol ?) [could be meta?]
             -> genFct => len() / pow() / divmod()
             -> list/tuple/dict/bytes/bytearray
             -> local_symbols
-                -> no needs for SType ? -> use local_symbols instead ?
-                -> type(x) => write_symbol => use a _r_.int => a symbol ?
                 -> add local_symbols (the types) to the generated AST (for imports)
             -> class
                 -> class => is context.type really usefull ?
                     -> use parent_node_context ? (the self context ?)
                 -> class: self context ? a type that is filled with class members ?
                 -> fct vs method: generate ASTNode variants or use value ?
-            -> op.
-                -> jsop => write_binaryop version (replace old version ?)
-                -> redesign op. structures ?
-            -> ASTNode type
-                -> (as any). => add facultative properties (op priority + as)
-                    -> better convert system ?
-                -> args => really need fake node ?
-            -> 3 int strats : only number/only bigint/mix.
-                -> only number
-                    -> fast
-                    -> lost of prec (rare)
-                    -> good JS interact.
-                    -> can't distinguish from float runtime.
-                -> only bigint
-                    -> slower
-                    -> prec guaranteed
-                    -> may require explicit conversions when interacting with JS
-                    -> can distinguish runtime.
-                -> mixed
-                    -> middle
-                    -> prec guaranteed
-                    -> issue conversions -> defaults to bigint when interacting with JS.
-                        -> arg conversion when call...
-                    -> may distinguish runtime
-                -> evaluate perfs.
 
-    2. Add builtin functions (builder) => no need to add them to SType.
-        -> e.g. len() / use it to generate __class__ ?
-    3. Classes def ?
     4. Write doc ?
         -> import/export + tools.
-        -> 16ms
         -> compliance over performances, performances over compliance.
         -> what SBrython is not:
             -> no debug
@@ -285,7 +225,6 @@ https://denis-migdal.github.io/SimplerBrython/
     -> doc (simple usage/rationnal/philosophy)
         -> use Brython for dev, SBrython for prod (speed up, less security checks)
         -> Editor -> download+upload? (beta)
-            -> futur: deno + lib (client+server)
     -> imports / interactions
         => merge into the same JS.
         => opti with webworker and prefetch before parsing
@@ -294,11 +233,9 @@ https://denis-migdal.github.io/SimplerBrython/
         => import map with modifications dates and URL.
 
     -> isinstance() / len() / divmod()
-        -> function as SType...
-        -> cstr / typeof / __class__
     -> type()
         { __class__ } / cstr / typeof => {__name__: "int"}
-        -> substitute_value() => _r_.int 
+        -> write_value() => _r_.int 
         -> requires placeholders for types...
     => rewrite isinstance => typeof a === b // a instanceof b
     => [instanceof might cause issues]
@@ -308,7 +245,6 @@ https://denis-migdal.github.io/SimplerBrython/
     => classes
 
     => f-string/format
-    => ?
 
     => AST parsing strategy
         => do not enter subcontext => push to list.
@@ -344,10 +280,8 @@ https://denis-migdal.github.io/SimplerBrython/
             => decl order.../recursive fct...
             => parcours de graphe -> changer...
                 => recursive vs pile...
-        => return int => jsint conversion (how?)
     => improve fct args
-        => + respect original indentation...
-        => + deduce params of JS fct from toString().
+        => + deduce params of JS fct from toString() [?]
 
         (d) Brython <=> SBrython interactions / SBrython <=> JS module interactions.
             => 2x2 for Brython (export/import JS/Py space).
@@ -457,8 +391,6 @@ https://denis-migdal.github.io/SimplerBrython/
         => @dataclass(frozen=True)
         => Final[int]
 
-        => generate sourcemap from AST
-        (e) int => __class__ => __name__
         (f) Imports
             => can assert some info
                 => class vs fcts (new or not?)
@@ -497,52 +429,6 @@ https://denis-migdal.github.io/SimplerBrython/
     => bug fix -> core feature -> compat module -> edge case -> workaround_possible
     => current limitations ok/nok ?
 
-Tot (149)
-
-(??)
-- op (??)
-- = (10)
-- << (2)
-
-(??)
-- bool() (2)
-- str() (5)
-- float() (7)
-    - infinity() (3)
-- int() (13)
-
-- abs()    (3)
-- pow()    (7)
-- divmod() (2)
-
-- type(2)
-- isinstance (5)
-- complex (12)
-
-(19)
-- except (5)
-- assertRaises (4)
-- assert raise (10)
-
--> int()
--> float()
--> divmod()
--> pow()
--> round()
-
-x types...
--> list/tuple/range
--> set/frozenset / dict
--> bytes/bytearray/memoryview
-
--> in / not in
--> []
--> len() / min() / max() / .count() / .index()
-
--> bit_length() + bit_count() + to_bytes() + from_bytes() + hash()
--> complex + complex() + conjugate()
-
--> math.XXX
 
 #### Complex functions calls ?
 
@@ -550,13 +436,10 @@ x types...
 
 #### Classes ?
 
-
 #### Brython inter-op ?
 
 ## Links
 
-https://denis-migdal.github.io/SimplerBrython/
-https://denis-migdal.github.io/SimplerBrython/doc
 https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
 
 ## Implemented features
@@ -613,7 +496,6 @@ https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
     
 ### Possible optimizations
 
-- pre-compute operations on literals.
 - Write own Py2AST parser.
 
 cf https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/ftPUn9LMAAAJ
@@ -649,31 +531,6 @@ Principle
 
     8. ADD other features... (keywords/ops...)
 
-### ASTNode type refactor
-
-    - =(assign) variant (how to remove ?)
-    - remove type from constructor, set it depending on the filename ?
-
-### SBrython AST
-
-- Webworker to distribute work ?
-    -> WEBASM to control allocations ?
-    -> ?
-- Type checker/setter after AST build.
-
-main_body
-    - parseToken()
-        - if/etc. => parse other token.
-            - indentation
-            - :
-    - a + b => (a+b)...
-        => continuer ? arrêter ?
-        => priorité des opérateurs... association gauche ou droite ?
-    (g) op => parse
-    (g) op (d) op
-        => si g= (g op d)
-        => sinon (g) op (d op x)
-
 ### Classes
 
 - empty class
@@ -694,17 +551,8 @@ main_body
         - tester module...
         - assert keyword... => plug or smthing ?
 
-    - [ ] Check AST
-        - check function call arguments type... + return type.
-        - check assignations AFTER AST is built ?
-        - check result_type=unknown AFTER AST is built.
-            - children of assign can be unknown.
-            - fctcall can be unknown if not used.
-            - if deduced, set unknown ?
-        -> warning on node => show in editor ?
-
-    - [ ] py code in core_modules ? => pre-transpile
-        - [ ] JS code insert
+    - [ ] py code in core_modules ? => pre-transpile
+        - [ ] JS code insert
 
     - keywords
         - async/await
@@ -725,9 +573,9 @@ main_body
 - I will publish some PoC, for AST tree structure, AST tree printing, unit tests, documentations, etc. that I hope could be interesting and potentially adapted for Brython.
 - I think some design choices I'll make could be interesting for Brython, so it could serve as a PoC on the way some features can be implemented/architectured.
 
-        - [ ] Build + usage
+        - [ ] Build + usage
         - [ ] Generated JS: op(1n, '+', 1n) => need to override operators, can't know type of variables at transpilation type. In vanilla JS would simply write 1n + 1n / array[x] / - 2, etc // types hint
-        - [ ] Context.options
+        - [ ] Context.options
         - [ ] How code is validated (several options + Brython)
     - figure for JS API ?
 
@@ -745,30 +593,28 @@ main_body
         - ast2js(AST) => JS : convert an AST into JS Code
     - [Soon:] JS stack to Python stack conversion
 
-
 ## Student projects
 
-- [ ] Python code parsing to produce AST.
+- [ ] Python code parsing to produce AST.
 - [ ] Documentation (style+markdown+complete)
 - [ ] Better editor :
     - [ ] Twice exec, one with runtime type checks
-    - [ ] make asserts that will be only be performed in SBrython (no Brython)
-    - [ ] scroll to
-- [ ] Type
+    - [ ] scroll to
+- [ ] Type
     - [ ] Better type deduction: if type === => change local type in body.
-    - [ ] Deduce for in target type...
+    - [ ] Deduce for in target type...
     - [ ] Generate TS code mode
     - [ ] fetch JS API types from TS. (.d.ts ???)
-- [ ] CPython/PEP compliant
+- [ ] CPython/PEP compliant
     - [ ] debug = true
     - [ ] async as coroutines = true
     - [ ] enforce python type = false
         - [ ] ignore variable type annotations.
         - [ ] forbid (or raise a warning) explicit type violation .
-        - [ ] forbid (or raise a warning) on variable deduced type violation.
-        - [ ] forbid (or raise a warning) all non-explicit unknown type.- forbid (or - - - [ ] raise a warning) when using values of unknown type.
+        - [ ] forbid (or raise a warning) on variable deduced type violation.
+        - [ ] forbid (or raise a warning) all non-explicit unknown type.- forbid (or - - - [ ] raise a warning) when using values of unknown type.
         - [ ] runtime type checking.
-    - [ ] Add features (complete SBrython)
+    - [ ] Add features (complete SBrython)
 - [ ] Py => JS Regex conversions.
 - [ ] Keep python indent (e.g. if fct argument indented, indent it in JS too)
 - [ ] Keep Python comments
@@ -778,13 +624,10 @@ main_body
 - [ ] Opti
     - [ ] in some cases convert int into float (cste) [AST checks ?]
 
-- [ ] comments
-- [ ] list used core_module + extend core_module.
-- [ ] brython better perfs...:
-    - split Py2JS into Py2AST and AST2JS
-    cf https://github.com/brython-dev/brython/blob/master/www/src/py2js.js
+- [ ] comments
+- [ ] list used core_module + extend core_module.
 
-- [ ] traceback... (+ need compat mode for locals)
+- [ ] traceback... (+ need compat mode for locals)
 
 - [ ] SBrython
     - [ ] doc API + complete API
@@ -801,6 +644,5 @@ Info (TODO)
 
 Info
     - [ ] Arg parsing: https://github.com/brython-dev/brython/issues/2478
-
 
 Simple, Speedy, Static, Small

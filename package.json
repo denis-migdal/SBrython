@@ -11,7 +11,7 @@
       "build"     : "clear ; webpack --no-watch --mode=development",
       "build-prod": "clear ; webpack --no-watch --mode=production",
       "watch"     : "clear ; webpack --watch    --mode=development",
-      "stats"     : "du -h brython/www/src/brython.min.js ; zip - brython/www/src/brython.min.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/dev/libs/SBrython-dev/index.js ; zip - dist/dev/libs/SBrython-dev/index.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/prod/libs/SBrython-dev/index.js ; zip - dist/prod/libs/SBrython-dev/index.js 2> /dev/null | wc -c | numfmt --to=iec"
+      "stats"     : "du -h brython/www/src/brython.min.js ; zip - brython/www/src/brython.min.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/dev/libs/SBrython-dev/index.js ; zip - dist/dev/libs/SBrython-dev/index.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/prod/libs/SBrython-dev/index.js ; zip - dist/prod/libs/SBrython-dev/index.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/prod/libs/SBrython-prod/index.js ; zip - dist/prod/libs/SBrython-prod/index.js 2> /dev/null | wc -c | numfmt --to=iec ; du -h dist/prod/libs/SBrython-runtime-prod/index.js ; zip - dist/prod/libs/SBrython-runtime-prod/index.js 2> /dev/null | wc -c | numfmt --to=iec"
     },
     "author": "[AUTHOR]",
     "license": "[LICENCE]",

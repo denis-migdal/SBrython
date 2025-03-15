@@ -1,8 +1,9 @@
-import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/dop";
-import { buildJSCode } from "@SBrython/ast2js";
-import { buildPyCode } from "@SBrython/py2ast";
+import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
+import { buildJSCode } from "@SBrython/sbry/ast2js/ast2js";
+import { buildPyCode } from "@SBrython/sbry/py2ast";
 
-import Types from "@SBrython/types/list";
+import Types from "@SBrython/sbry/types/list";
+import { id2name } from "@SBrython/sbry/ast2js/list";
 
 type CodePos = {
     line: number,
@@ -28,7 +29,7 @@ export default function astnode2tree(id = 0): NODE {
     const coffset    = firstChild(id);
 
     return {
-        type: ''+type(id), // TODO convert
+        type       : id2name[type(id)], // TODO convert
         result_type: Types[resultType(id)]?.__name__,
         value      : VALUES[id],
         jscode  : buildJSCode(id),

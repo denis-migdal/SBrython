@@ -21,7 +21,7 @@ export default function executeSBrython(results: SubResults) {
 
 /*
 
-sb._b_.assert = (cond) => { if( ! cond ) {
+sb._sb_.assert = (cond) => { if( ! cond ) {
 
     console.warn("Assertion failed");
 

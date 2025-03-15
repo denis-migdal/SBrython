@@ -1,8 +1,10 @@
 import webpack from 'webpack';
 
 import buildConfigs from "./build/WebpackFramework/index.js";
-import genBry2SBry  from "./build/genBry2SBry.js";
-import genTypes     from "./build/genTypes.js";
+import genBry2SBry  from "./build/gen/bry2sbry.js";
+import genTypes     from "./build/gen/types.js";
+import genAST2JS    from "./build/gen/ast2js.js";
+import genRuntime   from "./build/gen/runtime.js";
 
 export default async function(...args) {
 	
@@ -19,6 +21,12 @@ export default async function(...args) {
 
 	const Benchmark = entries.Benchmark;
 	delete entries.Benchmark;
+	const  LibEntryName = 'libs/SBrython-prod';
+	const RLibEntryName = 'libs/SBrython-runtime-prod';
+	const  Lib       = entries[ LibEntryName];
+	const RLib       = entries[RLibEntryName];
+	delete entries[ LibEntryName]
+	delete entries[RLibEntryName]
 
 	cfg.plugins = [...cfg_debug.plugins];
 
@@ -29,9 +37,9 @@ export default async function(...args) {
 				await Promise.all([
 					genBry2SBry(),
 					genTypes(),
+					genAST2JS(),
+					genRuntime(),
 				]);
-				//genCoreModuleList();
-				//genCoreRuntimeList();
 			});
 		},
 	});
@@ -39,7 +47,9 @@ export default async function(...args) {
 
 	cfg.entry   = {
 		skeleton: entries.skeleton,
-		Benchmark
+		Benchmark,
+		[ LibEntryName]:  Lib,
+		[RLibEntryName]: RLib
 	};
 	cfg.output.clean = false;
 

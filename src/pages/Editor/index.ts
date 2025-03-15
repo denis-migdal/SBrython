@@ -556,7 +556,7 @@ function print_errors({success, sbrython, lines_equals}, brython_result, sbrytho
 */
 
 /*
-sb._b_.assert = (cond) => { if( ! cond ) {
+sb._sb_.assert = (cond) => { if( ! cond ) {
 
 console.warn("Assertion failed");
 
