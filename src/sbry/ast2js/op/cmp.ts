@@ -5,7 +5,7 @@ import { write_binary_jsop } from "@SBrython/sbry/structs/operators/binary";
 import { TYPEID_NotImplementedType } from "@SBrython/sbry/types";
 
 import Types from "@SBrython/sbry/types/list";
-import { Fct, AST_KEY_RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
+import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
 function find_and_write_call(node: number, left:number, op: string, right: number) {
     
@@ -17,14 +17,14 @@ function find_and_write_call(node: number, left:number, op: string, right: numbe
 
     let method = Types[ltype][op] as Fct;
     if( method !== undefined )
-        type = method[AST_KEY_RETURN_TYPE](rtype!);
+        type = method[RETURN_TYPE](rtype!);
 
     if( type === TYPEID_NotImplementedType) {
 
         op     = reversed_operator(op as Parameters<typeof reversed_operator>[0]);
         method = Types[rtype][op] as Fct;
         if( method !== undefined )
-            type   = method[AST_KEY_RETURN_TYPE](ltype!);
+            type   = method[RETURN_TYPE](ltype!);
         
         if( type === TYPEID_NotImplementedType) {
             if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' )

@@ -2,7 +2,7 @@ import { firstChild, resultType, VALUES } from "@SBrython/sbry/dop";
 import { AssignOperators } from "@SBrython/sbry/structs/BinaryOperators";
 import { TYPEID_NotImplementedType } from "@SBrython/sbry/types";
 import Types from "@SBrython/sbry/types/list";
-import { Fct, AST_KEY_RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
+import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
 export default function ast2js(node: number) {
 
@@ -14,7 +14,7 @@ export default function ast2js(node: number) {
     let method = Types[resultType(coffset)][op] as Fct;
 
     if( method !== undefined )
-        type = method[AST_KEY_RETURN_TYPE](resultType(coffset+1)!);
+        type = method[RETURN_TYPE](resultType(coffset+1)!);
 
     // try a = a + b
     if( __DEBUG__ && type === TYPEID_NotImplementedType) {

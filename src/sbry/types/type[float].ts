@@ -5,7 +5,7 @@ import { firstChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { Int2Number } from "@SBrython/sbry/structs/Converters";
 import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_LIT_STR } from "@SBrython/sbry/ast2js/";
-import Types from "./list";
+import Types from "./index";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";
 import { WRITE_CALL } from "./utils/types";
 
@@ -55,7 +55,7 @@ export default Object.assign(TYPE_type_float_,
             if( __DEBUG__ && (otype === undefined || otype.__int__ === undefined) )
                 throw new Error(`${otype?.__name__}.__int__ not defined`);
 
-            otype.__int__[WRITE_CALL]!(node, other);
+            otype.__int__![WRITE_CALL]!(node, other);
         }
         )
     },

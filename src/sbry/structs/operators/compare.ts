@@ -1,7 +1,7 @@
 import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
 import { jsop2pyop } from "../BinaryOperators";
 import { Converter, NOCONVERT } from "../Converters";
-import { AST_KEY_RETURN_TYPE_FCT } from "../ReturnTypeFcts";
+import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { resultType } from "@SBrython/sbry/dop";
 import { write_binary_jsop } from "./binary";
 
@@ -40,7 +40,7 @@ export type GenCmpOps_Opts = {
 };
 
 export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
-                            return_type: AST_KEY_RETURN_TYPE_FCT,
+                            return_type: RETURN_TYPE_FCT,
                             {
                                 convert_other   = NOCONVERT,
                                 convert_self    = NOCONVERT,

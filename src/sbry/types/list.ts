@@ -1,4 +1,4 @@
-export default [
+const LIST = [
 	require("./NotImplementedType").default,
 	require("./NoneType").default,
 	require("./int").default,
@@ -10,3 +10,7 @@ export default [
 	require("./type[float]").default,
 	require("./type[str]").default,
 ]
+
+import ILIST from './index';
+ILIST.push(...LIST);
+export default ILIST;

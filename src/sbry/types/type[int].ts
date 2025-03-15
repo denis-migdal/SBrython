@@ -4,7 +4,7 @@ import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType } from "@SBrython/sbry/dop";
 import { w_node, w_sns } from "@SBrython/sbry/ast2js/utils";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
-import Types from "./list";
+import Types from "./index";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";
 import { WRITE_CALL } from "./utils/types";
 
@@ -46,7 +46,7 @@ export default Object.assign(TYPE_type_int_,
             if( __DEBUG__ && (otype === undefined || otype.__int__ === undefined) )
                 throw new Error(`${otype?.__name__}.__int__ not defined`);
 
-            otype.__int__[WRITE_CALL](node, other);
+            otype.__int__![WRITE_CALL](node, other);
         })
     }
 );

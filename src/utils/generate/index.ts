@@ -3,6 +3,8 @@ import buildAST from "./AST";
 import generateBrython from "./Brython";
 import generateSBrython from "./SBrython";
 
+console.warn("first");
+
 export default function generate(code: string, results: Results) {
 
     const offset = results.bry.offset;

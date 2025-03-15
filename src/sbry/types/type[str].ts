@@ -2,7 +2,7 @@ import { RET_STR } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_type_str_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType } from "@SBrython/sbry/dop";
-import Types from "./list";
+import Types from "./index";
 import { w_node } from "@SBrython/sbry/ast2js/utils";
 import { TYPEID_str } from ".";
 import { WRITE_CALL } from "./utils/types";
@@ -25,7 +25,7 @@ export default Object.assign(TYPE_type_str_,
             if( __DEBUG__ && (otype === undefined || otype.__str__ === undefined) )
                 throw new Error(`${otype?.__name__}.__str__ not defined`);
 
-            otype.__str__[WRITE_CALL](node, other);
+            otype.__str__![WRITE_CALL](node, other);
         })
     }
 );

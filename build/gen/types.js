@@ -33,9 +33,10 @@ import * as TYPES from "../../src/sbry/types/index.js";
 
 function importModules(modules) {
 
-    let result = "export default [\n";
+    let result = "const LIST = [\n";
 
     let keys = Object.keys(TYPES);
+    --keys.length; // remove default export
     const order = new Array(keys.length);
     for(let i = 0; i < keys.length; ++i)
         order[TYPES[keys[i]]] = keys[i].slice(7);
@@ -47,7 +48,11 @@ function importModules(modules) {
         result += `\trequire("${file}").default,\n`;
     }
 
-    result += "]";
+    result += "]\n";
+
+    result += "\nimport ILIST from './index';\n";
+    result += "ILIST.push(...LIST);\n";
+    result += "export default ILIST;\n";
 
     return result;
 }

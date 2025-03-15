@@ -6,9 +6,9 @@ import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/
 import Body from "@SBrython/sbry/bry2sbry/Body";
 
 import Types from "@SBrython/sbry/types/list";
-import { ARGS_INFO, Callable, AST_KEY_RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
+import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
-const FAKE_AST_KEY_RETURN_NODE = {
+const FAKE_RETURN_NODE = {
     constructor: {
         $name: "Return"
     }
@@ -41,13 +41,13 @@ function generate(dst: number, node: any, context: Context) {
     // tell body this function has been generated.
     meta.generate = undefined;
     // prevents recursive calls or reaffectation.
-    call[AST_KEY_RETURN_TYPE] = undefined as any;
+    call[RETURN_TYPE] = undefined as any;
 
     const annotation = node.returns?.id;
     if( annotation !== undefined ) {
         let fct_return_type = context.local_symbols[annotation]; // ?
         // force the type.
-        call[AST_KEY_RETURN_TYPE] = () => fct_return_type!;
+        call[RETURN_TYPE] = () => fct_return_type!;
     }
 
     // implicit return...
@@ -66,7 +66,7 @@ function generate(dst: number, node: any, context: Context) {
             }
             node.body.push( fake_node );
         } else {
-            node.body.push( FAKE_AST_KEY_RETURN_NODE );
+            node.body.push( FAKE_RETURN_NODE );
         }
     }
 
@@ -81,9 +81,10 @@ export default function convert(dst: number, node: any, context: Context) {
     const SType_fct: Callable = {
         __name__: "function",
         __call__: {
-            [AST_KEY_RETURN_TYPE]: () => {
+            __name__: "__call__",
+            [RETURN_TYPE]: () => {
                 generate(dst, node, context); // should be the new context
-                return SType_fct.__call__[AST_KEY_RETURN_TYPE]();
+                return SType_fct.__call__[RETURN_TYPE]();
             },
             [WRITE_CALL]: default_call,
             [ARGS_INFO]: {

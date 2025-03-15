@@ -3,7 +3,7 @@ import { addChild, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code } from "@SBrython/sbry/bry2sbry/utils";
 import Types from "@SBrython/sbry/types/list";
 import keyword from "./keyword";
-import { Fct, AST_KEY_RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
+import { Fct, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -16,7 +16,7 @@ export default function convert(dst: number, node: any, context: Context) {
     }
 
     const fct = Types[fct_type];
-    const ret_type = (fct.__call__ as Fct)[AST_KEY_RETURN_TYPE]();
+    const ret_type = (fct.__call__ as Fct)[RETURN_TYPE]();
 
     setType      (dst, AST_FCT_CALL);
     setResultType(dst, ret_type);

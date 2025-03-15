@@ -1,17 +1,26 @@
 import { type Context } from "@SBrython/sbry/bry2sbry/utils";
 
-export const AST_KEY_RETURN_TYPE = Symbol();
+export const RETURN_TYPE = Symbol();
 export const WRITE_CALL  = Symbol();
 export const ARGS_INFO   = Symbol();
 
-export type Fct<T extends any[] = unknown[]> = {
-    [AST_KEY_RETURN_TYPE]: (o?: number) => number,
+export type Type = {
+    [key: string]: string|Type,
+    [key: symbol]: unknown,
+    __name__: string,
+    __str__?: Fct<[number]>,
+    __int__?: Fct<[number]>,
+}
+
+export type Fct<T extends any[] = unknown[]> = Type & {
+    [RETURN_TYPE]: (o?: number) => number,
     [WRITE_CALL] : (node: number, ...args: T) => void
 }
 
-export type Callable<T extends any[] = unknown[]> = {
+export type Callable<T extends any[] = unknown[]> = Type & {
     __name__?: string,
     __call__: Fct<T> & {
+        __name__: "__call__",
         [ARGS_INFO]: {
             
             args_names : string[],

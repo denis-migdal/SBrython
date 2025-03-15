@@ -1,7 +1,7 @@
 import { parentOPPrio, setParentOPPrio, VALUES } from "@SBrython/sbry/dop";
 import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
 import { Converter, NOCONVERT } from "../Converters";
-import { AST_KEY_RETURN_TYPE_FCT } from "../ReturnTypeFcts";
+import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { write_unary_jsop } from "./unary";
@@ -13,7 +13,7 @@ export type GenBinaryOps_Opts = {
 };
 
 export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
-                            return_type: AST_KEY_RETURN_TYPE_FCT, 
+                            return_type: RETURN_TYPE_FCT, 
                          {
                             convert_other   = NOCONVERT,
                             convert_self    = NOCONVERT,

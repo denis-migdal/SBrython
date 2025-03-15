@@ -382,6 +382,7 @@ function startTests(test_name: string, merge: boolean) {
         window.clearResults();
     */
 
+    console.warn("here", generate);
     generate(fullcode, results);
 
     execute(results);
