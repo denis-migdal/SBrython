@@ -1,4 +1,4 @@
-import { BB, BE, w_NL, w_node } from "@SBrython/sbry/ast2js/ast2js";
+import { BB, BE, w_NL, w_node } from "@SBrython/sbry/ast2js/utils";
 import { firstChild, nbChild } from "@SBrython/sbry/dop";
 
 export default function ast2js(node: number) {

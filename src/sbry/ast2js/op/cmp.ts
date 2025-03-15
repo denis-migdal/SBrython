@@ -1,4 +1,4 @@
-import { w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { w_str } from "@SBrython/sbry/ast2js/utils";
 import { firstChild, resultType, VALUES } from "@SBrython/sbry/dop";
 import { reversed_operator } from "@SBrython/sbry/structs/BinaryOperators";
 import { write_binary_jsop } from "@SBrython/sbry/structs/operators/binary";

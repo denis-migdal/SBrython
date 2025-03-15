@@ -48,3 +48,5 @@ export const AST_CLASSDEF = 39;
 export const AST_BODY = 40;
 export const AST_2BIGINT = 41;
 export const AST_2NUMBER = 42;
+
+export default [];

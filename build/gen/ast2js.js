@@ -10,11 +10,12 @@ async function getModules(path) {
     for(let i = 0; i < files.length; ++i) {
         const filepath = files[i];
 
-        if(filepath === "list.ts"
+        if(    filepath === "list.ts"
             || filepath === "index.ts"
             || filepath === "bases.ts"
             || filepath === "utils.ts"
-            || filepath === "ast2js.ts")
+            || filepath === "ast2js.ts"
+            || filepath === "utils.ts")
             continue;
 
         const end = filepath.indexOf(".", 0);
@@ -32,9 +33,11 @@ import * as TYPES from "../../src/sbry/ast2js/index.js";
 
 function importModules(modules) {
 
-    let result = "export default [\n";
+    let result = "const LIST = [\n";
 
-    let keys = Object.keys(TYPES);
+    const keys = Object.keys(TYPES);
+    --keys.length; // default default...
+
     const order = new Array(keys.length);
     for(let i = 0; i < keys.length; ++i)
         order[TYPES[keys[i]]] = keys[i].slice(4);
@@ -46,7 +49,9 @@ function importModules(modules) {
         result += `\trequire("${file}").default,\n`;
     }
 
-    result += "]\n";
+    result += "];\n";
+    
+    result +="\nimport ILIST from '.';\nILIST.push(...LIST);\nexport default ILIST;\n";
 
     result += "\n";
     result += "let _id2name: string[] = [];\n";

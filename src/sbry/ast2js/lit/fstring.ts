@@ -1,4 +1,4 @@
-import { set_js_cursor, w_node, w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { set_js_cursor, w_node, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_LIT_FSTRING_FVAL } from "@SBrython/sbry/ast2js/";
 import { CODE_BEG, CODE_END, firstChild, nbChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_str } from "@SBrython/sbry/types";

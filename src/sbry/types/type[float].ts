@@ -3,7 +3,7 @@ import { TYPE_type_float_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { Int2Number } from "@SBrython/sbry/structs/Converters";
-import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_LIT_STR } from "@SBrython/sbry/ast2js/";
 import Types from "./list";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";

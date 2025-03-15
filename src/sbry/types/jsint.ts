@@ -4,7 +4,7 @@ import { RET_IJ2INT, RET_IJB2INT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_INT, RET_JS
 import { CONVERT_2INT, CONVERT_INT2FLOAT, Int2Number, Number2Int } from "@SBrython/sbry/structs/Converters";
 import { resultType } from "@SBrython/sbry/dop";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
-import { w_sns } from "@SBrython/sbry/ast2js/ast2js";
+import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { genUnaryOps, write_unary_jsop } from "@SBrython/sbry/structs/operators/unary";
 import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
 import { TYPEID_float, TYPEID_int } from ".";

@@ -6,6 +6,8 @@ import genTypes     from "./build/gen/types.js";
 import genAST2JS    from "./build/gen/ast2js.js";
 import genRuntime   from "./build/gen/runtime.js";
 
+import CircularDependencyPlugin from 'circular-dependency-plugin';
+
 export default async function(...args) {
 	
 	const cfg = await buildConfigs("./src/",
@@ -42,7 +44,20 @@ export default async function(...args) {
 				]);
 			});
 		},
-	});
+	}, new CircularDependencyPlugin({
+		// exclude detection of files based on a RegExp
+		exclude: /node_modules/,
+		// include specific files based on a RegExp
+		include: /src/,
+		// add errors to webpack instead of warnings
+		failOnError: true,
+		// allow import cycles that include an asyncronous import,
+		// e.g. via import(/* webpackMode: "weak" */ './file.js')
+		allowAsyncCycles: false,
+		// set the current working directory for displaying module paths
+		cwd: process.cwd(),
+	  })
+	);
 
 
 	cfg.entry   = {

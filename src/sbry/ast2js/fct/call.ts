@@ -1,4 +1,4 @@
-import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_FCT_CALL_KEYWORD } from "@SBrython/sbry/ast2js/";
 import { firstChild, nbChild, type, VALUES } from "@SBrython/sbry/dop";
 import { ARGS_INFO, Callable, Fct, WRITE_CALL } from "@SBrython/sbry/types/utils/types";

@@ -1,4 +1,4 @@
-import { w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { w_str } from "@SBrython/sbry/ast2js/utils";
 import { resultType, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_int } from "@SBrython/sbry/types";
 

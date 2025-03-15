@@ -1,4 +1,4 @@
-export default [
+const LIST = [
 	require("./symbol").default,
 	require("./struct/tuple").default,
 	require("./struct/list").default,
@@ -42,7 +42,11 @@ export default [
 	require("./body").default,
 	require("./2bigint").default,
 	require("./2number").default,
-]
+];
+
+import ILIST from '.';
+ILIST.push(...LIST);
+export default ILIST;
 
 let _id2name: string[] = [];
 if( __DEBUG__ ) _id2name = [

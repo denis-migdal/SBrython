@@ -1,6 +1,6 @@
 import { RET_FLOAT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_STR } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { method_wrapper } from "./utils/methods";
-import { w_sns } from "@SBrython/sbry/ast2js/ast2js";
+import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { TYPE_float, TYPE_type_float_ } from "./bases";
 import { CONVERT_INT2FLOAT } from "@SBrython/sbry/structs/Converters";
 import { genBinaryOps } from "@SBrython/sbry/structs/operators/binary";

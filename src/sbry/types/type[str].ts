@@ -3,7 +3,7 @@ import { TYPE_type_str_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType } from "@SBrython/sbry/dop";
 import Types from "./list";
-import { w_node } from "@SBrython/sbry/ast2js/ast2js";
+import { w_node } from "@SBrython/sbry/ast2js/utils";
 import { TYPEID_str } from ".";
 import { WRITE_CALL } from "./utils/types";
 

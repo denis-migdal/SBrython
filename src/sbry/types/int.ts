@@ -1,7 +1,7 @@
 import { RET_IJ2INT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_INT, RET_INT2INT, RET_STR } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_int, TYPE_type_int_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
-import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/ast2js";
+import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { write_id_jsop } from "@SBrython/sbry/structs/operators/id";
 import { genBinaryOps, write_binary_jsop } from "@SBrython/sbry/structs/operators/binary";
 import { CONVERT_2INT, CONVERT_INT2FLOAT, Int2Number } from "@SBrython/sbry/structs/Converters";

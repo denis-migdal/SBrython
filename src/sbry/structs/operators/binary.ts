@@ -3,7 +3,7 @@ import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
 import { Converter, NOCONVERT } from "../Converters";
 import { AST_KEY_RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
-import { w_sns } from "@SBrython/sbry/ast2js/ast2js";
+import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { write_unary_jsop } from "./unary";
 
 export type GenBinaryOps_Opts = {

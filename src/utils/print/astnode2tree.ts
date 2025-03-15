@@ -1,5 +1,5 @@
 import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
-import { buildJSCode } from "@SBrython/sbry/ast2js/ast2js";
+import { buildJSCode } from "@SBrython/sbry/ast2js/utils";
 import { buildPyCode } from "@SBrython/sbry/py2ast";
 
 import Types from "@SBrython/sbry/types/list";

@@ -2,7 +2,7 @@ import { RET_INT } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_type_int_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType } from "@SBrython/sbry/dop";
-import { w_node, w_sns } from "@SBrython/sbry/ast2js/ast2js";
+import { w_node, w_sns } from "@SBrython/sbry/ast2js/utils";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
 import Types from "./list";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";

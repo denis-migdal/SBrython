@@ -1,6 +1,6 @@
 import { parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
 import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
-import { w_sns } from "@SBrython/sbry/ast2js/ast2js";
+import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { AST_KEY_RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
 
