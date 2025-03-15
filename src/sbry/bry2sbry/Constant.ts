@@ -1,6 +1,6 @@
 import { AST_LIT_BOOL, AST_LIT_FLOAT, AST_LIT_INT, AST_LIT_NONE, AST_LIT_STR } from "@SBrython/sbry/ast2js/";
 import { setResultType, setType, VALUES } from "@SBrython/sbry/dop";
-import { Context } from "@SBrython/sbry/py2ast";
+import { Context } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NoneType, TYPEID_str } from "@SBrython/sbry/types";
 
 export default function convert(dst: number, node: any, _context: Context): false|void {

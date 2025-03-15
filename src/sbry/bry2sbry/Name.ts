@@ -1,5 +1,5 @@
-import { Context } from "@SBrython/sbry/py2ast";
-import { AST_SYMBOL } from "@SBrython/sbry/ast2js/";
+import { Context } from "@SBrython/sbry/bry2sbry/utils";
+import { AST_SYMBOL } from "@SBrython/sbry/ast2js/index";
 import { setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 
 function isClass(_: unknown) {

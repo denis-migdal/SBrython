@@ -1,5 +1,5 @@
 // must NOT depends on list.
-import AST2JS from ".";
+import AST2JS from "./index"; // required for correct type deduction...
 
 import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, type } from "../dop";
 

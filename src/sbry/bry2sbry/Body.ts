@@ -1,6 +1,6 @@
 import { AST_BODY } from "@SBrython/sbry/ast2js/";
 import { addChild, setType } from "@SBrython/sbry/dop";
-import { Context, convert_node } from "@SBrython/sbry/py2ast";
+import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
 import Types from "@SBrython/sbry/types/list";
 import { ARGS_INFO, AST_KEY_RETURN_TYPE } from "@SBrython/sbry/types/utils/types";

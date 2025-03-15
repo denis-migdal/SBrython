@@ -51,7 +51,7 @@ function importModules(modules) {
 
     result += "];\n";
     
-    result +="\nimport ILIST from '.';\nILIST.push(...LIST);\nexport default ILIST;\n";
+    result +="\nimport ILIST from './index';\nILIST.push(...LIST);\nexport default ILIST;\n";
 
     result += "\n";
     result += "let _id2name: string[] = [];\n";

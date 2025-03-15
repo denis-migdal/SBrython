@@ -1,4 +1,4 @@
-export default {
+const LIST = {
 	Name: require("./Name").default,
 	Constant: require("./Constant").default,
 	ClassDef: require("./ClassDef").default,
@@ -36,3 +36,7 @@ export default {
 	For: require("./controlflows/For").default,
 	ExceptHandler: require("./controlflows/ExceptHandler").default,
 }
+
+import ILIST from './index';
+Object.assign(ILIST, LIST);
+export default ILIST;

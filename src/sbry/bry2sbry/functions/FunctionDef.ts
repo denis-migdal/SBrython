@@ -1,4 +1,4 @@
-import { Context, set_py_code_from_list } from "@SBrython/sbry/py2ast";
+import { Context, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { default_call } from "@SBrython/sbry/ast2js/fct/call";
 import { convert_args } from "./Args";
 import { AST_FCT_DEF } from "@SBrython/sbry/ast2js/";
@@ -27,7 +27,7 @@ function generate(dst: number, node: any, context: Context) {
     const meta    = call[ARGS_INFO];
 
     // new context for the function local variables
-    context = new Context("fct", context);
+    context = context.createSubContext("fct");
     context.parent_node_context = dst; // <- here
 
     // fake the node... => better doing here to not have context issues.

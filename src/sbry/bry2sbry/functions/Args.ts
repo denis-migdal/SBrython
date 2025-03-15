@@ -1,4 +1,4 @@
-import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBrython/sbry/py2ast";
+import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBrython/sbry/bry2sbry/utils";
 import { AST_FCT_DEF_ARGS } from "@SBrython/sbry/ast2js/";
 import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType } from "@SBrython/sbry/types";

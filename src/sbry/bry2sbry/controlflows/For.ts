@@ -1,7 +1,7 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
 import { AST_CTRL_FOR, AST_CTRL_FOR_RANGE } from "@SBrython/sbry/ast2js/";
 import { addChild, setType, VALUES } from "@SBrython/sbry/dop";
-import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/py2ast";
+import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID_int } from "@SBrython/sbry/types";
 
 export default function convert(dst: number, node: any, context: Context): false|void {

@@ -1,6 +1,6 @@
 import { AST_OP_CMP } from "@SBrython/sbry/ast2js/";
 import { addChild, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
-import { Context, convert_node } from "@SBrython/sbry/py2ast";
+import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { bname2pyname } from "@SBrython/sbry/structs/BinaryOperators";
 import { TYPEID_bool } from "@SBrython/sbry/types";
 

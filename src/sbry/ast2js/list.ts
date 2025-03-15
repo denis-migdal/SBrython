@@ -44,7 +44,7 @@ const LIST = [
 	require("./2number").default,
 ];
 
-import ILIST from '.';
+import ILIST from './index';
 ILIST.push(...LIST);
 export default ILIST;
 

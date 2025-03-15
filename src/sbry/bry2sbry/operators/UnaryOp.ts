@@ -1,4 +1,4 @@
-import { Context, convert_node } from "@SBrython/sbry/py2ast";
+import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { bname2pyname } from "@SBrython/sbry/structs/BinaryOperators";
 import { AST_OP_UNARY } from "@SBrython/sbry/ast2js/";
 import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";

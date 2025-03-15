@@ -1,6 +1,6 @@
 import { AST_KEY_BREAK } from "@SBrython/sbry/ast2js/";
 import { setType } from "@SBrython/sbry/dop";
-import { Context } from "@SBrython/sbry/py2ast";
+import { Context } from "@SBrython/sbry/bry2sbry/utils";
 
 export default function convert(dst: number, node: any, context: Context) {
     

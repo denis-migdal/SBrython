@@ -10,7 +10,11 @@ async function getModules(path) {
     for(let i = 0; i < files.length; ++i) {
         const filepath = files[i];
 
-        if(filepath === "list.ts" || filepath === "index.ts" || filepath === "index.js")
+        if(    filepath === "list.ts"
+            || filepath === "index.ts"
+            || filepath === "index.d.ts"
+            || filepath === "index.js"
+            || filepath === "utils.ts")
             continue;
 
         const pos = filepath.lastIndexOf("/");
@@ -26,12 +30,16 @@ async function getModules(path) {
 
 function importModules(modules) {
 
-    let result = "export default {\n";
+    let result = "const LIST = {\n";
 
     for(let key in modules)
         result += `\t${key}: require("${modules[key]}").default,\n`;
 
-    result += "}";
+    result += "}\n\n";
+
+    result += "import ILIST from './index';\n";
+    result += "Object.assign(ILIST, LIST);\n";
+    result += "export default ILIST;\n";
 
     return result;
 }

@@ -83,7 +83,6 @@ export function setType(node: number, value: number) {
     return ASTNODES[node * ASTNODE_SIZE + ASTNODE_TYPE_ID] = value;
 }
 export function setResultType(node: number, value: number) {
-
     ASTNODES[node * ASTNODE_SIZE + ASTNODE_RESULT_TYPE] = value;
 }
 export function setParentOPPrio(node: number, value: number) {

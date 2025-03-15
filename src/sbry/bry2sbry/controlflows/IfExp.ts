@@ -1,6 +1,6 @@
 import { AST_CTRL_TERNARY } from "@SBrython/sbry/ast2js/";
 import { addChild, resultType, setResultType, setType } from "@SBrython/sbry/dop";
-import { Context, convert_node } from "@SBrython/sbry/py2ast";
+import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
 export default function convert(dst: number, node: any, context: Context) {
 

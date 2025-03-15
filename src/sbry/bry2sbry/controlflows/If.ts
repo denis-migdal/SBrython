@@ -1,7 +1,7 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
 import { AST_CTRL_IFBLOCK } from "@SBrython/sbry/ast2js/";
 import { addChild, setType } from "@SBrython/sbry/dop";
-import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/py2ast";
+import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 
 export default function convert(dst: number, node: any, context: Context) {
 

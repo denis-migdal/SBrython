@@ -1,6 +1,6 @@
 import { AST_KEY_RETURN } from "@SBrython/sbry/ast2js/";
 import { addChild, resultType, setResultType, setType } from "@SBrython/sbry/dop";
-import { Context, convert_node } from "@SBrython/sbry/py2ast";
+import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID_NoneType } from "@SBrython/sbry/types";
 
 import Types from "@SBrython/sbry/types/list";

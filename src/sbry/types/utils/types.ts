@@ -1,4 +1,4 @@
-import { Context } from "@SBrython/sbry/py2ast";
+import { type Context } from "@SBrython/sbry/bry2sbry/utils";
 
 export const AST_KEY_RETURN_TYPE = Symbol();
 export const WRITE_CALL  = Symbol();

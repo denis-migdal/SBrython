@@ -1,6 +1,6 @@
 import { AST_FCT_CALL } from "@SBrython/sbry/ast2js/";
 import { addChild, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
-import { Context, convert_node, set_py_code, set_py_code_from_list } from "@SBrython/sbry/py2ast";
+import { Context, convert_node, set_py_code } from "@SBrython/sbry/bry2sbry/utils";
 import Types from "@SBrython/sbry/types/list";
 import keyword from "./keyword";
 import { Fct, AST_KEY_RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
