@@ -31,7 +31,12 @@ const merge     = search.get("merge") === "true" ? true : false;
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
 
-const brython_tests = ['basic test suite', 'numbers'];
+const brython_tests = ['basic test suite', 'numbers'];//, "strings", "string methods"];
+// strings ~600
+// list    ~496
+// dicts   ~288
+// sets    ~300
+// bytes   ~300
 const test_suites   = await loadTests(...brython_tests); // cf end of file for available tests
 
 if( test_name !== null)
@@ -483,23 +488,26 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
 
     subTestsStats[test_name] = [];
 
-    return code.split('#').slice(1).map( t => {
+    const parts = code.split('#').slice(1);
+
+    return parts.map( (t,idx) => {
 
         let   lines = t.split('\n');
         const name  = lines[0].trim();
+        lines[0] = "# " + test_name + "." + name + " (" + (idx+1) + "/" + parts.length + ")";
         const fullname = `${test_name}.${name}`;
 
-        lines = filter(lines.slice(1), exclude[fullname]);
+        lines = filter(lines, exclude[fullname]);
 
         let nbEmptyLines = 0;
-        for(let i = 0; i < lines.length; ++i)
+        for(let i = 1; i < lines.length; ++i)
             if(lines[i].trim() === '')
                 ++nbEmptyLines;
     
-        let code_len = lines.length - nbEmptyLines;
+        let code_len = lines.length - 1 - nbEmptyLines;
     
         let nbExcluded = 0;
-        for(let i = 0; i < lines.length; ++i)
+        for(let i = 1; i < lines.length; ++i)
             nbExcluded += +(lines[i][0] === '#');
 
         subTestsStats[test_name].push({
@@ -519,13 +527,13 @@ function filter(lines: string[], list: (number|"*"|number[])[]) {
     list ??= [];
     
     let result = lines.map( (l, idx) => {
-        idx = idx + 1 + 2;
+        idx = idx + 1;
         let excluded = list.find( (v) => {
             if( v === '*')
                 return true;
             if( idx === v)
                 return true;
-            if( Array.isArray(v) && v[0] - 2 <= idx && v[1] - 2 >= idx)
+            if( Array.isArray(v) && v[0] <= idx && v[1] >= idx)
                 return true;
             return false;
         }) !== undefined;

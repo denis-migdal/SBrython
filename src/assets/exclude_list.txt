@@ -1,16 +1,16 @@
 # numbers.numbers
 // is instance/__class__
-9
-30
+8
+29
 
 // assert_raise
-5
+4
 // __divmod__
-42-42
+39
 
 # numbers.issue 1666
 // abs
-8-9
+5-6
 
 # numbers.issue 840
 // id()
@@ -24,7 +24,7 @@
 *
 # numbers.issue 1299
 // pow
-3
+2
 # numbers.issue 1309
 // pow + Fraction
 *
@@ -55,16 +55,16 @@
 
 # numbers.long integers
 // Math.pi 
-4-7
+2-4
 // int() with base
-13-47
+10-44
 
 # numbers.issue 1512
 // maths + isnan
 *
 # numbers.issue 1511
 // math.isnan
-8-9
+5-6
 
 # numbers.issue 749
 // __eq__ override
@@ -148,8 +148,8 @@
 
 # numbers.issue 1491
 // unary +
-6
-10
+5
+9
 
 # numbers.issue 1686
 // __mul__ __rmull__ override
@@ -318,7 +318,7 @@
 
 # numbers.issue 350
 // repr
-7
+6
 
 # numbers.True and False are instances of int
 // isinstance
@@ -364,12 +364,12 @@
 
 # basic test suite.strings
 // extra tab...
-13
-20
-27
-32
+12
+19
+26
+31
 // str.strip()
-41-43
+37-40
 
 # basic test suite.enumerate
 *

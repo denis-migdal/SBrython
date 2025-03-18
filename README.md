@@ -25,12 +25,7 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 
 TODO:
 - [ ] Add features
-    - __abs__ __ceil__ __mod__ / abs() / id() / divmod()
-    - round()
-    - latter
-        - => pow() => ** [la merde à implémenter...] => __pow__ ??
-        - JS operator "."...
-    - [ ] dicts/lists/bytes/sets/strings/string_methods
+    - [ ] strings/string_methods/lists/dicts/sets
     - [ ] complex / bytes (from/to bytes)
     - [ ] classes.py
     - [ ] special methods
@@ -39,6 +34,9 @@ TODO:
     - [ ] Final[] decorator (const decl).
     - [ ] file API ??
     - [ ] type guard (type() / .__class__)
+    - latter
+        - => pow() => ** [la merde à implémenter...] => __pow__ ??
+        - JS operator "."...
 - [ ] documenter !
     - [ ] Production mode
         - [ ] indentation
