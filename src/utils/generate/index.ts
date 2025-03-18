@@ -24,3 +24,5 @@ export default function generate(code: string, results: Results) {
     results. bry.times[offset] += results. bry.times[offset+1];
     results.sbry.times[offset] += results.sbry.times[offset+1];
 }
+
+console.warn("second", generate);

@@ -1,5 +1,5 @@
 import { RET_FLOAT } from "@SBrython/sbry/structs/ReturnTypeFcts";
-import { TYPE_type_float_ } from "./bases";
+import { TYPE_type, TYPE_type_float_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { Int2Number } from "@SBrython/sbry/structs/Converters";
@@ -11,7 +11,8 @@ import { WRITE_CALL } from "./utils/types";
 
 export default Object.assign(TYPE_type_float_,
     {
-        __name__ : "type",
+        __class__: TYPE_type,
+        __name__ : "float",
         __call__ : method_wrapper(RET_FLOAT, (node: number) => {
 
             const other = firstChild(node)+1;

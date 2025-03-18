@@ -11,7 +11,6 @@ import { TYPEID_str } from ".";
 
 export default Object.assign(TYPE_str,
     {
-        __name__ : "str",
         __class__: TYPE_type_str_,
         __len__: method_wrapper(RET_INT, (node) => {
             w_node( firstChild(node) + 1 );

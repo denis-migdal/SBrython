@@ -24,18 +24,36 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms (3.43x)
 
 TODO:
-
+- [ ] tests
+    - [ ] Tests stats (#lines + excluded)
+    - [ ] Execute tests one by one (merge=X)
+    - [ ] ignore utils/
+    - [ ] str2float ?
+    - [ ] root_local symbols ???
+        - [ ] builtins in types ?
+    - [ ] type() => Its value is the same as the object. __class__ instance variable
+        - [ ] -> get ID from obj.
+        - [ ] type(int) / type(float) are the same class type...
+    - [ ] print() => SB().print(...)
+- [ ] Add features
+    - [ ] some functions (len/divmod/etc) - uncomment
+    - [ ] dicts/lists/bytes/sets/strings/string_methods
+    - [ ] classes.py
+    - [ ] special methods
+    - [ ] imports / js obj / brython interactions
+    - [ ] iterators/generators/decorators/descriptors
+    - [ ] Final[] decorator (const decl).
+    - [ ] file API ??
+    - [ ] type() / instanceof() => type["number"] = Number / type[X] = X.constructor
+        - [ ] type[x] = x + offset ?
 - [ ] documenter !
     - [ ] Production mode
         - [ ] indentation
         - [ ] optionnal checks (core_modules)
         - [ ] JS/PY code positions
     - [ ] bry2sbry
-- [ ] Webpack merge module : avoid circular deps (?)
 
-- [ ] Restaure Editor
-    - [ ] Tests stats (#lines + excluded)
-    - [ ] make pages/Editor depends on library (2x) ?
+- [ ] make pages/Editor depends on library (2x) ?
 
 1. AST2JS
 2. tokens2AST

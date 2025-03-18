@@ -30,7 +30,7 @@ export default function astnode2tree(id = 0): NODE {
 
     return {
         type       : id2name[type(id)], // TODO convert
-        result_type: Types[resultType(id)]?.__name__,
+        result_type: Types[resultType(id)]?.__class__?.__name__!,
         value      : VALUES[id],
         jscode  : buildJSCode(id),
         pycode  : buildPyCode(id),

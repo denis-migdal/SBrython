@@ -13,7 +13,6 @@ import { TYPEID_float } from ".";
 
 export default Object.assign(TYPE_int,
     {
-        __name__ : "int",
         __class__: TYPE_type_int_,
         __str__  : method_wrapper(RET_STR, (_, arg) => {
             w_node(arg); w_str(".toString()");

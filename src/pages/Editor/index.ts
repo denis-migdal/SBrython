@@ -1,8 +1,10 @@
 import generate from "@SBrython/utils/generate";
+
 import execute  from "@SBrython/utils/execute";
 import resetResults from "@SBrython/utils/results";
 import { generate_report } from "@SBrython/utils/reports";
 import astnode2tree, { NODE } from "@SBrython/utils/print/astnode2tree";
+
 
 window.onerror = (...args) => {
 	console.log(args);
@@ -382,7 +384,6 @@ function startTests(test_name: string, merge: boolean) {
         window.clearResults();
     */
 
-    console.warn("here", generate);
     generate(fullcode, results);
 
     execute(results);

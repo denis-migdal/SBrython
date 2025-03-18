@@ -6,6 +6,7 @@ const LIST = [
 	require("./float").default,
 	require("./bool").default,
 	require("./str").default,
+	require("./type").default,
 	require("./type[int]").default,
 	require("./type[float]").default,
 	require("./type[str]").default,

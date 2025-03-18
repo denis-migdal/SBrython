@@ -7,9 +7,10 @@ export const ARGS_INFO   = Symbol();
 export type Type = {
     [key: string]: string|Type,
     [key: symbol]: unknown,
-    __name__: string,
-    __str__?: Fct<[number]>,
-    __int__?: Fct<[number]>,
+    __class__?: Type,
+    __name__ ?: string,
+    __str__  ?: Fct<[number]>,
+    __int__  ?: Fct<[number]>,
 }
 
 export type Fct<T extends any[] = unknown[]> = Type & {

@@ -1,4 +1,4 @@
- from tester import assertRaises
+from tester import assertRaises
 
 class Exc(Exception):
     pass

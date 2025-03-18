@@ -1,5 +1,5 @@
 import { RET_INT } from "@SBrython/sbry/structs/ReturnTypeFcts";
-import { TYPE_type_int_ } from "./bases";
+import { TYPE_type, TYPE_type_int_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
 import { firstChild, resultType } from "@SBrython/sbry/dop";
 import { w_node, w_sns } from "@SBrython/sbry/ast2js/utils";
@@ -10,7 +10,8 @@ import { WRITE_CALL } from "./utils/types";
 
 export default Object.assign(TYPE_type_int_,
     {
-        __name__ : "type",
+        __class__: TYPE_type,
+        __name__ : "int",
         __call__: method_wrapper(RET_INT, (node: number) => {
 
             const other = firstChild(node) + 1;

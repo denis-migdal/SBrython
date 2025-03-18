@@ -11,7 +11,6 @@ import { TYPEID_float, TYPEID_int } from ".";
 
 export default Object.assign(TYPE_jsint,
     {
-        __name__ : "jsint",
         __class__: TYPE_type_int_,
     },
     genBinaryOps(

@@ -10,7 +10,6 @@ import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
 
 export default Object.assign(TYPE_float,
     {
-        __name__ : "float",
         __class__: TYPE_type_float_,
 
         __str__: method_wrapper(RET_STR, (node, arg) => {
