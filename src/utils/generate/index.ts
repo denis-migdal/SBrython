@@ -3,13 +3,18 @@ import buildAST from "./AST";
 import generateBrython from "./Brython";
 import generateSBrython from "./SBrython";
 
-console.warn("first");
-
 export default function generate(code: string, results: Results) {
+
+    results.bry.offset  = 0;
+    results.sbry.offset = 0;
+
+    results.code = code;
 
     const offset = results.bry.offset;
     results.bry.offset += 2;
     results.sbry.offset+= 2;
+
+    ++results.nb_files;
 
     const ast = buildAST(code, results);
     
@@ -24,5 +29,3 @@ export default function generate(code: string, results: Results) {
     results. bry.times[offset] += results. bry.times[offset+1];
     results.sbry.times[offset] += results.sbry.times[offset+1];
 }
-
-console.warn("second", generate);

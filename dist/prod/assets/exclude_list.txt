@@ -93,7 +93,7 @@
 *
 # numbers.issue 1299
 // pow
-4
+3
 # numbers.issue 1309
 // pow + Fraction
 *

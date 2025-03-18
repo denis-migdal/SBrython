@@ -17,10 +17,15 @@ const  bry_output  = document.querySelector ( '.brython_output')!;
 const sbry_output  = document.querySelector('.sbrython_output')!;
 const python_input = document.querySelector<HTMLInputElement>('#python')!;
 
+const python_output = document.querySelector(".python_ouput")!;
+const ast_output    = document.querySelector("#ast")!;
+const js_output     = document.querySelector("#js")!;
+
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
-const merge     = true; // search.get("merge") === "true" ? true : false;
+const merge     = search.get("merge") === "true" ? true : false;
 
+const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
 
 const brython_tests = ['basic test suite', 'numbers'];
@@ -28,13 +33,6 @@ const test_suites   = await loadTests(...brython_tests); // cf end of file for a
 
 if( test_name !== null)
     startTests(test_name, merge);
-
-// handle GUI...
-
-const python_output = document.querySelector(".python_ouput")!;
-const ast_output    = document.querySelector("#ast")!;
-const js_output     = document.querySelector("#js")!;
-
 
 python_input.addEventListener("input",
     () => {
@@ -73,6 +71,8 @@ function oneTimeExec(fullcode: string) {
 
     clearResults();
 
+    results.total_lines = fullcode.split('\n').filter(l => l.trim() !== "").length;
+
     generate(fullcode, results);
 
     try {
@@ -85,8 +85,8 @@ function oneTimeExec(fullcode: string) {
 
     sbry_output.classList.add('success');
     
-     bry_output.textContent = generate_report(results.nb_tokens, results. bry , results.sbry );
-    sbry_output.textContent = generate_report(results.nb_tokens, results.sbry, results. bry);
+     bry_output.textContent = generate_report(results, "bry" , "sbry");
+    sbry_output.textContent = generate_report(results, "sbry", "bry");
  
     const ast = astnode2tree();
     try {
@@ -352,59 +352,88 @@ function startTests(test_name: string, merge: boolean) {
     if( test_name === "brython" )
         tests = brython_tests;
 
+    let error: null|Error = null;
     let fullcode = "";
 
     // build merged code
     let id = -1;
-    for(let i = 0; i < tests.length; ++i) {
+    tests: for(let i = 0; i < tests.length; ++i) {
 
         const subtests = test_suites[tests[i]];
+        const substats = subTestsStats[tests[i]];
 
         for(let j = 0; j < subtests.length; ++j) {
 
+            const stats = substats[j];
+            results.total_lines       += stats.total;
+            results.nb_excluded_lines += stats.excluded;
+
+            const code = subtests[j];
+
             ++id;
 
-            if( subtests[j] === "")
+            if( code === "")
                 continue;
        
             if( id === 5) { // || id > 121) {
                 //console.warn("ignored", id);
+                results.nb_excluded_lines += stats.total - stats.excluded;
                 continue;
             }
-            
-            const indented_code = subtests[j].split('\n').map(e => `\t${e}`).join('\n');
-            fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
-        }
 
+            if( merge ) {
+                const indented_code = code.split('\n').map(e => `\t${e}`).join('\n');
+                fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
+            } else {
+                try {
+                    fullcode = code;
+                    generate(fullcode, results);
+                    execute(results);
+                } catch(e) {
+                    error = e as Error;
+                    break tests;
+                }
+            }
+        }
     }
 
-    /* 
-        let error = false;
-        let lastResults;
-        window.clearResults();
-    */
-
-    generate(fullcode, results);
-
-    execute(results);
+    if( merge ) {
+        try {
+            generate(fullcode, results);
+            execute(results);
+        } catch(e) {
+            error = e as Error;
+        }
+    }
     
-    //TODO
-    
-    /* if(error) {
-        window.updateFromResults(lastResults);
+    if(error) {
 
-        const python_input = document.querySelector('#python');
-        python_input.value = lastResults.sbrython.pycode;
+        python_input.value = results.code;
+
+        sbry_output.classList.add('error');
+        sbry_output.textContent = error.message;
+        console.warn(error);
+
+        const ast = astnode2tree();
+        try {
+            print_js( results.sbry.code, ast );
+        } catch(e) { console.warn(e); }
+        try {
+            print_python( fullcode, ast );
+        } catch(e) { console.warn(e); }
+        try {
+            print_ast( ast );
+        } catch(e) { console.warn(e); }
 
         return;
-    }*/
+    }
 
     python_input.value = "";
     
     sbry_output.classList.add('success');
     
-     bry_output.textContent = generate_report(results.nb_tokens, results. bry , results.sbry );
-    sbry_output.textContent = generate_report(results.nb_tokens, results.sbry, results. bry);
+     bry_output.textContent = generate_report(results, "bry" , "sbry" );
+    sbry_output.textContent = generate_report(results, "sbry", "bry");
     
 }
 
@@ -444,26 +473,33 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
 
     const code = await (await fetch(`/assets/unittests/${test_name}.py`)).text();
 
+    subTestsStats[test_name] = [];
+
     return code.split('#').slice(1).map( t => {
 
         let   lines = t.split('\n');
         const name  = lines[0].trim();
+        const fullname = `${test_name}.${name}`;
 
-        lines = filter(lines.slice(1), exclude[`${test_name}.${name}`]);
+        lines = filter(lines.slice(1), exclude[fullname]);
 
         let nbEmptyLines = 0;
-        for(let i = 1; i < lines.length; ++i)
+        for(let i = 0; i < lines.length; ++i)
             if(lines[i].trim() === '')
                 ++nbEmptyLines;
     
-        let code_len = lines.length - 1 - nbEmptyLines;
+        let code_len = lines.length - nbEmptyLines;
     
         let nbExcluded = 0;
-        for(let i = 1; i < lines.length; ++i)
+        for(let i = 0; i < lines.length; ++i)
             nbExcluded += +(lines[i][0] === '#');
-    
-        //total          += code_len;
-        //excluded_count += nbExcluded;
+
+        console.warn(code_len, nbExcluded, nbEmptyLines, lines);
+
+        subTestsStats[test_name].push({
+            excluded: nbExcluded,
+            total   : code_len
+        });
     
         if(code_len === nbExcluded)
             return "";

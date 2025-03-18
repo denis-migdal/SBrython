@@ -7,7 +7,13 @@ export type SubResults = {
 
 const results = {
 
+    code: "",
+
     nb_tokens: 0,
+
+    total_lines      : 0,
+    nb_excluded_lines: 0,
+    nb_files         : 0,
 
     bry: {
         offset: 0,
@@ -25,6 +31,11 @@ const results = {
 export type Results = typeof results;
 
 export default function resetResults() {
+
+    results.code = "";
+    results.total_lines      = 0,
+    results.nb_excluded_lines= 0,
+    results.nb_files         = 0,
 
     results.nb_tokens = 0;
 

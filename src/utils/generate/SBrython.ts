@@ -26,7 +26,7 @@ export default function generateSBrython(_ast: string, results: SubResults) {
 
     const t1 = performance.now();
 
-    results.code += jscode;
+    results.code  = jscode;
     results.ast   = ast;
 
     //results.times[results.offset++] += t1 - beg; // total

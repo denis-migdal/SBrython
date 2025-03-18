@@ -6,7 +6,7 @@
 
 ## SimplerBrython
 
-https://sbrython.migdal.ovh/Editor/?test=brython
+https://sbrython.migdal.ovh/Editor/?test=brython&merge=true
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
@@ -25,15 +25,12 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 
 TODO:
 - [ ] tests
-    - [ ] Tests stats (#lines + excluded)
-    - [ ] Execute tests one by one (merge=X)
-    - [ ] str2float ?
     - [ ] root_local symbols ???
         - [ ] builtins in types ?
-    - [ ] type() => Its value is the same as the object. __class__ instance variable
-        - [ ] -> get ID from obj.
-        - [ ] type(int) / type(float) are the same class type...
     - [ ] print() => SB().print(...)
+    - [ ] type.__call__()
+        - [ ] -> get ID from obj (for return type)
+        - [ ] -> first type guard.
 - [ ] Add features
     - [ ] some functions (len/divmod/etc) - uncomment
     - [ ] dicts/lists/bytes/sets/strings/string_methods
