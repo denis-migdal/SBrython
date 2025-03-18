@@ -13,7 +13,7 @@ async function getModules(path) {
         if(filepath === "list.ts"
             || filepath === "index.ts"
             || filepath === "bases.ts"
-            || filepath === "utils.ts")
+            || filepath.startsWith("utils") )
             continue;
 
         const pos = filepath.lastIndexOf("/");

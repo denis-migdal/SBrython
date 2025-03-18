@@ -27,7 +27,6 @@ TODO:
 - [ ] tests
     - [ ] Tests stats (#lines + excluded)
     - [ ] Execute tests one by one (merge=X)
-    - [ ] ignore utils/
     - [ ] str2float ?
     - [ ] root_local symbols ???
         - [ ] builtins in types ?
