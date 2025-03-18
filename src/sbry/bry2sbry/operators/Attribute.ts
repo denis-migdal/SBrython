@@ -9,5 +9,10 @@ export default function convert(dst: number, node: any, context: Context) {
 
     convert_node(coffset, node.value, context);
 
-    VALUES[dst] = node.attr;
+    //TODO: return type...
+    let value = node.attr;
+    if( value === "__class__")
+        value = "constructor";
+
+    VALUES[dst] = value;
 }

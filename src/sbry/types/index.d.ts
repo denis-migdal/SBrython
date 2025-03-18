@@ -5,9 +5,10 @@ export declare const TYPEID_jsint              = 3;
 export declare const TYPEID_float              = 4;
 export declare const TYPEID_bool               = 5;
 export declare const TYPEID_str                = 6;
-export declare const TYPEID_type_int_          = 7;
-export declare const TYPEID_type_float_        = 8;
-export declare const TYPEID_type_str_          = 9;
+export declare const TYPEID_type               = 7;
+export declare const TYPEID_type_int_          = 8;
+export declare const TYPEID_type_float_        = 9;
+export declare const TYPEID_type_str_          = 10;
 
 import type {Type} from "./utils/types";
 

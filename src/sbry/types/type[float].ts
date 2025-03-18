@@ -7,12 +7,13 @@ import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_LIT_STR } from "@SBrython/sbry/ast2js/";
 import Types from "./index";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";
-import { WRITE_CALL } from "./utils/types";
+import { JS_NAME, WRITE_CALL } from "./utils/types";
 
 export default Object.assign(TYPE_type_float_,
     {
         __class__: TYPE_type,
         __name__ : "float",
+        [JS_NAME]: "Number",
         __call__ : method_wrapper(RET_FLOAT, (node: number) => {
 
             const other = firstChild(node)+1;

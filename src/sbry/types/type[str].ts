@@ -5,12 +5,13 @@ import { firstChild, resultType } from "@SBrython/sbry/dop";
 import Types from "./index";
 import { w_node } from "@SBrython/sbry/ast2js/utils";
 import { TYPEID_str } from ".";
-import { WRITE_CALL } from "./utils/types";
+import { JS_NAME, WRITE_CALL } from "./utils/types";
 
 export default Object.assign(TYPE_type_str_,
     {
         __class__: TYPE_type,
         __name__ : "str",
+        [JS_NAME]: "String",
         __call__: method_wrapper(RET_STR, (node) => {
 
             const other = firstChild(node)+1;

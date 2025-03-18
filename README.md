@@ -25,11 +25,18 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 
 TODO:
 - [ ] Add features
-    - [ ] some functions (len/divmod/etc) - uncomment
+    - __class__ ?
+        -> write symbol
+            -> ??? ???
+        -> .constructor...
+    - => pow() => ** [la merde à implémenter...]
+    - JS operator "."...
+    - [ ] -> cf unit test exclude...
     - [ ] type.__call__() / __class__ unit tests
         - [ ] -> get ID from obj (for return type)
         - [ ] -> first type guard...
     - [ ] dicts/lists/bytes/sets/strings/string_methods
+    - [ ] complex / bytes
     - [ ] classes.py
     - [ ] special methods
     - [ ] imports / js obj / brython interactions

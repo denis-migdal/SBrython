@@ -1,5 +1,5 @@
-import Types, { TYPEID_type_float_, TYPEID_type_int_, TYPEID_type_str_ } from ".";
-import { w_node, w_sns, w_str } from "../ast2js/utils";
+import Types, { TYPEID_type, TYPEID_type_float_, TYPEID_type_int_, TYPEID_type_str_ } from ".";
+import { w_node, w_str } from "../ast2js/utils";
 import { firstChild, nbChild, resultType } from "../dop";
 import { RET_INT, RET_None, RETURN_TYPE_FCT } from "../structs/ReturnTypeFcts";
 import { addType } from "./utils/addType";
@@ -11,6 +11,7 @@ export default {
     int  : TYPEID_type_int_,
     str  : TYPEID_type_str_,
     float: TYPEID_type_float_,
+    type : TYPEID_type,
     len  : addType("len", genUnaryOpFct("len", RET_INT)),
     print: addType("print", {
         __call__: method_wrapper(RET_None, (call:number) => {

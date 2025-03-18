@@ -76,18 +76,25 @@ function oneTimeExec(fullcode: string) {
 
     results.total_lines = fullcode.split('\n').filter(l => l.trim() !== "").length;
 
-    generate(fullcode, results);
+    let error: null|Error = null;
 
     try {
+        generate(fullcode, results);
         execute(results, sbry_print);
     } catch(e) {
-        console.warn(e);
+        error = e as Error;
     }
 
     //TODO: AST+code trees...
 
-    sbry_output.classList.add('success');
-    
+    if( error !== null) {
+        sbry_output.textContent += error.message + "\n";
+        sbry_output.classList.add('error');
+        console.error(error);
+    } else {
+        sbry_output.classList.add('success');
+    }
+
      bry_output.textContent += generate_report(results, "bry" , "sbry");
     sbry_output.textContent += generate_report(results, "sbry", "bry");
  
@@ -362,8 +369,8 @@ function startTests(test_name: string, merge: boolean) {
     let error: null|Error = null;
     let fullcode = "";
 
-    // build merged code
     let id = -1;
+    // build merged code
     tests: for(let i = 0; i < tests.length; ++i) {
 
         const subtests = test_suites[tests[i]];
@@ -371,23 +378,17 @@ function startTests(test_name: string, merge: boolean) {
 
         for(let j = 0; j < subtests.length; ++j) {
 
+            ++id;
+
             const stats = substats[j];
             results.total_lines       += stats.total;
             results.nb_excluded_lines += stats.excluded;
 
             const code = subtests[j];
 
-            ++id;
-
             if( code === "")
                 continue;
        
-            if( id === 5) { // || id > 121) {
-                //console.warn("ignored", id);
-                results.nb_excluded_lines += stats.total - stats.excluded;
-                continue;
-            }
-
             if( merge ) {
                 const indented_code = code.split('\n').map(e => `\t${e}`).join('\n');
                 fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;

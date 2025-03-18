@@ -1,6 +1,9 @@
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
 import { AST_SYMBOL } from "@SBrython/sbry/ast2js/index";
 import { setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import builtins from "../types/builtins";
+import Types from "../types/";
+import { JS_NAME } from "../types/utils/types";
 
 function isClass(_: unknown) {
     // from https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
@@ -10,11 +13,18 @@ function isClass(_: unknown) {
 export default function convert(dst: number, node: any, context: Context) {
 
     let result_type = 0;
-    let value = node.id;
+    let value = node.id as string;
 
     if( value === 'self')
         value = 'this'; //TODO type of current context ! -> self in local_symbols ?
-    else if( value in context.local_symbols)
+    else if(value in builtins ) {
+        result_type = builtins[value as keyof typeof builtins];
+
+        const alt = Types[result_type][JS_NAME];
+        if( alt !== undefined)
+            value = alt;
+
+    } else if( value in context.local_symbols)
         result_type = context.local_symbols[value];
 
     /*

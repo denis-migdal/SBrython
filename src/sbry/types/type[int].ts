@@ -6,12 +6,13 @@ import { w_node, w_sns } from "@SBrython/sbry/ast2js/utils";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
 import Types from "./index";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str } from ".";
-import { WRITE_CALL } from "./utils/types";
+import { JS_NAME, WRITE_CALL } from "./utils/types";
 
 export default Object.assign(TYPE_type_int_,
     {
         __class__: TYPE_type,
         __name__ : "int",
+        [JS_NAME]: "BigInt",
         __call__: method_wrapper(RET_INT, (node: number) => {
 
             const other = firstChild(node) + 1;
