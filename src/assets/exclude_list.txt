@@ -5,12 +5,12 @@
 
 // assert_raise
 5
-// __abs__ __ceil__ __mod__
-36-42
+// __divmod__
+42-42
 
 # numbers.issue 1666
 // abs
-*
+8-9
 
 # numbers.issue 840
 // id()

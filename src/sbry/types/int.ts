@@ -5,11 +5,12 @@ import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { write_id_jsop } from "@SBrython/sbry/structs/operators/id";
 import { genBinaryOps, write_binary_jsop } from "@SBrython/sbry/structs/operators/binary";
 import { CONVERT_2INT, CONVERT_INT2FLOAT, Int2Number } from "@SBrython/sbry/structs/Converters";
-import { resultType } from "@SBrython/sbry/dop";
+import { firstChild, resultType } from "@SBrython/sbry/dop";
 import { genUnaryOps, write_unary_jsop } from "@SBrython/sbry/structs/operators/unary";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
 import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
 import { TYPEID_float } from ".";
+import { printNode } from "../py2ast";
 
 export default Object.assign(TYPE_int,
     {
@@ -18,8 +19,18 @@ export default Object.assign(TYPE_int,
             w_node(arg); w_str(".toString()");
         }),
         __int__: method_wrapper(RET_INT, (node, self) => {
-            return write_id_jsop(node, self);
-        })
+            write_id_jsop(node, self);
+        }),
+        __abs__: {
+            __call__: method_wrapper(RET_INT, (node) => {
+                w_sns("_sb_.abs(", firstChild(node), ")");
+            })
+        },
+        __ceil__: {
+            __call__: method_wrapper(RET_INT, (node) => {
+                write_id_jsop(node, firstChild(node) );
+            })
+        }
     },
     genBinaryOps([
             // '**' => if "as float" could accept loss of precision.

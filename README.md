@@ -25,26 +25,20 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 
 TODO:
 - [ ] Add features
-    - __class__ ?
-        -> write symbol
-            -> ??? ???
-        -> .constructor...
-    - => pow() => ** [la merde à implémenter...]
-    - JS operator "."...
-    - [ ] -> cf unit test exclude...
-    - [ ] type.__call__() / __class__ unit tests
-        - [ ] -> get ID from obj (for return type)
-        - [ ] -> first type guard...
+    - __abs__ __ceil__ __mod__ / abs() / id() / divmod()
+    - round()
+    - latter
+        - => pow() => ** [la merde à implémenter...] => __pow__ ??
+        - JS operator "."...
     - [ ] dicts/lists/bytes/sets/strings/string_methods
-    - [ ] complex / bytes
+    - [ ] complex / bytes (from/to bytes)
     - [ ] classes.py
     - [ ] special methods
     - [ ] imports / js obj / brython interactions
     - [ ] iterators/generators/decorators/descriptors
     - [ ] Final[] decorator (const decl).
     - [ ] file API ??
-    - [ ] type() / instanceof() => type["number"] = Number / type[X] = X.constructor
-        - [ ] type[x] = x + offset ?
+    - [ ] type guard (type() / .__class__)
 - [ ] documenter !
     - [ ] Production mode
         - [ ] indentation

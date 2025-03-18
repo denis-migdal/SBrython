@@ -4,4 +4,5 @@ export default {
 	...require("./op_bin").default,
 	...require("./float2str").default,
 	...require("./assert").default,
+	...require("./abs").default,
 }

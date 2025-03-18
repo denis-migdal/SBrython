@@ -12,10 +12,12 @@ import { TYPEID_str } from ".";
 export default Object.assign(TYPE_str,
     {
         __class__: TYPE_type_str_,
-        __len__: method_wrapper(RET_INT, (node) => {
-            w_node( firstChild(node) + 1 );
-            w_str(".length");
-        })
+        __len__: {
+            __call__: method_wrapper(RET_INT, (node) => {
+                w_node( firstChild(node) + 1 );
+                w_str(".length");
+            })
+        }
     },
     genCmpOps   (CMPOPS_LIST, RET_STR2BOOL),
     genBinaryOps(["+"]      , RET_STR2STR),

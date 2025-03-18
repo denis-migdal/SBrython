@@ -4,7 +4,7 @@ import { firstChild, nbChild, resultType } from "../dop";
 import { RET_INT, RET_None, RETURN_TYPE_FCT } from "../structs/ReturnTypeFcts";
 import { addType } from "./utils/addType";
 import { method_wrapper } from "./utils/methods";
-import { Fct, WRITE_CALL } from "./utils/types";
+import { Callable, Fct, WRITE_CALL } from "./utils/types";
 
 // builtin symbols.
 export default {
@@ -13,6 +13,7 @@ export default {
     float: TYPEID_type_float_,
     type : TYPEID_type,
     len  : addType("len", genUnaryOpFct("len", RET_INT)),
+    abs  : addType("abs", genUnaryOpFct("abs", RET_INT)), //TODO...
     print: addType("print", {
         __call__: method_wrapper(RET_None, (call:number) => {
             const coffset  = firstChild(call);
@@ -37,8 +38,8 @@ function genUnaryOpFct(name: string, return_type: RETURN_TYPE_FCT) {
         //__name__ : name,
         __call__ : method_wrapper(return_type, (call: number) => {
             const left   = firstChild(call)+1;
-            const method = Types[resultType(left)]![opname] as Fct;
-            return method[WRITE_CALL](call);
+            const method = Types[resultType(left)]![opname] as Callable;
+            return method.__call__[WRITE_CALL](call);
         })
     }
 }

@@ -11,8 +11,11 @@ export type AST = {
 
 export function printNode(id: number) {
     console.warn({
+        id,
+        typeID   : type(id),
         type     : id2name[type(id)],
-        ret_type : Types[resultType(id)].__name__,
+        ret_typeID: resultType(id),
+        ret_type : Types[resultType(id)]?.__name__,
         value    : VALUES[id],
     });
 }

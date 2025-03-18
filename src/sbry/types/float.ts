@@ -7,6 +7,8 @@ import { genBinaryOps } from "@SBrython/sbry/structs/operators/binary";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
 import { genUnaryOps } from "@SBrython/sbry/structs/operators/unary";
 import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
+import { firstChild } from "../dop";
+import { printNode } from "../py2ast";
 
 export default Object.assign(TYPE_float,
     {
@@ -15,6 +17,11 @@ export default Object.assign(TYPE_float,
         __str__: method_wrapper(RET_STR, (node, arg) => {
             w_sns("_sb_.float2str(", arg, ")");
         }),
+        __abs__: {
+            __call__: method_wrapper(RET_FLOAT, (node) => {
+                w_sns("Math.abs(", firstChild(node) + 1, ")");
+            })
+        },
     },
     genBinaryOps(['**', '*', '/', '+', '-'], RET_IJBF2FLOAT,
                     {
