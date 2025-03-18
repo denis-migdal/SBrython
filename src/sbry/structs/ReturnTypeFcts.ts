@@ -1,6 +1,11 @@
 import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType, TYPEID_str } from "@SBrython/sbry/types";
+import { TYPEID_NoneType } from "../types";
 
 export type RETURN_TYPE_FCT = (o: number) => number;
+
+export function RET_None(o: number) {
+    return TYPEID_NoneType;
+}
 
 export function RET_IJBF2BOOL(o: number) {
     if( TYPEID_int <= o && o <= TYPEID_float)

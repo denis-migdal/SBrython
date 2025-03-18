@@ -24,15 +24,11 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms (3.43x)
 
 TODO:
-- [ ] tests
-    - [ ] root_local symbols ???
-        - [ ] builtins in types ?
-    - [ ] print() => SB().print(...)
-    - [ ] type.__call__()
-        - [ ] -> get ID from obj (for return type)
-        - [ ] -> first type guard.
 - [ ] Add features
     - [ ] some functions (len/divmod/etc) - uncomment
+    - [ ] type.__call__() / __class__ unit tests
+        - [ ] -> get ID from obj (for return type)
+        - [ ] -> first type guard...
     - [ ] dicts/lists/bytes/sets/strings/string_methods
     - [ ] classes.py
     - [ ] special methods
@@ -48,6 +44,7 @@ TODO:
         - [ ] optionnal checks (core_modules)
         - [ ] JS/PY code positions
     - [ ] bry2sbry
+- [ ] print/assert : use stackline...
 
 - [ ] make pages/Editor depends on library (2x) ?
 

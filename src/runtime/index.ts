@@ -45,6 +45,10 @@ export class SBrython {
         return this.#registered_AST[filename]; //TODO modulename?
     }
 
+    print(...args: []) {
+        console.log(...args);
+    }
+
     get _r_() {
         return _r_;
     }

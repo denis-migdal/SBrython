@@ -5,7 +5,6 @@ import resetResults from "@SBrython/utils/results";
 import { generate_report } from "@SBrython/utils/reports";
 import astnode2tree, { NODE } from "@SBrython/utils/print/astnode2tree";
 
-
 window.onerror = (...args) => {
 	console.log(args);
 	// msg
@@ -20,6 +19,10 @@ const python_input = document.querySelector<HTMLInputElement>('#python')!;
 const python_output = document.querySelector(".python_ouput")!;
 const ast_output    = document.querySelector("#ast")!;
 const js_output     = document.querySelector("#js")!;
+
+const sbry_print = (...args: any[]) => {
+    console.log("[SBRY]", ...args);
+}
 
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
@@ -76,7 +79,7 @@ function oneTimeExec(fullcode: string) {
     generate(fullcode, results);
 
     try {
-        execute(results);
+        execute(results, sbry_print);
     } catch(e) {
         console.warn(e);
     }
@@ -85,8 +88,8 @@ function oneTimeExec(fullcode: string) {
 
     sbry_output.classList.add('success');
     
-     bry_output.textContent = generate_report(results, "bry" , "sbry");
-    sbry_output.textContent = generate_report(results, "sbry", "bry");
+     bry_output.textContent += generate_report(results, "bry" , "sbry");
+    sbry_output.textContent += generate_report(results, "sbry", "bry");
  
     const ast = astnode2tree();
     try {
@@ -230,8 +233,12 @@ function print_node(node: any) {
     node.$gui_elems.push( html_bloc );
 
     html_bloc.textContent = node.type;
-    if( node.value != null)
-        html_bloc.textContent += `:${node.value}`;
+    if( node.value != null) {
+        let val = node.value;
+        if( val.__name__ !== undefined)
+            val = val.__name__;
+        html_bloc.textContent += `:${val}`;
+    }
     if( node.result_type !== null) {
 
         html_bloc.textContent += ` (${node.result_type})`;
@@ -388,7 +395,7 @@ function startTests(test_name: string, merge: boolean) {
                 try {
                     fullcode = code;
                     generate(fullcode, results);
-                    execute(results);
+                    execute(results, sbry_print);
                 } catch(e) {
                     error = e as Error;
                     break tests;
@@ -400,7 +407,7 @@ function startTests(test_name: string, merge: boolean) {
     if( merge ) {
         try {
             generate(fullcode, results);
-            execute(results);
+            execute(results, sbry_print);
         } catch(e) {
             error = e as Error;
         }
@@ -493,8 +500,6 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
         let nbExcluded = 0;
         for(let i = 0; i < lines.length; ++i)
             nbExcluded += +(lines[i][0] === '#');
-
-        console.warn(code_len, nbExcluded, nbEmptyLines, lines);
 
         subTestsStats[test_name].push({
             excluded: nbExcluded,

@@ -1,5 +1,5 @@
 # numbers.numbers
-// is instance
+// is instance/__class__
 9
 30
 
@@ -11,15 +11,70 @@
 // __abs__ __ceil__ __mod__
 36-42
 
+# numbers.issue 1666
+// abs
+*
+
+# numbers.issue 840
+// id()
+*
+# numbers.issue 1234
+// round()
+*
+
+# numbers.issue 1298
+// pow / Fraction
+*
+# numbers.issue 1299
+// pow
+3
+# numbers.issue 1309
+// pow + Fraction
+*
+# numbers.issue 1328
+// pow()
+*
+# numbers.issue 2110
+// pow()
+*
+# numbers.issue 2407
+// pow()
+*
+
+# numbers.issue 1784
+// pow() + divmod
+*
+
+# numbers.issue 1315
+// divmod
+*
+
+# numbers.issue 2465
+// type()
+*
+
+# numbers.issue 1504
+// int() with base
+*
+# numbers.issue 1960
+// int() with base 0
+*
+
 # numbers.long integers
 // Math.pi 
 4-7
 // int() with base
 13-47
 
+# numbers.issue 1512
+// maths + isnan
+*
+# numbers.issue 1511
+// math.isnan
+8-9
 
 # numbers.issue 749
-// __eq__
+// __eq__ override
 *
 
 # numbers.issue 98
@@ -34,6 +89,13 @@
 *
 # numbers.issue 794
 // to_bytes
+*
+
+# numbers.issue 1558
+// bytes
+*
+
+# basic test suite.bytes
 *
 
 # numbers.PEP 515
@@ -73,40 +135,12 @@
 # numbers.method __complex__
 *
 
-# numbers.issue 840
-// id()
-*
-# numbers.issue 1234
-// round()
-*
-
 # numbers.issue 1127
 // override bitwise op
 *
 # numbers.& for long integers
 // & operator -> for in list (get element type...)
 *
-
-
-# numbers.issue 1298
-// pow / Fraction
-*
-# numbers.issue 1299
-// pow
-3
-# numbers.issue 1309
-// pow + Fraction
-*
-# numbers.issue 1328
-// pow()
-*
-# numbers.issue 2110
-// pow()
-*
-# numbers.issue 2407
-// pow()
-*
-
 
 # numbers.issue 1295
 // format stuff
@@ -124,31 +158,11 @@
 6
 10
 
-# numbers.issue 1504
-// int() with base
-*
-# numbers.issue 1960
-// int() with base 0
-*
-
-# numbers.issue 1558
-// bytes
-*
-
-# numbers.issue 1666
-// abs
-*
-
 # numbers.issue 1686
-// __mul__ __rmull__
+// __mul__ __rmull__ override
 *
-
 
 # numbers.hash of integers
-*
-
-# numbers.issue 1784
-// pow() + divmod
 *
 
 # numbers.issue 1924
@@ -177,10 +191,6 @@
 // TypeError
 *
 
-# numbers.issue 2465
-// type()
-*
-
 # classes.classes
 5
 // multi-inheritance
@@ -197,9 +207,6 @@
 *
 
 # basic test suite.inline functions and classes
-*
-
-# basic test suite.bytes
 *
 
 # basic test suite.functions and methods
@@ -350,10 +357,6 @@
 # numbers.as_integer_ratio() on integers
 *
 
-# numbers.issue 1315
-// divmod
-*
-
 # numbers.issue 1396
 // format
 *
@@ -402,13 +405,6 @@
 # numbers.issue 1156
 // except + isinstance()
 *
-
-# numbers.issue 1512
-// maths + isnan
-*
-# numbers.issue 1511
-// math.isnan
-8-9
 
 # numbers.issue 2058
 // hash()

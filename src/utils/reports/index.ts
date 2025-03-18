@@ -43,9 +43,10 @@ export function generate_report(results: Results, a: "bry"|"sbry", b: "bry"|"sbr
 
     const nb_lines    = results.total_lines;
     const nb_excluded = results.nb_excluded_lines;
+    const nb_done     = nb_lines - nb_excluded;
 
     report += "Status         : SUCCESS\n";
-    report += `Tested         : ${nb_lines - nb_excluded}/${nb_lines} (${nb_excluded} excluded)\n`;
+    report += `Tested         : ${nb_done}/${nb_lines} (${(nb_done/nb_lines*100).toFixed(2)}%)\n`;
     report += `Py code        : ${nb_tokens} tokens (${results.nb_files} file)\n`;
     report += "JS code        : " + tdiff(A.code.length, B.code.length) + "\n";
     report += "\n"

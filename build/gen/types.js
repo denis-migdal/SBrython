@@ -13,6 +13,7 @@ async function getModules(path) {
         if(filepath === "list.ts"
             || filepath === "index.ts"
             || filepath === "bases.ts"
+            || filepath === "builtins.ts"
             || filepath.startsWith("utils") )
             continue;
 
