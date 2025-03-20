@@ -1,12 +1,13 @@
 import { Context, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { default_call } from "@SBrython/sbry/ast2js/fct/call";
 import { convert_args } from "./Args";
-import { AST_FCT_DEF } from "@SBrython/sbry/ast2js/";
+import { AST_FCT_DEF, AST_FCT_DEF_METH } from "@SBrython/sbry/ast2js/";
 import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import Body from "@SBrython/sbry/bry2sbry/Body";
 
 import Types from "@SBrython/sbry/types/list";
 import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
+import { addType } from "@SBrython/sbry/types/utils/addType";
 
 const FAKE_RETURN_NODE = {
     constructor: {
@@ -28,7 +29,7 @@ function generate(dst: number, node: any, context: Context) {
 
     // new context for the function local variables
     context = context.createSubContext("fct");
-    context.parent_node_context = dst; // <- here
+    context.parentTypeID = dst; // <- here
 
     // fake the node... => better doing here to not have context issues.
     convert_args(coffset, node, stype, context);
@@ -76,8 +77,6 @@ function generate(dst: number, node: any, context: Context) {
 
 export default function convert(dst: number, node: any, context: Context) {
 
-    //const isMethod = context.type === "class";
-
     const SType_fct: Callable = {
         __name__: "function",
         __call__: {
@@ -102,12 +101,39 @@ export default function convert(dst: number, node: any, context: Context) {
     const STypeID = Types.length;
     Types[STypeID] = SType_fct;
 
-    //if( ! isMethod ) {
-    // if method add to self_context.symbols ?
     context.local_symbols[node.name] = STypeID;
 
-    setType      (dst, AST_FCT_DEF);
-    setResultType(dst, STypeID);
+    let type = AST_FCT_DEF;
+    if( context.type === "class") {
+        type = AST_FCT_DEF_METH;
+        const klass = Types[context.parentTypeID];
+        VALUES[dst] = [node.name, klass.__name__];
 
-    VALUES[dst] = node.name;
+        const method_name = node.name;
+        
+        Types[context.parentTypeID  ][method_name] = SType_fct;
+
+        const gen = SType_fct.__call__[ARGS_INFO].generate!;
+        SType_fct.__call__[ARGS_INFO].generate = (...args) => {
+            gen(...args);
+
+            //@ts-ignore
+            instanceType.__call__ = {...SType_fct.__call__};
+            instanceType.__call__[ARGS_INFO] = {...SType_fct.__call__[ARGS_INFO]};
+
+            //TODO: update ARGS_INFO...
+            console.warn( instanceType.__call__[ARGS_INFO] );
+            // WRITE_CALL => no issues as it uses ARGS_INFO...
+        }
+        const instanceTypeID = addType(SType_fct);
+        const instanceType = Types[instanceTypeID];
+
+        Types[context.parentTypeID-1][method_name] = instanceType;
+
+    } else {
+        VALUES[dst] = node.name;
+    }
+
+    setType      (dst, type);
+    setResultType(dst, STypeID);
 }

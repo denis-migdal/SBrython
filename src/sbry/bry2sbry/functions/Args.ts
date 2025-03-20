@@ -2,7 +2,8 @@ import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBryth
 import { AST_FCT_DEF_ARGS } from "@SBrython/sbry/ast2js/";
 import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType } from "@SBrython/sbry/types";
-import { ARGS_INFO, Callable } from "@SBrython/sbry/types/utils/types";
+import { ARGS_INFO, Callable, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
+import Types from "@SBrython/sbry/types";
 
 //TODO: fake node...
 export default function convert() {
@@ -151,8 +152,10 @@ export function convert_arg(dst: number, node: any, defval: any, type:number, co
     let result_type = TYPEID_NotImplementedType;
 
     const annotation = node.annotation?.id;
-    if( annotation !== undefined)
-        result_type = context.local_symbols[annotation]; //?
+    if( annotation !== undefined) {
+        const type = Types[context.local_symbols[annotation]] as Callable;
+        result_type = type.__call__[RETURN_TYPE]()
+    }
 
     if( defval !== undefined ) {
 

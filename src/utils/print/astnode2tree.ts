@@ -28,9 +28,17 @@ export default function astnode2tree(id = 0): NODE {
 
     const coffset    = firstChild(id);
 
+    const typeID = resultType(id);
+    let result_type = `${typeID}:`;
+    const t   = Types[typeID];
+    result_type += t.__name__ ?? "";
+    result_type += ":";
+    result_type += t.__class__?.__name__ ?? "";
+
+
     return {
         type       : id2name[type(id)], // TODO convert
-        result_type: Types[resultType(id)]?.__class__?.__name__!,
+        result_type,
         value      : VALUES[id],
         jscode  : buildJSCode(id),
         pycode  : buildPyCode(id),

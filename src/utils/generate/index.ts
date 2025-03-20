@@ -3,7 +3,7 @@ import buildAST from "./AST";
 import generateBrython from "./Brython";
 import generateSBrython from "./SBrython";
 
-export default function generate(code: string, results: Results) {
+export default function generate(code: string, results: Results, use_parser: boolean) {
 
     results.bry.offset  = 0;
     results.sbry.offset = 0;
@@ -16,8 +16,7 @@ export default function generate(code: string, results: Results) {
 
     ++results.nb_files;
 
-    const ast = buildAST(code, results);
-    
+    const ast = buildAST(code, results, use_parser);
     generateSBrython(ast      , results.sbry);
     generateBrython (ast, code, results.bry);
 

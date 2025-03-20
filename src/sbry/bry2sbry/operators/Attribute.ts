@@ -1,6 +1,8 @@
 import { AST_OP_ATTR } from "@SBrython/sbry/ast2js/";
-import { addChild, setType, VALUES } from "@SBrython/sbry/dop";
+import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
+import { TYPEID } from "@SBrython/sbry/types/utils/types";
+import Types from "@SBrython/sbry/types";
 
 export default function convert(dst: number, node: any, context: Context) {
     
@@ -8,6 +10,11 @@ export default function convert(dst: number, node: any, context: Context) {
     const coffset = addChild(dst, 1);
 
     convert_node(coffset, node.value, context);
+
+    const type_obj = resultType(coffset);
+    console.warn("attr", node.attr, type_obj, Types[type_obj].__name__, Object.keys(Types[type_obj]) );
+    // @ts-ignore
+    setResultType(dst, Types[type_obj][node.attr]?.[TYPEID] ?? 0);
 
     //TODO: return type...
     let value = node.attr;

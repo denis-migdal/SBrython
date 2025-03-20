@@ -10,6 +10,7 @@ const LIST = [
 	require("./type[int]").default,
 	require("./type[float]").default,
 	require("./type[str]").default,
+	require("./type[bool]").default,
 ]
 
 import ILIST from './index';

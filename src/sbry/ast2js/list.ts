@@ -42,6 +42,8 @@ const LIST = [
 	require("./body").default,
 	require("./2bigint").default,
 	require("./2number").default,
+	require("./fct/def_meth").default,
+	require("./op/assign_attr").default,
 ];
 
 import ILIST from './index';
@@ -93,5 +95,7 @@ if( __DEBUG__ ) _id2name = [
 	"BODY",
 	"2BIGINT",
 	"2NUMBER",
+	"FCT_DEF_METH",
+	"OP_ASSIGN_ATTR",
 ]
 export const id2name = _id2name;

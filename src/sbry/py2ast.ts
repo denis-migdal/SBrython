@@ -81,8 +81,16 @@ export class Context {
     createSubContext(type: "?"|"class"|"fct" = "?") {
         return new Context(type, this.local_symbols);
     }
+    createClassContext(type: number) {
+
+        const ctx = new Context("class", this.local_symbols);
+
+        ctx.parentTypeID = type;
+
+        return ctx;
+    }
 
     local_symbols: Record<string, number>;
-    parent_node_context?: number; // is it used ?
-    type; //TODO: remove
+    parentTypeID: number = 0; // is it used ?
+    type; //TODO: remove ?
 }

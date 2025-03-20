@@ -26,12 +26,17 @@ const sbry_print = (...args: any[]) => {
 
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
-const merge     = search.get("merge") === "true" ? true : false;
+const merge     = search.get("merge")  === "true" ? true : false;
+const parser    = search.get("parser") === "true" ? true : false;
 
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
 
-const brython_tests = ['basic test suite', 'numbers'];//, "strings", "string methods"];
+const brython_tests = ['basic test suite', 'numbers',
+    "classes" // ~1174
+//    "strings",
+//    "string methods"
+];
 // strings ~600
 // list    ~496
 // dicts   ~288
@@ -68,7 +73,7 @@ python_input.addEventListener('keydown', (ev) => {
         }
     });
 
-if( window.location.search === '') {
+if( window.location.search === '' || window.location.search === '?parser=true') {
     python_input.value = localStorage.getItem('sbrython_code') ?? "";
     oneTimeExec(python_input.value)
 }
@@ -84,7 +89,7 @@ function oneTimeExec(fullcode: string) {
     let error: null|Error = null;
 
     try {
-        generate(fullcode, results);
+        generate(fullcode, results, parser);
         execute(results, sbry_print);
     } catch(e) {
         error = e as Error;
@@ -400,7 +405,7 @@ function startTests(test_name: string, merge: boolean) {
             } else {
                 try {
                     fullcode = code;
-                    generate(fullcode, results);
+                    generate(fullcode, results, parser);
                     execute(results, sbry_print);
                 } catch(e) {
                     error = e as Error;
@@ -412,20 +417,14 @@ function startTests(test_name: string, merge: boolean) {
 
     if( merge ) {
         try {
-            generate(fullcode, results);
+            generate(fullcode, results, parser);
             execute(results, sbry_print);
         } catch(e) {
             error = e as Error;
         }
     }
-    
-    if(error) {
 
-        python_input.value = results.code;
-
-        sbry_output.classList.add('error');
-        sbry_output.textContent = error.message;
-        console.warn(error);
+    if( error || ! merge ) {
 
         const ast = astnode2tree();
         try {
@@ -437,6 +436,15 @@ function startTests(test_name: string, merge: boolean) {
         try {
             print_ast( ast );
         } catch(e) { console.warn(e); }
+    }
+    
+    if(error) {
+
+        python_input.value = results.code;
+
+        sbry_output.classList.add('error');
+        sbry_output.textContent = error.message;
+        console.warn(error);
 
         return;
     }
@@ -497,7 +505,11 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
         lines[0] = "# " + test_name + "." + name + " (" + (idx+1) + "/" + parts.length + ")";
         const fullname = `${test_name}.${name}`;
 
-        lines = filter(lines, exclude[fullname]);
+        let excl = exclude[fullname];
+        if( excl === undefined)
+            excl = exclude[`${test_name}.*`];
+
+        lines = filter(lines, excl);
 
         let nbEmptyLines = 0;
         for(let i = 1; i < lines.length; ++i)

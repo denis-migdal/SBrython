@@ -9,6 +9,7 @@ function isClass(_: unknown) {
     // from https://stackoverflow.com/questions/526559/testing-if-something-is-a-class-in-javascript
     return Object.getOwnPropertyDescriptors(_)?.prototype?.writable === false;
 }
+// + https://github.com/brython-dev/brython/issues/2513
 
 export default function convert(dst: number, node: any, context: Context) {
 
@@ -24,8 +25,9 @@ export default function convert(dst: number, node: any, context: Context) {
         if( alt !== undefined)
             value = alt;
 
-    } else if( value in context.local_symbols)
+    } else if( value in context.local_symbols) {
         result_type = context.local_symbols[value];
+    }
 
     /*
         //TODO globalSymbols

@@ -20,7 +20,7 @@ export default function convert(dst:number, node: any, context: Context) {
     setType(dst, AST_KEY_RETURN);
     setResultType(dst, result_type);
 
-    const meta = (Types[resultType(context.parent_node_context!)] as Callable).__call__;
+    const meta = (Types[resultType(context.parentTypeID!)] as Callable).__call__;
     if( meta[RETURN_TYPE] === undefined )
         meta[RETURN_TYPE] = () => result_type;
 }

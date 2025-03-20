@@ -7,6 +7,7 @@
 ## SimplerBrython
 
 https://sbrython.migdal.ovh/Editor/?test=brython&merge=true
+https://sbrython.migdal.ovh/Editor/?parser=true
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
@@ -23,8 +24,83 @@ Executed in    :  2.654s [-15.67%]  44.340ms
 3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.060ms (1.22x)
 2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms (3.43x)
 
+-> manipulate object : don't need to convert them, convert the operations.
 TODO:
-- [ ] Add features
+    -> unoptimized thingy... (=> py2ast more important)
+    -> fix JS pos...
+    -> impl. some functions
+    -> type deduction
+    -> py2ast parser
+    -> doc + usage
+    -> gen TS/WASM/modules
+
+== classes first ==
+    + no self subs in symbol...
+    -> first __add__ static
+        -> it uses class not instance...
+        -> new call system (and method call system)
+            -> a.foo(a,b) => fct or method...
+            -> real fct call vs subst. call...
+                -> can't access subst. call as an object.
+        -> needs a new system + a.foo() issue... => binded... => but write too??? -no direct calls ????- => at the class level ???
+    -> method_wrapper args... (redo...)
+        -> call_method args...
+        -> call_node, ... (?)
+    -> remove __abs__ / __ceil__ direct calls... (they are special...)
+        __x__ => issues???
+    - klass.method() vs foo()
+        -> method: handle both at once ?
+            => how to know if fct or attribute ???
+            => needs a function ID for each... (but too much ID... but need it...)
+                [due to resultTypeID...]
+                => __add__ : twice (klass + instance...)
+                    => declare both at once...
+
+- once done, present arch here:
+https://github.com/brython-dev/brython/issues/2548
+
+https://github.com/brython-dev/brython/issues/2560
+
+Fct shape ID
+-> to str to quick compare/ID get.
+-> compatibility ??? get Return Type (conditional...) ???
+
+== test system ==
+
+Command-line + set of scripts (can we build them without issues)
+https://github.com/brython-dev/brython/issues/2372
+-> https://pyperformance.readthedocs.io/usage.html#run-benchmarks
+
+== STR ==
+- strip
+- replace
+- find/index
+- lower/upper/capitalize
+- splits
+- startsWith/endsWith
+- count
+- join
+- replace
+- slice
+- in
+- isupper/islower
+- isidentifier/isnumeric
+- removeprefix/suffix
+- partition
+
+https://www.w3schools.com/python/python_ref_string.asp
+
+- chr/ord
+- bytes / encode/decode
+- repr ?
+
+- maketrans/translate -> requiert dicts
+- \N
+- codecs
+- klass
+- stdout
+- format
+
     - [ ] strings/string_methods/lists/dicts/sets
     - [ ] complex / bytes (from/to bytes)
     - [ ] classes.py
@@ -62,6 +138,8 @@ TODO:
     - [ ] Dev mode only: asserts / __debug__ false
 
 ## PARSER
+
+https://docs.python.org/3/reference/lexical_analysis.html
 
 - firstChild (ptr)
 - nextSibling (ptr) instead of nbChild()

@@ -12,9 +12,10 @@ export default {
     str  : TYPEID_type_str_,
     float: TYPEID_type_float_,
     type : TYPEID_type,
-    len  : addType("len", genUnaryOpFct("len", RET_INT)),
-    abs  : addType("abs", genUnaryOpFct("abs", RET_INT)), //TODO...
-    print: addType("print", {
+    len  : addType( genUnaryOpFct("len", RET_INT)),
+    abs  : addType( genUnaryOpFct("abs", RET_INT)), //TODO...
+    print: addType({
+        __name__: "print",
         __call__: method_wrapper(RET_None, (call:number) => {
             const coffset  = firstChild(call);
             const nb_child = nbChild(call);
@@ -35,7 +36,7 @@ export default {
 function genUnaryOpFct(name: string, return_type: RETURN_TYPE_FCT) {
     const opname = `__${name}__`;
     return {
-        //__name__ : name,
+        __name__ : name,
         __call__ : method_wrapper(return_type, (call: number) => {
             const left   = firstChild(call)+1;
             const method = Types[resultType(left)]![opname] as Callable;

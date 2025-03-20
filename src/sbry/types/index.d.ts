@@ -9,6 +9,7 @@ export declare const TYPEID_type               = 7;
 export declare const TYPEID_type_int_          = 8;
 export declare const TYPEID_type_float_        = 9;
 export declare const TYPEID_type_str_          = 10;
+export declare const TYPEID_type_bool_         = 11;
 
 import type {Type} from "./utils/types";
 

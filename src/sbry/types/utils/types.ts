@@ -1,6 +1,7 @@
 import { type Context } from "@SBrython/sbry/bry2sbry/utils";
 
 export const RETURN_TYPE = Symbol();
+export const TYPEID      = Symbol();
 export const WRITE_CALL  = Symbol();
 export const JS_NAME     = Symbol();
 export const ARGS_INFO   = Symbol();
@@ -12,7 +13,8 @@ export type Type = {
     __name__ ?: string,
     __str__  ?: Fct<[number]>,
     __int__  ?: Fct<[number]>,
-    [JS_NAME]?: string
+    [JS_NAME]?: string,
+    [TYPEID ]?: number,
 }
 
 export type Fct<T extends any[] = unknown[]> = Type & {

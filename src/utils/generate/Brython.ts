@@ -4,7 +4,9 @@ declare const $B: any;
 
 // jscode = $B.pythonToJS(code);
 
-export default function generateBrython(ast: any, src:string, results: SubResults) {
+export default function generateBrython(_ast: any, src:string, results: SubResults) {
+
+    const ast = _ast.bry;
 
     const beg = performance.now();
 

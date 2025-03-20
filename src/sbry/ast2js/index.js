@@ -21,6 +21,7 @@ export const AST_OP_ATTR = 10;
 export const AST_OP_BRACKETS = 11;
 export const AST_OP_ASSIGN_AUG = 12;
 export const AST_OP_ASSIGN_INIT = 13;
+export const AST_OP_ASSIGN_ATTR = 44;
 export const AST_OP_ASSIGN = 14;
 // Litterals
 export const AST_LIT_STR = 15;
@@ -32,6 +33,7 @@ export const AST_LIT_BOOL = 20;
 export const AST_LIT_NONE = 21;
 // Functions
 export const AST_FCT_DEF = 28;
+export const AST_FCT_DEF_METH = 43;
 export const AST_FCT_DEF_ARGS = 31;
 export const AST_FCT_CALL = 29;
 export const AST_FCT_CALL_KEYWORD = 30;

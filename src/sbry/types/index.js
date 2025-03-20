@@ -11,5 +11,6 @@ export const TYPEID_type               = 7;
 export const TYPEID_type_int_          = 8;
 export const TYPEID_type_float_        = 9;
 export const TYPEID_type_str_          =10;
+export const TYPEID_type_bool_         =11;
 
 export default [];

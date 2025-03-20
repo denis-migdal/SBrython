@@ -184,11 +184,18 @@
 // TypeError
 *
 
-# classes.classes
-5
-// multi-inheritance
-28-45
 
+# classes.classes
+// import assert_raise
+3
+// multi-inheritance
+//39-42
+
+# classes.inherit list
+*
+
+# classes.*
+*
 
 # basic test suite.string methods
 *
@@ -403,6 +410,16 @@
 # numbers.issue 1156
 // except + isinstance()
 *
+
+# strings.strings
+// import
+2
+// isinstance()
+5
+// extra tab...
+7-18
+// strip
+26-99
 
 # numbers.issue 2058
 // hash()

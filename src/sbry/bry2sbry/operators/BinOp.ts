@@ -38,7 +38,7 @@ export default function convert(dst: number, node: any, context: Context) {
             type   = method[RETURN_TYPE](ltype!);
 
         if( __DEBUG__ && type === TYPEID_NotImplementedType) {
-            throw new Error(`${Types[rtype].__name__} ${op} ${Types[ltype].__name__} NOT IMPLEMENTED!`);
+            throw new Error(`${Types[rtype].__class__?.__name__} ${op} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
         }
 
         swapASTNodes(coffset, coffset+1); // costly, use 2 ast2js instead ?
