@@ -12,7 +12,6 @@ export default function convert(dst: number, node: any, context: Context) {
     convert_node(coffset, node.value, context);
 
     const type_obj = resultType(coffset);
-    console.warn("attr", node.attr, type_obj, Types[type_obj].__name__, Object.keys(Types[type_obj]) );
     // @ts-ignore
     setResultType(dst, Types[type_obj][node.attr]?.[TYPEID] ?? 0);
 

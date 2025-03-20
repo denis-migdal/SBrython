@@ -14,7 +14,7 @@ class bar(baz):
     def test(self):
         return 'test in bar'
 
-    def test1(self, x):
+    def test1(self, x: int):
         return x * 'test1'
 
 
@@ -41,6 +41,8 @@ assert obj.test1(2) == 'test1test1'
 assert obj.test2() == 'test2'
 
 assert obj.machin == 99
+
+# inherit list
 
 class stack(list):
 

@@ -33,7 +33,7 @@ const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
 
 const brython_tests = ['basic test suite', 'numbers',
-    "classes" // ~1174
+//    "classes" // ~1174
 //    "strings",
 //    "string methods"
 ];

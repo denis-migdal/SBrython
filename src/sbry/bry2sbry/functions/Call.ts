@@ -20,8 +20,6 @@ export default function convert(dst: number, node: any, context: Context) {
 
         fct = Types[type][name] as Type;
 
-        console.warn(fct, Types[type], name);
-
         if( __DEBUG__ && fct === undefined ) {
             console.warn(node);
             throw new Error(`Method ${name} not defined`);
