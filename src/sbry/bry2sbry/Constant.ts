@@ -1,9 +1,9 @@
-import { AST_LIT_BOOL, AST_LIT_FLOAT, AST_LIT_INT, AST_LIT_NONE, AST_LIT_STR } from "@SBrython/sbry/ast2js/";
-import { setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { AST_LIT_FALSE, AST_LIT_TRUE, AST_LIT_FLOAT, AST_LIT_INT, AST_LIT_NONE, AST_LIT_STR } from "@SBrython/sbry/ast2js/";
+import { NODE_ID, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NoneType, TYPEID_str } from "@SBrython/sbry/types";
 
-export default function convert(dst: number, node: any, _context: Context): false|void {
+export default function convert(dst: NODE_ID, node: any, _context: Context): false|void {
 
     const value = node.value;
     const vtype = typeof value;
@@ -13,10 +13,10 @@ export default function convert(dst: number, node: any, _context: Context): fals
 
         if( vtype === "boolean" ) {
 
-            setType      (dst, AST_LIT_BOOL);
+            const type = value ? AST_LIT_TRUE : AST_LIT_FALSE;
+
+            setType      (dst, type);
             setResultType(dst, TYPEID_bool);
-            
-            VALUES[dst] = value; // TODO: 2 types instead of one ?
 
             return;
         }

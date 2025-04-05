@@ -1,5 +1,5 @@
 import { w_node, w_str } from "@SBrython/sbry/ast2js/utils";
-import { firstChild, nbChild, setParentOPPrio } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, setParentOPPrio } from "@SBrython/sbry/dop";
 
 // current
     // astname => pyname (bname2pyname)
@@ -312,18 +312,12 @@ export function reversed_operator<T extends keyof typeof BinaryOperators>(op: T)
 const LEFT  = 1;
 const RIGHT = 2;
 
-export function write_multi_jsop(node: number, op: string ) {
+export function write_multi_jsop(node: NODE_ID, op: string ) {
 
     const first      = firstChild(node);
-    const nbChildren = nbChild(node); 
 
     const prio   = JSOperatorsPriority[op];
     const p_prio = JSOperatorsPriority[op];
-
-    setParentOPPrio(first, prio);
-
-    for(let i = 1; i < nbChildren; ++i)
-        setParentOPPrio( first + i, prio + 1 );
 
     const parenthesis = p_prio < prio;
     if( parenthesis )
@@ -331,9 +325,17 @@ export function write_multi_jsop(node: number, op: string ) {
 
     w_node(first);
 
-    for(let i = 1; i < nbChildren; ++i) {
+    setParentOPPrio(first, prio);
+
+    let cur = nextSibling(first);
+    while(cur !== 0) {
+
+        setParentOPPrio( cur, prio + 1 );
+
         w_str(' && ');
-        w_node(first+1);
+        w_node(cur);
+
+        cur = nextSibling(cur);
     }
 
     if( parenthesis )

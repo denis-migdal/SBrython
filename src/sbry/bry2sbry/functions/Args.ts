@@ -1,6 +1,6 @@
 import { Context, convert_node, set_py_code, set_py_from_beg_end } from "@SBrython/sbry/bry2sbry/utils";
 import { AST_FCT_DEF_ARGS } from "@SBrython/sbry/ast2js/";
-import { addChild, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, PY_CODE, resultType, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, nextSibling, NODE_ID, PY_CODE, resultType, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType } from "@SBrython/sbry/types";
 import { ARGS_INFO, Callable, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 import Types from "@SBrython/sbry/types";
@@ -20,7 +20,7 @@ export const AST_FCT_DEF_ARGS_POS     = 4;
 
 convert.brython_name = "arguments";
 
-export function convert_args(dst: number, node: any, SType_fct: Callable, context: Context) {
+export function convert_args(dst: NODE_ID, node: any, SType_fct: Callable, context: Context) {
 
     const meta = SType_fct.__call__[ARGS_INFO];
 
@@ -39,7 +39,12 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
 
     setType(dst, AST_FCT_DEF_ARGS);
 
-    const coffset = addChild(dst, total_args); // args
+    let cur!: NODE_ID;
+    let first!: NODE_ID;
+    let addSblng = (node: NODE_ID) => {
+        addSblng = addSibling;
+        return first = addFirstChild(dst);
+    }
 
     const pos_defaults = node.args.defaults;
     const posonly = _args.posonlyargs;
@@ -48,17 +53,17 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
     // posonly
     let doffset = pos_defaults.length - posonly.length - pos.length;
     for(let i = 0; i < posonly.length; ++i ) {
-        convert_arg(i + coffset, posonly[i], pos_defaults[i - doffset], AST_FCT_DEF_ARGS_POSONLY, context);
-        context.local_symbols[posonly[i].arg] = resultType(i+coffset);
+        cur = addSblng(cur);
+        convert_arg(cur, posonly[i], pos_defaults[i - doffset], AST_FCT_DEF_ARGS_POSONLY, context);
+        context.local_symbols[posonly[i].arg] = resultType(cur);
     }
 
     // pos
     let offset = posonly.length;
       doffset -= posonly.length;
     for(let i = 0; i < pos.length; ++i ) {
-        
-        convert_arg(offset + coffset, pos[i], pos_defaults[i - doffset], AST_FCT_DEF_ARGS_POS, context);
-        
+        cur = addSblng(cur);
+        convert_arg(cur, pos[i], pos_defaults[i - doffset], AST_FCT_DEF_ARGS_POS, context);
         args_names[offset++] = pos[i].arg;
     }
 
@@ -68,8 +73,8 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
     if( has_vararg ) {
         meta.idx_end_pos = Number.POSITIVE_INFINITY;
 
-        convert_arg(offset + coffset, _args.vararg, undefined, AST_FCT_DEF_ARGS_VARG, context);
-        
+        cur = addSblng(cur);
+        convert_arg(cur, _args.vararg, undefined, AST_FCT_DEF_ARGS_VARG, context);
         ++offset;
     } else {
         
@@ -86,11 +91,11 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
     if( cut_off === Number.POSITIVE_INFINITY)
         cut_off = meta.idx_vararg;
     for(let i = posonly.length; i < cut_off; ++i)
-        args_pos[VALUES[i + coffset]] = i;
+        args_pos[args_names[i]] = i;
 
     const end = meta.idx_vararg - cut_off;
     for(let i = 0; i < end; ++i)
-        args_pos[VALUES[i + coffset]] = -1;
+        args_pos[args_names[i]] = -1;
 
     //TODO: idx_end_pos (if default and no idx_vararg)
 
@@ -102,21 +107,19 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
 
     doffset = kw_defaults.length - kwonly.length;
     for(let i = 0; i < kwonly.length; ++i ) {
-        
-        convert_arg(offset + coffset, kwonly[i], kw_defaults[i], AST_FCT_DEF_ARGS_KWONLY, context);
-        
-        args_pos[kwonly[i].arg] = -1;
 
+        cur = addSblng(cur);
+        convert_arg(cur, kwonly[i], kw_defaults[i], AST_FCT_DEF_ARGS_KWONLY, context);
+        args_pos[kwonly[i].arg] = -1;
         ++offset;
     }
 
     // kwarg
     if( has_kwarg ) {
-        
-        convert_arg(offset + coffset, _args.kwarg, undefined, AST_FCT_DEF_ARGS_KWARG, context);
 
+        cur = addSblng(cur);
+        convert_arg(cur, _args.kwarg, undefined, AST_FCT_DEF_ARGS_KWARG, context);
         meta.kwargs = _args.kwarg.arg;
-
         ++offset;
     }
 
@@ -133,19 +136,19 @@ export function convert_args(dst: number, node: any, SType_fct: Callable, contex
     if( __DEBUG__ ) {
         if( total_args !== 0) {
 
-            set_py_from_beg_end(dst, coffset, coffset + total_args - 1);
+            set_py_from_beg_end(dst, first, cur);
 
         } else {
             // an estimation...
             const col = node.col_offset + 4 + node.name.length + 1;
 
-            const py_offset = 4*dst;
+            const py_offset = 4*(dst as number);
             PY_CODE[ py_offset + CODE_BEG_LINE ] = PY_CODE[ py_offset + CODE_END_LINE ] = node.lineno;
             PY_CODE[ py_offset + CODE_BEG_COL  ] = PY_CODE[ py_offset + CODE_END_COL  ] = col;
         }
     }
 }
-export function convert_arg(dst: number, node: any, defval: any, type:number, context: Context) {
+export function convert_arg(dst: NODE_ID, node: any, defval: any, type:number, context: Context) {
 
     const name = node.arg;
 
@@ -159,7 +162,7 @@ export function convert_arg(dst: number, node: any, defval: any, type:number, co
 
     if( defval !== undefined ) {
 
-        const coffset = addChild(dst, 1);
+        const coffset = addFirstChild(dst);
         convert_node(coffset, defval, context);
 
         if( result_type === TYPEID_NotImplementedType ) {

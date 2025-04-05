@@ -3,37 +3,9 @@ import BRY2SBRY from "./index"; // required for correct type deduction...
 import type {Context} from "./index.d.ts";
 export type {Context};
 
-import { ASTNODE_SIZE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, PY_CODE, VALUES } from "../dop";
+import { CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END_COL, CODE_END_LINE, CODE_LINE, NODE_ID, PY_CODE, VALUES } from "../dop";
 
-//TODO: use firstChild + nextSibling instead of nbChild
-export function swapASTNodes(a: number, b: number ) {
-
-    const ao = ASTNODE_SIZE * a;
-    const bo = ASTNODE_SIZE * b;
-
-    let t:any;
-    for(let i = 0; i < ASTNODE_SIZE; ++i) {
-        t = ASTNODES[ao+i];
-        ASTNODES[ao+i] = ASTNODES[bo+i];
-        ASTNODES[bo+i] = t;
-    }
-
-    if( __DEBUG__ ) {
-        const ap = 4*a;
-        const bp = 4*b;
-        for(let i = 0; i < 4; ++i) {
-            t = PY_CODE[ap+i];
-            PY_CODE[ap+i] = PY_CODE[bp+i];
-            PY_CODE[bp+i] = t;
-        }
-    }
-
-    t = VALUES[a];
-    VALUES[a] = VALUES[b];
-    VALUES[b] = t;
-}
-
-export function convert_node(id: number, brython_node: any, context: Context) {
+export function convert_node(id: NODE_ID, brython_node: any, context: Context) {
 
     const name = brython_node.constructor.$name;
 
@@ -53,18 +25,18 @@ export function convert_node(id: number, brython_node: any, context: Context) {
 
 // ================ POS ====================
 
-export function set_py_code(id: number, brython_node: any) {
+export function set_py_code(id: NODE_ID, brython_node: any) {
 
-    const offset = 4*id;
+    const offset = 4*(id as number);
     PY_CODE[ offset + CODE_BEG_LINE ] = brython_node.lineno;
     PY_CODE[ offset + CODE_BEG_COL  ] = brython_node.col_offset;
     PY_CODE[ offset + CODE_END_LINE ] = brython_node.end_lineno;
     PY_CODE[ offset + CODE_END_COL  ] = brython_node.end_col_offset;
 }
 
-export function set_py_code_from_list(id: number, brython_node: any) {
+export function set_py_code_from_list(id: NODE_ID, brython_node: any) {
 
-    const offset = 4*id;
+    const offset = 4*(id as number);
 
     const beg = brython_node[0];
     const end = brython_node[brython_node.length-1];
@@ -76,11 +48,11 @@ export function set_py_code_from_list(id: number, brython_node: any) {
 }
 
 
-export function set_py_from_beg_end( src: number, dst_beg: number, dst_end: number ) {
+export function set_py_from_beg_end( src: NODE_ID, dst_beg: NODE_ID, dst_end: NODE_ID ) {
 
-    const src_offset = 4*src;
-    const beg_offset = 4*dst_beg;
-    const end_offset = 4*dst_end + 2;
+    const src_offset = 4*(src as number);
+    const beg_offset = 4*(dst_beg as number);
+    const end_offset = 4*(dst_end as number) + 2;
 
     PY_CODE[ src_offset + CODE_BEG_LINE ] = PY_CODE[ beg_offset + CODE_LINE ];
     PY_CODE[ src_offset + CODE_BEG_COL  ] = PY_CODE[ beg_offset + CODE_COL  ];

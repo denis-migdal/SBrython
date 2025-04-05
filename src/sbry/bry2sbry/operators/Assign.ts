@@ -1,18 +1,16 @@
 import { AST_OP_ASSIGN, AST_OP_ASSIGN_ATTR, AST_OP_ASSIGN_INIT } from "@SBrython/sbry/ast2js/";
-import { addChild, firstChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, nextSibling, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import Types, { TYPEID_int, TYPEID_jsint } from "@SBrython/sbry/types";
 import { TYPEID } from "@SBrython/sbry/types/utils/types";
-import { printNode } from "@SBrython/sbry/py2ast";
 
-export default function convert(dst: number, node: any, context: Context): false|void {
+export default function convert(dst: NODE_ID, node: any, context: Context): false|void {
 
     let targets = node.targets;
     if( targets === undefined )
         targets = [node.target];
 
-    const nbChildren = targets.length + 1;
-    const coffset = addChild(dst, nbChildren);
+    const coffset = addFirstChild(dst);
 
     convert_node(coffset, node.value, context); // right
     let rtype = resultType(coffset);
@@ -35,10 +33,13 @@ export default function convert(dst: number, node: any, context: Context): false
 
     setResultType(dst, result_type);
 
-    for(let i = 1; i < nbChildren; ++i) {
-    
-        convert_node(coffset+i, targets[i-1], context );
-        context.local_symbols[targets[i-1].id] = result_type;
+    const nbChildren = targets.length;
+
+    let cur = coffset;
+    for(let i = 0; i < nbChildren; ++i) {
+        cur = addSibling(cur);
+        convert_node(cur, targets[i], context );
+        context.local_symbols[targets[i].id] = result_type;
     }
 
 
@@ -48,7 +49,7 @@ export default function convert(dst: number, node: any, context: Context): false
 
         VALUES[dst] = context.parentTypeID;
 
-        const attrname = VALUES[coffset+1];
+        const attrname = VALUES[nextSibling(coffset)];
         const attrdef  = { [TYPEID]: result_type };
 
         Types[context.parentTypeID  ][attrname] = attrdef

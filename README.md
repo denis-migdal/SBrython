@@ -10,6 +10,32 @@ https://sbrython.migdal.ovh/Editor/?test=brython&merge=true
 https://sbrython.migdal.ovh/Editor/?parser=true
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
+### Roadmap
+
+0. status... / roadmap...
+1. Parser (pass unit tests)
+2. Classes def.
+3. base type methods (str, int/float/bool, lists/dicts/sets -> type is a fct).
+4. complex/bytes (from/to bytes)
+5. iterators/generators/decorators/descriptors
+6. Final[] => const/readonly
+
+X. __debug__ & assert remove in prod mode /!\ keep assert if Benchmark...
+X. Import JS module -> .pyi
+X. Import Brython modules (?)
+X. Write documentations/make it usable/tools/AoT build/gen ES6 modules
+    -> philosophy
+X. Real-life test suite & compare with CPython
+X. WASM/TS output
+X. Better type deduction (+fct shape ID...) + type guard (__class__ / type / instanceof)
+X. File API
+
+Y. Optimize operators.
+Y. Optimize fcts args def/call.
+Y. Fix JS pos in Editor.
+
+### ...
+
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
 Executed in    :  2.654s [-15.67%]  44.340ms
     PY2JS      :  2.575s [- 5.58%]  43.020ms
@@ -23,16 +49,6 @@ Executed in    :  2.654s [-15.67%]  44.340ms
            __DEBUG__  py2ast cond.    bry2sbry    (type system+write system)
 3.180ms -> 2.740ms -> 2.340ms      -> 2.060ms   -> 2.060ms (1.22x)
 2.300ms -> 2.000ms -> 1.980ms      -> 2.060ms   -> 1.860ms (3.43x)
-
--> manipulate object : don't need to convert them, convert the operations.
-TODO:
-    -> unoptimized thingy... (=> py2ast more important)
-    -> fix JS pos...
-    -> impl. some functions
-    -> type deduction
-    -> py2ast parser
-    -> doc + usage
-    -> gen TS/WASM/modules
 
 == classes first ==
     + no self subs in symbol...
@@ -123,10 +139,7 @@ https://www.w3schools.com/python/python_ref_string.asp
 
 - [ ] make pages/Editor depends on library (2x) ?
 
-1. AST2JS
-2. tokens2AST
-3. tokenizer
-4. limits : type unions/deduction + unknown type (bigger runtime) + (?)
+limits : type unions/deduction + unknown type (bigger runtime) + (?)
 => WASM version for some steps ? (webpack loader ???)
     => if you want perfs => go AoT...
 => AoT WASM output => https://webassembly.github.io/spec/core/binary/index.html
@@ -137,25 +150,7 @@ https://www.w3schools.com/python/python_ref_string.asp
     - [ ] Terser : not properly inlined ??? constant ???
     - [ ] Dev mode only: asserts / __debug__ false
 
-## PARSER
-
-https://docs.python.org/3/reference/lexical_analysis.html
-
-- firstChild (ptr)
-- nextSibling (ptr) instead of nbChild()
-=> then swapping is only changing firstChild/nextSibling...
-    => addSibling() ?
-    => currentNode (consumed ?) => is it safe ? (I don't think so...)
-    => firstChild needed if r_op.
-
-- end of token (?) [^\w_] ?
-- operators + priority !!!
-- keywords (for/while/if)
-- string parsing.
-- numbers
-- ()
-
-### Once parser done
+## Once parser done
 
 - [ ] functions args rewrite (?)
     -> precompute some vals
@@ -517,15 +512,6 @@ cf binaryop file...
     => bug fix -> core feature -> compat module -> edge case -> workaround_possible
     => current limitations ok/nok ?
 
-
-#### Complex functions calls ?
-
-#### List/Tuples/etc.
-
-#### Classes ?
-
-#### Brython inter-op ?
-
 ## Links
 
 https://groups.google.com/g/brython/c/5Y4FneO3tzU/m/KnnzMS6QAAAJ
@@ -647,7 +633,6 @@ Principle
         + move some 2 keywords.
 
 ## Documentation (TODO)
-
 
     - [ ] DOC !!!
         - [ ] Presentation/goal

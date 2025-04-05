@@ -1,21 +1,25 @@
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
-import { firstChild, nbChild } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID } from "@SBrython/sbry/dop";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
 
-    let coffset    = firstChild(node);
-    let nbChildren = nbChild(node);
+    let cur    = firstChild(node);
 
     // if
-    w_sns("if(", coffset++, "{", coffset++, "}");
+    w_sns("if(", cur, "){", cur = nextSibling(cur), "}");
+    cur = nextSibling(cur);
 
     // else if
-    let i;
-    for(i = 2; i < nbChildren - 1; i += 2) {
-        w_sns("else if(", coffset++, "){", coffset++, "}");
-    }
+    while(cur !== 0) {
 
-    // else
-    if( i === nbChildren - 1 )
-        w_sns("else {", coffset, "}");
+        let cond: NODE_ID = cur;
+        cur = nextSibling(cur);
+
+        if( cur !== 0)
+            w_sns("else if(", cond, "){", cur, "}");
+        else
+            w_sns("else {", cond, "}");
+
+        cur = nextSibling(cur);
+    }   
 }

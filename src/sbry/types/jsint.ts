@@ -2,7 +2,7 @@ import { genBinaryOps, write_binary_jsop } from "@SBrython/sbry/structs/operator
 import { TYPE_jsint, TYPE_type_int_ } from "./bases";
 import { RET_IJ2INT, RET_IJBF2BOOL, RET_IJBF2FLOAT, RET_INT, RET_JSINT, RET_JSINT2JSINT } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { CONVERT_2INT, CONVERT_INT2FLOAT, Int2Number, Number2Int } from "@SBrython/sbry/structs/Converters";
-import { firstChild, resultType } from "@SBrython/sbry/dop";
+import { firstChild, NODE_ID, resultType } from "@SBrython/sbry/dop";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { genUnaryOps, write_unary_jsop } from "@SBrython/sbry/structs/operators/unary";
@@ -59,14 +59,14 @@ export default Object.assign(TYPE_jsint,
     ),
     genBinaryOps(['//'], RET_JSINT2JSINT,
         {
-            write_call: (node: number, self: number, op, other: number) => {
+            write_call: (node: NODE_ID, self: NODE_ID, op, other: NODE_ID) => {
                 w_sns("_sb_.floordiv_float(", self, ", ", other, ")");
             },
         }
     ),
     genBinaryOps(['%'], RET_JSINT2JSINT,
         {
-            write_call: (node: number, self: number, op, other: number) => {
+            write_call: (node: NODE_ID, self: NODE_ID, op, other: NODE_ID) => {
                 // do not handle -0
                 w_sns("_sb_.mod_int(", self, ", ", other, ")");
             },

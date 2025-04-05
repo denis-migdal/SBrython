@@ -1,4 +1,5 @@
 import { type Context } from "@SBrython/sbry/bry2sbry/utils";
+import { NODE_ID } from "@SBrython/sbry/dop";
 
 export const RETURN_TYPE = Symbol();
 export const TYPEID      = Symbol();
@@ -11,15 +12,15 @@ export type Type = {
     [key: symbol]: unknown,
     __class__?: Type,
     __name__ ?: string,
-    __str__  ?: Fct<[number]>,
-    __int__  ?: Fct<[number]>,
+    __str__  ?: Fct<[NODE_ID]>,
+    __int__  ?: Fct<[NODE_ID]>,
     [JS_NAME]?: string,
     [TYPEID ]?: number,
 }
 
 export type Fct<T extends any[] = unknown[]> = Type & {
     [RETURN_TYPE]: (o?: number) => number,
-    [WRITE_CALL] : (node: number, ...args: T) => void
+    [WRITE_CALL] : (node: NODE_ID, ...args: T) => void
 }
 
 export type Callable<T extends any[] = unknown[]> = Type & {
@@ -36,7 +37,7 @@ export type Callable<T extends any[] = unknown[]> = Type & {
             kwargs    ?: string;
     
             // used to delay function body parsing in order to handle out of order decl.
-            generate   : undefined|( (node: any, astnode: number, context: Context) => void );
+            generate   : undefined|( (node: any, astnode: NODE_ID, context: Context) => void );
         }
     }
 }

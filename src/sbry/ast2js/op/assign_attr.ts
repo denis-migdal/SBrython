@@ -1,31 +1,33 @@
 import { BB, BE, w_NL, w_node, w_str } from "@SBrython/sbry/ast2js/utils";
-import { firstChild, nbChild, resultType, VALUES } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, resultType, VALUES } from "@SBrython/sbry/dop";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
 import { TYPEID_int, TYPEID_jsint } from "@SBrython/sbry/types";
 import Types from "@SBrython/sbry/types/";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
     
     const kname = Types[VALUES[node]].__name__;
 
     w_str("static ");
 
-    const nbChildren = nbChild(node);
-    const coffset    = firstChild(node);
+    let rchild    = firstChild(node);
+    let cur = nextSibling(rchild);
+    const name = VALUES[cur];
     
-    for(let i = 1; i < nbChildren; ++i) {
-        w_node(i+coffset);
-        w_str(" = ");
-    }
+    do {
 
-    let rchild: number = coffset;
-    if( resultType(coffset) === TYPEID_jsint && resultType(node) === TYPEID_int )
-        rchild = Number2Int(coffset);
+        w_node(cur);
+        w_str(" = ");
+
+        cur = nextSibling(rchild);
+    } while(cur !== 0);
+
+    if( resultType(rchild) === TYPEID_jsint && resultType(node) === TYPEID_int )
+        rchild = Number2Int(rchild);
 
     w_node(rchild);
 
     w_NL();
-    const name = VALUES[coffset+1];
     w_str(`get ${name}(){`);
     BB(); w_NL();
     w_str(`let v = this._${name};`); w_NL();

@@ -1,27 +1,40 @@
 import { AST_BODY } from "@SBrython/sbry/ast2js/";
-import { addChild, setType } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
 import Types from "@SBrython/sbry/types/list";
 import { ARGS_INFO, Callable, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     setType(dst, AST_BODY);
 
     const nbChildren = node.length;
-    const coffset    = addChild(dst, nbChildren);
 
-    const beg = Types.length;
+    if(nbChildren === 0)
+        return;
 
-    for(let i = 0; i < nbChildren; ++i) {
+    let cur    = addFirstChild(dst);
+
+    let cn = node[0];
+    if(cn.constructor.$name === "Expr") // only found in body ?
+        cn = cn.value;
+
+    convert_node(cur, cn, context);
+
+
+    for(let i = 1; i < nbChildren; ++i) {
+
+        cur = addSibling(cur);
 
         let cn = node[i];
         if(cn.constructor.$name === "Expr") // only found in body ?
             cn = cn.value;
 
-        convert_node(i + coffset, cn, context);
+        convert_node(cur, cn, context);
     }
+
+    const beg = Types.length;
 
     // generate ungenerated functions...
     const end = Types.length;

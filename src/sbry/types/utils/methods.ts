@@ -1,8 +1,9 @@
+import { NODE_ID } from "@SBrython/sbry/dop";
 import { Fct, RETURN_TYPE, WRITE_CALL } from "./types";
 
-export function method_wrapper<T extends any[]>(
+export function method_wrapper<T extends any[] = unknown[]>(
                                 RET_TYPE: (o: number) => number,
-                                write   : (node: number, ...args: T) => void) {
+                                write   : (call: NODE_ID, ...args: T) => void) {
     const r = Object.create(null);
 
     r[RETURN_TYPE] = RET_TYPE;

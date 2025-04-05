@@ -1,4 +1,4 @@
-import dop_reset, {ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, PY_CODE, resultType, type, VALUES} from "@SBrython/sbry/dop";
+import dop_reset, {ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, NODE_ID, PY_CODE, resultType, type, VALUES} from "@SBrython/sbry/dop";
 import Body from "./bry2sbry/Body";
 import Types from "@SBrython/sbry/types/list";
 import { id2name } from "./ast2js/list";
@@ -9,7 +9,7 @@ export type AST = {
     filename: string
 }
 
-export function printNode(id: number) {
+export function printNode(id: NODE_ID) {
     console.warn({
         id,
         typeID   : type(id),
@@ -20,8 +20,9 @@ export function printNode(id: number) {
     });
 }
 
-export function buildPyCode(id: number) {
-    const offset = 4*id;
+export function buildPyCode(id: NODE_ID) {
+
+    const offset = 4*(id as number);
 
     return {
         start: {

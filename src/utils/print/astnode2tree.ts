@@ -1,4 +1,4 @@
-import { firstChild, nbChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { buildJSCode } from "@SBrython/sbry/ast2js/utils";
 import { buildPyCode } from "@SBrython/sbry/py2ast";
 
@@ -24,9 +24,7 @@ export type NODE = {
     children: NODE[];
 }
 
-export default function astnode2tree(id = 0): NODE {
-
-    const coffset    = firstChild(id);
+export default function astnode2tree(id: NODE_ID = 0): NODE {
 
     const typeID = resultType(id);
     let result_type = `${typeID}:`;
@@ -35,6 +33,13 @@ export default function astnode2tree(id = 0): NODE {
     result_type += ":";
     result_type += t.__class__?.__name__ ?? "";
 
+    const children = [];
+
+    let cur = firstChild(id);
+    while(cur !== 0) {
+        children.push( astnode2tree(cur) );
+        cur = nextSibling(cur);
+    }
 
     return {
         type       : id2name[type(id)], // TODO convert
@@ -42,6 +47,6 @@ export default function astnode2tree(id = 0): NODE {
         value      : VALUES[id],
         jscode  : buildJSCode(id),
         pycode  : buildPyCode(id),
-        children: Array.from({length: nbChild(id)}, (_,i) => astnode2tree(coffset+i) )
+        children
     };
 }

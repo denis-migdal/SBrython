@@ -1,28 +1,34 @@
 import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_FCT_CALL_KEYWORD } from "@SBrython/sbry/ast2js/";
-import { firstChild, nbChild, type, VALUES } from "@SBrython/sbry/dop";
-import { ARGS_INFO, Callable, Fct, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
+import { firstChild, nextSibling, NODE_ID, type, VALUES } from "@SBrython/sbry/dop";
+import { ARGS_INFO, Callable, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
-export function default_call(node: number) {
+export function default_call(node: NODE_ID) {
 
     const meta = (VALUES[node] as Callable).__call__[ARGS_INFO];
 
     const coffset    = firstChild(node);
-    const nbChildren = nbChild(node);
 
     w_node(coffset);
     w_str('(');
 
-    const nb_call_args = nbChildren - 1; // could have short if nb_call_args = 0...
-    const call_args_offset  = coffset + 1;
+    //TODO: opti...
+    let nb_call_args = 0;
+    let cur = coffset;
+    while( (cur = nextSibling(cur)) !== 0) ++nb_call_args;
 
     // nb_pos_call
     let nb_pos_call = nb_call_args;
-    for(let i = 0; i < nb_call_args; ++i)
-        if( type( i + call_args_offset) === AST_FCT_CALL_KEYWORD) {
+
+    cur = coffset;
+    for(let i = 0; i < nb_call_args; ++i) {
+        cur = nextSibling(cur);
+
+        if( type(cur) === AST_FCT_CALL_KEYWORD ) {
             nb_pos_call = i;
             break;
         }
+    }
 
     // 1) Consume call pos (nb_pos_call) until max_pos
     let max_pos = meta.idx_end_pos;
@@ -31,13 +37,15 @@ export function default_call(node: number) {
         max_pos = meta.idx_vararg; // vararg_array + max_pos: can be precomputed ?
 
     const cutoff = Math.min(nb_pos_call, max_pos);
+    cur = coffset;
     for(let i = 0; i < cutoff; ++i) {
-        w_node(i + coffset + 1);
+        cur = nextSibling(cur);
+        w_node(cur);
         w_str(", ");
     }
 
-    const kw    : Record<string, number> = {};
-    const kwargs: Record<string, number> = {};
+    const kw    : Record<string, NODE_ID> = {};
+    const kwargs: Record<string, NODE_ID> = {};
 
     let call_has_kw     = false;
     let call_has_kwargs = false;
@@ -53,11 +61,13 @@ export function default_call(node: number) {
 
             w_str("[");
 
-            w_node(varg_start + call_args_offset);
+            cur = nextSibling(cur);
+            w_node(cur);
             
             for(let i = 1; i < varg_nb; ++i) {
                 w_str(", ");
-                w_node(i + varg_start + call_args_offset );
+                cur = nextSibling(cur);
+                w_node(cur);
             }
 
             w_str("]");
@@ -65,8 +75,10 @@ export function default_call(node: number) {
     } else {
         // WHY ???
         const args_names = meta.args_names;
-        for(let i = cutoff; i < nb_pos_call; ++i)
-            kw[ args_names[i-1] ] = i + coffset;
+        for(let i = cutoff; i < nb_pos_call; ++i) {
+            cur = nextSibling(cur);
+            kw[ args_names[i-1] ] = cur;
+        }
 
         call_has_kw = cutoff !== nb_pos_call;
     }
@@ -75,21 +87,21 @@ export function default_call(node: number) {
 
     for(let i = nb_pos_call; i < nb_call_args; ++i) {
 
-        const arg  = i + coffset;
-        const name = VALUES[arg];
+        cur = nextSibling(cur);
+        const name = VALUES[cur];
         const idx  = args_pos[ name ];
 
         if( idx >= 0 ) { // pos args given by kw...
-            pos[idx - cutoff] = arg;
+            pos[idx - cutoff] = cur;
             continue;
         }
 
         call_has_kw = true;
 
         if( idx === -1)
-            kw[name] = arg;
+            kw[name] = cur;
         else {
-            kwargs[name] = arg;
+            kwargs[name] = cur;
             call_has_kwargs = true;
         }
     }
@@ -140,6 +152,6 @@ export function default_call(node: number) {
     w_str(')');
 }
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
     (VALUES[node] as Callable).__call__[WRITE_CALL]!(node);
 }

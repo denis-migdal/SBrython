@@ -1,24 +1,30 @@
 import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
-import { firstChild, nbChild, VALUES } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, VALUES } from "@SBrython/sbry/dop";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
 
     const body       = firstChild(node);
-    const nbChildren = nbChild(node);
+    let cur = nextSibling(body);
 
     w_str(`class ${VALUES[node]} extends `);
 
-    if( nbChildren > 2 ) {
-        w_str("_sb_.mix(");
-        for (let i = 1; i < nbChildren; ++i) {
-            w_node(body+i);
-            w_str(", ");
-        }
-        w_str(")");
-    } else if( nbChildren === 2)
-        w_node(body+1);
-    else
+    if( cur === 0) {
         w_str("_r_.object");
+    } else if( nextSibling(cur) === 0) {
+        w_node(cur);
+    } else {
+        w_str("_sb_.mix(");
+        w_node(cur);
+        cur = nextSibling(cur);
+        do {
+            w_str(", ");
+            w_node(cur);
+            cur = nextSibling(cur);
+        } while(cur !== 0);
+        
+        w_str(")");
+    }
+        
 
     w_sns(" {", body, "}");
 }

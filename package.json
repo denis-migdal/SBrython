@@ -17,7 +17,8 @@
     "license": "[LICENCE]",
     "private": "true",
     "dependencies": {
-        "circular-dependency-plugin": "^5.2.2"
+        "circular-dependency-plugin": "^5.2.2",
+        "ts-loader": "^9.5.2"
     },
     "devDependencies": {
         "copy-webpack-plugin": "^12.0.2",

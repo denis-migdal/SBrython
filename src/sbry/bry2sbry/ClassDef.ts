@@ -1,6 +1,6 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
 import { AST_CLASSDEF } from "@SBrython/sbry/ast2js/";
-import { addChild, firstChild, resultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, firstChild, NODE_ID, resultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { addType } from "@SBrython/sbry/types/utils/addType";
 import { method_wrapper } from "../types/utils/methods";
@@ -14,7 +14,7 @@ function weak_assign(target: Record<string, any>, src: Record<string, any>) {
             target[key] = src[key];
 }
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const instance_TypeID = addType({});
 
@@ -38,15 +38,16 @@ export default function convert(dst: number, node: any, context: Context) {
     context = context.createClassContext(typeID);
 
     setType(dst , AST_CLASSDEF);
-    const nbChildren = 1 + node.bases.length;
-    const coffset    = addChild(dst, nbChildren);
+    const nbChildren = node.bases.length;
+    let cur    = addFirstChild(dst);
 
-    Body(coffset, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(coffset, node.body);
+    Body(cur, node.body, context);
+    if(__DEBUG__) set_py_code_from_list(cur, node.body);
 
-    for(let i = 1; i < nbChildren ; ++i){
-        convert_node(i+coffset, node.bases[i-1], context);
-        const stypeID = resultType(i+coffset);
+    for(let i = 0; i < nbChildren ; ++i){
+        cur = addSibling(cur);
+        convert_node(cur, node.bases[i], context);
+        const stypeID = resultType(cur);
 
         // could be optimized...
         weak_assign(klass_type, Types[stypeID]);

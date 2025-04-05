@@ -1,6 +1,6 @@
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
 import { AST_SYMBOL } from "@SBrython/sbry/ast2js/index";
-import { setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { NODE_ID, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import builtins from "../types/builtins";
 import Types from "../types/";
 import { JS_NAME } from "../types/utils/types";
@@ -11,7 +11,7 @@ function isClass(_: unknown) {
 }
 // + https://github.com/brython-dev/brython/issues/2513
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     let result_type = 0;
     let value = node.id as string;

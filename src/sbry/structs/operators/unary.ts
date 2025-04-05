@@ -1,4 +1,4 @@
-import { parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
+import { NODE_ID, parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
 import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
@@ -7,7 +7,7 @@ import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
 
 type GenUnaryOps_Opts = {
     //convert_self ?: Converter,
-    write_call   ?: (node: number, op: string, a: number) => void
+    write_call   ?: (node: NODE_ID, op: string, a: NODE_ID) => void
 };
 
 export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
@@ -27,7 +27,7 @@ export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
             op = '-';
 
         result[`__${pyop}__`] = method_wrapper(return_type,
-            (node: number, self: number) => {
+            (node: NODE_ID, self: NODE_ID) => {
                 return write_call(node, op, self); //convert_self(self) );
             }
         )
@@ -36,7 +36,7 @@ export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
     return result;
 }
 
-export function write_unary_jsop(node: number, op: string, a: number) {
+export function write_unary_jsop(node: NODE_ID, op: string, a: NODE_ID) {
 
     let rop = op;
     if( rop === '-')

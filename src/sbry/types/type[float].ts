@@ -1,7 +1,7 @@
 import { RET_FLOAT } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_type, TYPE_type_float_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
-import { firstChild, resultType, type, VALUES } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, resultType, type, VALUES } from "@SBrython/sbry/dop";
 import { Int2Number } from "@SBrython/sbry/structs/Converters";
 import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { AST_LIT_STR } from "@SBrython/sbry/ast2js/";
@@ -14,9 +14,9 @@ export default Object.assign(TYPE_type_float_,
         __class__: TYPE_type,
         __name__ : "float",
         [JS_NAME]: "Number",
-        __call__ : method_wrapper(RET_FLOAT, (node: number) => {
+        __call__ : method_wrapper(RET_FLOAT, (node: NODE_ID) => {
 
-            const other = firstChild(node)+1;
+            const other = nextSibling(firstChild(node));
             const other_type = resultType(other);
 
             //TODO use their __int__ ?
@@ -25,7 +25,7 @@ export default Object.assign(TYPE_type_float_,
                 return;
             }
             if( other_type === TYPEID_float || other_type === TYPEID_jsint) {
-                w_node(other_type);
+                w_node(other);
                 return;
             }
 

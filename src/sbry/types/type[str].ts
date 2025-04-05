@@ -1,7 +1,7 @@
 import { RET_STR } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_type, TYPE_type_str_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
-import { firstChild, resultType } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, resultType } from "@SBrython/sbry/dop";
 import Types from "./index";
 import { w_node } from "@SBrython/sbry/ast2js/utils";
 import { TYPEID_str } from ".";
@@ -14,7 +14,7 @@ export default Object.assign(TYPE_type_str_,
         [JS_NAME]: "String",
         __call__: method_wrapper(RET_STR, (node) => {
 
-            const other = firstChild(node)+1;
+            const other = nextSibling(firstChild(node));
             const other_type = resultType(other);
 
             //TODO use their __int__ ?

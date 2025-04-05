@@ -1,10 +1,10 @@
 import { AST_OP_CMP } from "@SBrython/sbry/ast2js/";
-import { addChild, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { bname2pyname } from "@SBrython/sbry/structs/BinaryOperators";
 import { TYPEID_bool } from "@SBrython/sbry/types";
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const nops = node.ops;
     const nb_ops = nops.length
@@ -22,10 +22,13 @@ export default function convert(dst: number, node: any, context: Context) {
 
     setType(dst, AST_OP_CMP);
     setResultType(dst, TYPEID_bool);
-    const nbChildren = node.comparators.length + 1;
-    const coffset = addChild(dst, nbChildren);
 
-    convert_node(coffset, node.left, context );
-    for(let i = 1 ; i < nbChildren; ++i)
-        convert_node(i + coffset, node.comparators[i-1], context);
+    let cur = addFirstChild(dst);
+    convert_node(cur, node.left, context );
+
+    const nbChildren = node.comparators.length;
+    for(let i = 0 ; i < nbChildren; ++i) {
+        cur = addSibling(cur);
+        convert_node(cur, node.comparators[i], context);
+    }
 }

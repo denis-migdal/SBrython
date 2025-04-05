@@ -1,39 +1,36 @@
-Target /10-20 ?
+https://docs.python.org/3/reference/lexical_analysis.html
+https://github.com/brython-dev/brython/issues/2554
 
-[WITHOUT NEXT SIBLING] (Benchmark) [retry...]
-Py code        : 2004 tokens (1 file) [200 lines]
-    PY2JS      :  2.123s [- 8.59%]  42.540ms
-        py2ast :  1.912s [   =   ]  38.320ms
-        astProc:  0.120s [- 5.51%]   2.400ms
-        ast2js :  0.091s [-67.96%]   1.820ms [x  3.12]
-    RUNTIME    :  0.069s [-82.44%]   1.380ms
-        genFct :  0.018s [-73.13%]   0.360ms
-        exeFct :  0.051s [-84.36%]   1.020ms
-=> Things were deoptimized (ast2js x5 too slow, BUT some opti + class & co)
-    => and mainly astProc (null/reported to py2ast)
+PY2JS      :  2.254s [- 8.91%]  45.180ms
+    py2ast :  2.043s [   =   ]  40.940ms
+    astProc:  0.119s [-10.53%]   2.380ms
+    ast2js :  0.093s [-69.00%]   1.860ms
+Target /10-20 ? x30 faster : only support True/False :P
 
-x30 faster : only support True/False :P
--> we don't know the number of children when parsing...
-    -> nbChild (-> nextSibling) + invert children order in op...
-    -> measure loss of perfs...
-        -> setSibling( createNode() ) ~> can't do both at once...
-            -> firstChild is NOT always the same.
+=> Big code x80 / x30
 
--> Body (add sibling until end...)
-    -> next line...
-    -> indent level... (slice(indent.length) === indent).
-        -> else : end of body...
-        -> special firstBody => verif EOF ?
--> If + other keywords...
+-> op : properly read op
+-> ifblock : elif/else... [prev stuff (?) how (?) dunno]
+-> fcts : parse args (+ use type id instead of VALUES ?) / SType
 
-- generateAST
+(8/36)
+- Structures   : 0/3  // requiert "," parsing
+- Functions    : 0/5  // def (requiert "," parsing) +call (requiert symbol + ctxt)
+- Symbol       : 0/1
+- Keywords     : 5/8  // importx2 + raise (requiert fct call)
+- Operators    : 0/10
+- Literals     : 2/8
+- Others       : 0/4
+- ControlFlows : 1/7
+
+- utils/generate : generateAST (refactor)
     -> split bry/sbry
         -> bry use thingy
         -> if use parser parse
         -> else use sbry + copy sbry time...
     -> merge execute/ast/generate in one global fct...
-
 - exclude list for parser
+
 - test parsing strat : regex vs by hand vs sticky regex...
 
 0. use test.py for tests
@@ -49,8 +46,6 @@ Initially:
         - parseStr
         - parseOp
         - parseToken
-
-- keyword[.slice()] => consume fct() => if not found => add (?)
 - op priority
 
 Tokens (~37):

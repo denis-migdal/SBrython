@@ -9,72 +9,55 @@ import genRuntime   from "./build/gen/runtime.js";
 import CircularDependencyPlugin from 'circular-dependency-plugin';
 
 export default async function(...args) {
-	
+
+	// cf https://github.com/webpack/webpack/issues/11557#issuecomment-2778661210
+
 	const cfg = await buildConfigs("./src/",
-                            "./dist/${version}/",
-                            {
-                                "@SBrython": "src/"
-                            })(...args);
+		"./dist/${version}/",
+		{
+			"@SBrython": "src/"
+		})(...args);
 
-	const cfg_debug = {...cfg};
+	const entries = cfg.entry = await cfg.entry();
 
-	const entries = await cfg_debug.entry();
-	cfg_debug.entry = entries;
-
-	const Benchmark = entries.Benchmark;
-	delete entries.Benchmark;
-	const  LibEntryName = 'libs/SBrython-prod';
-	const RLibEntryName = 'libs/SBrython-runtime-prod';
-	const  Lib       = entries[ LibEntryName];
-	const RLib       = entries[RLibEntryName];
-	delete entries[ LibEntryName]
-	delete entries[RLibEntryName]
-
-	cfg.plugins = [...cfg_debug.plugins];
+	const names = [ 'libs/SBrython-prod', 'libs/SBrython-runtime-prod', 'Benchmark'];
+	for(let name in entries)
+		entries[name].layer = `__DEBUG__=${ ! names.includes(name)}`;
 
 	// only require it once.
-	cfg_debug.plugins.push({
+	cfg.plugins.push({
 		apply: (compiler) => {
 			compiler.hooks.compile.tap("MyPlugin_compile", async () => {
-				await Promise.all([
-					genBry2SBry(),
-					genTypes(),
-					genAST2JS(),
-					genRuntime(),
-				]);
-			});
-		},
+			await Promise.all([
+				genBry2SBry(),
+				genTypes(),
+				genAST2JS(),
+				genRuntime(),
+			]);
+		});
+	},
 	}, new CircularDependencyPlugin({
 		// exclude detection of files based on a RegExp
 		exclude: /node_modules/,
 		// include specific files based on a RegExp
 		include: /src/,
 		// add errors to webpack instead of warnings
-		failOnError: true,
+		failOnError: false,
 		// allow import cycles that include an asyncronous import,
-		// e.g. via import(/* webpackMode: "weak" */ './file.js')
+		// e.g. via import(/* webpackMode: "weak" *//* './file.js')
 		allowAsyncCycles: false,
 		// set the current working directory for displaying module paths
 		cwd: process.cwd(),
-	  })
+		})
 	);
 
-
-	cfg.entry   = {
-		skeleton: entries.skeleton,
-		Benchmark,
-		[ LibEntryName]:  Lib,
-		[RLibEntryName]: RLib
-	};
-	cfg.output.clean = false;
-
-	cfg_debug.plugins.push(new webpack.DefinePlugin({
-		__DEBUG__: "true"
-	}));
+	cfg.experiments.layers = true;
 
 	cfg.plugins.push(new webpack.DefinePlugin({
-		__DEBUG__: "false"
+		__DEBUG__: webpack.DefinePlugin.runtimeValue(
+			ctx => ctx.module.layer === '__DEBUG__=true'
+		)
 	}));
 
-	return [cfg_debug, cfg];
+	return cfg;
 }

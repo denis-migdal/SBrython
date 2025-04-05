@@ -1,15 +1,15 @@
-import { createASTNode, firstChild, resultType, setFirstChild, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
+import { createASTNode, firstChild, nextSibling, NODE_ID, resultType, setFirstChild, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
 import { AST_LIT_INT, AST_2BIGINT, AST_2NUMBER } from "@SBrython/sbry/ast2js/";
 import { TYPEID_float, TYPEID_int, TYPEID_jsint } from "@SBrython/sbry/types";
 
-export type Converter = (node: number) => number;
+export type Converter = (node: NODE_ID) => NODE_ID;
 
-export const NOCONVERT = (node: number) => node;
+export const NOCONVERT = (node: NODE_ID) => node;
 
 export const CONVERT_INT2FLOAT = Int2Number;
 export const CONVERT_2INT      = Number2Int;
 
-export function Int2Number(a: number, target = TYPEID_float) {
+export function Int2Number(a: NODE_ID, target = TYPEID_float) {
 
     if( resultType(a) !== TYPEID_int) // already a number
         return a;
@@ -27,7 +27,7 @@ export function Int2Number(a: number, target = TYPEID_float) {
 
     if( a_value === '__mul__' || a_value === '__rmul__' ) {
         const ltype = resultType(coffset);
-        const rtype = resultType(coffset+1);
+        const rtype = resultType( nextSibling(coffset) );
         if(    (ltype === TYPEID_int || ltype === TYPEID_jsint)
             && (rtype === TYPEID_int || rtype === TYPEID_jsint)
         ) {
@@ -51,7 +51,7 @@ export function Int2Number(a: number, target = TYPEID_float) {
     return idx;
 }
 
-export function Number2Int(a: number) {
+export function Number2Int(a: NODE_ID) {
 
     if( resultType(a) === TYPEID_int)
         return a;

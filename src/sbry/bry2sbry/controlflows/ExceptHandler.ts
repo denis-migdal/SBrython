@@ -1,22 +1,20 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
 import { AST_CTRL_TRYBLOCK_CATCH } from "@SBrython/sbry/ast2js/";
-import { addChild, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 
-export default function convert(dst: number, node: any, context: Context) {
-
-    let nbChildren = 1;
-    if( node.type !== undefined )
-        nbChildren = 2;
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     setType(dst, AST_CTRL_TRYBLOCK_CATCH);
-    const coffset = addChild(dst, nbChildren);
 
+    const coffset = addFirstChild(dst);
     Body(coffset, node.body, context);
     if(__DEBUG__) set_py_code_from_list(coffset, node.body);
 
-    if( nbChildren === 2)
-        convert_node(coffset+1, node.type, context);
+    if( node.type !== undefined ) {
+        const cur = addSibling(coffset);
+        convert_node(cur, node.type, context);
+    }
     
     VALUES[dst] = node.name;
 }

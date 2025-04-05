@@ -1,10 +1,10 @@
 import Types, { TYPEID_type, TYPEID_type_float_, TYPEID_type_int_, TYPEID_type_str_ } from ".";
 import { w_node, w_str } from "../ast2js/utils";
-import { firstChild, nbChild, resultType } from "../dop";
+import { firstChild, nextSibling, NODE_ID, resultType } from "../dop";
 import { RET_INT, RET_None, RETURN_TYPE_FCT } from "../structs/ReturnTypeFcts";
 import { addType } from "./utils/addType";
 import { method_wrapper } from "./utils/methods";
-import { Callable, Fct, WRITE_CALL } from "./utils/types";
+import { Callable, WRITE_CALL } from "./utils/types";
 
 // builtin symbols.
 export default {
@@ -16,14 +16,15 @@ export default {
     abs  : addType( genUnaryOpFct("abs", RET_INT)), //TODO...
     print: addType({
         __name__: "print",
-        __call__: method_wrapper(RET_None, (call:number) => {
+        __call__: method_wrapper(RET_None, (call:NODE_ID) => {
             const coffset  = firstChild(call);
-            const nb_child = nbChild(call);
 
             w_str("__SB__.print(");
-            for(let i = 1; i < nb_child; ++i) {
-                w_node(coffset + i);
+            let cur = nextSibling(coffset);
+            while(cur !== 0) {
+                w_node(cur);
                 w_str(", ");
+                cur = nextSibling(cur);
             }
             w_str(")");
         })
@@ -37,8 +38,8 @@ function genUnaryOpFct(name: string, return_type: RETURN_TYPE_FCT) {
     const opname = `__${name}__`;
     return {
         __name__ : name,
-        __call__ : method_wrapper(return_type, (call: number) => {
-            const left   = firstChild(call)+1;
+        __call__ : method_wrapper(return_type, (call: NODE_ID) => {
+            const left   = nextSibling(firstChild(call));
             const method = Types[resultType(left)]![opname] as Callable;
             return method.__call__[WRITE_CALL](call);
         })

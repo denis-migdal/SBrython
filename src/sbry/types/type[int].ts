@@ -1,7 +1,7 @@
 import { RET_INT } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_type, TYPE_type_int_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
-import { firstChild, resultType } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, resultType } from "@SBrython/sbry/dop";
 import { w_node, w_sns } from "@SBrython/sbry/ast2js/utils";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
 import Types from "./index";
@@ -13,9 +13,9 @@ export default Object.assign(TYPE_type_int_,
         __class__: TYPE_type,
         __name__ : "int",
         [JS_NAME]: "BigInt",
-        __call__: method_wrapper(RET_INT, (node: number) => {
+        __call__: method_wrapper(RET_INT, (node: NODE_ID) => {
 
-            const other = firstChild(node) + 1;
+            const other = nextSibling(firstChild(node));
             const other_type =resultType(other);
 
             //TODO use their __int__ ?

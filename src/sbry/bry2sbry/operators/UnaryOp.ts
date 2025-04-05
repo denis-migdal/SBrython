@@ -1,15 +1,15 @@
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { bname2pyname } from "@SBrython/sbry/structs/BinaryOperators";
 import { AST_OP_UNARY } from "@SBrython/sbry/ast2js/";
-import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_bool, TYPEID_int, TYPEID_NotImplementedType } from "@SBrython/sbry/types";
 import Types from "@SBrython/sbry/types/list";
 import { Fct, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     setType(dst, AST_OP_UNARY);
-    const coffset = addChild(dst, 1);
+    const coffset = addFirstChild(dst);
 
     convert_node(coffset, node.operand , context );
 

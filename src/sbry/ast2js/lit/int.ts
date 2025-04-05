@@ -1,8 +1,8 @@
 import { w_str } from "@SBrython/sbry/ast2js/utils";
-import { resultType, VALUES } from "@SBrython/sbry/dop";
+import { NODE_ID, resultType, VALUES } from "@SBrython/sbry/dop";
 import { TYPEID_int } from "@SBrython/sbry/types";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
 
     let value = VALUES[node];
 

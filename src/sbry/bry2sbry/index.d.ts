@@ -1,3 +1,5 @@
+import { NODE_ID } from "../dop";
+
 export type Context = {
     local_symbols: Record<string, number>;
     parentTypeID  : number; 
@@ -7,5 +9,5 @@ export type Context = {
     createClassContext(type: number): Context;
 }
 
-declare const _default: Record<string, (dst: number, node: any, context: Context) => void>;
+declare const _default: Record<string, (dst: NODE_ID, node: any, context: Context) => void>;
 export default _default;

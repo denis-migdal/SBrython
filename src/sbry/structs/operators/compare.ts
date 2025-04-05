@@ -2,7 +2,7 @@ import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
 import { jsop2pyop } from "../BinaryOperators";
 import { Converter, NOCONVERT } from "../Converters";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
-import { resultType } from "@SBrython/sbry/dop";
+import { NODE_ID, resultType } from "@SBrython/sbry/dop";
 import { write_binary_jsop } from "./binary";
 
 //TODO....
@@ -17,7 +17,7 @@ const reverse = {
 
 //TODO: handle reversed : remove condition ??? -> switch children ???
 
-export function write_compare_jsop(node: number, a: number, op: string, b: number, reversed: boolean) {
+export function write_compare_jsop(node: NODE_ID, a: NODE_ID, op: string, b: NODE_ID, reversed: boolean) {
 
     let cop = op;
 
@@ -36,7 +36,7 @@ export function write_compare_jsop(node: number, a: number, op: string, b: numbe
 export type GenCmpOps_Opts = {
     convert_other   ?: Converter,
     convert_self    ?: Converter,
-    write_call      ?: (node: number, self: number, op: string, other: number, reversed: boolean) => void
+    write_call      ?: (node: NODE_ID, self: NODE_ID, op: string, other: NODE_ID, reversed: boolean) => void
 };
 
 export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
@@ -53,7 +53,7 @@ export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
 
         const pyop = jsop2pyop[op];
 
-        result[`__${pyop}__`] = method_wrapper(return_type, (node: number, self: number, o: number, reversed: boolean) => {
+        result[`__${pyop}__`] = method_wrapper(return_type, (node: NODE_ID, self: NODE_ID, o: NODE_ID, reversed: boolean) => {
             write_call(node, convert_self(self), op, convert_other(o), reversed );
         });
     }

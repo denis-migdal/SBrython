@@ -1,7 +1,7 @@
 // must NOT depends on list.
 import AST2JS from "./index"; // required for correct type deduction...
 
-import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, type } from "../dop";
+import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, NODE_ID, type } from "../dop";
 
 export const CURSOR = __DEBUG__ ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
@@ -47,8 +47,8 @@ function new_jscode(filename: string) {
     }
 }
 
-export function buildJSCode(id: number) {
-    const offset = 4*id;
+export function buildJSCode(id: NODE_ID) {
+    const offset = 4*(id as number);
     
     return {
         start: {
@@ -110,16 +110,16 @@ export function BE() {
 export function w_str(str: string) {
     jscode += str;
 }
-export function w_node(node: number) {
-    if( __DEBUG__ ) set_js_cursor(4*node + CODE_BEG);
+export function w_node(node: NODE_ID) {
+    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
     AST2JS[type(node)!](node);
-    if( __DEBUG__ ) set_js_cursor(4*node + CODE_END);
+    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
 }
 
-type W_SNS = [string, number, string]
-    | [string, number, string, number, string]
-    | [string, number, string, number, string, number, string]
-    | [string, number, string, number, string, number, string, number, string];
+type W_SNS = [string, NODE_ID, string]
+    | [string, NODE_ID, string, NODE_ID, string]
+    | [string, NODE_ID, string, NODE_ID, string, NODE_ID, string]
+    | [string, NODE_ID, string, NODE_ID, string, NODE_ID, string, NODE_ID, string];
 
 export function w_sns(...args: W_SNS) { //TODO: alternate
 
@@ -127,12 +127,12 @@ export function w_sns(...args: W_SNS) { //TODO: alternate
 
     for(let i = 1; i < args.length; i+=2) {
 
-        const node = args[i] as number;
+        const node = args[i] as NODE_ID;
 
-        if( __DEBUG__ ) set_js_cursor(4*node + CODE_BEG);
+        if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
         AST2JS[type(node)!](node);
-        if( __DEBUG__ ) set_js_cursor(4*node + CODE_END);
+        if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
 
-        jscode += args[i+1];
+        jscode += args[i+1] as string;
     }
 }

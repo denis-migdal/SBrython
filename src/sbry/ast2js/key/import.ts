@@ -1,15 +1,18 @@
 import { w_node, w_str } from "@SBrython/sbry/ast2js/utils";
-import { firstChild, nbChild, VALUES } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, VALUES } from "@SBrython/sbry/dop";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
 
     w_str("const {");
 
-    const coffset = firstChild(node);
-    const nbChildren = nbChild(node);
+    let cur = firstChild(node);
+    w_node(cur);
+    cur = nextSibling(cur);
 
-    for(let i = 0; i < nbChildren; ++i) {
-        w_node(i + coffset); w_str(", ");
+    while(cur !== 0) {
+
+        w_str(", "); w_node(cur);
+        cur = nextSibling(cur);
     }
 
     w_str('} = ');

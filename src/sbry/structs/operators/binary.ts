@@ -1,4 +1,4 @@
-import { parentOPPrio, setParentOPPrio, VALUES } from "@SBrython/sbry/dop";
+import { NODE_ID, parentOPPrio, setParentOPPrio, VALUES } from "@SBrython/sbry/dop";
 import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
 import { Converter, NOCONVERT } from "../Converters";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
@@ -9,7 +9,7 @@ import { write_unary_jsop } from "./unary";
 export type GenBinaryOps_Opts = {
     convert_other   ?: Converter,
     convert_self    ?: Converter,
-    write_call      ?: (node: number, self: number, op: string, other: number) => void
+    write_call      ?: (node: NODE_ID, self: NODE_ID, op: string, other: NODE_ID) => void
 };
 
 export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
@@ -29,12 +29,12 @@ export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
             op = '/';
 
         result[`__${pyop}__`]  = method_wrapper(return_type,
-            (node: number, self: number, other: number) => {
+            (node: NODE_ID, self: NODE_ID, other: NODE_ID) => {
             return write_call(node, convert_self(self), op, convert_other(other) );
         });
 
         result[`__r${pyop}__`] = method_wrapper(return_type,
-            (node: number, self: number, other: number) => {
+            (node: NODE_ID, self: NODE_ID, other: NODE_ID) => {
             return write_call(node, convert_other(other), op, convert_self(self) );
         });
 
@@ -42,7 +42,7 @@ export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
 
             result[`__i${pyop}__`] = method_wrapper(return_type,
         
-                (node: number, self: number, other: number) => {
+                (node: NODE_ID, self: NODE_ID, other: NODE_ID) => {
                     
                     const other_value = VALUES[other];
 
@@ -60,7 +60,7 @@ export function genBinaryOps(ops: (keyof typeof jsop2pyop)[],
     return result;
 }
 
-export function write_binary_jsop(node: number, a: number, op: string, b: number) {
+export function write_binary_jsop(node: NODE_ID, a: NODE_ID, op: string, b: NODE_ID) {
 
     const   prio = JSOperatorsPrio[op];
     const p_prio = parentOPPrio(node);

@@ -1,13 +1,19 @@
 import { AST_STRUCT_LIST } from "@SBrython/sbry/ast2js/";
-import { addChild, setType } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     setType(dst, AST_STRUCT_LIST);
-    const nbChildren = node.elts.length;
-    const coffset = addChild(dst, nbChildren);
-
-    for(let i = 0; i < nbChildren; ++i)
-        convert_node(i + coffset, node.elts[i], context);
+    const elts       = node.elts;
+    const nbChildren = elts.length;
+    if( nbChildren === 0)
+        return;
+    
+    let cur = addFirstChild(dst);
+    convert_node( cur , elts[0], context);
+    for(let i = 1; i < nbChildren; ++i) {
+        cur = addSibling(cur);
+        convert_node( cur , elts[i], context);
+    }
 }

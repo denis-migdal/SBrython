@@ -3,6 +3,8 @@ import { SubResults } from "../results";
 
 export default function executeSBrython(results: SubResults, print: (...args: any[]) => void) {
 
+    console.warn(results.code);
+
     const beg = performance.now();
 
     const sb = new SBrython();

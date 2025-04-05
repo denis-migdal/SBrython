@@ -7,19 +7,18 @@ import { genBinaryOps } from "@SBrython/sbry/structs/operators/binary";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
 import { genUnaryOps } from "@SBrython/sbry/structs/operators/unary";
 import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
-import { firstChild } from "../dop";
-import { printNode } from "../py2ast";
+import { firstChild, nextSibling, NODE_ID } from "../dop";
 
 export default Object.assign(TYPE_float,
     {
         __class__: TYPE_type_float_,
 
-        __str__: method_wrapper(RET_STR, (node, arg) => {
+        __str__: method_wrapper(RET_STR, (node, arg: NODE_ID) => {
             w_sns("_sb_.float2str(", arg, ")");
         }),
         __abs__: {
             __call__: method_wrapper(RET_FLOAT, (node) => {
-                w_sns("Math.abs(", firstChild(node) + 1, ")");
+                w_sns("Math.abs(", nextSibling(firstChild(node)), ")");
             })
         },
     },

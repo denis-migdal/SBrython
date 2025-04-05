@@ -21,6 +21,8 @@ export default function buildAST(code: string, results: Results, use_parser: boo
     const tokens = $B.tokenizer(code, '_');
     results.nb_tokens += tokens.length;
 
+    console.warn(tokens);
+
     results.bry .times[results.bry .offset++] += t0 - beg;
 
     if( ! use_parser ) {

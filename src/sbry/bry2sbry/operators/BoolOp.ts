@@ -1,5 +1,5 @@
 import { AST_OP_BOOL } from "@SBrython/sbry/ast2js/";
-import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
 const bname2jsop = {
@@ -7,16 +7,19 @@ const bname2jsop = {
     'Or' : '||'
 };
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     setType(dst, AST_OP_BOOL);
     const nbChildren = node.values.length;
-    const coffset    = addChild(dst, nbChildren);
 
-    for(let i = 0; i < nbChildren; ++i)
-        convert_node(i + coffset, node.values[i], context )
+    let cur    = addFirstChild(dst);
+    convert_node(cur, node.values[0], context )
+    setResultType(dst, resultType(cur) );
 
-    setResultType(dst, resultType(coffset) );
+    for(let i = 1; i < nbChildren; ++i) {
+        cur = addSibling(cur);
+        convert_node(cur, node.values[i], context )
+    }
     
     VALUES[dst] = bname2jsop[node.op.constructor.$name as keyof typeof bname2jsop];
 }

@@ -1,7 +1,7 @@
 import { RET_IJ2STR, RET_INT, RET_STR2BOOL, RET_STR2STR } from "@SBrython/sbry/structs/ReturnTypeFcts";
 import { TYPE_str, TYPE_type_str_ } from "./bases";
 import { method_wrapper } from "./utils/methods";
-import { firstChild, resultType } from "@SBrython/sbry/dop";
+import { firstChild, nextSibling, NODE_ID, resultType } from "@SBrython/sbry/dop";
 import { w_node, w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
 import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
 import { CONVERT_INT2FLOAT } from "@SBrython/sbry/structs/Converters";
@@ -14,7 +14,7 @@ export default Object.assign(TYPE_str,
         __class__: TYPE_type_str_,
         __len__: {
             __call__: method_wrapper(RET_INT, (node) => {
-                w_node( firstChild(node) + 1 );
+                w_node( nextSibling(firstChild(node)) );
                 w_str(".length");
             })
         }
@@ -24,7 +24,7 @@ export default Object.assign(TYPE_str,
     genBinaryOps(["*"]      , RET_IJ2STR,
         {
             convert_other  : CONVERT_INT2FLOAT,
-            write_call: (node: number, a: number, op, b: number) => {
+            write_call: (node: NODE_ID, a: NODE_ID, op, b: NODE_ID) => {
                 
                 if( resultType(a) !== TYPEID_str ){
                     const t = a;

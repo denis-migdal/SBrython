@@ -2,7 +2,7 @@ import { Context, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { default_call } from "@SBrython/sbry/ast2js/fct/call";
 import { convert_args } from "./Args";
 import { AST_FCT_DEF, AST_FCT_DEF_METH } from "@SBrython/sbry/ast2js/";
-import { addChild, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import Body from "@SBrython/sbry/bry2sbry/Body";
 
 import Types from "@SBrython/sbry/types/list";
@@ -17,10 +17,10 @@ const FAKE_RETURN_NODE = {
 
 // required as some symbols may have been declared out of order
 // (not only for return type computation)
-function generate(dst: number, node: any, context: Context) {
+function generate(dst: NODE_ID, node: any, context: Context) {
 
     const rtype   = resultType(dst);
-    const coffset = addChild(dst, 2);
+    const coffset = addFirstChild(dst);
 
     // fuck...
     const stype   = Types[rtype] as Callable;
@@ -29,7 +29,7 @@ function generate(dst: number, node: any, context: Context) {
 
     // new context for the function local variables
     context = context.createSubContext("fct");
-    context.parentTypeID = dst; // <- here
+    context.parentTypeID = rtype; // TODO <- here
 
     // fake the node... => better doing here to not have context issues.
     convert_args(coffset, node, stype, context);
@@ -71,11 +71,12 @@ function generate(dst: number, node: any, context: Context) {
         }
     }
 
-    Body(coffset+1, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(coffset+1, node.body);
+    const body = addSibling(coffset);
+    Body(body, node.body, context);
+    if(__DEBUG__) set_py_code_from_list(body, node.body);
 }
 
-export default function convert(dst: number, node: any, context: Context) {
+export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const SType_fct: Callable = {
         __name__: "function",

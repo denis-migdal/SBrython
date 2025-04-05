@@ -1,10 +1,10 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
 import { AST_CTRL_FOR, AST_CTRL_FOR_RANGE } from "@SBrython/sbry/ast2js/";
-import { addChild, setType, VALUES } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, NODE_ID, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID_int } from "@SBrython/sbry/types";
 
-export default function convert(dst: number, node: any, context: Context): false|void {
+export default function convert(dst: NODE_ID, node: any, context: Context): false|void {
 
     const target = node.target.id;
     context.local_symbols[target] = 0; //TODO
@@ -13,12 +13,13 @@ export default function convert(dst: number, node: any, context: Context): false
     if( node.iter.constructor.$name === "Call" && node.iter.func.id === "range" ) {
     
         setType(dst, AST_CTRL_FOR);
-        const coffset = addChild(dst, 2);
+        const coffset = addFirstChild(dst);
     
         convert_node(coffset  , node.iter, context);
     
-        Body(coffset+1, node.body, context);
-        if(__DEBUG__) set_py_code_from_list(coffset+1, node.body);
+        const body = addSibling(coffset);
+        Body(body, node.body, context);
+        if(__DEBUG__) set_py_code_from_list(body, node.body);
     
         VALUES[dst] = target;
 
@@ -31,14 +32,16 @@ export default function convert(dst: number, node: any, context: Context): false
     const args = node.iter.args;
 
     setType(dst, AST_CTRL_FOR_RANGE);
-    const nbChildren = args.length + 1;
-    const coffset    = addChild(dst, nbChildren);
 
-    Body(coffset, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(coffset, node.body);
+    let cur    = addFirstChild(dst);
+    Body(cur, node.body, context);
+    if(__DEBUG__) set_py_code_from_list(cur, node.body);
 
-    for(let i = 1; i < nbChildren ; ++i)
-        convert_node(i+coffset, args[i-1], context);
+    const nbChildren = args.length;
+    for(let i = 1; i < nbChildren ; ++i) {
+        cur = addSibling(cur);
+        convert_node(cur, args[i-1], context);
+    }
 
     VALUES[dst] = target;
 }

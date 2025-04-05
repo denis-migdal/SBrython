@@ -12,10 +12,10 @@ async function getModules(path) {
 
         if(    filepath === "list.ts"
             || filepath === "index.ts"
+            || filepath === "ids.ts"
             || filepath === "bases.ts"
             || filepath === "utils.ts"
-            || filepath === "ast2js.ts"
-            || filepath === "utils.ts")
+            || filepath === "ast2js.ts")
             continue;
 
         const end = filepath.indexOf(".", 0);
@@ -29,14 +29,13 @@ async function getModules(path) {
     return modules;
 }
 
-import * as TYPES from "../../src/sbry/ast2js/index.js";
+import * as TYPES from "../../src/sbry/ast2js/ids.js";
 
 function importModules(modules) {
 
     let result = "const LIST = [\n";
 
     const keys = Object.keys(TYPES);
-    --keys.length; // default default...
 
     const order = new Array(keys.length);
     for(let i = 0; i < keys.length; ++i)

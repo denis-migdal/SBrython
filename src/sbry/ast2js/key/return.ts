@@ -1,7 +1,7 @@
 import { w_sns, w_str } from "@SBrython/sbry/ast2js/utils";
-import { firstChild } from "@SBrython/sbry/dop";
+import { firstChild, NODE_ID } from "@SBrython/sbry/dop";
 
-export default function ast2js(node: number) {
+export default function ast2js(node: NODE_ID) {
 
     const coffset = firstChild(node);
 

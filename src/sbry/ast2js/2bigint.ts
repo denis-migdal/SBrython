@@ -1,6 +1,6 @@
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
-import { firstChild } from "@SBrython/sbry/dop";
+import { firstChild, NODE_ID } from "@SBrython/sbry/dop";
 
-export default function(node: number) {
+export default function(node: NODE_ID) {
     w_sns("BigInt(", firstChild(node), ")");
 }

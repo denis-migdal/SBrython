@@ -1,6 +1,6 @@
 import { AST_SYMBOL } from "@SBrython/sbry/ast2js/";
 import Py_Exception from "@SBrython/runtime/_r_/Exceptions/Exception";
-import { type, VALUES } from "@SBrython/sbry/dop";
+import { NODE_ID, type, VALUES } from "@SBrython/sbry/dop";
 import { SBrython } from "@SBrython/runtime";
 
 function filter_stack(stack: string[]) {
@@ -8,7 +8,7 @@ function filter_stack(stack: string[]) {
 }
 
 //TODO: use ~=sourcemap...
-function find_astnode_from_jscode_pos(nodes: any, line: number, col: number): null|number {
+function find_astnode_from_jscode_pos(nodes: any, line: number, col: number): null|NODE_ID {
 
   //TODO...
   /*
@@ -32,7 +32,7 @@ function find_astnode_from_jscode_pos(nodes: any, line: number, col: number): nu
   return null; //throw new Error("node not found");
 }
 
-export function stackline2astnode(stackline: StackLine, sb: SBrython): number {
+export function stackline2astnode(stackline: StackLine, sb: SBrython): NODE_ID {
   const ast = sb.getASTFor("sbrython_editor.js");
   return find_astnode_from_jscode_pos(ast.nodes, stackline[1], stackline[2])!;
 }
@@ -40,7 +40,7 @@ export function stackline2astnode(stackline: StackLine, sb: SBrython): number {
 export type StackLine = [string, number, number];
 
 //TODO: convert
-export function stack2astnodes(stack: StackLine[], sb: SBrython): number[] {
+export function stack2astnodes(stack: StackLine[], sb: SBrython): NODE_ID[] {
   return stack.map( e => stackline2astnode(e, sb) );
 }
 
