@@ -74,10 +74,10 @@ export function parentOPPrio(node: NODE_ID) {
 }
 
 export function setFirstChild(parent: NODE_ID, value: NODE_ID) {
-    ASTNODES[(parent as number) * ASTNODE_SIZE + ASTNODE_FIRST_CHILD] = value as any;
+    return ASTNODES[(parent as number) * ASTNODE_SIZE + ASTNODE_FIRST_CHILD] = value as any;
 }
 export function setSibling(node: NODE_ID, sibling: NODE_ID) {
-    ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_NEXT_SIBLING] = sibling as any;
+    return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_NEXT_SIBLING] = sibling as any;
 }
 export function setType(node: NODE_ID, value: number) {
     ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_TYPE_ID] = value;

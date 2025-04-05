@@ -1,10 +1,11 @@
 import Types from "@SBrython/sbry/types/list";
 import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IFBLOCK, AST_FCT_DEF, AST_FCT_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT } from "./ast2js";
-import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, NODE_ID, PY_CODE, setResultType, setType, VALUES } from "./dop"
+import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, NODE_ID, PY_CODE, setFirstChild, setResultType, setSibling, setType, VALUES } from "./dop"
 import { AST } from "./py2ast"
 import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/fct/call";
 import { TYPEID_float } from "./types";
+import { opsymbol2opid } from "./structs/operators";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -50,44 +51,48 @@ function nextSymbol(){
     return code.slice(offset, offset += end );
 }
 
-const KNOWN_SYMBOLS: Record<string, (id: NODE_ID)=>void> = {
+const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>boolean> = {
     // for op tests
     "1"    :    (id) => {
         setType(id, AST_LIT_FLOAT);
         setResultType(id, TYPEID_float);
         VALUES[id] = 1;
+
+        return false;
     },
-    "True" :    (id) => setType(id, AST_LIT_TRUE),
-    "False":    (id) => setType(id, AST_LIT_FALSE),
-    "break":    (id) => setType(id, AST_KEY_BREAK),
-    "continue": (id) => setType(id, AST_KEY_CONTINUE),
-    "pass":     (id) => setType(id, AST_KEY_PASS),
-    "return":   (id) => setType(id, AST_KEY_RETURN),
+    "True" :    (id) => { setType(id, AST_LIT_TRUE)    ; return false; },
+    "False":    (id) => { setType(id, AST_LIT_FALSE)   ; return false; },
+    "break":    (id) => { setType(id, AST_KEY_BREAK)   ; return true; },
+    "continue": (id) => { setType(id, AST_KEY_CONTINUE); return true; },
+    "pass":     (id) => { setType(id, AST_KEY_PASS)    ; return true; },
+    "return":   (id) => { setType(id, AST_KEY_RETURN)  ; return true; },
     "assert": (id) => {
         setType(id, AST_KEY_ASSERT);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
-        readExpr( addFirstChild(id) );
+        setFirstChild(id, readExpr() );
         ++offset; // this is a \n
+
+        return true;
     },
     "while": (id) => {
         setType(id, AST_CTRL_WHILE);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
-        const cond = addFirstChild(id);
-        readExpr( cond );
+        const first = setFirstChild(id, readExpr());
         ++offset; // this is a :
 
-        const body = addSibling(cond);
-        readBody(body);
+        setSibling(first, readBody()  );
+
+        return true;
     },
     "if": (id) => {
         setType(id, AST_CTRL_IFBLOCK);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
-        const cond = addFirstChild(id);
-        readExpr( cond );
+        const first = setFirstChild(id, readExpr());
         ++offset; // this is a :
 
-        const body = addSibling(cond);
-        readBody(body);
+        setSibling(first, readBody() );
+
+        return true;
     },
     "def": (id) => {
 
@@ -132,8 +137,9 @@ const KNOWN_SYMBOLS: Record<string, (id: NODE_ID)=>void> = {
 
         offset += 3; //TODO: read args + ()
 
-        const body = addSibling(args);
-        readBody(body);
+        setSibling(args, readBody() );
+
+        return true;
     }
 }
 
@@ -160,11 +166,14 @@ function consumeIndentedLines() {
         beg = offset;
     }
 
+    --offset;
     CURRENT_INDENTATION = 0;
     if(__DEBUG__) CURSOR[1] = offset;
 }
 
-function readBody(id: NODE_ID){
+function readBody(){
+
+    const id = createASTNode();
 
     if( __DEBUG__ ) set_py_code_beg(id);
 
@@ -174,18 +183,17 @@ function readBody(id: NODE_ID){
     const indent = CURRENT_INDENTATION;
 
     // a child is guaranteed.
-    const first = addFirstChild(id);
-    readExpr(first);
+    let cur = setFirstChild(id, readExpr() );
 
-    let cur = first;
     consumeIndentedLines();
     while(CURRENT_INDENTATION === indent) {
-        cur = addSibling(cur);
-        readExpr(cur);
+        cur = setSibling(cur, readExpr() );
         consumeIndentedLines();
     }
 
     if( __DEBUG__ ) set_py_code_end(id);
+
+    return id;
 }
 
 function consumeSpaces() {
@@ -195,18 +203,26 @@ function consumeSpaces() {
         curChar = code.charCodeAt(++offset);
 }
 
-function readExpr(id: NODE_ID) {
-
-    if( __DEBUG__ ) set_py_code_beg(id);
+function readExpr() {
 
     //const char = currentChar();
     //TODO: orienter vers correct nextX();
     //TODO: expr (op) + consommer fin de la ligne.
 
+    let left = createASTNode();
+    let op_node = left;
+
+    if( __DEBUG__ ) set_py_code_beg(left); //TODO : for op node too... (copy)
+
     const token  = nextSymbol();
     const symbol = KNOWN_SYMBOLS[token];
-    if( symbol !== undefined)
-        symbol(id); //TODO: add node...
+    if( symbol !== undefined) {
+        // if return true can't be part of an expression (avoid issue in next cond)
+        if( symbol(left) ) { //TODO: search in context ?
+            if( __DEBUG__ ) set_py_code_end(op_node);
+            return op_node;
+        }
+    }
 
     consumeSpaces();
 
@@ -214,26 +230,34 @@ function readExpr(id: NODE_ID) {
 
         let op    = code[offset];
         ++offset;
+
+        const type    = opsymbol2opid[op as keyof typeof opsymbol2opid];
+        op_node = createASTNode();
+        setType(op_node, type);
+
+        setFirstChild(op_node, left);
+        VALUES[op_node] = "__add__"; //TODO
+
         // multi = * / > <
         // TODO: text op (+ not in + is not)
 
         consumeSpaces();
 
-        let right = nextSymbol();
-        const symbol = KNOWN_SYMBOLS[right];
-        if( symbol !== undefined)
-            symbol(id); //TODO: add node...
+        const right = addSibling(left);
 
-        console.warn(op, right);
+        let rtoken = nextSymbol();
+        const symbol = KNOWN_SYMBOLS[rtoken];
+        if( symbol !== undefined)
+            symbol(right); //TODO: search in context ?
 
         curChar = code.charCodeAt(offset);
-
-        throw "nok";
     }
     
     // /!\ escaped line...
 
-    if( __DEBUG__ ) set_py_code_end(id);
+    if( __DEBUG__ ) set_py_code_end(op_node);
+
+    return op_node;
 
     // we can have several expr (e.g. assert)
     //++offset; // we know it is '\n' or ':'
@@ -255,13 +279,10 @@ export function py2ast(_code: string, filename: string): AST {
     
     if( consumeEmptyLines() ) {
 
-        let cur = addFirstChild(id);
-        readExpr(cur);
+        let cur = setFirstChild(id, readExpr() );
 
-        while( consumeEmptyLines() ) {
-            cur = addSibling(cur);
-            readExpr(cur);
-        }
+        while( consumeEmptyLines() )
+            cur = setSibling(cur, readExpr() );
     }
 
     return {

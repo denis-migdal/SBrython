@@ -9,18 +9,25 @@ Target /10-20 ? x30 faster : only support True/False :P
 
 => Big code x80 / x30
 
--> op : properly read op
+-> litterals (could be great to test op...)
+-> op :
+    - one ID per op
+    - true op parsing (type etc)
+    - py op priority
+    - op refactor
+    - properly read op
+    - other types of op
 -> ifblock : elif/else... [prev stuff (?) how (?) dunno]
 -> fcts : parse args (+ use type id instead of VALUES ?) / SType
 
-(8/36)
+(9/36)
 - Structures   : 0/3  // requiert "," parsing
 - Functions    : 0/5  // def (requiert "," parsing) +call (requiert symbol + ctxt)
 - Symbol       : 0/1
-- Keywords     : 5/8  // importx2 + raise (requiert fct call)
+- Keywords     : 5/8  // importx2 + raise (requiert call)
 - Operators    : 0/10
 - Literals     : 2/8
-- Others       : 0/4
+- Others       : 1/4 (class) + 2 convert
 - ControlFlows : 1/7
 
 - utils/generate : generateAST (refactor)
