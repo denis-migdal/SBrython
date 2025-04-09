@@ -1,11 +1,11 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
-import { AST_CTRL_IFBLOCK } from "@SBrython/sbry/ast2js/";
+import { AST_CTRL_ELIF, AST_CTRL_ELSE, AST_CTRL_IF } from "@SBrython/sbry/ast2js/";
 import { addFirstChild, addSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 
 export default function convert(dst: NODE_ID, node: any, context: Context) {
 
-    setType(dst, AST_CTRL_IFBLOCK);
+    setType(dst, AST_CTRL_IF);
     let coffset = addFirstChild(dst);
 
     // if
@@ -15,24 +15,37 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
     Body(coffset, node.body, context);
     if(__DEBUG__) set_py_code_from_list(coffset, node.body);
 
+    let ifblock_cur = dst;
+
     // else if
     let cur = node;
     while( "orelse" in cur && cur.orelse.length === 1 ) {
 
         // cur.orelse[0] is the body
         if( ! ("test" in cur.orelse[0]) ) { // final else
-            coffset = addSibling(coffset);
-            convert_node(coffset, cur.orelse, context)
+
+            ifblock_cur = addSibling(ifblock_cur);
+            setType(ifblock_cur, AST_CTRL_ELSE);
+            
+            // body
+            const id = addFirstChild(ifblock_cur);
+            Body(id, cur.orelse, context );
+            if(__DEBUG__) set_py_code_from_list(ifblock_cur, cur.orelse);
+            
             break;
         }
 
         cur = cur.orelse[0];
 
-        coffset = addSibling(coffset);
-        convert_node(coffset, cur.test, context);
-        coffset = addSibling(coffset);
-        Body(coffset, cur.body, context);
+        ifblock_cur = addSibling(ifblock_cur);
+        setType(ifblock_cur, AST_CTRL_ELIF);
+        
+        // body
+        const first = addFirstChild(ifblock_cur);
+        convert_node(first, cur.test, context); // cond
 
-        if(__DEBUG__) set_py_code_from_list(coffset, cur.body);
+        const id = addSibling(first);
+        Body(id, cur.body, context);
+        if(__DEBUG__) set_py_code_from_list(id, cur.body);
     }
 }

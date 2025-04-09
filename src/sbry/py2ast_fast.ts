@@ -1,6 +1,6 @@
 import Types from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IFBLOCK, AST_FCT_DEF, AST_FCT_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT } from "./ast2js";
-import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, NODE_ID, PY_CODE, setFirstChild, setResultType, setSibling, setType, VALUES } from "./dop"
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_FCT_DEF, AST_FCT_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR } from "./ast2js";
+import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, NODE_ID, PY_CODE, setFirstChild, setResultType, setSibling, setType, VALUES } from "./dop"
 import { AST, printNode } from "./py2ast"
 import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/fct/call";
@@ -12,10 +12,15 @@ const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
 const CHAR_SPACE = 32;
 const CHAR_QUOTE = 34;
+const CHAR_PARENTHESIS_LEFT   = 40;
+const CHAR_PARENTHESIS_RIGHT  = 41;
+const CHAR_COMMA = 44;
 const CHAR_DOT   = 46;
 const CHAR_COLON = 58;
 const CHAR_DIGIT_0 = 48;
 const CHAR_DIGIT_9 = 57;
+const CHAR_BRACKET_LEFT   = 91;
+const CHAR_BRACKET_RIGHT  = 93;
 
 let offset = 0;
 let code: string;
@@ -56,29 +61,39 @@ function nextSymbol(){
     return code.slice(offset, offset += end );
 }
 
-const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>boolean> = {
+const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
     // for op tests
     "1"    :    (id) => {
         setType(id, AST_LIT_FLOAT);
         setResultType(id, TYPEID_float);
         VALUES[id] = 1;
-
-        return false;
     },
-    "True" :    (id) => { setType(id, AST_LIT_TRUE)    ; return false; },
-    "False":    (id) => { setType(id, AST_LIT_FALSE)   ; return false; },
-    "None" :    (id) => { setType(id, AST_LIT_NONE)    ; return false; },
-    "break":    (id) => { setType(id, AST_KEY_BREAK)   ; return true; },
-    "continue": (id) => { setType(id, AST_KEY_CONTINUE); return true; },
-    "pass":     (id) => { setType(id, AST_KEY_PASS)    ; return true; },
-    "return":   (id) => { setType(id, AST_KEY_RETURN)  ; return true; },
+    "True" :    (id) => setType(id, AST_LIT_TRUE),
+    "False":    (id) => setType(id, AST_LIT_FALSE),
+    "None" :    (id) => setType(id, AST_LIT_NONE),
+    "break":    (id) => setType(id, AST_KEY_BREAK),
+    "continue": (id) => setType(id, AST_KEY_CONTINUE),
+    "pass":     (id) => setType(id, AST_KEY_PASS),
+    "return":   (id) => setType(id, AST_KEY_RETURN),
     "assert": (id) => {
         setType(id, AST_KEY_ASSERT);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
         setFirstChild(id, readExpr() );
         ++offset; // this is a \n
+    },
+    "for": (id) => {
+        // TODO: for range
 
-        return true;
+        setType(id, AST_CTRL_FOR);
+        ++offset; //TODO: consume white spaces at the start of readExpr (?)
+        VALUES[id] = nextSymbol(); // name
+        consumeSpaces();
+        offset += 2; // "in"
+        consumeSpaces();
+        const first = setFirstChild(id, readExpr()); // list
+        ++offset; // this is a :
+
+        setSibling(first, readBody()  );
     },
     "while": (id) => {
         setType(id, AST_CTRL_WHILE);
@@ -87,19 +102,30 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>boolean> = {
         ++offset; // this is a :
 
         setSibling(first, readBody()  );
-
-        return true;
     },
     "if": (id) => {
-        setType(id, AST_CTRL_IFBLOCK);
+        setType(id, AST_CTRL_IF);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
         const first = setFirstChild(id, readExpr());
         ++offset; // this is a :
 
         setSibling(first, readBody() );
-
-        return true;
     },
+    "elif": (id) => {
+        setType(id, AST_CTRL_ELIF);
+        ++offset; //TODO: consume white spaces at the start of readExpr (?)
+        const first = setFirstChild(id, readExpr());
+        ++offset; // this is a :
+
+        setSibling(first, readBody() );
+    },
+    "else": (id) => {
+        setType(id, AST_CTRL_ELSE);
+        ++offset; // this is a :
+
+        setFirstChild(id, readBody() );
+    },
+    //TODO: elif/else
     "def": (id) => {
 
         setType(id, AST_FCT_DEF);
@@ -144,35 +170,33 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>boolean> = {
         offset += 3; //TODO: read args + ()
 
         setSibling(args, readBody() );
-
-        return true;
     }
 }
 
 let CURRENT_INDENTATION = 0;
 function consumeIndentedLines() {
 
-    let beg = offset;
+    let curChar = code.charCodeAt(offset);
+    if( curChar !== CHAR_NL ) // indentation already consumed
+        return;
+
+    let beg = ++offset;
     while( offset < code.length ) {
 
-        curChar = code.charCodeAt(offset);
-
-        while( curChar === CHAR_SPACE ) {
+        while( (curChar = code.charCodeAt(offset)) === CHAR_SPACE )
             ++offset;
-            curChar = code.charCodeAt(offset);
-        }
 
+        // we have a non-empty line.
         if(curChar !== CHAR_NL) {
-            CURRENT_INDENTATION = beg - offset;
+            CURRENT_INDENTATION = offset - beg;
             return;
         }
 
+        // empty line, consume next line.
         if(__DEBUG__) ++CURSOR[0];
-        ++offset;
-        beg = offset;
+        beg = ++offset;
     }
 
-    --offset;
     CURRENT_INDENTATION = 0;
     if(__DEBUG__) CURSOR[1] = offset;
 }
@@ -185,17 +209,19 @@ function readBody(){
 
     setType(id, AST_BODY);
 
-    consumeIndentedLines();
+    consumeIndentedLines(); // guaranty...
     const indent = CURRENT_INDENTATION;
 
     // a child is guaranteed.
     let cur = setFirstChild(id, readExpr() );
 
-    consumeIndentedLines();
+    consumeIndentedLines(); // + check at the same time ???
     while(CURRENT_INDENTATION === indent) {
         cur = setSibling(cur, readExpr() );
         consumeIndentedLines();
     }
+
+    offset -= CURRENT_INDENTATION + 1;
 
     if( __DEBUG__ ) set_py_code_end(id);
 
@@ -256,21 +282,56 @@ function readExpr() {
         setResultType(left, result_type);
         
         VALUES[left] = code.slice(beg, offset);
-    }else {
-        const token  = nextSymbol();
-        const symbol = KNOWN_SYMBOLS[token];
-        if( symbol !== undefined) {
-            // if return true can't be part of an expression (avoid issue in next cond)
-            if( symbol(left) ) { //TODO: search in context ?
-                if( __DEBUG__ ) set_py_code_end(op_node);
-                return op_node;
+    }  else if( curChar === CHAR_BRACKET_LEFT ) {
+        // consume list
+
+        setType(left, AST_STRUCT_LIST);
+
+        ++offset;
+
+        consumeSpaces();
+        // @ts-ignore
+        if(curChar !== CHAR_BRACKET_RIGHT) {
+
+            let cur = setFirstChild(left, readExpr() );
+
+            consumeSpaces();
+            // @ts-ignore
+            if( curChar === CHAR_COMMA ) {
+                ++offset;
+                consumeSpaces();
+            }
+
+            // @ts-ignore
+            while(curChar !== CHAR_BRACKET_RIGHT) {
+
+                cur = setSibling(cur, readExpr() );
+
+                consumeSpaces();
+                // @ts-ignore
+                if( curChar === CHAR_COMMA ) {
+                    ++offset;
+                    consumeSpaces();
+                }
             }
         }
+
+        ++offset;
+
+    } else {
+        const token  = nextSymbol();
+        const symbol = KNOWN_SYMBOLS[token];
+        if( symbol !== undefined)
+            symbol(left);
     }
 
     consumeSpaces();
 
-    while( curChar !== CHAR_NL && curChar !== CHAR_COLON ) {
+    // TODO another cond ?
+    while( curChar !== CHAR_NL
+            && curChar !== CHAR_COLON
+            && curChar !== CHAR_COMMA
+            && curChar !== CHAR_BRACKET_RIGHT ) {
 
         let op    = code[offset];
         ++offset;

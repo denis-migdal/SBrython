@@ -9,26 +9,31 @@ Target /10-20 ? x30 faster : only support True/False :P
 
 => Big code x80 / x30
 
--> ifblock : elif/else... [prev stuff (?) how (?) dunno]
-    [ ] 1] Dans py2ast : lire prochaine ligne + verif indentation + revenir en arrière si erreur
-    [X] 2] Dans ast2js : traiter les else/elif/catch/finally dans if/while/try/etc + ne rien faire dans else/elif.
--> op :
+-> fcts (2+1): parse args (+ use type id instead of VALUES ?) / SType
+    -> need context/symbol to be able to call it later...
+-> op (10):
     - one ID per op
     - true op parsing (type etc)
     - py op priority
     - op refactor
     - properly read op
     - other types of op
--> fcts : parse args (+ use type id instead of VALUES ?) / SType
+-> structs (2)
+    -> dict (peu utile pour le moment...)
+    -> tuple : "," est une sorte d'opérator, tuple pas besoin de ()...
+        -> parseExpr x 2 ? (with expect / without expect ",")...
+-> class
+-> try/catch/finally/else + raise (+ a way to assert it...) [assert in else ?]
+-> f-string
 
-(13/36)
-- ControlFlows : 1/7
+(18/46)
+- ControlFlows : 3/7 (tryblock(_catch), for_range (-requires fct call), ternary ~= operator)
 - Operators    : 0/10
-- Structures   : 0/3  // requiert "," parsing
+- Structures   : 1/3
 - Functions    : 0/5  // def (requiert "," parsing) +call (requiert symbol + ctxt)
-- Symbol       : 0/1
+- Symbol       : 0/1// requiert "," parsing
 - Keywords     : 5/8  // importx2 + raise (requiert call)
-- Others       : 1/4 (class) + 2 convert
+- Others       : 3/4 (class)
 - Literals     : 6/8 (fstring)
 
 - utils/generate : generateAST (refactor)
@@ -46,52 +51,3 @@ Target /10-20 ? x30 faster : only support True/False :P
 4. => unknown symbol (ID) <- name.
 X. [nextTokenType?] numerics/strings
 X. op priority (requires nextSibling for the AST tree...)
-
-Initially:
-    - parseExp => consume \n => continue...
-        - ParseSymbol : seeks end of token (loop) => slice => do stuff
-        - parseNumber
-        - parseStr
-        - parseOp
-        - parseToken
-- op priority
-
-Tokens (~37):
-- If
-- While
-- For
-- Try / ExceptHandler
-- IfExp
-
-- Body
-- ClassDef
-- Constant (int/float/str/bool)
-- Name
-
-- Assert
-- Break
-- Continue
-- Pass
-- Raise
-- Return
-
-- FunctionDef
-- keyword
-- Call
-- Args
-
-- Assign
-- Attribute
-- AugAssign
-- BinOp
-- Compare
-- Subscript
-- UnaryOp
-
-- Dict
-- List
-- Tuple
-
-- alias / Import / ImportFrom
-
-- JoinedStr

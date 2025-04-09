@@ -47,7 +47,9 @@ export const AST_CTRL_WHILE         = last_id++;
 export const AST_CTRL_TRYBLOCK      = last_id++;
 export const AST_CTRL_TRYBLOCK_CATCH= last_id++;
 export const AST_CTRL_TERNARY       = last_id++;
-export const AST_CTRL_IFBLOCK       = last_id++;
+export const AST_CTRL_IF            = last_id++;
+export const AST_CTRL_ELIF          = last_id++;
+export const AST_CTRL_ELSE          = last_id++;
 export const AST_CTRL_FOR_RANGE     = last_id++;
 export const AST_CTRL_FOR           = last_id++;
 // Others

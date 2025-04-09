@@ -1,5 +1,5 @@
 import { AST_BODY } from "@SBrython/sbry/ast2js/";
-import { addFirstChild, addSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
+import { addFirstChild, addSibling, nextSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
 import Types from "@SBrython/sbry/types/list";
@@ -32,6 +32,9 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
             cn = cn.value;
 
         convert_node(cur, cn, context);
+
+        while( nextSibling(cur) !== 0) // for if & try/catch...
+            cur = nextSibling(cur);
     }
 
     const beg = Types.length;
