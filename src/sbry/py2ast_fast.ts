@@ -1,16 +1,21 @@
 import Types from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IFBLOCK, AST_FCT_DEF, AST_FCT_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT } from "./ast2js";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IFBLOCK, AST_FCT_DEF, AST_FCT_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT } from "./ast2js";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, NODE_ID, PY_CODE, setFirstChild, setResultType, setSibling, setType, VALUES } from "./dop"
-import { AST } from "./py2ast"
+import { AST, printNode } from "./py2ast"
 import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/fct/call";
-import { TYPEID_float } from "./types";
+import { TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types";
 import { opsymbol2opid } from "./structs/operators";
+import { TYPEID_str } from "./types";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
 const CHAR_SPACE = 32;
+const CHAR_QUOTE = 34;
+const CHAR_DOT   = 46;
 const CHAR_COLON = 58;
+const CHAR_DIGIT_0 = 48;
+const CHAR_DIGIT_9 = 57;
 
 let offset = 0;
 let code: string;
@@ -62,6 +67,7 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>boolean> = {
     },
     "True" :    (id) => { setType(id, AST_LIT_TRUE)    ; return false; },
     "False":    (id) => { setType(id, AST_LIT_FALSE)   ; return false; },
+    "None" :    (id) => { setType(id, AST_LIT_NONE)    ; return false; },
     "break":    (id) => { setType(id, AST_KEY_BREAK)   ; return true; },
     "continue": (id) => { setType(id, AST_KEY_CONTINUE); return true; },
     "pass":     (id) => { setType(id, AST_KEY_PASS)    ; return true; },
@@ -205,22 +211,60 @@ function consumeSpaces() {
 
 function readExpr() {
 
-    //const char = currentChar();
-    //TODO: orienter vers correct nextX();
-    //TODO: expr (op) + consommer fin de la ligne.
-
     let left = createASTNode();
     let op_node = left;
 
     if( __DEBUG__ ) set_py_code_beg(left); //TODO : for op node too... (copy)
 
-    const token  = nextSymbol();
-    const symbol = KNOWN_SYMBOLS[token];
-    if( symbol !== undefined) {
-        // if return true can't be part of an expression (avoid issue in next cond)
-        if( symbol(left) ) { //TODO: search in context ?
-            if( __DEBUG__ ) set_py_code_end(op_node);
-            return op_node;
+    if( curChar === CHAR_QUOTE ) {
+        // consume str
+        setType(left, AST_LIT_STR);
+        setResultType(left, TYPEID_str);
+
+        const beg = offset;
+        do {
+            curChar = code.charCodeAt(++offset);
+        } while( curChar !== CHAR_QUOTE);
+
+        ++offset;
+
+        VALUES[left] = code.slice(beg, offset);
+    } if(curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 ) {
+        // consume number
+        const beg = offset;
+        do {
+            curChar = code.charCodeAt(++offset);
+        } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
+
+        let astnode_type = AST_LIT_INT;
+        let result_type  = TYPEID_int;
+
+        if( curChar === CHAR_DOT ) {
+
+            astnode_type = AST_LIT_FLOAT;
+            result_type  = TYPEID_float;
+        
+            do {
+                curChar = code.charCodeAt(++offset);
+            } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
+        } else if( offset - beg <= 9 ) { // opti
+            result_type = TYPEID_jsint
+        }
+
+
+              setType(left, astnode_type);
+        setResultType(left, result_type);
+        
+        VALUES[left] = code.slice(beg, offset);
+    }else {
+        const token  = nextSymbol();
+        const symbol = KNOWN_SYMBOLS[token];
+        if( symbol !== undefined) {
+            // if return true can't be part of an expression (avoid issue in next cond)
+            if( symbol(left) ) { //TODO: search in context ?
+                if( __DEBUG__ ) set_py_code_end(op_node);
+                return op_node;
+            }
         }
     }
 

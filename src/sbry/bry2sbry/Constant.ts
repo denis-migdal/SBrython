@@ -26,7 +26,7 @@ export default function convert(dst: NODE_ID, node: any, _context: Context): fal
             setType      (dst, AST_LIT_STR);
             setResultType(dst, TYPEID_str);
         
-            VALUES[dst] = value;
+            VALUES[dst] = `'${value}'`; // restaure quotes
 
             return;
         }
@@ -39,7 +39,7 @@ export default function convert(dst: NODE_ID, node: any, _context: Context): fal
             setType      (dst, AST_LIT_FLOAT);
             setResultType(dst, TYPEID_float);
             
-            VALUES[dst] = value.value;
+            VALUES[dst] = value.value.toString();
 
             return;
         }
@@ -60,9 +60,9 @@ export default function convert(dst: NODE_ID, node: any, _context: Context): fal
 
     if( qname === "int" ) { // bigint
         setResultType(dst, TYPEID_int);
-        VALUES[dst] = value.value;
+        VALUES[dst] = value.value.toString();
     } else {
         setResultType(dst, TYPEID_jsint);
-        VALUES[dst] = value;
+        VALUES[dst] = value.toString();
     }
 }

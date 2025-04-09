@@ -9,7 +9,9 @@ Target /10-20 ? x30 faster : only support True/False :P
 
 => Big code x80 / x30
 
--> litterals (could be great to test op...)
+-> ifblock : elif/else... [prev stuff (?) how (?) dunno]
+    [ ] 1] Dans py2ast : lire prochaine ligne + verif indentation + revenir en arrière si erreur
+    [X] 2] Dans ast2js : traiter les else/elif/catch/finally dans if/while/try/etc + ne rien faire dans else/elif.
 -> op :
     - one ID per op
     - true op parsing (type etc)
@@ -17,18 +19,17 @@ Target /10-20 ? x30 faster : only support True/False :P
     - op refactor
     - properly read op
     - other types of op
--> ifblock : elif/else... [prev stuff (?) how (?) dunno]
 -> fcts : parse args (+ use type id instead of VALUES ?) / SType
 
-(9/36)
+(13/36)
+- ControlFlows : 1/7
+- Operators    : 0/10
 - Structures   : 0/3  // requiert "," parsing
 - Functions    : 0/5  // def (requiert "," parsing) +call (requiert symbol + ctxt)
 - Symbol       : 0/1
 - Keywords     : 5/8  // importx2 + raise (requiert call)
-- Operators    : 0/10
-- Literals     : 2/8
 - Others       : 1/4 (class) + 2 convert
-- ControlFlows : 1/7
+- Literals     : 6/8 (fstring)
 
 - utils/generate : generateAST (refactor)
     -> split bry/sbry
