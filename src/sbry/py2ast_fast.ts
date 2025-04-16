@@ -575,6 +575,9 @@ export function py2ast(_code: string, filename: string): AST {
     const nodes = ASTNODES;
     dop_reset();
     offset = 0;
+
+    CURSOR[0] = 0;
+    CURSOR[1] = 0;
     
     const id = createASTNode();
     setType(id, AST_BODY);

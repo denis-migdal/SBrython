@@ -14,6 +14,7 @@ But : py2ast 90% of exec time => 85% faster => ~6.6x faster (?)
     -> in a first time went from x15 -> x10 (I was kind of sad - no clues why - one addition ???)
     -> then -> ~x25-30 py2ast (WTF xD) -> some opti.
     -> then x15 again when added new op... (code size ???)
+    -> then x30...
 
 32k -> 9.9k
 
@@ -38,11 +39,13 @@ Possible improvements:
 -> /!\ startup time + parsing time (difficult to eval...)
 -> regroup in same file without using webpack...
 
+-> Webpack list + globals.
+
 MISSING
 =======
 
 -> start unit tests
-    -> # comments...
+    -> consume # comments.
     -> ctx (almost done test with fct & affectation)
 
 -> complete op

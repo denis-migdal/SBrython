@@ -5,6 +5,7 @@ import { add_method } from "@SBrython/sbry/types/utils/methods";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, OP_OFF_REVERSE, OP_OOF_IEQ, opid2jsop, opid2opmethod, type OP_ID } from ".";
 import { w_JSUnrOp } from "./unary";
+import { printNode } from "@SBrython/sbry/py2ast";
 
 export type addJSBinOps_Opts = {
     convert_other?: Converter,
