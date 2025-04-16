@@ -47,6 +47,7 @@ MISSING
 -> start unit tests
     -> consume # comments.
     -> ctx (almost done test with fct & affectation)
+    -> separate op from call...
 
 -> complete op
 -> classes

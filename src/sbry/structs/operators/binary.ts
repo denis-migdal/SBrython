@@ -5,7 +5,6 @@ import { add_method } from "@SBrython/sbry/types/utils/methods";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, OP_OFF_REVERSE, OP_OOF_IEQ, opid2jsop, opid2opmethod, type OP_ID } from ".";
 import { w_JSUnrOp } from "./unary";
-import { printNode } from "@SBrython/sbry/py2ast";
 
 export type addJSBinOps_Opts = {
     convert_other?: Converter,
@@ -23,29 +22,21 @@ export function addJSBinOps(target     : any,
                             }: addJSBinOps_Opts = {}) {
 
     const ADD_EQ = convert_self === NOCONVERT && w_call === w_JSBinOp;
-    const SAME   = convert_other === convert_self;
 
     for(let i = 0; i < ops.length; ++i) {
 
         let op = ops[i];
 
-        const FCT = (call: NODE_ID) => {
+        add_method(target, opid2opmethod[op], return_type, (call: NODE_ID) => {
             const _ = firstChild(call);
             const a = nextSibling(_); const b = nextSibling(a);
             return w_call(call, convert_self(a), op, convert_other(b) );
-        };
-
-        let RFCT = FCT;
-        if( ! SAME ) {
-            RFCT = (call: NODE_ID) => {
-                const _ = firstChild(call);
-                const a = nextSibling(_); const b = nextSibling(a);
-                return w_call(call, convert_other(a), op, convert_self(b) );
-            }
-        }
-
-        add_method(target, opid2opmethod[op]               , return_type, FCT);
-        add_method(target, opid2opmethod[op+OP_OFF_REVERSE], return_type, RFCT);
+        });
+        add_method(target, opid2opmethod[op+OP_OFF_REVERSE], return_type, (call: NODE_ID) => {
+            const _ = firstChild(call);
+            const a = nextSibling(_); const b = nextSibling(a);
+            return w_call(call, convert_other(b), op, convert_self(a) );
+        });
 
         if( ADD_EQ ) {
 
