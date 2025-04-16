@@ -1,62 +1,37 @@
-import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
-import { jsop2pyop } from "../BinaryOperators";
-import { Converter, NOCONVERT } from "../Converters";
+import { add_method } from "@SBrython/sbry/types/utils/methods";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
-import { NODE_ID, resultType } from "@SBrython/sbry/dop";
-import { write_binary_jsop } from "./binary";
+import { firstChild, nextSibling, NODE_ID, resultType } from "@SBrython/sbry/dop";
+import { w_JSBinOp } from "./binary";
+import { OP_CMP_EQ, OP_CMP_GE, OP_CMP_GT, OP_CMP_LE, OP_CMP_LT, OP_CMP_NEQ, OP_EQ2IS, OP_ID, opid2opmethod } from ".";
 
-//TODO....
-const reverse = {
-    "==": "==",
-    "!=": "!=",
-    ">": "<",
-    "<": ">",
-    ">=": "<=",
-    "<=": ">=",
-} as const;
+export const JSCmpOps_LIST = [OP_CMP_EQ, OP_CMP_NEQ, OP_CMP_LT, OP_CMP_LE, OP_CMP_GT, OP_CMP_GE] as const;;
 
-//TODO: handle reversed : remove condition ??? -> switch children ???
+export function addJSCmpOps(target     : any,
+                            ops        : readonly OP_ID[],
+                            return_type: RETURN_TYPE_FCT) {
 
-export function write_compare_jsop(node: NODE_ID, a: NODE_ID, op: string, b: NODE_ID, reversed: boolean) {
+    for(let i = 0; i < ops.length; ++i) {
 
-    let cop = op;
+        const op = ops[i];
 
-    if( reversed ) {
-        [a,b] = [b,a];
-        cop = reverse[cop as keyof typeof reverse];
-    }
-
-    if(    (cop[0] === '=' || cop[0] === '!')
-        && resultType(a) === resultType(b) )
-            cop += '=';
-
-    write_binary_jsop(node, a, cop, b);
-}
-
-export type GenCmpOps_Opts = {
-    convert_other   ?: Converter,
-    convert_self    ?: Converter,
-    write_call      ?: (node: NODE_ID, self: NODE_ID, op: string, other: NODE_ID, reversed: boolean) => void
-};
-
-export function genCmpOps(  ops        : readonly (keyof typeof reverse)[],
-                            return_type: RETURN_TYPE_FCT,
-                            {
-                                convert_other   = NOCONVERT,
-                                convert_self    = NOCONVERT,
-                                write_call      = write_compare_jsop,
-                             }: GenCmpOps_Opts = {} ) {
-
-    let result: Record<string, ReturnType<typeof method_wrapper>> = {};
-
-    for(const op of ops) {
-
-        const pyop = jsop2pyop[op];
-
-        result[`__${pyop}__`] = method_wrapper(return_type, (node: NODE_ID, self: NODE_ID, o: NODE_ID, reversed: boolean) => {
-            write_call(node, convert_self(self), op, convert_other(o), reversed );
+        add_method(target, opid2opmethod[op], return_type, (call: NODE_ID) => {
+            const a = nextSibling(firstChild(call));
+            const b = nextSibling(a);
+            w_JSCmpOp(call, a, op, b );
         });
     }
-    
-    return result;
+}
+
+
+export function w_JSCmpOp(node: NODE_ID, a: NODE_ID, op: OP_ID, b: NODE_ID) {
+
+    /*if( reversed ) { // reverse OP: meh
+        [a,b] = [b,a];
+        cop = reverse[cop as keyof typeof reverse];
+    }*/
+
+    if( (op === OP_CMP_EQ || op === OP_CMP_NEQ) && resultType(a) === resultType(b) )
+        op += OP_EQ2IS; // use is/is not JS op.
+
+    w_JSBinOp(node, a, op, b);
 }

@@ -1,5 +1,4 @@
-import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType, TYPEID_str } from "@SBrython/sbry/types";
-import { TYPEID_NoneType } from "../types";
+import { TYPEID_NoneType, TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType, TYPEID_str } from "@SBrython/sbry/types/list";
 
 export type RETURN_TYPE_FCT = (o: number) => number;
 

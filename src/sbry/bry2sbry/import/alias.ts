@@ -1,4 +1,4 @@
-import { AST_KEY_IMPORT_ALIAS } from "@SBrython/sbry/ast2js/";
+import { AST_KEY_IMPORT_ALIAS } from "@SBrython/sbry/ast2js/list";
 import { NODE_ID, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context } from "@SBrython/sbry/py2ast";
 

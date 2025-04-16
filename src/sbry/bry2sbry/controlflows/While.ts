@@ -1,5 +1,5 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
-import { AST_CTRL_WHILE } from "@SBrython/sbry/ast2js/";
+import { AST_CTRL_WHILE } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
 

@@ -1,4 +1,4 @@
-import { AST_BODY } from "@SBrython/sbry/ast2js/";
+import { AST_BODY } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, nextSibling, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 
@@ -45,7 +45,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         const obj = Types[i] as Callable;
         if( obj.__name__ !== "function")
             continue;
-        const generate = obj.__call__[ARGS_INFO].generate;
+        const generate = obj.__call__[ARGS_INFO]!.generate;
         if( generate !== undefined)
             obj.__call__[RETURN_TYPE](); // h4ck
     }

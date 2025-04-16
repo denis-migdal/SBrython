@@ -1,8 +1,8 @@
-import { AST_OP_ATTR } from "@SBrython/sbry/ast2js/";
+import { AST_OP_ATTR } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 import { TYPEID } from "@SBrython/sbry/types/utils/types";
-import Types from "@SBrython/sbry/types";
+import Types from "@SBrython/sbry/types/list";
 
 export default function convert(dst: NODE_ID, node: any, context: Context) {
     

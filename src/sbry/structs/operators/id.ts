@@ -1,9 +1,9 @@
 import { w_node } from "@SBrython/sbry/ast2js/utils";
 import { NODE_ID, parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
 
-export function write_id_jsop(node: NODE_ID, a: NODE_ID) {
+export function w_subs(call: NODE_ID, to_write: NODE_ID) {
 
-    setParentOPPrio( a, parentOPPrio(node) );
+    setParentOPPrio( to_write, parentOPPrio(call) );
 
-    w_node(a);
+    w_node(to_write);
 }

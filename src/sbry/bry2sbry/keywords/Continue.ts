@@ -1,4 +1,4 @@
-import { AST_KEY_CONTINUE } from "@SBrython/sbry/ast2js/";
+import { AST_KEY_CONTINUE } from "@SBrython/sbry/ast2js/list";
 import { NODE_ID, setType } from "@SBrython/sbry/dop";
 import type { Context } from "@SBrython/sbry/bry2sbry/utils";
 

@@ -3,7 +3,8 @@ import { buildJSCode } from "@SBrython/sbry/ast2js/utils";
 import { buildPyCode } from "@SBrython/sbry/py2ast";
 
 import Types from "@SBrython/sbry/types/list";
-import { id2name } from "@SBrython/sbry/ast2js/list";
+import { id2name } from "@SBrython/sbry/ast2js";
+import { id2name as id2typename } from "@SBrython/sbry/types";
 
 type CodePos = {
     line: number,
@@ -27,11 +28,7 @@ export type NODE = {
 export default function astnode2tree(id: NODE_ID = 0): NODE {
 
     const typeID = resultType(id);
-    let result_type = `${typeID}:`;
-    const t   = Types[typeID];
-    result_type += t.__name__ ?? "";
-    result_type += ":";
-    result_type += t.__class__?.__name__ ?? "";
+    const result_type = id2typename[typeID];
 
     const children = [];
 

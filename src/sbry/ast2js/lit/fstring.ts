@@ -1,7 +1,7 @@
 import { set_js_cursor, w_node, w_str } from "@SBrython/sbry/ast2js/utils";
-import { AST_LIT_FSTRING_FVAL } from "@SBrython/sbry/ast2js/";
+import { AST_LIT_FSTRING_FVAL } from "@SBrython/sbry/ast2js/list";
 import { CODE_BEG, CODE_END, firstChild, nextSibling, NODE_ID, resultType, type, VALUES } from "@SBrython/sbry/dop";
-import { TYPEID_str } from "@SBrython/sbry/types";
+import { TYPEID_str } from "@SBrython/sbry/types/list";
 
 export default function ast2js(node: NODE_ID) {
 

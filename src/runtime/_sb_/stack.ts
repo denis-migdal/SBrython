@@ -1,4 +1,4 @@
-import { AST_SYMBOL } from "@SBrython/sbry/ast2js/";
+import { AST_SYMBOL } from "@SBrython/sbry/ast2js/list";
 import Py_Exception from "@SBrython/runtime/_r_/Exceptions/Exception";
 import { NODE_ID, type, VALUES } from "@SBrython/sbry/dop";
 import { SBrython } from "@SBrython/runtime";

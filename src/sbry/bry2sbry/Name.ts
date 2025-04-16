@@ -1,6 +1,8 @@
+// @ts-nocheck
+
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
-import { AST_SYMBOL } from "@SBrython/sbry/ast2js/index";
-import { NODE_ID, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { AST_SYMBOL } from "@SBrython/sbry/ast2js/list";
+import { NODE_ID, setResultType, setType, TYPE_ID, VALUES } from "@SBrython/sbry/dop";
 import builtins from "../types/builtins";
 import Types from "../types/";
 import { JS_NAME } from "../types/utils/types";
@@ -13,7 +15,7 @@ function isClass(_: unknown) {
 
 export default function convert(dst: NODE_ID, node: any, context: Context) {
 
-    let result_type = 0;
+    let result_type: TYPE_ID = 0;
     let value = node.id as string;
 
     if( value === 'self')

@@ -1,0 +1,63 @@
+import type {NODE_ID} from '../dop';
+
+//@ts-ignore
+import {BRAND} from '@SBrython/dop';
+
+
+declare const LIST: ((node: NODE_ID) => void)[];
+export default LIST;
+
+export declare const AST_SYMBOL             : BRAND<0  , "NODE_TYPE">;
+export declare const AST_STRUCT_TUPLE       : BRAND<1  , "NODE_TYPE">;
+export declare const AST_STRUCT_LIST        : BRAND<2  , "NODE_TYPE">;
+export declare const AST_STRUCT_DICT        : BRAND<3  , "NODE_TYPE">;
+export declare const AST_KEY_RETURN         : BRAND<4  , "NODE_TYPE">;
+export declare const AST_KEY_PASS           : BRAND<5  , "NODE_TYPE">;
+export declare const AST_KEY_RAISE          : BRAND<6  , "NODE_TYPE">;
+export declare const AST_KEY_IMPORT         : BRAND<7  , "NODE_TYPE">;
+export declare const AST_KEY_IMPORT_ALIAS   : BRAND<8  , "NODE_TYPE">;
+export declare const AST_KEY_CONTINUE       : BRAND<9  , "NODE_TYPE">;
+export declare const AST_KEY_BREAK          : BRAND<10 , "NODE_TYPE">;
+export declare const AST_KEY_ASSERT         : BRAND<11 , "NODE_TYPE">;
+export declare const AST_OP_OP              : BRAND<12 , "NODE_TYPE">;
+export declare const AST_OP_UNARY           : BRAND<13 , "NODE_TYPE">;
+export declare const AST_OP_CMP             : BRAND<14 , "NODE_TYPE">;
+export declare const AST_OP_BOOL            : BRAND<15 , "NODE_TYPE">;
+export declare const AST_OP_BIN             : BRAND<16 , "NODE_TYPE">;
+export declare const AST_OP_ATTR            : BRAND<17 , "NODE_TYPE">;
+export declare const AST_OP_BRACKETS        : BRAND<18 , "NODE_TYPE">;
+export declare const AST_OP_ASSIGN_AUG      : BRAND<19 , "NODE_TYPE">;
+export declare const AST_OP_ASSIGN_INIT     : BRAND<20 , "NODE_TYPE">;
+export declare const AST_OP_ASSIGN_ATTR     : BRAND<21 , "NODE_TYPE">;
+export declare const AST_OP_ASSIGN          : BRAND<22 , "NODE_TYPE">;
+export declare const AST_LIT_STR            : BRAND<23 , "NODE_TYPE">;
+export declare const AST_LIT_INT            : BRAND<24 , "NODE_TYPE">;
+export declare const AST_LIT_FLOAT          : BRAND<25 , "NODE_TYPE">;
+export declare const AST_LIT_FSTRING        : BRAND<26 , "NODE_TYPE">;
+export declare const AST_LIT_FSTRING_FVAL   : BRAND<27 , "NODE_TYPE">;
+export declare const AST_LIT_TRUE           : BRAND<28 , "NODE_TYPE">;
+export declare const AST_LIT_FALSE          : BRAND<29 , "NODE_TYPE">;
+export declare const AST_LIT_NONE           : BRAND<30 , "NODE_TYPE">;
+export declare const AST_DEF_FCT            : BRAND<31 , "NODE_TYPE">;
+export declare const AST_DEF_METH           : BRAND<32 , "NODE_TYPE">;
+export declare const AST_DEF_ARGS           : BRAND<33 , "NODE_TYPE">;
+export declare const AST_DEF_ARG_POSONLY    : BRAND<34 , "NODE_TYPE">;
+export declare const AST_DEF_ARG_POS        : BRAND<35 , "NODE_TYPE">;
+export declare const AST_DEF_ARG_VARARGS    : BRAND<36 , "NODE_TYPE">;
+export declare const AST_DEF_ARG_KWONLY     : BRAND<37 , "NODE_TYPE">;
+export declare const AST_DEF_ARG_KWARGS     : BRAND<38 , "NODE_TYPE">;
+export declare const AST_CALL               : BRAND<39 , "NODE_TYPE">;
+export declare const AST_CALL_ARG_KW        : BRAND<40 , "NODE_TYPE">;
+export declare const AST_CTRL_WHILE         : BRAND<41 , "NODE_TYPE">;
+export declare const AST_CTRL_TRYBLOCK      : BRAND<42 , "NODE_TYPE">;
+export declare const AST_CTRL_TRYBLOCK_CATCH: BRAND<43 , "NODE_TYPE">;
+export declare const AST_CTRL_TERNARY       : BRAND<44 , "NODE_TYPE">;
+export declare const AST_CTRL_IF            : BRAND<45 , "NODE_TYPE">;
+export declare const AST_CTRL_ELIF          : BRAND<46 , "NODE_TYPE">;
+export declare const AST_CTRL_ELSE          : BRAND<47 , "NODE_TYPE">;
+export declare const AST_CTRL_FOR_RANGE     : BRAND<48 , "NODE_TYPE">;
+export declare const AST_CTRL_FOR           : BRAND<49 , "NODE_TYPE">;
+export declare const AST_CLASSDEF           : BRAND<50 , "NODE_TYPE">;
+export declare const AST_BODY               : BRAND<51 , "NODE_TYPE">;
+export declare const AST_2BIGINT            : BRAND<52 , "NODE_TYPE">;
+export declare const AST_2NUMBER            : BRAND<53 , "NODE_TYPE">;

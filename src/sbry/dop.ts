@@ -19,8 +19,14 @@ export const VALUES = new Array<any>() as any as Record<NODE_ID, any>;
 
 let NEXT_AST_NODE_ID = 0;
 
-const s = Symbol();
-export type NODE_ID = 0 | typeof s;
+declare const tag: unique symbol;
+
+export type BRAND <T, B extends string, E = never>  = T & {[tag]: B} | E;
+//type OPAQUE<B extends string, T = never> = T | {[tag]: B};
+
+export type NODE_ID   = BRAND<number, "NODE_ID"  , 0>;
+export type NODE_TYPE = BRAND<number, "NODE_TYPE", 0>;
+export type TYPE_ID   = BRAND<number, "TYPE_ID"  , 0>;
 
 export function addFirstChild(node: NODE_ID): NODE_ID {
     // createNode + setFirstChild
@@ -57,8 +63,8 @@ const BUFFER = new ArrayBuffer(BUFFER_SIZE, {maxByteLength: BUFFER_SIZE});
 
 export const ASTNODES = new ARRAY_TYPE(BUFFER);
 
-export function type(node: NODE_ID) {
-    return ASTNODES[(node as number)* ASTNODE_SIZE + ASTNODE_TYPE_ID];
+export function type(node: NODE_ID): NODE_TYPE {
+    return ASTNODES[(node as number)* ASTNODE_SIZE + ASTNODE_TYPE_ID] as NODE_TYPE;
 }
 export function nextSibling(node: NODE_ID): NODE_ID {
     return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_NEXT_SIBLING] as any;
@@ -66,8 +72,8 @@ export function nextSibling(node: NODE_ID): NODE_ID {
 export function firstChild(parent: NODE_ID): NODE_ID {
     return ASTNODES[(parent as number) * ASTNODE_SIZE + ASTNODE_FIRST_CHILD] as any;
 }
-export function resultType(node: NODE_ID) {
-    return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_RESULT_TYPE];
+export function resultType(node: NODE_ID): TYPE_ID {
+    return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_RESULT_TYPE] as TYPE_ID;
 }
 export function parentOPPrio(node: NODE_ID) {
     return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_PARENT_OP_PRIORITY];
@@ -79,11 +85,11 @@ export function setFirstChild(parent: NODE_ID, value: NODE_ID) {
 export function setSibling(node: NODE_ID, sibling: NODE_ID) {
     return ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_NEXT_SIBLING] = sibling as any;
 }
-export function setType(node: NODE_ID, value: number) {
-    ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_TYPE_ID] = value;
+export function setType(node: NODE_ID, value: NODE_TYPE) {
+    ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_TYPE_ID] = value as number;
 }
-export function setResultType(node: NODE_ID, value: number) {
-    ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_RESULT_TYPE] = value;
+export function setResultType(node: NODE_ID, value: TYPE_ID) {
+    ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_RESULT_TYPE] = value as number;
 }
 export function setParentOPPrio(node: NODE_ID, value: number) {
     ASTNODES[(node as number) * ASTNODE_SIZE + ASTNODE_PARENT_OP_PRIORITY] = value;

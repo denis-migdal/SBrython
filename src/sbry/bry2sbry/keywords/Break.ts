@@ -1,4 +1,4 @@
-import { AST_KEY_BREAK } from "@SBrython/sbry/ast2js/";
+import { AST_KEY_BREAK } from "@SBrython/sbry/ast2js/list";
 import { NODE_ID, setType } from "@SBrython/sbry/dop";
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
 

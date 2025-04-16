@@ -1,6 +1,7 @@
+// @ts-nocheck
+
 import { firstChild, nextSibling, NODE_ID, resultType, VALUES } from "@SBrython/sbry/dop";
-import { AssignOperators } from "@SBrython/sbry/structs/BinaryOperators";
-import { TYPEID_NotImplementedType } from "@SBrython/sbry/types";
+import { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
 import Types from "@SBrython/sbry/types/list";
 import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
@@ -34,5 +35,5 @@ export default function ast2js(node: NODE_ID) {
         */
     }
 
-    method[WRITE_CALL](node, coffset, c2);
+    method[WRITE_CALL](node);
 }

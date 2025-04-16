@@ -6,6 +6,6 @@ export default function ast2js(node: NODE_ID) {
 
     const coffset = firstChild(node);
     
-    const method = Types[resultType(coffset)]![VALUES[node]] as Fct<[NODE_ID, NODE_ID]>;
-    method[WRITE_CALL]!(node, coffset, nextSibling(coffset) );
+    const method = Types[resultType(coffset)]![VALUES[node]] as Fct;
+    method[WRITE_CALL]!(node);
 }

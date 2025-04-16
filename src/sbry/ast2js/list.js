@@ -1,5 +1,4 @@
 // needs to be JS compatible
-
 let last_id = 0;
 
 export const AST_SYMBOL             = last_id++;
@@ -17,10 +16,13 @@ export const AST_KEY_CONTINUE       = last_id++;
 export const AST_KEY_BREAK          = last_id++;
 export const AST_KEY_ASSERT         = last_id++;
 // operators
+export const AST_OP_OP              = last_id++;
+
 export const AST_OP_UNARY           = last_id++;
 export const AST_OP_CMP             = last_id++;
 export const AST_OP_BOOL            = last_id++;
 export const AST_OP_BIN             = last_id++;
+
 export const AST_OP_ATTR            = last_id++;
 export const AST_OP_BRACKETS        = last_id++;
 export const AST_OP_ASSIGN_AUG      = last_id++;
@@ -36,12 +38,18 @@ export const AST_LIT_FSTRING_FVAL   = last_id++;
 export const AST_LIT_TRUE           = last_id++;
 export const AST_LIT_FALSE          = last_id++;
 export const AST_LIT_NONE           = last_id++;
-// Functions
-export const AST_FCT_DEF            = last_id++;
-export const AST_FCT_DEF_METH       = last_id++;
-export const AST_FCT_DEF_ARGS       = last_id++;
-export const AST_FCT_CALL           = last_id++;
-export const AST_FCT_CALL_KEYWORD   = last_id++;
+// Function def
+export const AST_DEF_FCT            = last_id++;
+export const AST_DEF_METH           = last_id++;
+export const AST_DEF_ARGS           = last_id++;
+export const AST_DEF_ARG_POSONLY    = last_id++;
+export const AST_DEF_ARG_POS        = last_id++;
+export const AST_DEF_ARG_VARARGS    = last_id++;
+export const AST_DEF_ARG_KWONLY     = last_id++;
+export const AST_DEF_ARG_KWARGS     = last_id++;
+// function call
+export const AST_CALL               = last_id++;
+export const AST_CALL_ARG_KW        = last_id++;
 // Controlflows
 export const AST_CTRL_WHILE         = last_id++;
 export const AST_CTRL_TRYBLOCK      = last_id++;
@@ -57,3 +65,5 @@ export const AST_CLASSDEF           = last_id++;
 export const AST_BODY               = last_id++;
 export const AST_2BIGINT            = last_id++;
 export const AST_2NUMBER            = last_id++;
+
+export default [];

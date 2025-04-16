@@ -1,33 +1,33 @@
 import { type Context } from "@SBrython/sbry/bry2sbry/utils";
-import { NODE_ID } from "@SBrython/sbry/dop";
+import { NODE_ID, TYPE_ID } from "@SBrython/sbry/dop";
 
-export const RETURN_TYPE = Symbol();
-export const TYPEID      = Symbol();
-export const WRITE_CALL  = Symbol();
-export const JS_NAME     = Symbol();
-export const ARGS_INFO   = Symbol();
+export const RETURN_TYPE = Symbol("RETURN_TYPE");
+export const TYPEID      = Symbol("TYPEID");
+export const WRITE_CALL  = Symbol("WRITE_CALL");
+export const JS_NAME     = Symbol("JS_NAME");
+export const ARGS_INFO   = Symbol("ARGS_INFO");
 
 export type Type = {
     [key: string]: string|Type,
     [key: symbol]: unknown,
     __class__?: Type,
     __name__ ?: string,
-    __str__  ?: Fct<[NODE_ID]>,
-    __int__  ?: Fct<[NODE_ID]>,
+    __str__  ?: Fct,
+    __int__  ?: Fct,
     [JS_NAME]?: string,
     [TYPEID ]?: number,
 }
 
-export type Fct<T extends any[] = unknown[]> = Type & {
-    [RETURN_TYPE]: (o?: number) => number,
-    [WRITE_CALL] : (node: NODE_ID, ...args: T) => void
+export type Fct = Type & {
+    [RETURN_TYPE]: (o?: number) => TYPE_ID,
+    [WRITE_CALL] : (node: NODE_ID) => void
 }
 
-export type Callable<T extends any[] = unknown[]> = Type & {
+export type Callable = Type & {
     __name__?: string,
-    __call__: Fct<T> & {
+    __call__: Fct & {
         __name__: "__call__",
-        [ARGS_INFO]: {
+        [ARGS_INFO]?: { //TODO: bry2sbry
             
             args_names : string[],
             args_pos   : Record<string, number>,

@@ -1,7 +1,7 @@
-import { AST_LIT_FSTRING } from "@SBrython/sbry/ast2js/";
+import { AST_LIT_FSTRING } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, setResultType, setType } from "@SBrython/sbry/dop";
 import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
-import { TYPEID_str } from "@SBrython/sbry/types";
+import { TYPEID_str } from "@SBrython/sbry/types/list";
 
 export default function convert(dst: NODE_ID, node: any, context: Context) {
 

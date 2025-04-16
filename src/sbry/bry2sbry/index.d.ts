@@ -1,7 +1,7 @@
-import { NODE_ID } from "../dop";
+import { NODE_ID, TYPE_ID } from "../dop";
 
 export type Context = {
-    local_symbols: Record<string, number>;
+    local_symbols: Record<string, TYPE_ID>;
     parentTypeID  : number; 
     type: "?"|"class"|"fct" //TODO: remove???
 

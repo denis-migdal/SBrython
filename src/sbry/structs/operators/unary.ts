@@ -1,57 +1,36 @@
-import { NODE_ID, parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
-import { jsop2pyop, JSOperatorsPrio } from "../BinaryOperators";
+import { firstChild, nextSibling, NODE_ID, parentOPPrio, setParentOPPrio } from "@SBrython/sbry/dop";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
-import { method_wrapper } from "@SBrython/sbry/types/utils/methods";
+import { add_method } from "@SBrython/sbry/types/utils/methods";
+import {  OP_ID, opid2jsop, opid2opmethod } from ".";
 
-
-type GenUnaryOps_Opts = {
-    //convert_self ?: Converter,
-    write_call   ?: (node: NODE_ID, op: string, a: NODE_ID) => void
-};
-
-export function genUnaryOps(ops        : (keyof typeof jsop2pyop)[],
+export function addJSUnrOps(target     : any,
+                            ops        : OP_ID[],
                             return_type: RETURN_TYPE_FCT,
-                            {
-                                //convert_self = NOCONVERT,
-                                write_call   = write_unary_jsop,
-                            }: GenUnaryOps_Opts = {}
+                            w_call = w_JSUnrOp
                         ) {
 
-    let result: Record<string, ReturnType<typeof method_wrapper>> = {};
+    for(let i = 0; i < ops.length; ++i) {
 
-    for(let op of ops) {
+        const op = ops[i];
 
-        const pyop = jsop2pyop[op];
-        if( op === 'u.-')
-            op = '-';
-
-        result[`__${pyop}__`] = method_wrapper(return_type,
-            (node: NODE_ID, self: NODE_ID) => {
-                return write_call(node, op, self); //convert_self(self) );
-            }
-        )
+        add_method(target, opid2opmethod[op], return_type, (node: NODE_ID) => {
+            w_call(node, op, nextSibling(firstChild(node)));
+        })
     }
-    
-    return result;
 }
 
-export function write_unary_jsop(node: NODE_ID, op: string, a: NODE_ID) {
+export function w_JSUnrOp(node: NODE_ID, op: OP_ID, a: NODE_ID) {
 
-    let rop = op;
-    if( rop === '-')
-        rop = 'u.-';
-
-    // unary JS Op prio list (?)
-    const prio   = JSOperatorsPrio[rop];
+    const prio   = 14; //jsop_priorities[op];
     const p_prio = parentOPPrio(node);
 
     setParentOPPrio(a, prio);
 
-    let l = op; let r = "";
+    let l = opid2jsop[op]; let r = "";
 
     if( p_prio > prio ) {
-        l = `(${op}`; r = ")";
+        l = `(${l}`; r = ")";
     }
 
     w_sns(l, a, r);

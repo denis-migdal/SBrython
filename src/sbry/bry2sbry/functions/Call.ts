@@ -1,4 +1,4 @@
-import { AST_FCT_CALL } from "@SBrython/sbry/ast2js/";
+import { AST_CALL } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code } from "@SBrython/sbry/bry2sbry/utils";
 import Types from "@SBrython/sbry/types/list";
@@ -37,7 +37,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const ret_type = (fct.__call__ as Fct)[RETURN_TYPE]();
 
-    setType      (dst, AST_FCT_CALL);
+    setType      (dst, AST_CALL);
     setResultType(dst, ret_type);
 
     convert_node(cur, node.func, context ); // fct to call

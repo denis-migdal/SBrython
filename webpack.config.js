@@ -21,7 +21,7 @@ export default async function(...args) {
 	const entries = cfg.entry = await cfg.entry();
 
 	const names = [ 'libs/SBrython-prod', 'libs/SBrython-runtime-prod', 'Benchmark'];
-	for(let name in entries)
+	for(const name in entries)
 		entries[name].layer = `__DEBUG__=${ ! names.includes(name)}`;
 
 	// only require it once.

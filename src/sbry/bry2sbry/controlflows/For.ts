@@ -1,8 +1,8 @@
 import Body from "@SBrython/sbry/bry2sbry/Body";
-import { AST_CTRL_FOR, AST_CTRL_FOR_RANGE } from "@SBrython/sbry/ast2js/";
+import { AST_CTRL_FOR, AST_CTRL_FOR_RANGE } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
-import { TYPEID_int } from "@SBrython/sbry/types";
+import { TYPEID_int } from "@SBrython/sbry/types/list";
 
 export default function convert(dst: NODE_ID, node: any, context: Context): false|void {
 

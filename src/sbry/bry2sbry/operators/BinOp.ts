@@ -1,8 +1,9 @@
+// @ts-nocheck
+
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
-import { bname2pyname, reversed_operator } from "@SBrython/sbry/structs/BinaryOperators";
-import { AST_OP_BIN } from "@SBrython/sbry/ast2js/";
+import { AST_OP_BIN } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, resultType, setFirstChild, setResultType, setSibling, setType, VALUES } from "@SBrython/sbry/dop";
-import { TYPEID_NotImplementedType } from "@SBrython/sbry/types";
+import { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
 import Types from "@SBrython/sbry/types/list";
 import { Fct, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 

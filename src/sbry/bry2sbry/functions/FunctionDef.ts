@@ -1,13 +1,14 @@
+// @ts-nocheck
+
 import { Context, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
-import { default_call } from "@SBrython/sbry/ast2js/fct/call";
+import { default_call } from "@SBrython/sbry/ast2js/call/";
 import { convert_args } from "./Args";
-import { AST_FCT_DEF, AST_FCT_DEF_METH } from "@SBrython/sbry/ast2js/";
-import { addFirstChild, addSibling, NODE_ID, resultType, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
+import { AST_DEF_FCT, AST_DEF_METH } from "@SBrython/sbry/ast2js/list";
+import { addFirstChild, addSibling, NODE_ID, resultType, setResultType, setType, TYPE_ID, VALUES } from "@SBrython/sbry/dop";
 import Body from "@SBrython/sbry/bry2sbry/Body";
 
 import Types from "@SBrython/sbry/types/list";
 import { ARGS_INFO, Callable, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
-import { addType } from "@SBrython/sbry/types/utils/addType";
 
 const FAKE_RETURN_NODE = {
     constructor: {
@@ -25,7 +26,7 @@ function generate(dst: NODE_ID, node: any, context: Context) {
     // fuck...
     const stype   = Types[rtype] as Callable;
     const call    = stype.__call__;
-    const meta    = call[ARGS_INFO];
+    const meta    = call[ARGS_INFO]!;
 
     // new context for the function local variables
     context = context.createSubContext("fct");
@@ -46,7 +47,7 @@ function generate(dst: NODE_ID, node: any, context: Context) {
 
     const annotation = node.returns?.id;
     if( annotation !== undefined ) {
-        let fct_return_type = context.local_symbols[annotation]; // ?
+        const fct_return_type = context.local_symbols[annotation]; // ?
         // force the type.
         call[RETURN_TYPE] = () => fct_return_type!;
     }
@@ -99,14 +100,14 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         }
     }
 
-    const STypeID = Types.length;
+    const STypeID = Types.length as TYPE_ID;
     Types[STypeID] = SType_fct;
 
     context.local_symbols[node.name] = STypeID;
 
-    let type = AST_FCT_DEF;
+    let type = AST_DEF_FCT;
     if( context.type === "class") {
-        type = AST_FCT_DEF_METH;
+        type = AST_DEF_METH;
         const klass = Types[context.parentTypeID];
         VALUES[dst] = [node.name, klass.__name__];
 
@@ -114,8 +115,8 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         
         Types[context.parentTypeID  ][method_name] = SType_fct;
 
-        const gen = SType_fct.__call__[ARGS_INFO].generate!;
-        SType_fct.__call__[ARGS_INFO].generate = (...args) => {
+        const gen = SType_fct.__call__[ARGS_INFO]!.generate!;
+        SType_fct.__call__[ARGS_INFO]!.generate = (...args) => {
             gen(...args);
 
             //@ts-ignore

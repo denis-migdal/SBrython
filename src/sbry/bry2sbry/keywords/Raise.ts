@@ -1,4 +1,4 @@
-import { AST_KEY_RAISE } from "@SBrython/sbry/ast2js/";
+import { AST_KEY_RAISE } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, NODE_ID, setType } from "@SBrython/sbry/dop";
 import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 

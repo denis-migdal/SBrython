@@ -1,6 +1,6 @@
 import { createASTNode, firstChild, nextSibling, NODE_ID, resultType, setFirstChild, setResultType, setType, type, VALUES } from "@SBrython/sbry/dop";
-import { AST_LIT_INT, AST_2BIGINT, AST_2NUMBER } from "@SBrython/sbry/ast2js/";
-import { TYPEID_float, TYPEID_int, TYPEID_jsint } from "@SBrython/sbry/types";
+import { AST_LIT_INT, AST_2BIGINT, AST_2NUMBER } from "@SBrython/sbry/ast2js/list";
+import { TYPEID_float, TYPEID_int, TYPEID_jsint } from "@SBrython/sbry/types/list";
 
 export type Converter = (node: NODE_ID) => NODE_ID;
 

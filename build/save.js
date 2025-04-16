@@ -6,12 +6,10 @@ export default async function save(path, content) {
 
     const file = await fs.open(path, "a+");
 
-    const size = (await file.stat()).size;
-    const file_changed = size !== content.length;
+    const old_content = await file.readFile({encoding: "utf8"});
 
-    if( file_changed ) {
-        if( size )
-            await file.truncate();
+    if( content !== old_content ) {
+        await file.truncate();
         await file.write( encoder.encode(content), {position: 0}); // ftruncate doesn't reset position...
     }
     await file.close();

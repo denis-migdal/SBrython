@@ -1,5 +1,5 @@
 // must NOT depends on list.
-import BRY2SBRY from "./index"; // required for correct type deduction...
+import BRY2SBRY from "./"; // required for correct type deduction...
 import type {Context} from "./index.d.ts";
 export type {Context};
 

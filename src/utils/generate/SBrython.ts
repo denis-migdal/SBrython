@@ -1,5 +1,5 @@
 import {py2ast, convert_ast} from "@SBrython/sbry/py2ast";
-import {ast2js} from "@SBrython/sbry/ast2js/ast2js";
+import {ast2js} from "@SBrython/sbry/ast2js";
 import {SBrython, _sb_, _r_} from "@SBrython/runtime";
 
 // declare all builtin types...

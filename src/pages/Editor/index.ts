@@ -193,8 +193,12 @@ function print_code_node(node: any, code: string, type: "pycode"|"jscode") {
 
     for(let i = 0; i < children.length; ++i) {
         const ctype = children[i][type];
-        if( ctype === undefined )
+        if( ctype === undefined )   // when does it occur ?
             continue;
+        if( ctype.start.line === 0) {// unprinted node
+            subparts.length -= 2;
+            continue;
+        }
         subparts[offset++] = slice_code(code, cursor, ctype.start);
         subparts[offset++] = print_code_node(children[i], code, type);
         cursor = children[i][type].end;
@@ -252,8 +256,14 @@ function print_node(node: any) {
     html_bloc.textContent = node.type;
     if( node.value != null) {
         let val = node.value;
-        if( val.__name__ !== undefined)
+        if( val.__qualname__ !== undefined)
+            val = val.__qualname__;
+        else if( val.__name__ !== undefined)
             val = val.__name__;
+        else if( val.name !== undefined)
+            val = val.name;
+        else
+            val = JSON.stringify(val);
         html_bloc.textContent += `:${val}`;
     }
     if( node.result_type !== null) {
@@ -271,7 +281,7 @@ function print_node(node: any) {
         html_bloc.textContent += ` (${name}${as_type})`;*/
     }
 
-	for(let child of node.children) {
+	for(const child of node.children) {
         const html_child = print_node(child);
         html_child.style.setProperty("margin-left", "20px");
         html_bloc.append( html_child );
@@ -289,7 +299,7 @@ function highlight(target: HTMLElement) {
         return;
     if( prev_highlighted !== null) {
 
-        for(let gui_elem of (prev_highlighted as any).$gui_elems)
+        for(const gui_elem of (prev_highlighted as any).$gui_elems)
             gui_elem?.classList.remove("highlight");
         prev_highlighted = null;
     }
@@ -299,7 +309,7 @@ function highlight(target: HTMLElement) {
         return;
 
     prev_highlighted = $node;
-    for(let gui_elem of $node.$gui_elems)
+    for(const gui_elem of $node.$gui_elems)
         gui_elem?.classList.add("highlight");
 }
 

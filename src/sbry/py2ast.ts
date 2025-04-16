@@ -1,7 +1,9 @@
-import dop_reset, {ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, NODE_ID, PY_CODE, resultType, type, VALUES} from "@SBrython/sbry/dop";
+// @ts-nocheck
+
+import dop_reset, {ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, CODE_LINE, createASTNode, NODE_ID, PY_CODE, resultType, type, TYPE_ID, VALUES} from "@SBrython/sbry/dop";
 import Body from "./bry2sbry/Body";
 import Types from "@SBrython/sbry/types/list";
-import { id2name } from "./ast2js/list";
+import { id2name } from "./ast2js";
 import { set_py_code_from_list } from "./bry2sbry/utils";
 
 export type AST = {
@@ -74,7 +76,7 @@ export function convert_ast(ast: any) {
 }
 
 export class Context {
-    constructor(type: "?"|"class"|"fct" = "?", symbols: Record<string, number> = builtins) {
+    constructor(type: "?"|"class"|"fct" = "?", symbols: Record<string, TYPE_ID> = builtins) {
         this.type = type; //TODO: remove
         this.local_symbols = {...symbols};
     }
@@ -91,7 +93,7 @@ export class Context {
         return ctx;
     }
 
-    local_symbols: Record<string, number>;
+    local_symbols: Record<string, TYPE_ID>;
     parentTypeID: number = 0; // is it used ?
     type; //TODO: remove ?
 }

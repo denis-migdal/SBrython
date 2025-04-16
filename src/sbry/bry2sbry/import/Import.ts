@@ -1,4 +1,4 @@
-import { AST_KEY_IMPORT } from "@SBrython/sbry/ast2js/";
+import { AST_KEY_IMPORT } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, NODE_ID, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 

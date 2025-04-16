@@ -1,9 +1,21 @@
-import {glob} from 'glob';
-import save from "../save.js";
+import {generateList} from "./index.js";
+
+export default async function genAST2JS() {
+    await generateList({
+        brand : "TYPE_ID",
+        path  : "./src/sbry/types/",
+        prefix: "TYPEID_",
+        list_type: "Type[]",
+        list_imports: "import type {Type} from './utils/types';\n",
+        add: (i, file) => file === undefined ? "" : `require("${file}");\n`,
+    });
+}
+
+/*
 
 async function getModules(path) {
 
-    let files = await glob("**/*.ts", {cwd: path});
+    let files = await glob("**//*.ts", {cwd: path});
 
     const modules = {};
 
@@ -34,7 +46,7 @@ import * as TYPES from "../../src/sbry/types/index.js";
 
 function importModules(modules) {
 
-    let result = "const LIST = [\n";
+    let result = "import LIST from './index';\n\n";
 
     let keys = Object.keys(TYPES);
     --keys.length; // remove default export
@@ -46,24 +58,10 @@ function importModules(modules) {
         const file = modules[order[i]];
         if( file === undefined )
             throw new Error(`${order[i]} not found!`);
-        result += `\trequire("${file}").default,\n`;
+        result += `require("${file}");\n`;
     }
 
-    result += "]\n";
-
-    result += "\nimport ILIST from './index';\n";
-    result += "ILIST.push(...LIST);\n";
-    result += "export default ILIST;\n";
-
-    return result;
-}
-
-export function generateBases(modules) {
-
-    let result = "";
-
-    for(let key in modules)
-        result += `export const TYPE_${key}\t= Object.create(null);\n`;
+    result += "\nexport default LIST;\n";
 
     return result;
 }
@@ -72,13 +70,10 @@ async function generateList(path) {
 
     const modules = await getModules(path);
 
-    await Promise.all([
-        save(`${path}/list.ts` , importModules(modules) ),
-        save(`${path}/bases.ts`, generateBases(modules) )
-    ]);
+    await save(`${path}/list.ts` , importModules(modules) );
 }
 
 export default async function genTypes() {
 
     await generateList("./src/sbry/types/");
-}
+}*/

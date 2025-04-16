@@ -1,11 +1,8 @@
-import { genCmpOps } from "@SBrython/sbry/structs/operators/compare";
-import { TYPE_bool, TYPE_type_bool_ } from "./bases";
-import { CMPOPS_LIST } from "@SBrython/sbry/structs/BinaryOperators";
+import { addJSCmpOps, JSCmpOps_LIST } from "@SBrython/sbry/structs/operators/compare";
 import { RET_IJBF2BOOL } from "@SBrython/sbry/structs/ReturnTypeFcts";
+import { TYPEID_bool, TYPEID_type_bool_ } from "./list";
+import { initBuiltinClass } from "./utils/methods";
 
-export default Object.assign(TYPE_bool,
-    {
-        __class__: TYPE_type_bool_,
-    },
-    genCmpOps(CMPOPS_LIST, RET_IJBF2BOOL),
-);
+const klass = initBuiltinClass(TYPEID_bool, TYPEID_type_bool_, "bool", "Boolean");
+
+addJSCmpOps(klass, JSCmpOps_LIST, RET_IJBF2BOOL);

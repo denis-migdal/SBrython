@@ -1,10 +1,10 @@
+// @ts-nocheck
+
 import { w_str } from "@SBrython/sbry/ast2js/utils";
 import { firstChild, nextSibling, NODE_ID, resultType, VALUES } from "@SBrython/sbry/dop";
-import { printNode } from "@SBrython/sbry/py2ast";
-import { reversed_operator } from "@SBrython/sbry/structs/BinaryOperators";
 import { Number2Int } from "@SBrython/sbry/structs/Converters";
-import { write_binary_jsop } from "@SBrython/sbry/structs/operators/binary";
-import { TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType } from "@SBrython/sbry/types";
+import { w_JSBinOp } from "@SBrython/sbry/structs/operators/binary";
+import { TYPEID_int, TYPEID_jsint, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
 
 import Types from "@SBrython/sbry/types/list";
 import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
@@ -29,24 +29,19 @@ function find_and_write_call(node: NODE_ID, left:NODE_ID, op: string, right: NOD
             type   = method[RETURN_TYPE](ltype!);
         
         if( type === TYPEID_NotImplementedType) {
-            if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' ) {
-                printNode(left);
-                printNode(right);
+            if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' )
                 throw new Error(`${ltype} ${op} ${rtype} not implemented!`);
-            }
 
             const jsop = op === '__eq__' ? '===' : '!==';
 
-            write_binary_jsop(node, left, jsop, right);
+            //TODO... (delete ?)
+            w_JSBinOp(node, left, 0, right);
 
             return;
         }
-
-        reversed = true;
-        [left, right] = [right, left];
     }
 
-    method[WRITE_CALL]!(node, left, right, reversed);
+    method[WRITE_CALL]!(node);
 }
 
 function writeOp(node: NODE_ID, cur: NODE_ID, value: string[], count: number): NODE_ID {
@@ -72,8 +67,8 @@ function writeOp(node: NODE_ID, cur: NODE_ID, value: string[], count: number): N
         else if (rtype === TYPEID_jsint && ltype === TYPEID_int )
             r = Number2Int(r);
 
-
-        write_binary_jsop(node, l, jop, r);
+        //TODO : delete ?
+        w_JSBinOp(node, l, 0, r);
     } else {
         find_and_write_call(node, left, op, right);
     }

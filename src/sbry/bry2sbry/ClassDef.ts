@@ -1,12 +1,11 @@
+// @ts-nocheck
+
 import Body from "@SBrython/sbry/bry2sbry/Body";
-import { AST_CLASSDEF } from "@SBrython/sbry/ast2js/";
+import { AST_CLASSDEF } from "@SBrython/sbry/ast2js/list";
 import { addFirstChild, addSibling, firstChild, NODE_ID, resultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context, convert_node, set_py_code_from_list } from "@SBrython/sbry/bry2sbry/utils";
-import { addType } from "@SBrython/sbry/types/utils/addType";
-import { method_wrapper } from "../types/utils/methods";
 import { w_sns, w_str } from "../ast2js/utils";
-import { TYPE_type } from "../types/bases";
-import Types from "../types";
+import TYPES, { TYPEID_type } from "../types/list";
 
 function weak_assign(target: Record<string, any>, src: Record<string, any>) {
     for(let key in src)
@@ -20,7 +19,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const typeID = addType({
         __name__ : node.name,
-        __class__: TYPE_type,
+        __class__: TYPES[TYPEID_type],
         __call__: method_wrapper(() => instance_TypeID, (call) => {
             //TODO: should not be here...
             w_sns("new ", firstChild(call), "(");
@@ -29,8 +28,8 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         })
     });
 
-    const klass_type = Types[instance_TypeID];
-    const inst_type  = Types[typeID];
+    const klass_type = TYPES[instance_TypeID];
+    const inst_type  = TYPES[typeID];
 
     inst_type.__class__ = klass_type;
 
@@ -50,8 +49,8 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         const stypeID = resultType(cur);
 
         // could be optimized...
-        weak_assign(klass_type, Types[stypeID]);
-        weak_assign(inst_type , Types[stypeID-1]);
+        weak_assign(klass_type, TYPES[stypeID]);
+        weak_assign(inst_type , TYPES[stypeID-1]);
     }
 
     VALUES[dst] = node.name;

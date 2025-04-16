@@ -1,7 +1,7 @@
-import { AST_LIT_FALSE, AST_LIT_TRUE, AST_LIT_FLOAT, AST_LIT_INT, AST_LIT_NONE, AST_LIT_STR } from "@SBrython/sbry/ast2js/";
+import { AST_LIT_FALSE, AST_LIT_TRUE, AST_LIT_FLOAT, AST_LIT_INT, AST_LIT_NONE, AST_LIT_STR } from "@SBrython/sbry/ast2js/list";
 import { NODE_ID, setResultType, setType, VALUES } from "@SBrython/sbry/dop";
 import { Context } from "@SBrython/sbry/bry2sbry/utils";
-import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NoneType, TYPEID_str } from "@SBrython/sbry/types";
+import { TYPEID_bool, TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_NoneType, TYPEID_str } from "@SBrython/sbry/types/list";
 
 export default function convert(dst: NODE_ID, node: any, _context: Context): false|void {
 
