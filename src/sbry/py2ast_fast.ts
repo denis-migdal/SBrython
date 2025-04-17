@@ -1,14 +1,15 @@
 import Types, { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST, printNode } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
-import { OP_ASSIGN, OP_ID, OP_UNR_MINUS, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
+import { OP_ASSIGN, OP_ID, OP_UNR_MINUS, opid2iopmethod, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
 import { AST_COMMENT } from "./ast2js/list";
 import { addSymbol, getSymbol } from "./types/builtins";
 import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
+import { Int2Number } from "./structs/Converters";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -744,6 +745,9 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
             type      = resultType(right);
             node_type = AST_OP_ASSIGN_INIT;
 
+            if(type === TYPEID_jsint)
+                type = TYPEID_int;
+
             addSymbol(VALUES[left], type);
         }
 
@@ -752,7 +756,25 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
         // value is first child (can be chained)...
         setFirstChild(call , right);
-        setSibling   (right, left);
+        setSibling   (right, left );
+
+        return call;
+    }
+
+    if( op >= 29 ) {
+
+        const type = resultType(left);
+        setType(call, AST_OP_ASSIGN_AUG); //TODO: many nodes to store op in node_id ?
+        setResultType(call, type );
+
+        VALUES[call] = Types[type].__class__![opid2iopmethod[op-29]];
+        
+        const opnode = createASTNode();
+        setType(opnode, AST_OP_OP);
+        setFirstChild(call, opnode);
+
+        setSibling(opnode , left);
+        setSibling(left, right);
 
         return call;
     }

@@ -1,25 +1,14 @@
 https://docs.python.org/3/reference/lexical_analysis.html
 https://github.com/brython-dev/brython/issues/2554
 
-PY2JS      :  2.254s [- 8.91%]  45.180ms
-    py2ast :  2.043s [   =   ]  40.940ms
-    astProc:  0.119s [-10.53%]   2.380ms
-    ast2js :  0.093s [-69.00%]   1.860ms
-Target /10-20 ? x30 faster : only support True/False :P
+- basic test suite.numbers (1/73) : missing += / fcts done too
+code too small
 
-Currently : py2ast x2 slower than ast2js => overall +50% slower.
-But : py2ast 90% of exec time => 85% faster => ~6.6x faster (?)
+- x10 py2ast ~> some ideas to improve but need to pass more tests first to better measure
+- runtime -> x18+ / overall x2.4 (genFct)
+- code size -> x5.
 
--> Added Expr parsing (with op priority & type deduction)
-    -> only x8 faster :'( (some small opti still possible)
-    -> exec x13 (x3 overall)
-    -> x6 code size
-
--> Am I slower than brython for expr. parsing ? (due to type deduction)
-
-48k -> 15k + 4k -> 2k
-
-=> Big code x80 / x30
+48k -> 15k
 
 Possible improvements:
 =====================
@@ -54,17 +43,26 @@ Possible improvements:
 MISSING
 =======
 
-BUG: fct, if no args...
-    -> def add to builtins...
+-> BUG: fct, if no args...
+
+-> Basic  : 73
+-> Numbers: 82
 
 -> start unit tests
-    -> fix iop
-    -> ctx (almost done test with fct & affectation)
-    -> separate op from call...
-        ~> special ASTNode ???
-        ~> separate fct name & args node ?
-            ~> call : callID + first arg... (-> call.firstS can be empty)
-        ~> WRITE_OP may be different from WRITE_CALL ???
+    -> = succession... (assign)
+    -> fix iop... & not in / is not (+ better sym2opid)
+        -> <=> & ! (char)...
+        -> // ** >> << (doublement)
+        -> >= += >>=   (=)
+            -> need to generate idx.
+            -> if > X => aug_assign node...
+            -> [OPTI?] +/- offset to pass from one to another ?
+    -> separate op from call... (JS shortcut)...
+        -> separate system (faster & easier for +=)
+            -> [a][UNR_OP]           = []...
+            -> [a << 16 & b][BIN_OP] = [RET_TYPE, WRITE_FCT()] OR 2 arrays (???)
+                -> not registered in Types.
+                -> faster conversions (no conditions)
 
 -> test & complete op
 -> classes

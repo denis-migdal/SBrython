@@ -12,10 +12,11 @@
     ["BIN_MOD"   , "%" , 10, "%" ,12, "mod"     ],
     ["BIN_POW"   , "**", 11, "**",13, "pow"     ],
 
-    ["CMP_EQ"    , "==", 4 , "==", 8, "eq" , "eq" , null ],
-    ["CMP_NEQ"   , "!=", 4 , "!=", 8, "neq", "neq", null],
     ["CMP_GT"    , ">" , 4 , ">" , 9, "gt" , "lt" , null],
     ["CMP_LT"    , "<" , 4 , "<" , 9, "lt" , "gt" , null],
+
+    ["CMP_EQ"    , "==", 4 , "==", 8, "eq" , "eq" , null],
+    ["CMP_NEQ"   , "!=", 4 , "!=", 8, "neq", "neq", null],
     ["CMP_GE"    , ">=", 4 , ">=", 9, "ge" , "le" , null],
     ["CMP_LE"    , "<=", 4 , "<=", 9, "le" , "ge" , null],
 

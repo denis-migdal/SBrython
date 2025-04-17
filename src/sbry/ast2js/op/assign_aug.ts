@@ -7,6 +7,12 @@ import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
 export default function ast2js(node: NODE_ID) {
 
+    console.warn( VALUES[node], VALUES[node].__call__[WRITE_CALL] );
+
+    VALUES[node].__call__[WRITE_CALL](node);
+
+    /*
+
     let op = AssignOperators[VALUES[node] as keyof typeof AssignOperators];
 
     const coffset = firstChild(node);
@@ -32,8 +38,8 @@ export default function ast2js(node: NODE_ID) {
             throw new Error(`${right.result_type} ${op} ${left.result_type} NOT IMPLEMENTED!`);
 
         [left, right] = [right, left];
-        */
+        *//*
     }
 
-    method[WRITE_CALL](node);
+    method[WRITE_CALL](node);*/
 }

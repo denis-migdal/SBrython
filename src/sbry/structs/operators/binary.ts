@@ -3,7 +3,7 @@ import { Converter, NOCONVERT } from "../Converters";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { add_method } from "@SBrython/sbry/types/utils/methods";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
-import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, opid2jsop, opid2opmethod, opid2ropmethod, type OP_ID } from ".";
+import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, opid2iopmethod, opid2jsop, opid2opmethod, opid2ropmethod, type OP_ID } from ".";
 import { w_JSUnrOp } from "./unary";
 
 export type addJSBinOps_Opts = {
@@ -25,7 +25,7 @@ export function addJSBinOps(target     : any,
 
     for(let i = 0; i < ops.length; ++i) {
 
-        let op = ops[i];
+        const op = ops[i];
 
         add_method(target, opid2opmethod[op], return_type, (call: NODE_ID) => {
             const _ = firstChild(call);
@@ -40,28 +40,28 @@ export function addJSBinOps(target     : any,
 
         if( ADD_EQ ) {
 
+            const iop = op+29;
+
             const ADD_INCR = op === OP_BIN_ADD;
             const ADD_DECR = op === OP_BIN_SUB;
 
             //TODO:
-            add_method(target, `__i${op}__`, return_type, (node: NODE_ID) => {
+            add_method(target, opid2iopmethod[op], return_type, (call: NODE_ID) => {
 
-                const _ = firstChild(node);
-                const a = nextSibling(_);
+                const a = nextSibling(firstChild(call));
                 const b = nextSibling(a);
 
-                const other_value = VALUES[b];
-
-                //TODO...
+                /*
+                const other_value = VALUES[b]; //TODO...
 
                 if( ADD_INCR && other_value === "1")
                     return w_JSUnrOp(node, 0, a); //TODO... ++
                 if( ADD_DECR && other_value === "1")
-                    return w_JSUnrOp(node, 0, a); //TODO... --
+                    return w_JSUnrOp(node, 0, a); //TODO... --*/
 
                 //TODO...
 
-                return w_JSBinOp(node, a, op, convert_other(b) );
+                return w_JSBinOp(call, a, iop, convert_other(b) );
             });
         }
     }

@@ -24,8 +24,13 @@ export default async function genOperators() {
     let opid2rpyname   = "";
     let opid2ipyname   = "";
     let opid2jsop      = "";
+    let opid2jsop2     = "";
     let opsymbol2opid  = "";
     let opsymbol2uopid = "";
+
+
+    //TODO...
+    const offset = 29;
 
     const pad = Math.max(...data.map( op => op[OP_NAME].length));
 
@@ -59,10 +64,17 @@ export default async function genOperators() {
 
         opid2jsop    += `\t"${op[OP_JSOP]}",\n`;
 
-        if( op[OP_IS_UNARY] )
+        if( op[OP_IS_UNARY] ) {
             opsymbol2uopid+= `\t"${op[OP_PYOP]}": OP_${op[OP_NAME]},\n`;
-        else
+        } else {
             opsymbol2opid += `\t"${op[OP_PYOP]}": OP_${op[OP_NAME]},\n`;
+
+            if(iname !== null) {
+                
+                opid2jsop2   += `\t"${op[OP_JSOP]}=",\n`;
+                opsymbol2opid+= `\t"${op[OP_PYOP]}=": OP_${op[OP_NAME]}+${offset},\n`;
+            }
+        }
     }
 
     // can't brand it as I need to perform arithmetic operations on it...
@@ -83,7 +95,7 @@ export const jsop_priorities = [\n${jsop_prio}];\n\n`;
     result += `export const opid2ropmethod = [\n${opid2rpyname}]\n\n`;
     result += `export const opid2iopmethod = [\n${opid2ipyname}]\n\n`;
 
-    result += `export const opid2jsop = [\n${opid2jsop}]\n\n`;
+    result += `export const opid2jsop = [\n${opid2jsop}\n${opid2jsop2}]\n\n`;
 
     result += `export const opsymbol2opid  = {\n${opsymbol2opid }};\n\n`;
     result += `export const opsymbol2uopid = {\n${opsymbol2uopid}};\n\n`;

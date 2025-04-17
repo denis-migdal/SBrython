@@ -12,10 +12,10 @@ export const OP_BIN_DIV    = 8 as const;
 export const OP_BIN_FDIV   = 9 as const;
 export const OP_BIN_MOD    = 10 as const;
 export const OP_BIN_POW    = 11 as const;
-export const OP_CMP_EQ     = 12 as const;
-export const OP_CMP_NEQ    = 13 as const;
-export const OP_CMP_GT     = 14 as const;
-export const OP_CMP_LT     = 15 as const;
+export const OP_CMP_GT     = 12 as const;
+export const OP_CMP_LT     = 13 as const;
+export const OP_CMP_EQ     = 14 as const;
+export const OP_CMP_NEQ    = 15 as const;
 export const OP_CMP_GE     = 16 as const;
 export const OP_CMP_LE     = 17 as const;
 export const OP_ASSIGN     = 18 as const;
@@ -79,10 +79,10 @@ export const jsop_priorities = [
 	12,
 	12,
 	13,
-	8,
-	8,
 	9,
 	9,
+	8,
+	8,
 	9,
 	9,
 	2,
@@ -111,10 +111,10 @@ export const opid2opmethod  = [
 	"__floordir__",
 	"__mod__",
 	"__pow__",
-	"__eq__",
-	"__neq__",
 	"__gt__",
 	"__lt__",
+	"__eq__",
+	"__neq__",
 	"__ge__",
 	"__le__",
 	"__pos__",
@@ -136,10 +136,10 @@ export const opid2ropmethod = [
 	"__rfloordir__",
 	"__rmod__",
 	"__rpow__",
-	"__eq__",
-	"__neq__",
 	"__lt__",
 	"__gt__",
+	"__eq__",
+	"__neq__",
 	"__le__",
 	"__ge__",
 ]
@@ -172,10 +172,10 @@ export const opid2jsop = [
 	"/",
 	"%",
 	"**",
-	"==",
-	"!=",
 	">",
 	"<",
+	"==",
+	"!=",
 	">=",
 	"<=",
 	"=",
@@ -189,25 +189,50 @@ export const opid2jsop = [
 	"&&",
 	"!",
 	"",
+
+	"|=",
+	"^=",
+	"&=",
+	"<<=",
+	">>=",
+	"+=",
+	"-=",
+	"*=",
+	"/=",
+	"/=",
+	"%=",
+	"**=",
 ]
 
 export const opsymbol2opid  = {
 	"|": OP_BIT_OR,
+	"|=": OP_BIT_OR+29,
 	"^": OP_BIT_XOR,
+	"^=": OP_BIT_XOR+29,
 	"&": OP_BIT_AND,
+	"&=": OP_BIT_AND+29,
 	"<<": OP_BIT_LSHIFT,
+	"<<=": OP_BIT_LSHIFT+29,
 	">>": OP_BIT_RSHIFT,
+	">>=": OP_BIT_RSHIFT+29,
 	"+": OP_BIN_ADD,
+	"+=": OP_BIN_ADD+29,
 	"-": OP_BIN_SUB,
+	"-=": OP_BIN_SUB+29,
 	"*": OP_BIN_MUL,
+	"*=": OP_BIN_MUL+29,
 	"/": OP_BIN_DIV,
+	"/=": OP_BIN_DIV+29,
 	"//": OP_BIN_FDIV,
+	"//=": OP_BIN_FDIV+29,
 	"%": OP_BIN_MOD,
+	"%=": OP_BIN_MOD+29,
 	"**": OP_BIN_POW,
-	"==": OP_CMP_EQ,
-	"!=": OP_CMP_NEQ,
+	"**=": OP_BIN_POW+29,
 	">": OP_CMP_GT,
 	"<": OP_CMP_LT,
+	"==": OP_CMP_EQ,
+	"!=": OP_CMP_NEQ,
 	">=": OP_CMP_GE,
 	"<=": OP_CMP_LE,
 	"=": OP_ASSIGN,
