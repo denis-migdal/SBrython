@@ -5,7 +5,7 @@ import { AST } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
-import { OP_ID, OP_OFF_REVERSE, opid2opmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
+import { OP_ID, opid2opmethod, opid2ropmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
 import { AST_COMMENT } from "./ast2js/list";
 
 const END_OF_SYMBOL = /[^\w]/;
@@ -670,8 +670,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
     
     if( ret_type === TYPEID_NotImplementedType) {
         
-        op  += OP_OFF_REVERSE;
-        pyop_name = opid2opmethod[op];
+        pyop_name = opid2ropmethod[op];
         
         // we NEED to invert l&r.
         let _ = left;

@@ -1,0 +1,35 @@
+[
+    ["BIT_OR"    , "|" ,  5, "|" , 5, "or"      ],
+    ["BIT_XOR"   , "^" ,  6, "^" , 6, "xor"     ],
+    ["BIT_AND"   , "&" ,  7, "&" , 7, "and"     ],
+    ["BIT_LSHIFT", "<<",  8, "<<",10, "lshift"  ],
+    ["BIT_RSHIFT", ">>",  8, ">>",10, "rshift"  ],
+    ["BIN_ADD"   , "+" ,  9, "+" ,11, "add"     ],
+    ["BIN_SUB"   , "-" ,  9, "-" ,12, "sub"     ],
+    ["BIN_MUL"   , "*" , 10, "*" ,12, "mul"     ],
+    ["BIN_DIV"   , "/" , 10, "/" ,12, "truediv" ],
+    ["BIN_FDIV"  , "//", 10, "/" ,12, "floordir"],
+    ["BIN_MOD"   , "%" , 10, "%" ,12, "mod"     ],
+    ["BIN_POW"   , "**", 11, "**",13, "pow"     ],
+
+    ["CMP_EQ"    , "==", 4 , "==", 8, "eq" , "eq" , null ],
+    ["CMP_NEQ"   , "!=", 4 , "!=", 8, "neq", "neq", null],
+    ["CMP_GT"    , ">" , 4 , ">" , 9, "gt" , "lt" , null],
+    ["CMP_LT"    , "<" , 4 , "<" , 9, "lt" , "gt" , null],
+    ["CMP_GE"    , ">=", 4 , ">=", 9, "ge" , "le" , null],
+    ["CMP_LE"    , "<=", 4 , "<=", 9, "le" , "ge" , null],
+
+    ["UNR_PLUS"  , "" , 12, "+" , 14, "pos", null, null],
+    ["UNR_MINUS" , "" , 12, "-" , 14, "neg", null, null],
+    ["BIT_NOT"   , "~", 12, "~" , 14, "not", null, null],
+
+    ["CMP_IN"    , "in"    , 4, "in",  9, "contains", null, null],
+    ["CMP_IS"    , "is"    , 4, "===", 8, null, null, null],
+    ["CMP_IS_NOT", "is not", 4, "!==", 8, null, null, null],
+
+    ["BOOL_OR" , "or" , 1, "||", 3, null, null, null],
+    ["BOOL_AND", "and", 2, "&&", 4, null, null, null],
+    ["BOOL_NOT", "not", 3, "!" ,14, null, null, null],
+    
+    ["CMP_NOT_IN", "not in", 4, "",  9, null, null, null]
+]

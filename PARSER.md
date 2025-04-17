@@ -51,11 +51,10 @@ Possible improvements:
 MISSING
 =======
 
--> start unit tests
-    -> fix jscode: reset issue...
+-> start unit tests 
     -> fix a+(b+c)...
+        -> 2 + 2 == 4 (none type ?)
     -> fix iop
-    -> generate op structs to prevent errors...
     -> ctx (almost done test with fct & affectation)
     -> separate op from call...
         ~> special ASTNode ???

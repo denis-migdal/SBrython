@@ -3,7 +3,7 @@ import { Converter, NOCONVERT } from "../Converters";
 import { RETURN_TYPE_FCT } from "../ReturnTypeFcts";
 import { add_method } from "@SBrython/sbry/types/utils/methods";
 import { w_sns } from "@SBrython/sbry/ast2js/utils";
-import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, OP_OFF_REVERSE, OP_OOF_IEQ, opid2jsop, opid2opmethod, type OP_ID } from ".";
+import { jsop_priorities, OP_BIN_ADD, OP_BIN_SUB, opid2jsop, opid2opmethod, opid2ropmethod, type OP_ID } from ".";
 import { w_JSUnrOp } from "./unary";
 
 export type addJSBinOps_Opts = {
@@ -32,7 +32,7 @@ export function addJSBinOps(target     : any,
             const a = nextSibling(_); const b = nextSibling(a);
             return w_call(call, convert_self(a), op, convert_other(b) );
         });
-        add_method(target, opid2opmethod[op+OP_OFF_REVERSE], return_type, (call: NODE_ID) => {
+        add_method(target, opid2ropmethod[op], return_type, (call: NODE_ID) => {
             const _ = firstChild(call);
             const a = nextSibling(_); const b = nextSibling(a);
             return w_call(call, convert_other(b), op, convert_self(a) );
@@ -59,8 +59,9 @@ export function addJSBinOps(target     : any,
                 if( ADD_DECR && other_value === "1")
                     return w_JSUnrOp(node, 0, a); //TODO... --
 
+                //TODO...
 
-                return w_JSBinOp(node, a, op+ OP_OOF_IEQ, convert_other(b) );
+                return w_JSBinOp(node, a, op, convert_other(b) );
             });
         }
     }

@@ -4,7 +4,9 @@ import buildConfigs from "./build/WebpackFramework/index.js";
 import genBry2SBry  from "./build/gen/bry2sbry.js";
 import genTypes     from "./build/gen/types.js";
 import genAST2JS    from "./build/gen/ast2js.js";
+import genOperators from "./build/gen/operators.js";
 import genRuntime   from "./build/gen/runtime.js";
+
 
 import CircularDependencyPlugin from 'circular-dependency-plugin';
 
@@ -32,6 +34,7 @@ export default async function(...args) {
 				genBry2SBry(),
 				genTypes(),
 				genAST2JS(),
+				genOperators(),
 				genRuntime(),
 			]);
 		});
