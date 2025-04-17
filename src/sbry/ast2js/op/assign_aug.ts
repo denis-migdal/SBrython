@@ -7,8 +7,6 @@ import { Fct, RETURN_TYPE, WRITE_CALL } from "@SBrython/sbry/types/utils/types";
 
 export default function ast2js(node: NODE_ID) {
 
-    console.warn( VALUES[node], VALUES[node].__call__[WRITE_CALL] );
-
     VALUES[node].__call__[WRITE_CALL](node);
 
     /*

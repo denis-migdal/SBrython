@@ -49,7 +49,8 @@ MISSING
 -> Numbers: 82
 
 -> start unit tests
-    -> = succession... (assign)
+    -> new exclude list for parser
+    -> walrus operator (not possible...) -> requires to move out decl...
     -> fix iop... & not in / is not (+ better sym2opid)
         -> <=> & ! (char)...
         -> // ** >> << (doublement)

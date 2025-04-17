@@ -606,8 +606,10 @@ function readExpr() {
         op = readOp();
         rop_prio = pyop_priorities[op];
 
+        // TODO...
+
         // priority
-        if( rop_prio > lop_prio ) { // a+(b+...)
+        if( lop_prio < rop_prio || lop_prio + rop_prio === 0) { // a+(b+...)
 
             rop    = [createASTNode(), value, op, 0]; // ?
             lop[3] = rop[0];
