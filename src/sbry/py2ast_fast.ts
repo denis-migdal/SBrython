@@ -6,11 +6,13 @@ import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
 import { OP_ID, OP_OFF_REVERSE, opid2opmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
+import { AST_COMMENT } from "./ast2js/list";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
 const CHAR_SPACE = 32;
 const CHAR_QUOTE = 34;
+const CHAR_HASH  = 35;
 const CHAR_PARENTHESIS_LEFT   = 40;
 const CHAR_PARENTHESIS_RIGHT  = 41;
 const CHAR_STAR  = 42;
@@ -38,8 +40,10 @@ function consumeEmptyLines(): boolean {
 
         //TODO: if # => consume...
 
-        if(curChar !== CHAR_NL)
+        if(curChar !== CHAR_NL) {
+            if(__DEBUG__) CURSOR[1] = offset;
             return true;
+        }
 
         if(__DEBUG__) ++CURSOR[0];
         ++offset;
@@ -52,11 +56,6 @@ function consumeEmptyLines(): boolean {
 
 function nextSymbol(){
     const end = code.slice(offset).search(END_OF_SYMBOL);
-
-    if(__DEBUG__ && code.charCodeAt(offset+end) === CHAR_NL) {
-        ++CURSOR[0];
-        CURSOR[1] = offset + end + 1;
-    }
 
     return code.slice(offset, offset += end );
 }
@@ -262,6 +261,7 @@ function consumeIndentedLines() {
 
         // we have a non-empty line.
         if(curChar !== CHAR_NL) {
+            if(__DEBUG__) CURSOR[1] = offset;
             CURRENT_INDENTATION = offset - beg;
             return;
         }
@@ -271,8 +271,39 @@ function consumeIndentedLines() {
         beg = ++offset;
     }
 
-    CURRENT_INDENTATION = 0;
     if(__DEBUG__) CURSOR[1] = offset;
+
+    CURRENT_INDENTATION = 0;
+}
+
+function readComment() {
+
+    const node = createASTNode();
+    setType(node, AST_COMMENT);
+
+    set_py_code_beg(node);
+
+    const beg = offset + 1;
+    
+    do {
+        curChar = code.charCodeAt(++offset);
+    } while(curChar !== CHAR_NL);
+
+    set_py_code_end(node);
+    VALUES[node] = code.slice(beg, offset);
+
+    return node;
+}
+
+function readLine() {
+
+    if( curChar === CHAR_HASH)
+        return readComment();
+
+    // TODO: move Expr if/else/etc. here...
+    // TODO: true/false: how to handle ?
+
+    return readExpr();
 }
 
 function readBody(){
@@ -287,11 +318,11 @@ function readBody(){
     const indent = CURRENT_INDENTATION;
 
     // a child is guaranteed.
-    let cur = setFirstChild(id, readExpr() );
+    let cur = setFirstChild(id, readLine() );
 
     consumeIndentedLines(); // + check at the same time ???
     while(CURRENT_INDENTATION === indent) {
-        cur = setSibling(cur, readExpr() );
+        cur = setSibling(cur, readLine() );
         consumeIndentedLines();
     }
 
@@ -312,6 +343,10 @@ function consumeSpaces() {
 function readToken() {
     //TODO: known symbol 2 versions...
     let node = createASTNode();
+
+    console.warn("===");
+    console.warn(CURSOR[0], CURSOR[1]);
+    console.warn(CURSOR[0] + 1, offset - CURSOR[1]);
 
     if( __DEBUG__ ) set_py_code_beg(node);
 
@@ -584,10 +619,10 @@ export function py2ast(_code: string, filename: string): AST {
     
     if( consumeEmptyLines() ) {
 
-        let cur = setFirstChild(id, readExpr() );
+        let cur = setFirstChild(id, readLine() );
 
         while( consumeEmptyLines() )
-            cur = setSibling(cur, readExpr() );
+            cur = setSibling(cur, readLine() );
     }
 
     return {

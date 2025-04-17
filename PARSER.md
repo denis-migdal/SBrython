@@ -39,17 +39,30 @@ Possible improvements:
 -> /!\ startup time + parsing time (difficult to eval...)
 -> regroup in same file without using webpack...
 
+-> createASTNode => one version that add type & code_beg (?)
+
+-> check for unused fct / AST Node type ? (mainly op ?)
+-> OP_OP => OPERATOR
+
+-> ret_type (use call node...) ~> op: we need to construct call node & invert siblings.
+
 -> Webpack list + globals.
 
 MISSING
 =======
 
 -> start unit tests
-    -> consume # comments.
+    -> fix pycode + fix jscode
+    -> fix a+(b+c)...
+    -> fix iop
+    -> generate op structs to prevent errors...
     -> ctx (almost done test with fct & affectation)
     -> separate op from call...
+        ~> special ASTNode ???
+        ~> separate fct name & args node ?
+        ~> WRITE_OP may be different from WRITE_CALL ???
 
--> complete op
+-> test & complete op
 -> classes
 
 -> some opti
@@ -57,9 +70,6 @@ MISSING
 TODO
 ====
 
--> check for unused fct / AST Node type ? (mainly op ?)
--> OP_OP => OPERATOR
--> ret_type (use call node...) ~> op: we need to construct call node & invert siblings.
 - Expr with parenthesis (sub expr to handle tuples ? )
 
 -> parseExpr refactor:

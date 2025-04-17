@@ -56,6 +56,7 @@ LIST[50 ] = require("./classdef").default;
 LIST[51 ] = require("./body").default;
 LIST[52 ] = require("./2bigint").default;
 LIST[53 ] = require("./2number").default;
+LIST[54 ] = require("./comment").default;
 
 const _id2name = ! __DEBUG__ ? [] : [
 	"SYMBOL",
@@ -112,5 +113,6 @@ const _id2name = ! __DEBUG__ ? [] : [
 	"BODY",
 	"2BIGINT",
 	"2NUMBER",
+	"COMMENT",
 ];
 export const id2name = _id2name;

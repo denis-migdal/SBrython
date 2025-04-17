@@ -65,5 +65,6 @@ export const AST_CLASSDEF           = last_id++;
 export const AST_BODY               = last_id++;
 export const AST_2BIGINT            = last_id++;
 export const AST_2NUMBER            = last_id++;
+export const AST_COMMENT            = last_id++;
 
 export default [];

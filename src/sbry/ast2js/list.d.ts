@@ -61,3 +61,4 @@ export declare const AST_CLASSDEF           : BRAND<50 , "NODE_TYPE">;
 export declare const AST_BODY               : BRAND<51 , "NODE_TYPE">;
 export declare const AST_2BIGINT            : BRAND<52 , "NODE_TYPE">;
 export declare const AST_2NUMBER            : BRAND<53 , "NODE_TYPE">;
+export declare const AST_COMMENT            : BRAND<54 , "NODE_TYPE">;
