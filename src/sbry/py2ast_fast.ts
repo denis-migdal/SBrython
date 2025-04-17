@@ -1,7 +1,7 @@
 import Types, { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
 import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
-import { AST } from "./py2ast"
+import { AST, printNode } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
@@ -547,15 +547,17 @@ function readExpr() {
 
     type OP_INFO = [NODE_ID, NODE_ID, number, NODE_ID];
 
-    let lop      = [createASTNode(), value, op, 0] as OP_INFO;
+    let lop : OP_INFO = [createASTNode(), value, op, 0];
+    let rop : OP_INFO;
+
     let lop_prio = pyop_priorities[op];
+    let rop_prio;
 
     value = right;
 
-    let rop: OP_INFO;
-    let rop_prio;
-
-    const stack: OP_INFO[] = [];
+    const stack: OP_INFO[] = [
+        lop
+    ];
 
     do {
         
@@ -565,7 +567,7 @@ function readExpr() {
         // priority
         if( rop_prio > lop_prio ) { // a+(b+...)
 
-            rop    = [createASTNode(), value, op, 0];
+            rop    = [createASTNode(), value, op, 0]; // ?
             lop[3] = rop[0];
 
             stack.push(rop);
@@ -577,24 +579,26 @@ function readExpr() {
             createCallOpNode(...lop);
             for(let i = stack.length - 1; i >= 0 ; --i)
                 createCallOpNode(...stack[i]);
-            stack.length = 0;
 
-            rop   = [createASTNode(), lop[0], op, 0];
-            lop   = rop;
+            stack.length = 1;
+
+            rop      = [createASTNode(), stack[0][0], op, 0];
+            stack[0] = rop;
         }
 
+        lop      = rop;
         lop_prio = rop_prio;
         value = readToken();
 
     } while( ! isEndOfExpr() );
 
     lop[3] = value;
-    value = createCallOpNode(...lop)
+    createCallOpNode(...lop);
 
     for(let i = stack.length - 1; i >= 0 ; --i)
         createCallOpNode(...stack[i]);
 
-    return value;
+    return stack[0][0];
 }
 
 export function py2ast(_code: string, filename: string): AST {
@@ -680,12 +684,17 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
         method = Types[rtype].__class__![pyop_name] as Fct;
 
-        if( __DEBUG__ && method === undefined)
+        if( __DEBUG__ && method === undefined) {
+            printNode(left);
+            printNode(right);
             throw new Error(`${Types[rtype].__class__?.__name__} ${pyop_name} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
+        }
 
         ret_type = method[RETURN_TYPE](ltype!);
 
         if( __DEBUG__ && ret_type === TYPEID_NotImplementedType) {
+            printNode(left);
+            printNode(right);
             throw new Error(`${Types[rtype].__class__?.__name__} ${pyop_name} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
         }
     }

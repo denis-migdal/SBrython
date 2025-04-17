@@ -51,9 +51,9 @@ Possible improvements:
 MISSING
 =======
 
--> start unit tests 
-    -> fix a+(b+c)...
-        -> 2 + 2 == 4 (none type ?)
+-> start unit tests
+    -> 50 - 5 * 6 (NoneType __rmul__ int ?)
+    -> parenthesis
     -> fix iop
     -> ctx (almost done test with fct & affectation)
     -> separate op from call...
