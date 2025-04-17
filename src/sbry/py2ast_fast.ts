@@ -136,11 +136,11 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
     "continue": (id) => setType(id, AST_KEY_CONTINUE),
     "pass":     (id) => setType(id, AST_KEY_PASS),
     "return":   (id) => setType(id, AST_KEY_RETURN),
-    "assert": (id) => {
+    "assert":   (id) => {
         setType(id, AST_KEY_ASSERT);
-        ++offset; //TODO: consume white spaces at the start of readExpr (?)
+        consumeSpaces();
+
         setFirstChild(id, readExpr() );
-        ++offset; // this is a \n
     },
     "for": (id) => {
         // TODO: for range
@@ -497,6 +497,7 @@ function readToken() {
 }
 
 function isEndOfExpr() {
+
     return curChar === CHAR_NL
         || curChar === CHAR_COLON
         || curChar === CHAR_COMMA
@@ -684,8 +685,9 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
         ret_type = method[RETURN_TYPE](ltype!);
 
-        if( __DEBUG__ && ret_type === TYPEID_NotImplementedType)
+        if( __DEBUG__ && ret_type === TYPEID_NotImplementedType) {
             throw new Error(`${Types[rtype].__class__?.__name__} ${pyop_name} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
+        }
     }
 
     VALUES[call] = method;

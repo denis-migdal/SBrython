@@ -41,14 +41,14 @@ export default async function genOperators() {
         if( pyname !== null)
             opid2pyname += `\t"__${pyname}__",\n`;
 
-        let rname = pyname;
+        let rname = op[OP_RPYNAME];
         if(rname === undefined)
             rname = `r${pyname}`;
 
         if( rname !== null)
             opid2rpyname += `\t"__${rname}__",\n`;
 
-        let iname = pyname;
+        let iname = op[OP_IPYNAME];
         if(iname === undefined)
             iname = `i${pyname}`;
 
