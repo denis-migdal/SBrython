@@ -26,6 +26,19 @@ const builtins: [string, TYPE_ID][] = [
     })
 ];
 
+export function addSymbol(name: string, type: TYPE_ID) {
+    builtins[builtins.length] = [name, type];
+}
+
+export function getSymbol(name: string): TYPE_ID {
+
+    for(let i = builtins.length - 1; i >= 0; --i)
+        if(builtins[i][0] === name)
+            return builtins[i][1];
+
+    return 0;
+}
+
 export default builtins;
 
 function genOpFct(name: string, return_type: RETURN_TYPE_FCT): [string, TYPE_ID] {

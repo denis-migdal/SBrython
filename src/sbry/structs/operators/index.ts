@@ -18,18 +18,19 @@ export const OP_CMP_GT     = 14 as const;
 export const OP_CMP_LT     = 15 as const;
 export const OP_CMP_GE     = 16 as const;
 export const OP_CMP_LE     = 17 as const;
-export const OP_UNR_PLUS   = 18 as const;
-export const OP_UNR_MINUS  = 19 as const;
-export const OP_BIT_NOT    = 20 as const;
-export const OP_CMP_IN     = 21 as const;
-export const OP_CMP_IS     = 22 as const;
-export const OP_CMP_IS_NOT = 23 as const;
-export const OP_BOOL_OR    = 24 as const;
-export const OP_BOOL_AND   = 25 as const;
-export const OP_BOOL_NOT   = 26 as const;
-export const OP_CMP_NOT_IN = 27 as const;
+export const OP_ASSIGN     = 18 as const;
+export const OP_UNR_PLUS   = 19 as const;
+export const OP_UNR_MINUS  = 20 as const;
+export const OP_BIT_NOT    = 21 as const;
+export const OP_CMP_IN     = 22 as const;
+export const OP_CMP_IS     = 23 as const;
+export const OP_CMP_IS_NOT = 24 as const;
+export const OP_BOOL_OR    = 25 as const;
+export const OP_BOOL_AND   = 26 as const;
+export const OP_BOOL_NOT   = 27 as const;
+export const OP_CMP_NOT_IN = 28 as const;
 
-// https://www.w3schools.com/python/python_operators.asp
+// https://docs.python.org/3/reference/expressions.html#operator-precedence
 // the higher the more priority
 export const pyop_priorities = [
 	5,
@@ -50,6 +51,7 @@ export const pyop_priorities = [
 	4,
 	4,
 	4,
+	0,
 	12,
 	12,
 	12,
@@ -83,6 +85,7 @@ export const jsop_priorities = [
 	9,
 	9,
 	9,
+	2,
 	14,
 	14,
 	14,
@@ -175,6 +178,7 @@ export const opid2jsop = [
 	"<",
 	">=",
 	"<=",
+	"=",
 	"+",
 	"-",
 	"~",
@@ -206,6 +210,7 @@ export const opsymbol2opid  = {
 	"<": OP_CMP_LT,
 	">=": OP_CMP_GE,
 	"<=": OP_CMP_LE,
+	"=": OP_ASSIGN,
 	"in": OP_CMP_IN,
 	"is": OP_CMP_IS,
 	"is not": OP_CMP_IS_NOT,

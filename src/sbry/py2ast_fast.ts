@@ -1,12 +1,14 @@
 import Types, { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST, printNode } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
-import { OP_ID, OP_UNR_MINUS, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
+import { OP_ASSIGN, OP_ID, OP_UNR_MINUS, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
 import { AST_COMMENT } from "./ast2js/list";
+import { addSymbol, getSymbol } from "./types/builtins";
+import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -194,14 +196,15 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         setType(id, AST_DEF_FCT);
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
 
-        VALUES[id] = nextSymbol(); // name
+        const name = VALUES[id] = nextSymbol(); // name
 
         const args = addFirstChild(id);
         setType(args, AST_DEF_ARGS);
 
         //TODO: if same return + write_call, can be shared (i.e. same type/typeID)
         const SType_fct: Callable = {
-            __name__: "function",
+            __qualname__: name,
+            __name__    : name,
             __call__: {
                 __name__: "__call__",
                 [RETURN_TYPE]: () => {
@@ -211,8 +214,9 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
             }
         }
     
-        const STypeID = Types.length as TYPE_ID; // 15 for now...
+        const STypeID = Types.length as TYPE_ID;
         Types[STypeID] = SType_fct;
+        addSymbol(name, STypeID);
 
         setResultType(id, STypeID);
 
@@ -464,10 +468,14 @@ function readToken(): NODE_ID {
         if( symbol !== undefined)
             symbol(node);
         else {
-            //TODO: get type from context
+
             //TODO: search in local -> True/False/None in context ?
 
             if( __DEBUG__ ) set_py_code_end(node);
+
+            setType(node, AST_SYMBOL);
+            setResultType(node, getSymbol(token) );
+            VALUES[node] = token;
 
             consumeSpaces(); // end of py code not exact... (set again later...)
 
@@ -478,12 +486,10 @@ function readToken(): NODE_ID {
                 node = createASTNode();
                 setType(node, AST_CALL);
                 setFirstChild(node, cur);
+                VALUES[node] = Types[resultType(cur)];
+                //TODO: return type...
 
                 if( __DEBUG__ ) set_py_code_beg(node);
-
-                //TODO: get left from context...
-                setResultType(cur, 15 as TYPE_ID); // h4ck
-                VALUES[cur] = "foo"; // h4ck
 
                 ++offset; // (
                 consumeSpaces();
@@ -724,12 +730,34 @@ function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
 
 function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_ID) {
 
-    setType(call, AST_CALL);
-
     if( __DEBUG__ ) {
         copy_py_code_beg(left , call);
         copy_py_code_end(right, call);
     }
+
+    if( op === OP_ASSIGN ) {
+
+        let node_type = AST_OP_ASSIGN;
+
+        let type = resultType(left);
+        if( type === 0 ) { // unknown
+            type      = resultType(right);
+            node_type = AST_OP_ASSIGN_INIT;
+
+            addSymbol(VALUES[left], type);
+        }
+
+        setType(call, node_type);
+        setResultType(call, type);
+
+        // value is first child (can be chained)...
+        setFirstChild(call , right);
+        setSibling   (right, left);
+
+        return call;
+    }
+
+    setType(call, AST_CALL);
 
     const opnode = createASTNode();
     setType(opnode, AST_OP_OP);
@@ -749,8 +777,11 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
     let pyop_name = opid2opmethod[op];
 
-    if( __DEBUG__ && pyop_name === undefined)
+    if( __DEBUG__ && pyop_name === undefined) {
+        printNode(left);
+        printNode(right);
         throw new Error(`Unknown operator ${op}!`);
+    }
 
     const ltype = resultType(left);
     const rtype = resultType(right);

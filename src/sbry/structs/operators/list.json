@@ -19,6 +19,8 @@
     ["CMP_GE"    , ">=", 4 , ">=", 9, "ge" , "le" , null],
     ["CMP_LE"    , "<=", 4 , "<=", 9, "le" , "ge" , null],
 
+    ["ASSIGN"    , "=" , 0, "=" , 2, null, null, null],
+
     ["UNR_PLUS"  , "+" , 12, "+" , 14, "pos", null, null, true],
     ["UNR_MINUS" , "-" , 12, "-" , 14, "neg", null, null, true],
     ["BIT_NOT"   , "~" , 12, "~" , 14, "not", null, null, true],

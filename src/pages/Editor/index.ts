@@ -259,6 +259,7 @@ function print_node(node: any) {
     html_bloc.textContent = node.type;
     if( node.value != null) {
         let val = node.value;
+
         if( val.__qualname__ !== undefined)
             val = val.__qualname__;
         else if( val.__name__ !== undefined)

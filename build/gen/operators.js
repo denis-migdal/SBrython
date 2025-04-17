@@ -70,7 +70,7 @@ export default async function genOperators() {
 
     result += constants + "\n";
     result +=
-`// https://www.w3schools.com/python/python_operators.asp
+`// https://docs.python.org/3/reference/expressions.html#operator-precedence
 // the higher the more priority
 export const pyop_priorities = [\n${pyop_prio}];\n\n`;
 

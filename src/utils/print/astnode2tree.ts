@@ -18,7 +18,7 @@ type CodeRange = {
 
 export type NODE = {
     type    : string,
-    result_type :string,
+    result_type :string|null,
     value       : any,
     jscode  : CodeRange,
     pycode  : CodeRange,
@@ -28,7 +28,13 @@ export type NODE = {
 export default function astnode2tree(id: NODE_ID = 0): NODE {
 
     const typeID = resultType(id);
-    const result_type = id2typename[typeID];
+
+    const info = Types[typeID];
+
+    const inst_name  = info.__qualname__ as string ?? info.__name__ ?? ""
+    const klass_name = info.__class__?.__qualname__ as string ?? info.__class__?.__name__ ?? ""
+
+    const result_type = typeID === 0 ? null : `${inst_name}:${klass_name}`;
 
     const children = [];
 

@@ -1,6 +1,7 @@
 import LIST from './list';
 export default LIST;
 
+require("./unknown");
 require("./None");
 require("./NotImplemented");
 require("./int");
@@ -11,6 +12,7 @@ require("./str");
 require("./type");
 
 const _id2name = ! __DEBUG__ ? [] : [
+	"unknown",
 	"None",
 	"NoneType",
 	"NotImplemented",

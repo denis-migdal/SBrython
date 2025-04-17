@@ -15,7 +15,9 @@ But : py2ast 90% of exec time => 85% faster => ~6.6x faster (?)
     -> exec x13 (x3 overall)
     -> x6 code size
 
-32k -> 9.9k
+-> Am I slower than brython for expr. parsing ? (due to type deduction)
+
+48k -> 15k + 4k -> 2k
 
 => Big code x80 / x30
 
@@ -47,18 +49,21 @@ Possible improvements:
 
 -> Webpack list + globals.
 
+-> chained assign/cmp handle it in ast2js...
+
 MISSING
 =======
 
--> start unit tests
-    -> unary ops
-    -> assign + context
+BUG: fct, if no args...
+    -> def add to builtins...
 
+-> start unit tests
     -> fix iop
     -> ctx (almost done test with fct & affectation)
     -> separate op from call...
         ~> special ASTNode ???
         ~> separate fct name & args node ?
+            ~> call : callID + first arg... (-> call.firstS can be empty)
         ~> WRITE_OP may be different from WRITE_CALL ???
 
 -> test & complete op
@@ -69,27 +74,17 @@ MISSING
 TODO
 ====
 
-- Expr with parenthesis (sub expr to handle tuples ? )
-
 -> parseExpr refactor:
-    -> None/True/False -> in context, remove from known symbol ?
-    -> fct : if node is EQ => transforms into kw arg ?
-        => /!\ arg context !
     -> readExpr
         -> readToken
             -> nextSymbol()
-    -> readLine
-        -> str
-            -> if known symbol
-            -> elif ( => call
-            -> else likely assign
-        -> EQ (ou assimilés)
-            -> /!\ destructuring = tuple / with/without ","
-            -> right side is Expr
-        -> fct/class call
-            -> parseFct
-        -> known symbols.
-            -> call fct...
+    -> readLine -> lines never starts by an expression.
+        -> comments (already)
+        -> keyword ~> need to handle
+            -> readToken2()...
+        -> VALUE + call or VALUE + EQ ?
+    -> None/True/False -> in context, remove from known symbol ?
+    -> fct : if node is EQ & left = symbol -> this is a kw arg (+ add to fct context).
 
 -> op (10):
 -> affectation requires context array...
