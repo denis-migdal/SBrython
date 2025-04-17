@@ -5,7 +5,7 @@ import { AST, printNode } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
-import { OP_ID, opid2opmethod, opid2ropmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
+import { OP_ID, OP_UNR_MINUS, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
 import { AST_COMMENT } from "./ast2js/list";
 
 const END_OF_SYMBOL = /[^\w]/;
@@ -16,7 +16,9 @@ const CHAR_HASH  = 35;
 const CHAR_PARENTHESIS_LEFT   = 40;
 const CHAR_PARENTHESIS_RIGHT  = 41;
 const CHAR_STAR  = 42;
+const CHAR_PLUS  = 43;
 const CHAR_COMMA = 44;
+const CHAR_MINUS = 45;
 const CHAR_DOT   = 46;
 const CHAR_SLASH = 47;
 const CHAR_COLON = 58;
@@ -340,8 +342,40 @@ function consumeSpaces() {
         curChar = code.charCodeAt(++offset);
 }
 
-function readToken() {
+function readToken(): NODE_ID {
+
     //TODO: known symbol 2 versions...
+    if( curChar === CHAR_MINUS) { // 43/45/126
+
+        const call = createASTNode();
+
+        if( __DEBUG__ )
+            set_py_code_beg(call);
+
+        const op = OP_UNR_MINUS; //opsymbol2uopid[code[offset++] as keyof typeof opsymbol2uopid];
+        ++offset;
+        consumeSpaces();
+        return createCallUopNode(call, op, readToken());
+    }
+    /*
+        "+": OP_UNR_PLUS,
+        "-": OP_UNR_MINUS,
+        "~": OP_BIT_NOT,
+        "not": OP_BOOL_NOT,
+    */
+
+    // sub expr
+    if( curChar === CHAR_PARENTHESIS_LEFT) {
+
+        ++offset; // (
+        consumeSpaces();
+        const node = readExpr();
+        ++offset; // )
+        consumeSpaces();
+
+        return node;
+    }
+
     let node = createASTNode();
 
     if( __DEBUG__ ) set_py_code_beg(node);
@@ -424,6 +458,7 @@ function readToken() {
         ++offset;
 
     } else {
+        //TODO: not
         const token  = nextSymbol();
         const symbol = KNOWN_SYMBOLS[token];
         if( symbol !== undefined)
@@ -632,6 +667,59 @@ export function py2ast(_code: string, filename: string): AST {
         nodes, //TODO: slice
         filename
     }
+}
+
+
+function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
+
+    setType(call, AST_CALL);
+
+    if( __DEBUG__ ) copy_py_code_end(a, call);
+
+    const opnode = createASTNode();
+    setType(opnode, AST_OP_OP);
+    setFirstChild(call, opnode);
+
+    if( __DEBUG__ ) {
+        // I guess ?
+        const dst_off = 4*(opnode as number);
+        const src_beg = 4*(call  as number);
+        const src_end = 4*(a     as number);
+
+        PY_CODE[ dst_off + CODE_BEG_LINE ] = PY_CODE[ src_beg + CODE_BEG_LINE ];
+        PY_CODE[ dst_off + CODE_BEG_COL  ] = PY_CODE[ src_beg + CODE_BEG_COL  ];
+        PY_CODE[ dst_off + CODE_END_LINE ] = PY_CODE[ src_end + CODE_BEG_LINE ];
+        PY_CODE[ dst_off + CODE_END_COL  ] = PY_CODE[ src_end + CODE_BEG_COL  ];
+    }
+
+    let pyop_name = opid2opmethod[op];
+
+    if( __DEBUG__ && pyop_name === undefined)
+        throw new Error(`Unknown operator ${op}!`);
+
+    const atype = resultType(a);
+
+    let method   = Types[atype].__class__![pyop_name] as Fct;
+    let ret_type = TYPEID_NotImplementedType;
+
+    if( __DEBUG__ && method === undefined) {
+        printNode(a);
+        throw new Error(`${pyop_name} ${Types[atype].__class__?.__name__} NOT IMPLEMENTED!`);
+    }
+
+    ret_type = method[RETURN_TYPE](atype); //TODO: change...
+
+    if( __DEBUG__ && ret_type === TYPEID_NotImplementedType) {
+        printNode(a);
+        throw new Error(`${pyop_name} ${Types[atype].__class__?.__name__} NOT IMPLEMENTED!`);
+    }
+
+    VALUES[call] = method;
+    setResultType(call, ret_type)
+
+    setSibling(opnode, a );
+
+    return call;
 }
 
 function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_ID) {

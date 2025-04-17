@@ -108,16 +108,19 @@ function oneTimeExec(fullcode: string) {
      bry_output.textContent += generate_report(results, "bry" , "sbry");
     sbry_output.textContent += generate_report(results, "sbry", "bry");
  
-    const ast = astnode2tree();
-    try {
-    	print_js( results.sbry.code, ast );
-    } catch(e) { console.warn(e); }
-    try {
-        print_python( fullcode, ast );
-    } catch(e) { console.warn(e); }
-    try {
-        print_ast( ast );
-    } catch(e) { console.warn(e); }
+    if( __DEBUG__ ) {
+
+        const ast = astnode2tree();
+        try {
+            print_js( results.sbry.code, ast );
+        } catch(e) { console.warn(e); }
+        try {
+            print_python( fullcode, ast );
+        } catch(e) { console.warn(e); }
+        try {
+            print_ast( ast );
+        } catch(e) { console.warn(e); }
+    }
 
     /*try {
         print_errors(results, brython_results, sbrython_results);

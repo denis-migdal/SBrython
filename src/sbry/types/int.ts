@@ -8,7 +8,7 @@ import { firstChild, nextSibling, NODE_ID, resultType } from "@SBrython/sbry/dop
 import { addJSUnrOps, w_JSUnrOp } from "@SBrython/sbry/structs/operators/unary";
 import TYPES, { TYPEID_float, TYPEID_int, TYPEID_jsint, TYPEID_str, TYPEID_type_int_ } from "./list";
 import { WRITE_CALL } from "./utils/types";
-import { OP_BIN_ADD, OP_BIN_DIV, OP_BIN_FDIV, OP_BIN_MOD, OP_BIN_MUL, OP_BIN_POW, OP_BIN_SUB, OP_BIT_AND, OP_BIT_LSHIFT, OP_BIT_NOT, OP_BIT_OR, OP_BIT_RSHIFT, OP_BIT_XOR, OP_UNR_MINUS } from "../structs/operators";
+import { OP_BIN_ADD, OP_BIN_DIV, OP_BIN_FDIV, OP_BIN_MOD, OP_BIN_MUL, OP_BIN_POW, OP_BIN_SUB, OP_BIT_AND, OP_BIT_LSHIFT, OP_BIT_NOT, OP_BIT_OR, OP_BIT_RSHIFT, OP_BIT_XOR, OP_UNR_MINUS, OP_UNR_PLUS } from "../structs/operators";
 import { addJSCmpOps, JSCmpOps_LIST } from "../structs/operators/compare";
 
 const klass = initBuiltinClass(TYPEID_int, TYPEID_type_int_, "int", "BigInt");

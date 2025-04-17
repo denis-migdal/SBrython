@@ -11,10 +11,9 @@ Currently : py2ast x2 slower than ast2js => overall +50% slower.
 But : py2ast 90% of exec time => 85% faster => ~6.6x faster (?)
 
 -> Added Expr parsing (with op priority & type deduction)
-    -> in a first time went from x15 -> x10 (I was kind of sad - no clues why - one addition ???)
-    -> then -> ~x25-30 py2ast (WTF xD) -> some opti.
-    -> then x15 again when added new op... (code size ???)
-    -> then x30...
+    -> only x8 faster :'( (some small opti still possible)
+    -> exec x13 (x3 overall)
+    -> x6 code size
 
 32k -> 9.9k
 
@@ -52,7 +51,9 @@ MISSING
 =======
 
 -> start unit tests
-    -> parenthesis
+    -> unary ops
+    -> assign + context
+
     -> fix iop
     -> ctx (almost done test with fct & affectation)
     -> separate op from call...

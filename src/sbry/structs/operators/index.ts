@@ -187,7 +187,7 @@ export const opid2jsop = [
 	"",
 ]
 
-export const opsymbol2opid = {
+export const opsymbol2opid  = {
 	"|": OP_BIT_OR,
 	"^": OP_BIT_XOR,
 	"&": OP_BIT_AND,
@@ -206,16 +206,19 @@ export const opsymbol2opid = {
 	"<": OP_CMP_LT,
 	">=": OP_CMP_GE,
 	"<=": OP_CMP_LE,
-	"": OP_UNR_PLUS,
-	"": OP_UNR_MINUS,
-	"~": OP_BIT_NOT,
 	"in": OP_CMP_IN,
 	"is": OP_CMP_IS,
 	"is not": OP_CMP_IS_NOT,
 	"or": OP_BOOL_OR,
 	"and": OP_BOOL_AND,
-	"not": OP_BOOL_NOT,
 	"not in": OP_CMP_NOT_IN,
+};
+
+export const opsymbol2uopid = {
+	"+": OP_UNR_PLUS,
+	"-": OP_UNR_MINUS,
+	"~": OP_BIT_NOT,
+	"not": OP_BOOL_NOT,
 };
 
 export const OP_EQ2IS = OP_CMP_IS - OP_CMP_EQ;
