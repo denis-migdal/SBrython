@@ -26,8 +26,8 @@ const sbry_print = (...args: any[]) => {
 
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
-const merge     = search.get("merge")  === "true" ? true : false;
-const parser    = search.get("parser") === "true" ? true : false;
+const merge     = ! __DEBUG__;
+const parser    = search.get("parser") === "false" ? false : true;
 
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();

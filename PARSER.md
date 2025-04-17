@@ -52,7 +52,6 @@ MISSING
 =======
 
 -> start unit tests
-    -> 50 - 5 * 6 (NoneType __rmul__ int ?)
     -> parenthesis
     -> fix iop
     -> ctx (almost done test with fct & affectation)
