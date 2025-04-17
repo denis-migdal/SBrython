@@ -281,7 +281,7 @@ function readComment() {
     const node = createASTNode();
     setType(node, AST_COMMENT);
 
-    set_py_code_beg(node);
+    if( __DEBUG__ ) set_py_code_beg(node);
 
     const beg = offset + 1;
     
@@ -289,7 +289,7 @@ function readComment() {
         curChar = code.charCodeAt(++offset);
     } while(curChar !== CHAR_NL);
 
-    set_py_code_end(node);
+    if( __DEBUG__ ) set_py_code_end(node);
     VALUES[node] = code.slice(beg, offset);
 
     return node;
@@ -343,10 +343,6 @@ function consumeSpaces() {
 function readToken() {
     //TODO: known symbol 2 versions...
     let node = createASTNode();
-
-    console.warn("===");
-    console.warn(CURSOR[0], CURSOR[1]);
-    console.warn(CURSOR[0] + 1, offset - CURSOR[1]);
 
     if( __DEBUG__ ) set_py_code_beg(node);
 
@@ -611,8 +607,10 @@ export function py2ast(_code: string, filename: string): AST {
     dop_reset();
     offset = 0;
 
-    CURSOR[0] = 0;
-    CURSOR[1] = 0;
+    if( __DEBUG__ ) {
+        CURSOR[0] = 0;
+        CURSOR[1] = 0;
+    }
     
     const id = createASTNode();
     setType(id, AST_BODY);

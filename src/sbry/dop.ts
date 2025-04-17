@@ -11,8 +11,14 @@ export const CODE_BEG_COL  = CODE_BEG + CODE_COL;
 export const CODE_END_LINE = CODE_END + CODE_LINE;
 export const CODE_END_COL  = CODE_END + CODE_COL;
 
-export const PY_CODE = __DEBUG__ ? new ARRAY_TYPE(4*MAX_NB_ASTNODES) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
-export const JS_CODE = __DEBUG__ ? new ARRAY_TYPE(4*MAX_NB_ASTNODES) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
+const CODE_BUFFER_SIZE = __DEBUG__ ? 2 * ELEM_SIZE * MAX_NB_ASTNODES : 0;
+// @ts-ignore
+const PY_CODE_BUFFER = new ArrayBuffer(CODE_BUFFER_SIZE, {maxByteLength: CODE_BUFFER_SIZE});
+// @ts-ignore
+const JS_CODE_BUFFER = new ArrayBuffer(CODE_BUFFER_SIZE, {maxByteLength: CODE_BUFFER_SIZE});
+
+export const PY_CODE = __DEBUG__ ? new ARRAY_TYPE(PY_CODE_BUFFER) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
+export const JS_CODE = __DEBUG__ ? new ARRAY_TYPE(JS_CODE_BUFFER) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
 //TODO: indirection ou par ID...
 export const VALUES = new Array<any>() as any as Record<NODE_ID, any>;
@@ -48,6 +54,18 @@ export default function dop_reset() {
     BUFFER.resize( 0 );
     // @ts-ignore
     BUFFER.resize( BUFFER_SIZE );
+
+    if(__DEBUG__) {
+        // @ts-ignore
+        PY_CODE_BUFFER.resize(0);
+        // @ts-ignore
+        PY_CODE_BUFFER.resize(CODE_BUFFER_SIZE);
+
+        // @ts-ignore
+        JS_CODE_BUFFER.resize(0);
+        // @ts-ignore
+        JS_CODE_BUFFER.resize(CODE_BUFFER_SIZE);
+    }
 }
 
 export const ASTNODE_TYPE_ID            = 0; // set initially
