@@ -1,4 +1,4 @@
-import Types, { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
+import Types, { TYPEID_None, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
 import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST, printNode } from "./py2ast"
@@ -11,6 +11,7 @@ import { addSymbol, getSymbol, resetSymbols } from "./types/builtins";
 import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
 import TYPES from "./types/list";
 import { AST_OP_NOT } from "./ast2js/list";
+import { TYPEID_NoneType } from "./types/list";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -228,7 +229,7 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
             __call__: {
                 __name__: "__call__",
                 [RETURN_TYPE]: () => {
-                    return SType_fct.__call__[RETURN_TYPE]();
+                    return TYPEID_None; //TODO...
                 },
                 [WRITE_CALL]: default_call,
             }
@@ -244,8 +245,6 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         POSONLY_END        = 0;
 
         let cur: NODE_ID = 0;
-
-        console.warn(curChar, code[offset]);
 
         if( nextArg(cur) ) {
 
@@ -270,14 +269,18 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         offset += 2; // ):
 
+        curChar = code.charCodeAt(offset);
+
         setSibling(args, readBody() );
+
+        //TODO: set RETURN TYPE
     }
 }
 
 let CURRENT_INDENTATION = 0;
 function consumeIndentedLines() {
 
-    let curChar = code.charCodeAt(offset);
+    curChar = code.charCodeAt(offset);
     if( curChar !== CHAR_NL ) // indentation already consumed
         return;
 
@@ -325,6 +328,8 @@ function readComment() {
 
 function readLine() {
 
+    console.warn(curChar);
+
     if( curChar === CHAR_HASH)
         return readComment();
 
@@ -344,6 +349,8 @@ function readBody(){
 
     consumeIndentedLines(); // guaranty...
     const indent = CURRENT_INDENTATION;
+
+    console.warn(code.charAt(offset), curChar, offset);
 
     // a child is guaranteed.
     let cur = setFirstChild(id, readLine() );

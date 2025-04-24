@@ -419,7 +419,7 @@ function startTests(test_name: string, merge: boolean) {
                 continue;
        
             if( merge ) {
-                const indented_code = code.split('\n').map(e => `\t${e}`).join('\n');
+                const indented_code = code.split('\n').map(e => `    ${e}`).join('\n');
                 fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
             } else {
                 try {
