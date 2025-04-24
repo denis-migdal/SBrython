@@ -49,6 +49,7 @@ MISSING
 -> Numbers: 82
 
 -> start unit tests
+    -> O[xbo] (if > -)... b 32+2 / x 8+2 / o 10+2
     -> new exclude list for parser
     -> walrus operator (not possible...) -> requires to move out decl...
     -> fix iop... & not in / is not (+ better sym2opid)

@@ -400,32 +400,82 @@ function readToken(): NODE_ID {
         VALUES[node] = code.slice(beg, offset);
 
     } else if(curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 ) { // consume number
-       
+
         const beg = offset;
-        do {
-            curChar = code.charCodeAt(++offset);
-        } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
 
-        let astnode_type = AST_LIT_INT;
-        let result_type  = TYPEID_int;
+        const nextChar = code.charCodeAt(++offset);
+       
+        if( curChar === CHAR_DIGIT_0 && nextChar > CHAR_DIGIT_9) {
 
-        if( curChar === CHAR_DOT ) {
-
-            astnode_type = AST_LIT_FLOAT;
-            result_type  = TYPEID_float;
+            setType(node, AST_LIT_INT);
+    
+            if( nextChar === 66 || nextChar === 98 ) { // b
+    
+                do {
+                    curChar = code.charCodeAt(++offset);
+                } while( curChar === CHAR_DIGIT_0 || curChar === 49 ); // 1
+    
+                let result_type  = TYPEID_int;
+                if( offset - beg < 32 ) // opti
+                    result_type = TYPEID_jsint
         
-            do {
+                setResultType(node, result_type);
+                
+            } else if( nextChar === 79 || nextChar === 111 ) { // o
+    
+                do {
+                    curChar = code.charCodeAt(++offset);
+                } while(   curChar >= CHAR_DIGIT_0 && curChar <= 55 ); // 0 to 7
+    
+                let result_type  = TYPEID_int;
+                if( offset - beg <= 10 ) // opti
+                    result_type = TYPEID_jsint
+        
+                setResultType(node, result_type);
+    
+            } else if( nextChar === 88 || nextChar === 120 ) { // x
+    
+                do {
+                    curChar = code.charCodeAt(++offset);
+                } while(   curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9
+                        || curChar >= CHAR_a       && curChar <= 102
+                        || curChar >= 65           && curChar <= 70
+                 );
+    
+                let result_type  = TYPEID_int;
+                if( offset - beg <= 8 ) // opti
+                    result_type = TYPEID_jsint
+        
+                setResultType(node, result_type);
+            }
+        } else {
+
+            curChar = nextChar;
+            while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 ) {
                 curChar = code.charCodeAt(++offset);
-            } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
-        } else if( offset - beg <= 9 ) { // opti
-            result_type = TYPEID_jsint
+            }
+
+            let astnode_type = AST_LIT_INT;
+            let result_type  = TYPEID_int;
+
+            if( curChar === CHAR_DOT ) {
+
+                astnode_type = AST_LIT_FLOAT;
+                result_type  = TYPEID_float;
+            
+                do {
+                    curChar = code.charCodeAt(++offset);
+                } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
+            } else if( offset - beg <= 9 ) { // opti
+                result_type = TYPEID_jsint
+            }
+
+                setType(node, astnode_type);
+            setResultType(node, result_type);
         }
-
-
-              setType(node, astnode_type);
-        setResultType(node, result_type);
         
         VALUES[node] = code.slice(beg, offset);
+
     }  else if( curChar === CHAR_BRACKET_LEFT ) {
         // consume list
 
