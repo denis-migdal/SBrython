@@ -11,17 +11,6 @@ export type AST = {
     filename: string
 }
 
-export function printNode(id: NODE_ID) {
-    console.warn({
-        id,
-        typeID   : type(id),
-        type     : id2name[type(id)],
-        ret_typeID: resultType(id),
-        ret_type : Types[resultType(id)]?.__name__,
-        value    : VALUES[id],
-    });
-}
-
 export function buildPyCode(id: NODE_ID) {
 
     const offset = 4*(id as number);

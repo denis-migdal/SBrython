@@ -28,6 +28,7 @@ body {
     & > div {
 
         min-height: 0;
+        min-width: 0;
         /*flex: 1 1 0px;*/
 
         & > strong {

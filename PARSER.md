@@ -1,17 +1,40 @@
 https://docs.python.org/3/reference/lexical_analysis.html
 https://github.com/brython-dev/brython/issues/2554
 
-- basic test suite.numbers (1/73) : missing += / fcts done too
-code too small
+Tested         : 132/1894 (6.97%)
+Py code        : 1494 tokens (1 file)
+JS code        : -83.98%
 
-- x10 py2ast ~> some ideas to improve but need to pass more tests first to better measure
-- runtime -> x18+ / overall x2.4 (genFct)
-- code size -> x5.
+Executed in    :  0.337s [-91.01%]   5.040ms
+    PY2JS      :  0.257s [-92.35%]   3.840ms
+        py2ast :  0.174s [-93.98%]   2.600ms
+        astProc:  0.000s [-100.00%]   0.000ms
+        ast2js :  0.083s [-73.62%]   1.240ms
+    RUNTIME    :  0.080s [-79.45%]   1.200ms
+        genFct :  0.020s [-66.67%]   0.300ms
+        exeFct :  0.060s [-81.78%]   0.900ms
 
-48k -> 15k
+Tested         : 132/1894 (6.97%)
+Py code        : 1494 tokens (1 file)
+JS code        : x  6.24
+
+Executed in    :  3.751s [x 11.12]  56.040ms
+    PY2JS      :  3.360s [x 13.07]  50.200ms
+        py2ast :  2.893s [x 16.62]  43.220ms
+        astProc:  0.153s [xInfinity]   2.280ms
+        ast2js :  0.315s [x  3.79]   4.700ms
+    RUNTIME    :  0.391s [x  4.87]   5.840ms
+        genFct :  0.060s [x  3.00]   0.900ms
+        exeFct :  0.331s [x  5.49]   4.940ms
+
+36K -> 11K
 
 Possible improvements:
 =====================
+
+-> Webpack : questions
+    -> index/list.
+    -> constants.
 
 -> python formatter to remove useless spaces
     => then no need to consume them.
@@ -43,32 +66,17 @@ Possible improvements:
 MISSING
 =======
 
--> new circular deps...
--> move printNode.
 -> fct kw : if left is symbol
--> fct context... (will solve some issue when merging...)
--> current context : add let or not...
--> call return type : give call node...
+-> current context : use let or not...
+-> deduce fct return type
 
--> Basic  : 73
--> Numbers: 82
-
--> fix benchmark...
-    -> reset context ?
-
--> start unit tests
+    ->  disabled unit tests
         -> nested scope : basic test suite.nested scopes
         -> operator "is" : # basic test suite.issue 2041
         -> dict : # basic test suite.issue 1718
         -> strings : # basic test suite.strings
         -> ternary : basic test suite.issue 1387
         -> non-ascii : # basic test suite.Korean + # basic test suite.non-ASCII variable names
-    -> failed : only 7 :
-        -> unknown op x11 : ~ unary op + ?
-            -> non-ASCII names x2
-            -> is : special operator.
-    -> types not properly reseted ?
-    -> new exclude list for parser
     -> walrus operator (not possible...) -> requires to move out decl...
     -> fix iop... & not in / is not (+ better sym2opid)
         -> <=> & ! (char)...
@@ -86,7 +94,6 @@ MISSING
 
 -> WRITE_SYMBOL ? how ?
 
--> test & complete op
 -> classes
 
 -> some opti

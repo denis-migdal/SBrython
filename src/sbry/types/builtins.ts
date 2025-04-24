@@ -56,8 +56,6 @@ function genOpFct(name: string, return_type: RETURN_TYPE_FCT): [string, TYPE_ID]
         // @ts-ignore
         const method = Types[resultType(a)]!.__class__![opname] as Callable;
 
-        console.warn(name, opname, method, resultType(a), Types[resultType(a)])
-
         return method.__call__[WRITE_CALL](call);
     });
 
