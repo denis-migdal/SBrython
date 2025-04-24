@@ -54,7 +54,7 @@ MISSING
 -> Numbers: 82
 
 -> fix benchmark...
-    -> BUG: fct, if no args...
+    -> reset context ?
 
 -> start unit tests
         -> nested scope : basic test suite.nested scopes

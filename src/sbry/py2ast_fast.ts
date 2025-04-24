@@ -73,11 +73,11 @@ let POSONLY_END       !: NODE_ID;
 
 function nextArg(cur: NODE_ID): boolean {
 
-    if( curChar === CHAR_PARENTHESIS_RIGHT )
-        return false;
-
     ++offset; // ( or ,
     consumeSpaces();
+    
+    if( curChar === CHAR_PARENTHESIS_RIGHT )
+        return false;
 
     if( curChar === CHAR_SLASH) {
 
@@ -239,6 +239,8 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         POSONLY_END        = 0;
 
         let cur: NODE_ID = 0;
+
+        console.warn(curChar, code[offset]);
 
         if( nextArg(cur) ) {
 
