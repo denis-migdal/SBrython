@@ -23,6 +23,8 @@ export const AST_OP_CMP             = last_id++;
 export const AST_OP_BOOL            = last_id++;
 export const AST_OP_BIN             = last_id++;
 
+export const AST_OP_NOT             = last_id++;
+
 export const AST_OP_ATTR            = last_id++;
 export const AST_OP_BRACKETS        = last_id++;
 export const AST_OP_ASSIGN_AUG      = last_id++;

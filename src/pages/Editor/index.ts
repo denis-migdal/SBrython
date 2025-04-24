@@ -396,6 +396,9 @@ function startTests(test_name: string, merge: boolean) {
     let fullcode = "";
 
     let id = -1;
+
+    let failed = [];
+
     // build merged code
     tests: for(let i = 0; i < tests.length; ++i) {
 
@@ -425,7 +428,25 @@ function startTests(test_name: string, merge: boolean) {
                     execute(results, sbry_print);
                 } catch(e) {
                     error = e as Error;
-                    break tests;
+
+                    failed.push({
+                        code,
+                        error: e,
+                    })
+
+                    // print last error...
+                    try {
+                        const ast = astnode2tree();
+                        try {
+                            print_js( results.sbry.code, ast );
+                        } catch(e) { console.warn(e); }
+                        try {
+                            print_python( fullcode, ast );
+                        } catch(e) { console.warn(e); }
+                        try {
+                            print_ast( ast );
+                        } catch(e) { console.warn(e); }
+                    } catch(e) { console.warn(e); }
                 }
             }
         }
@@ -438,25 +459,29 @@ function startTests(test_name: string, merge: boolean) {
         } catch(e) {
             error = e as Error;
         }
-    }
 
-    if( error || ! merge ) {
+        if( error ) {
 
-        const ast = astnode2tree();
-        try {
-            print_js( results.sbry.code, ast );
-        } catch(e) { console.warn(e); }
-        try {
-            print_python( fullcode, ast );
-        } catch(e) { console.warn(e); }
-        try {
-            print_ast( ast );
-        } catch(e) { console.warn(e); }
+            try {
+                const ast = astnode2tree();
+                try {
+                    print_js( results.sbry.code, ast );
+                } catch(e) { console.warn(e); }
+                try {
+                    print_python( fullcode, ast );
+                } catch(e) { console.warn(e); }
+                try {
+                    print_ast( ast );
+                } catch(e) { console.warn(e); }
+            } catch(e) { console.warn(e); }
+        }
     }
     
     if(error) {
 
-        python_input.value = results.code;
+        console.warn(failed);
+
+        python_input.value = failed[failed.length-1]?.code ?? results.code;
 
         sbry_output.classList.add('error');
         sbry_output.textContent = error.message;

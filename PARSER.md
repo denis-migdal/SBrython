@@ -43,13 +43,31 @@ Possible improvements:
 MISSING
 =======
 
--> BUG: fct, if no args...
+-> new circular deps...
+-> move printNode.
+-> fct kw : if left is symbol
+-> fct context... (will solve some issue when merging...)
+-> current context : add let or not...
+-> call return type : give call node...
 
 -> Basic  : 73
 -> Numbers: 82
 
+-> fix benchmark...
+    -> BUG: fct, if no args...
+
 -> start unit tests
-    -> O[xbo] (if > -)... b 32+2 / x 8+2 / o 10+2
+        -> nested scope : basic test suite.nested scopes
+        -> operator "is" : # basic test suite.issue 2041
+        -> dict : # basic test suite.issue 1718
+        -> strings : # basic test suite.strings
+        -> ternary : basic test suite.issue 1387
+        -> non-ascii : # basic test suite.Korean + # basic test suite.non-ASCII variable names
+    -> failed : only 7 :
+        -> unknown op x11 : ~ unary op + ?
+            -> non-ASCII names x2
+            -> is : special operator.
+    -> types not properly reseted ?
     -> new exclude list for parser
     -> walrus operator (not possible...) -> requires to move out decl...
     -> fix iop... & not in / is not (+ better sym2opid)
@@ -65,6 +83,8 @@ MISSING
             -> [a << 16 & b][BIN_OP] = [RET_TYPE, WRITE_FCT()] OR 2 arrays (???)
                 -> not registered in Types.
                 -> faster conversions (no conditions)
+
+-> WRITE_SYMBOL ? how ?
 
 -> test & complete op
 -> classes
@@ -84,7 +104,6 @@ TODO
             -> readToken2()...
         -> VALUE + call or VALUE + EQ ?
     -> None/True/False -> in context, remove from known symbol ?
-    -> fct : if node is EQ & left = symbol -> this is a kw arg (+ add to fct context).
 
 -> op (10):
 -> affectation requires context array...

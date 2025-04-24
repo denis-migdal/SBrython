@@ -1,12 +1,39 @@
+# basic test suite.nested scopes
+*
+
+# basic test suite.issue 1718 (tabulations)
+*
+
+# basic test suite.issue 2041
+*
+
+# basic test suite.issue 1387
+*
+
+# basic test suite.strings
+*
+
+# basic test suite.Korean
+*
+
+# basic test suite.non-ASCII variable names
+*
+
 # numbers.numbers
 // is instance/__class__
+7
 8
+28
 29
+33-99
 
 // assert_raise
 4
 // __divmod__
 39
+
+# basic test suite.argument with "is not"
+*
 
 # numbers.issue 1666
 // abs
@@ -377,6 +404,7 @@
 31
 // str.strip()
 37-40
+*
 
 # basic test suite.enumerate
 *

@@ -8,6 +8,8 @@ import { addJSBinOps } from "@SBrython/sbry/structs/operators/binary";
 import { TYPEID_str, TYPEID_type_str_ } from "./list";
 import { OP_BIN_ADD, OP_BIN_MUL } from "../structs/operators";
 import TYPES from "./list";
+import { printNode } from "../py2ast";
+import { WRITE_CALL } from "./utils/types";
 
 const klass = initBuiltinClass(TYPEID_str, TYPEID_type_str_, "str", "String");
 
@@ -22,12 +24,14 @@ add_method(klass, "__call__", RET_STR, (node) => {
         return;
     }
 
-    const otype = TYPES[other_type];
-    if( __DEBUG__ && (otype === undefined || otype.__str__ === undefined) )
+    const otype = TYPES[other_type].__class__;
+    if( __DEBUG__ && (otype === undefined || otype.__str__ === undefined) ) {
+        printNode(other);
         throw new Error(`${otype?.__name__}.__str__ not defined`);
+    }
 
     // @ts-ignore
-    otype.__str__![WRITE_CALL](node);
+    otype.__str__!.__call__![WRITE_CALL](node);
 });
 
 add_method(klass, "__len__", RET_INT, (call: NODE_ID) => {

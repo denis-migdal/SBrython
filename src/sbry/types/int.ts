@@ -96,10 +96,7 @@ addJSBinOps(klass, [OP_BIN_DIV], // /
 addJSBinOps(klass, [OP_BIN_FDIV], // //
                     RET_IJ2INT, {
                         convert_other  : CONVERT_2INT,
-                        w_call: (call: NODE_ID) => {
-
-                            const a = nextSibling(firstChild(call)); const b = nextSibling(a);
-
+                        w_call: (call: NODE_ID, a: NODE_ID, op: any, b: NODE_ID) => {
                             w_sns("_sb_.floordiv_int(", a, ", ", b, ")");
                         },
                     });
@@ -107,10 +104,7 @@ addJSBinOps(klass, [OP_BIN_FDIV], // //
 addJSBinOps(klass, [OP_BIN_MOD], // %
                     RET_IJ2INT, {
                         convert_other  : CONVERT_2INT,
-                        w_call: (call: NODE_ID) => {
-
-                            const a = nextSibling(firstChild(call)); const b = nextSibling(a);
-
+                        w_call: (call: NODE_ID, a: NODE_ID, op: any, b: NODE_ID) => {
                             // do not handle -0
                             w_sns("_sb_.mod_int(", a, ", ", b, ")");
                         },

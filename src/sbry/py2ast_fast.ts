@@ -1,21 +1,23 @@
 import Types, { TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_CALL_ARG_KW, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST, printNode } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
-import { OP_ASSIGN, OP_ID, OP_UNR_MINUS, opid2iopmethod, opid2opmethod, opid2ropmethod, opsymbol2opid, opsymbol2uopid, pyop_priorities } from "./structs/operators";
+import { OP_ASSIGN, OP_BIT_NOT, OP_BOOL_NOT, OP_ID, OP_UNR_MINUS, opid2iopmethod, opid2opmethod, opid2ropmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
 import { AST_COMMENT } from "./ast2js/list";
-import { addSymbol, getSymbol } from "./types/builtins";
+import { addSymbol, getSymbol, resetSymbols } from "./types/builtins";
 import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
-import { Int2Number } from "./structs/Converters";
+import TYPES from "./types/list";
+import { AST_OP_NOT } from "./ast2js/list";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
 const CHAR_SPACE = 32;
 const CHAR_QUOTE = 34;
 const CHAR_HASH  = 35;
+const CHAR_SINGLE_QUOTE = 39;
 const CHAR_PARENTHESIS_LEFT   = 40;
 const CHAR_PARENTHESIS_RIGHT  = 41;
 const CHAR_STAR  = 42;
@@ -32,6 +34,7 @@ const CHAR_BRACKET_LEFT   = 91;
 const CHAR_BRACKET_RIGHT  = 93;
 const CHAR_a              = 97;
 const CHAR_z              = 122;
+const CHAR_TILDE          = 126;
 
 let offset = 0;
 let code: string;
@@ -136,6 +139,12 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
     "None" :    (id) => setType(id, AST_LIT_NONE),
     "True" :    (id) => setType(id, AST_LIT_TRUE),
     "False":    (id) => setType(id, AST_LIT_FALSE),
+    "not"  :    (id) => {
+
+        setType(id, AST_OP_NOT);
+        consumeSpaces();
+        setFirstChild(id, readToken());
+    },
     // not possibles in expr:
     "break":    (id) => setType(id, AST_KEY_BREAK),
     "continue": (id) => setType(id, AST_KEY_CONTINUE),
@@ -145,7 +154,12 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         setType(id, AST_KEY_ASSERT);
         consumeSpaces();
 
-        setFirstChild(id, readExpr() );
+        const cond = setFirstChild(id, readExpr() );
+        if( curChar === CHAR_COMMA) {
+            ++offset; // consume comma
+            consumeSpaces();
+            setSibling(cond, readExpr() );
+        }
     },
     "for": (id) => {
         // TODO: for range
@@ -362,11 +376,20 @@ function readToken(): NODE_ID {
         consumeSpaces();
         return createCallUopNode(call, op, readToken());
     }
+    if( curChar === CHAR_TILDE) {
+
+        const call = createASTNode();
+
+        if( __DEBUG__ )
+            set_py_code_beg(call);
+
+        const op = OP_BIT_NOT; //opsymbol2uopid[code[offset++] as keyof typeof opsymbol2uopid];
+        ++offset;
+        consumeSpaces();
+        return createCallUopNode(call, op, readToken());
+    }
     /*
         "+": OP_UNR_PLUS,
-        "-": OP_UNR_MINUS,
-        "~": OP_BIT_NOT,
-        "not": OP_BOOL_NOT,
     */
 
     // sub expr
@@ -385,7 +408,9 @@ function readToken(): NODE_ID {
 
     if( __DEBUG__ ) set_py_code_beg(node);
 
-    if( curChar === CHAR_QUOTE ) { // consume str
+    if( curChar === CHAR_QUOTE || curChar === CHAR_SINGLE_QUOTE) { // consume str
+
+        const end = curChar;
 
         setType(node, AST_LIT_STR);
         setResultType(node, TYPEID_str);
@@ -393,7 +418,7 @@ function readToken(): NODE_ID {
         const beg = offset;
         do {
             curChar = code.charCodeAt(++offset);
-        } while( curChar !== CHAR_QUOTE);
+        } while( curChar !== end);
 
         ++offset;
 
@@ -466,9 +491,21 @@ function readToken(): NODE_ID {
                 do {
                     curChar = code.charCodeAt(++offset);
                 } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
-            } else if( offset - beg <= 9 ) { // opti
-                result_type = TYPEID_jsint
             }
+            
+            if( curChar === 69 || curChar === 101 ) { // e
+
+                astnode_type = AST_LIT_FLOAT;
+                result_type  = TYPEID_float;
+
+                ++offset;
+                do {
+                    curChar = code.charCodeAt(++offset);
+                } while( curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 );
+            }
+            
+            if( result_type === AST_LIT_INT && offset - beg <= 9 ) // opti
+                result_type = TYPEID_jsint
 
                 setType(node, astnode_type);
             setResultType(node, result_type);
@@ -526,6 +563,7 @@ function readToken(): NODE_ID {
 
             setType(node, AST_SYMBOL);
             setResultType(node, getSymbol(token) );
+
             VALUES[node] = token;
 
             consumeSpaces(); // end of py code not exact... (set again later...)
@@ -537,7 +575,8 @@ function readToken(): NODE_ID {
                 node = createASTNode();
                 setType(node, AST_CALL);
                 setFirstChild(node, cur);
-                VALUES[node] = Types[resultType(cur)];
+
+                const fctType = VALUES[node] = Types[resultType(cur)];
                 //TODO: return type...
 
                 if( __DEBUG__ ) set_py_code_beg(node);
@@ -545,26 +584,19 @@ function readToken(): NODE_ID {
                 ++offset; // (
                 consumeSpaces();
 
+                let next: NODE_ID;
+
                 // @ts-ignore
                 while(curChar !== CHAR_PARENTHESIS_RIGHT) {
 
-                    let next;
+                    next = readExpr();
 
-                    //TODO: requires op refactor...
-                    if( curChar > CHAR_DIGIT_9 ) { // we assume kw args
+                    if(    type(next) === AST_OP_ASSIGN_INIT
+                        || type(next) === AST_OP_ASSIGN ) {
 
-                        // h4ck (requires context...)
-                        const name = nextSymbol();
-                        consumeSpaces();
-                        ++offset;
-                        consumeSpaces();
+                        //TODO: AST_CALL_ARG_KW
+                        //TODO
 
-                        next = createASTNode();
-                        setType(next, AST_CALL_ARG_KW);
-                        VALUES[next] = name;
-                        setFirstChild(next, readExpr());
-                    } else {
-                        next = readExpr();
                     }
 
                     cur = setSibling(cur, next);
@@ -576,6 +608,10 @@ function readToken(): NODE_ID {
                     // TODO kw arg...
                     // TODO **kwargs + *varargs
                 }
+
+                // TODO: give call node...
+                // @ts-ignore
+                setResultType(node, fctType.__call__[RETURN_TYPE]() );
 
                 ++offset; // )
             }
@@ -695,7 +731,18 @@ function readExpr() {
     return stack[0][0];
 }
 
+let nbTypes: number;
+
 export function py2ast(_code: string, filename: string): AST {
+
+    // h4ck
+    // @ts-ignore
+    if( nbTypes === undefined)
+        nbTypes = TYPES.length;
+
+    TYPES.length = nbTypes;
+
+    resetSymbols();
     
     if( _code[_code.length-1] !== '\n')
         _code += '\n'; // avoid EOF issue when parsing...

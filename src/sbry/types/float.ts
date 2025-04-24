@@ -32,9 +32,10 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
     //TODO: power...
     if( other_type === TYPEID_str ) {
 
-        const other_value = VALUES[other];
-
         if( type(other) === AST_LIT_STR ) {
+
+            const other_value = VALUES[other].slice(1,-1);
+
             if( other_value === "inf" || other_value === "infinity" ){
                 w_str("Number.POSITIVE_INFINITY");
                 return;

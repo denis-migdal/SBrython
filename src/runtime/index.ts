@@ -7,6 +7,14 @@ export {_sb_, _r_};
 
 // classe ?
 
+// @ts-ignore
+globalThis.int   = BigInt;
+// @ts-ignore
+globalThis.float = Number;
+// @ts-ignore
+globalThis.bool  = Boolean;
+// @ts-ignore
+globalThis.str   = String;
 
 export class SBrython {
 
