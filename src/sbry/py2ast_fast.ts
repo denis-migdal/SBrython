@@ -75,7 +75,7 @@ function nextArg(cur: NODE_ID): boolean {
 
     ++offset; // ( or ,
     consumeSpaces();
-    
+
     if( curChar === CHAR_PARENTHESIS_RIGHT )
         return false;
 
@@ -149,7 +149,12 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
     "break":    (id) => setType(id, AST_KEY_BREAK),
     "continue": (id) => setType(id, AST_KEY_CONTINUE),
     "pass":     (id) => setType(id, AST_KEY_PASS),
-    "return":   (id) => setType(id, AST_KEY_RETURN),
+    "return":   (id) => {
+        setType(id, AST_KEY_RETURN);
+        consumeSpaces();
+        if( curChar !== CHAR_NL)
+            setFirstChild(id, readExpr() );
+    },
     "assert":   (id) => {
         setType(id, AST_KEY_ASSERT);
         consumeSpaces();
