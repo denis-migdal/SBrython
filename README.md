@@ -30,10 +30,6 @@ X. WASM/TS output
 X. Better type deduction (+fct shape ID...) + type guard (__class__ / type / instanceof)
 X. File API
 
-Y. Optimize operators.
-Y. Optimize fcts args def/call.
-Y. Fix JS pos in Editor.
-
 ### ...
 
 TARGET: (plugged)  /4 at least... [WASM/2 ?]
@@ -149,23 +145,6 @@ limits : type unions/deduction + unknown type (bigger runtime) + (?)
 - [ ] ?
     - [ ] Terser : not properly inlined ??? constant ???
     - [ ] Dev mode only: asserts / __debug__ false
-
-## Once parser done
-
-- [ ] functions args rewrite (?)
-    -> precompute some vals
-    -> better algo ?
-    -> opti call args parsing... (write_call => depends on fct shape ?)
-- [ ] operator system rewrite (do not store op in VALUES!) [ou after ?]
-    - compare operator : reversed => handle it in ast2js ???
-- [ ] optimize value usage (when parser)
-    - [ ] some values store in CHILDREN ?
-        - FCT DEF  ? => use Type ID... (can extract name from it)
-        - FCT CALL ? => use Type ID... (can extract type from it)
-            /!\ fct ptr (how to implement it ???)
-        - BOOL : 2 values ?
-        - INT/FLOAT
-        - [ ] replace some values_str by name child ast node (some str ID)?
 
 ## Roadmap
 

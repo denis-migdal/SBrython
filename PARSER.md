@@ -1,6 +1,9 @@
 https://docs.python.org/3/reference/lexical_analysis.html
 https://github.com/brython-dev/brython/issues/2554
 
+Super total : 5986 tests (~= 6000)
+cat * | grep -v ^$ | grep -v ^# |  wc -l
+
 Tested         : 132/1894 (6.97%)
 Py code        : 1494 tokens (1 file)
 JS code        : -83.98%
@@ -29,77 +32,58 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 
 36K -> 11K
 
-Possible improvements:
-=====================
+Unit tests
+==========
 
--> Webpack : questions
-    -> index/list.
-    -> constants.
+->  disabled unit tests
+    -> strings : # basic test suite.strings
+        -> string.raw()
+        -> \\
+    -> nested scope : basic test suite.nested scopes
+    -> operator "is" : # basic test suite.issue 2041
+    -> dict : # basic test suite.issue 1718
+    -> non-ascii : # basic test suite.Korean + # basic test suite.non-ASCII variable names
+        -> \P{L} ?
+        -> check code ?
+        -> range U+0001..U+007F where the valid characters are restricted to the uppercase and lowercase letters A through Z, the underscore _ and, except for the first character, the digits 0 through 9
+-> classes
 
--> python formatter to remove useless spaces
-    => then no need to consume them.
--> node 0 : ignore + type 0 = pass (?) => évite boucle infinies en cas d'erreurs.
--> Editor/Benchmark refactor
-    -> split bry/sbry in utils/generate : generateAST
-        -> bry use thingy
-        -> if use parser parse
-        -> else use sbry + copy sbry time...
-    -> merge execute/ast/generate in one global fct...
-    -> exclude list for parser
--> test parsing strat : regex vs by hand vs sticky regex...
--> SType : array instead of obj ? (éviter quand même ?)
-
--> /!\ startup time + parsing time (difficult to eval...)
--> regroup in same file without using webpack...
-
--> createASTNode => one version that add type & code_beg (?)
-
--> check for unused fct / AST Node type ? (mainly op ?)
--> OP_OP => OPERATOR
-
--> ret_type (use call node...) ~> op: we need to construct call node & invert siblings.
-
--> Webpack list + globals.
-
--> chained assign/cmp handle it in ast2js...
-
-MISSING
+PARSING (missing)
 =======
+
+- class & methods (+qualname!)
+- tuple & dict
+- import
+- try/raise
+- for range
+- ternary operator
+- fstring
+
+TODO :
+======
 
 -> fct kw : if left is symbol
 -> current context : use let or not...
 -> deduce fct return type
 
-    ->  disabled unit tests
-        -> nested scope : basic test suite.nested scopes
-        -> operator "is" : # basic test suite.issue 2041
-        -> dict : # basic test suite.issue 1718
-        -> strings : # basic test suite.strings
-        -> ternary : basic test suite.issue 1387
-        -> non-ascii : # basic test suite.Korean + # basic test suite.non-ASCII variable names
-    -> walrus operator (not possible...) -> requires to move out decl...
-    -> fix iop... & not in / is not (+ better sym2opid)
-        -> <=> & ! (char)...
-        -> // ** >> << (doublement)
-        -> >= += >>=   (=)
-            -> need to generate idx.
-            -> if > X => aug_assign node...
-            -> [OPTI?] +/- offset to pass from one to another ?
-    -> separate op from call... (JS shortcut)...
-        -> separate system (faster & easier for +=)
-            -> [a][UNR_OP]           = []...
-            -> [a << 16 & b][BIN_OP] = [RET_TYPE, WRITE_FCT()] OR 2 arrays (???)
-                -> not registered in Types.
-                -> faster conversions (no conditions)
+-> ret_type (use call node...) ~> op: we need to construct call node & invert siblings.
 
--> WRITE_SYMBOL ? how ?
+-> Bundle optimisation (performances matter).
+    -> retry tenser macros (inline fcts)
+    -> optimisation for global constant ?
+    -> optimisation for index of lists ?
+    -> regroup in same file without using webpack ? (override a step ?)
 
--> classes
+-> node 0 : ignore + type 0 = pass (?) => évite boucle infinies en cas d'erreurs.
+-> OP_OP => OPERATOR
+-> check for unused fct / AST Node type ? (mainly op ?)
 
--> some opti
+-> evaluate import of lib.
 
-TODO
-====
+Possible improvements:
+=====================
+
+-> function type : only return type ? (name stored in fct / no qualname ?)
 
 -> parseExpr refactor:
     -> readExpr
@@ -110,33 +94,33 @@ TODO
         -> keyword ~> need to handle
             -> readToken2()...
         -> VALUE + call or VALUE + EQ ?
-    -> None/True/False -> in context, remove from known symbol ?
+    -> None/True/False -> in context + global variable, remove from known symbol ?
+    -> WRITE_SYMBOL ? how ?
 
--> op (10):
--> affectation requires context array...
--> start to pass unit tests...
--> fcts:
-    -> need context/symbol to be able to call it later... (array)
-    -> correct pycode positions in fct def/call
--> structs (2)
-    -> dict (peu utile pour le moment...)
-    -> tuple : "," est une sorte d'opérator, tuple pas besoin de ()...
-        -> parseExpr x 2 ? (with expect / without expect ",")...
--> class
-    -> qualname in ctx for classes ?
--> try/catch/finally/else + raise (+ a way to assert it...) [assert in else ?]
--> f-string
+-> separate op from call... (JS shortcut)...
+    -> separate system (faster & easier for +=)
+        -> [a][UNR_OP]           = []...
+        -> [a << 16 & b][BIN_OP] = [RET_TYPE, WRITE_FCT()] OR 2 arrays (???)
+            -> not registered in Types.
+            -> faster conversions (no conditions)
 
-(22/46)
-- Symbol       : 0/1// requiert "," parsing
-- Operators    : 0/10
+-> walrus operator (not possible...) -> requires to move out decl...
+-> fix iop... & not in / is not (+ better sym2opid)
+    -> <=> & ! (char)...
+    -> // ** >> << (doublement)
+    -> >= += >>=   (=)
+        -> need to generate idx.
+        -> if > X => aug_assign node...
+        -> [OPTI?] +/- offset to pass from one to another ?
 
-- Others       : 3/4 (class)
-- Functions    : 4/5 (method)
+-> Editor/Benchmark refactor
+    -> split bry/sbry in utils/generate : generateAST
+        -> bry use thingy
+        -> if use parser parse
+        -> else use sbry + copy sbry time...
+    -> merge execute/ast/generate in one global fct...
 
-- Structures   : 1/3
+-> python formatter to remove useless spaces
+    => then no need to consume them.
 
-- Keywords     : 5/8  // importx2 + raise (requiert call)
-- ControlFlows : 3/7 (tryblock(_catch), for_range (-requires fct call), ternary ~= operator)
-
-- Literals     : 6/8 (fstring)
+-> SType : array instead of obj ? (search in an array vs search in an object)

@@ -556,12 +556,18 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
         for(let i = 1; i < lines.length; ++i)
             if(lines[i].trim() === '')
                 ++nbEmptyLines;
-    
-        let code_len = lines.length - 1 - nbEmptyLines;
-    
+        
         let nbExcluded = 0;
-        for(let i = 1; i < lines.length; ++i)
-            nbExcluded += +(lines[i][0] === '#');
+        for(let i = 1; i < lines.length; ++i) {
+            if( lines[i][0] === '#' ) {
+                if( lines[i].slice(1).trim() === '' ) // commented empty line
+                    ++nbEmptyLines;
+                else
+                    ++nbExcluded
+            }
+        }
+
+        let code_len = lines.length - 1 - nbEmptyLines;
 
         subTestsStats[test_name].push({
             excluded: nbExcluded,
