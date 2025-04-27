@@ -32,24 +32,50 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 
 36K -> 11K
 
-Another todo
+Current test
 ============
 
-1. imports / python stubs... (in browser)
-    ~> stud parser ? // stubs/*.pyi
-        ~> [T: (int, str, set)](x: T, y: T) -> T:
-    ~> window... (query selector)
-    ~> auto-register module at startup ? (could be option too)
-        ~> only POC ? (could be completed later...)
-        ~> "..." operator
+from JS import document
 
-X ?
+a = document.querySelector("body")
+a.remove();
+
+Minor Steps
+===========
+
+- studs
+    - complete little by little...
+
+- clean JS output
     - parseFloat -> Number.NaN
     - int vs float...
     - classes...
     - kw fcts
+    - print...
+    - extra ","...
 
-X ? -> re-add unit tests
+- re-established previous unit tests
+
+- auto-formatter : (formatted flag ?)
+    - https://peps.python.org/pep-0008/
+        - no spaces
+            - Immediately inside parentheses, brackets or braces
+            - Between a trailing comma and a following close parenthesis:
+            - Immediately before a comma, semicolon, or colon:
+            - Immediately before the open parenthesis that starts the argument list of a function call:
+            - Immediately before the open parenthesis that starts an indexing or slicing:
+            - More than one space around an assignment (or other) operator to align it with another: (meh)
+            - Avoid trailing whitespace anywhere.
+            - Always surround these binary operators with a single space on either side
+            - Don’t use spaces around the = sign when used to indicate a keyword argument, or when used to indicate a default value for an unannotated function parameter
+        - tuples between ()
+        - Identifiers used in the standard library must be ASCII compatible
+    - https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter
+    - https://black.readthedocs.io/en/latest/
+    - https://black.vercel.app/?version=stable
+    - https://pypi.org/project/python-minifier/
+Another todo
+============
 
 X. AoT watch tool... (cf Brython-AOT)
 X. output format : "ES6"+"TypeScript" (export top level fct...) [do not test for now ?]
@@ -63,12 +89,13 @@ X. CLI tools - unit tests (+ perf measure)
 X. Output mode : ES6 module, commonjs (module.exports) module, variable...
 X. Language mode : JS, TS, WASM
 
-Steps
-=====
+Major Steps
+===========
 
 -> pass unit tests (~6k) + compat (lot to implement)
 -> refactors/performances
 -> JS standard lib... / Python libs / Import Brython / Imports ?
+-> typehints (+complex types ? (str repr, index to ID) )
 -> + tools/documentation...
 
 Unit tests
@@ -185,6 +212,11 @@ TODO :
 Possible improvements:
 =====================
 
+-> stup parser
+-> ... value
+- create stubs from sources / no parse format (from JS...)
+- special parser + imports before parsing... (avoid recursivity...)
+
 -> do I REALLY need firstChild/nextSibling ? (reorganise node order...)
     -> mainly used with operators priority...
 
@@ -201,6 +233,8 @@ Possible improvements:
         -> keyword ~> need to handle
             -> readToken2()...
         -> VALUE + call or VALUE + EQ ?
+        -> + typehint...
+            -> typeguard in if/else/etc. => invert order... (not an issue)
     -> None/True/False -> in context + global variable, remove from known symbol ?
     -> WRITE_SYMBOL ? how ?
 

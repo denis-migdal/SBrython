@@ -1,0 +1,3 @@
+# cf querySelector...
+def alert(msg, /):
+    pass

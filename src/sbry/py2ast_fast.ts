@@ -1,5 +1,5 @@
 import Types, { TYPEID_None, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR, AST_KEY_IMPORT } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, TYPEID, WRITE_CALL } from "./types/utils/types";
@@ -41,6 +41,8 @@ const CHAR_TILDE          = 126;
 let offset = 0;
 let code: string;
 let curChar!: number;
+
+let JS: Record<string, TYPE_ID> = {};
 
 function consumeEmptyLines(): boolean {
 
@@ -131,6 +133,12 @@ function nextArg(cur: NODE_ID): boolean {
 function readArg(id: NODE_ID) {
 
     VALUES[id] = nextSymbol(); // name
+    if( curChar === CHAR_COLON ) {
+        ++offset;
+        consumeSpaces();
+        const type = nextSymbol(); // type
+        setResultType(id, getSymbol(type) + 1 as TYPE_ID );
+    }
     consumeSpaces();
 
     if( curChar === CHAR_EQ ) { // might be or not, but well...
@@ -225,10 +233,20 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         const name = VALUES[id] = nextSymbol(); // name
 
+        let genericName = "";
+        let genericType = "";
+        if( curChar === CHAR_BRACKET_LEFT) {
+            ++offset;
+            genericName = nextSymbol();
+            offset += 2; // ": "
+            genericType = nextSymbol();
+            ++offset; // ]
+        }
+
         const args = addFirstChild(id);
         setType(args, AST_DEF_ARGS);
 
-        let ret_type = TYPEID_None;
+        let ret_type: TYPE_ID = 0;
 
         //TODO: if same return + write_call, can be shared (i.e. same type/typeID)
         const SType_fct: Callable = {
@@ -277,22 +295,65 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
             }
         }
 
-        offset += 2; // ):
+        ++offset; // )
+
+        consumeSpaces();
+        if( curChar === CHAR_MINUS ) {
+            offset += 2; // ->
+            consumeSpaces();
+            let ret_name = nextSymbol();
+            if( ret_name === genericName)
+                ret_name = genericType;
+            ret_type = getSymbol( ret_name ) + 1 as TYPE_ID;
+
+            // @ts-ignore
+            while(curChar === 124) { // |
+                ++offset;
+                nextSymbol();
+            }
+            consumeSpaces();
+        }
+
+        ++offset; // :
 
         curChar = code.charCodeAt(offset);
 
         const body = readBody();
         setSibling(args, body);
 
-        cur = firstChild(body);
-        while( nextSibling(cur) !== 0) {
-            cur = nextSibling(cur);
+        if( ret_type === 0 ) {
+
+            ret_type = TYPEID_None;
+
+            cur = firstChild(body);
+            while( nextSibling(cur) !== 0) {
+                cur = nextSibling(cur);
+            }
+
+            if( type(cur) === AST_KEY_RETURN && (cur = firstChild(cur)) !== 0)
+                ret_type = resultType(cur);
         }
 
-        if( type(cur) === AST_KEY_RETURN && (cur = firstChild(cur)) !== 0)
-            ret_type = resultType(cur);
-
         builtins.length = cur_builtin_idx;
+    },
+    "from": (id) => {
+        // only stubs for now...
+        consumeSpaces();
+        const module = nextSymbol();
+
+        consumeSpaces();
+        //TODO...
+        nextSymbol(); // from
+        consumeSpaces();
+        const imported_name = nextSymbol(); //TODO: many
+
+        if(module === "JS") {
+            addSymbol(imported_name, JS[imported_name] ); //TODO...
+            setType(id, AST_KEY_PASS); //TODO...
+        } else {
+            throw new Error("Not implemented !");
+        }
+        //TODO: parse studs...
     },
     "class": (id) => {
 
@@ -455,7 +516,7 @@ function readLine() {
     // TODO: move Expr if/else/etc. here...
     // TODO: true/false: how to handle ?
 
-    return readExpr();
+    return readExpr(false); //TODO... : typehint too...
 }
 
 function readBody(){
@@ -693,6 +754,7 @@ function readToken(): NODE_ID {
             if( __DEBUG__ ) set_py_code_end(node);
 
             setType(node, AST_SYMBOL);
+
             setResultType(node, getSymbol(token) );
 
             VALUES[node] = token;
@@ -813,9 +875,21 @@ function readOp() {
     return opsymbol2opid[op_str as keyof typeof opsymbol2opid];
 }
 
-function readExpr() {
+function readExpr(colon_is_end = true) { //TODO...
 
     let value = readToken();
+
+    if( ! colon_is_end && curChar === CHAR_COLON) {
+        ++offset;
+        consumeSpaces();
+        const type = nextSymbol();
+        const typeID = getSymbol(type) + 1 as TYPE_ID;
+
+        setResultType(value, typeID);
+        addSymbol(VALUES[value], typeID); //TODO...
+
+        consumeSpaces();
+    }
 
     if( isEndOfExpr() )
         return value;
@@ -884,16 +958,22 @@ function readExpr() {
     return stack[0][0];
 }
 
-let nbTypes: number;
+// @ts-ignore
+import JS_stubs  from "!!raw-loader!../stubs/Document.pyi";
+import buildAST from "@SBrython/utils/generate/AST";
+
 
 export function py2ast(_code: string, filename: string): AST {
 
-    // h4ck
-    // @ts-ignore
-    if( nbTypes === undefined)
-        nbTypes = TYPES.length;
+    if( filename !== "JS") { //TODO...
 
-    TYPES.length = nbTypes;
+        const start = builtins.length;
+
+        py2ast(JS_stubs, "JS");
+
+        for(let i = start; i < builtins.length; ++i)
+            JS[builtins[i][0]] = builtins[i][1]; //TODO: array (?)
+    }
 
     resetSymbols();
     
