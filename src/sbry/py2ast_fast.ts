@@ -318,20 +318,25 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         curChar = code.charCodeAt(offset);
 
-        const body = readBody();
-        setSibling(args, body);
+        if( curChar === CHAR_SPACE && code.charCodeAt(++offset) === CHAR_DOT ) {
+            offset += 3; // ...
+        } else {
 
-        if( ret_type === 0 ) {
+            const body = readBody();
+            setSibling(args, body);
 
-            ret_type = TYPEID_None;
+            if( ret_type === 0 ) {
 
-            cur = firstChild(body);
-            while( nextSibling(cur) !== 0) {
-                cur = nextSibling(cur);
+                ret_type = TYPEID_None;
+
+                cur = firstChild(body);
+                while( nextSibling(cur) !== 0) {
+                    cur = nextSibling(cur);
+                }
+
+                if( type(cur) === AST_KEY_RETURN && (cur = firstChild(cur)) !== 0)
+                    ret_type = resultType(cur);
             }
-
-            if( type(cur) === AST_KEY_RETURN && (cur = firstChild(cur)) !== 0)
-                ret_type = resultType(cur);
         }
 
         builtins.length = cur_builtin_idx;
