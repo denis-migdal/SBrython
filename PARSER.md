@@ -1,7 +1,7 @@
 https://docs.python.org/3/reference/lexical_analysis.html
 https://github.com/brython-dev/brython/issues/2554
 
-Super total : 5986 tests (~= 6000)
+Super total : 5869 tests (~= 6000)
 cat * | grep -v ^$ | grep -v ^# |  wc -l
 
 Tested         : 132/1894 (6.97%)
@@ -32,8 +32,49 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 
 36K -> 11K
 
+Another todo
+============
+
+1. imports / python stubs... (in browser)
+    ~> stud parser ? // stubs/*.pyi
+        ~> [T: (int, str, set)](x: T, y: T) -> T:
+    ~> window... (query selector)
+    ~> auto-register module at startup ? (could be option too)
+        ~> only POC ? (could be completed later...)
+        ~> "..." operator
+
+X ?
+    - parseFloat -> Number.NaN
+    - int vs float...
+    - classes...
+    - kw fcts
+
+X ? -> re-add unit tests
+
+X. AoT watch tool... (cf Brython-AOT)
+X. output format : "ES6"+"TypeScript" (export top level fct...) [do not test for now ?]
+
+X. assertion failed message (more details...)
+    -> "JS" : assert (global not sb...)
+
+X. Benchmark several versions...
+X. CLI tools - AoT (cf AoT Brython)
+X. CLI tools - unit tests (+ perf measure)
+X. Output mode : ES6 module, commonjs (module.exports) module, variable...
+X. Language mode : JS, TS, WASM
+
+Steps
+=====
+
+-> pass unit tests (~6k) + compat (lot to implement)
+-> refactors/performances
+-> JS standard lib... / Python libs / Import Brython / Imports ?
+-> + tools/documentation...
+
 Unit tests
 ==========
+
+- http://127.0.0.1:5501/compat/
 
 ->  disabled unit tests
     -> strings : # basic test suite.strings
@@ -46,7 +87,60 @@ Unit tests
         -> \P{L} ?
         -> check code ?
         -> range U+0001..U+007F where the valid characters are restricted to the uppercase and lowercase letters A through Z, the underscore _ and, except for the first character, the digits 0 through 9
+
+-> abs()
+-> pow() / divmod()
+-> round()
+-> id()
+-> int() with base
+-> is instance
+-> is not
+
+-> unary +
+
 -> classes
+    -> methods
+        -> methods
+            -> @classmethod (access class attr) - first params : cls (not in call)
+            -> @staticmethod
+            -> instance method by default.
+        -> attrs
+            NON : ne pas oublier python code !== JS code.
+            -> @property : getter/setter
+            -> static attr by default ? [no statics ?]
+            -> instance attr in __init__(self) ~> klass ctx... (how ?)
+                -> list of added self -> set at the end of __init__ ?
+                    NOPE : not in local symbols !
+                    ~> needs to declare in TS... (declare after __init__).
+    -> Overrides op.
+
+-> bytes
+    -> from_bytes
+    -> to_bytes
+
+-> complex
+
+-> f-string
+
+-> [] operator
+-> %=
+-> & operator
+-> hash
+-> @ operator ?
+-> del
+-> assignement expressions
+
+Format
+    -> repr
+    -> bit_count
+
+Math lib
+    -> Math.pi (?) - isnan
+
+-> assert raise
+
+-> list/strings/lamba/inline/list en compréhension
+-> local/nonlocal/global/vars()
 
 PARSING (missing)
 =======
@@ -62,9 +156,17 @@ PARSING (missing)
 TODO :
 ======
 
+-> Build class SType...
+-> static vs instance (add first exclude flag...)
+
+-> special method/functions (doesn't really exists)
+    -> create on demand ? : assign method/function => () => {} (?) or do not support ?
+    -> getattr override ?
+
 -> fct kw : if left is symbol
 -> current context : use let or not...
 -> deduce fct return type
+-> def args parsing (dble ")" ).
 
 -> ret_type (use call node...) ~> op: we need to construct call node & invert siblings.
 
@@ -82,6 +184,11 @@ TODO :
 
 Possible improvements:
 =====================
+
+-> do I REALLY need firstChild/nextSibling ? (reorganise node order...)
+    -> mainly used with operators priority...
+
+-> pyObject IS JS Object (?)
 
 -> function type : only return type ? (name stored in fct / no qualname ?)
 

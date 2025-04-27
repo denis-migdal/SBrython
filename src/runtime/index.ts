@@ -58,10 +58,11 @@ export class SBrython {
     }
 
     get _r_() {
-        return _r_;
+        return __COMPAT_LEVEL__ === "JS" ? null : _r_;
     }
     get _sb_() {
-        return _sb_;
+        //TODO...
+        return __COMPAT_LEVEL__ === "JS" ? {assert: _sb_.assert} : _sb_;
     }
 }
 

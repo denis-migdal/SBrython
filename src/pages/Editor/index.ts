@@ -28,6 +28,7 @@ const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
 const merge     = ! __DEBUG__;
 const parser    = search.get("parser") === "false" ? false : true;
+const DEFAULT_COMPAT_LEVEL = search.get("compat_level") ?? "JS";
 
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
@@ -35,15 +36,18 @@ const exclude_list = await loadExcludeList();
 const brython_tests = [
     'basic test suite',
     'numbers',
-//    "classes" // ~1174
+    //"classes" // ~726
 //    "strings",
 //    "string methods"
 ];
-// strings ~600
-// list    ~496
-// dicts   ~288
-// sets    ~300
-// bytes   ~300
+// strings ~616
+// list    ~345
+// dicts   ~205
+// sets    ~224
+// bytes   ~229
+
+// generators ~972...
+
 const test_suites   = await loadTests(...brython_tests); // cf end of file for available tests
 
 if( test_name !== null)
@@ -80,7 +84,57 @@ if( window.location.search === '' || window.location.search === '?parser=true') 
     oneTimeExec(python_input.value)
 }
 
+const select = document.querySelector<HTMLSelectElement>('#tests')!;
+
+const defaultOpt = new Option("----", undefined, true, true);
+defaultOpt.toggleAttribute('disabled');
+select.append( defaultOpt );
+
+select.addEventListener('change', () => {
+
+    let code = select.value;
+
+    const codes = code.split("\n");
+    for(let l = 1; l < codes.length; ++l) {
+        const idx = codes[l].indexOf('#');
+        if( idx <= 0)
+            continue;
+        const config = JSON.parse( codes[l].slice(idx+1).trim());
+        if( config.COMPAT_LEVEL !== DEFAULT_COMPAT_LEVEL )
+            codes[l] = "#" + codes[l];
+        else
+            codes[l] = codes[l].slice(0, idx).trimEnd();
+    }
+
+    code = codes.join('\n');
+
+    python_input.value = code;
+    localStorage.setItem('sbrython_code', code);
+    oneTimeExec(code);
+    
+});
+
+for(let i = 0; i < brython_tests.length; ++i) {
+
+    const subtests = test_suites[ brython_tests[i] ];
+
+    for(let j = 0; j < subtests.length; ++j) {
+
+        const code = subtests[j];
+
+        if( code === "")
+            continue;
+
+        const name = code.slice(2 , code.indexOf("\n") );
+
+        const opts = new Option(name, code);
+        select!.append( opts );
+    }
+}
+
 function oneTimeExec(fullcode: string) {
+
+    globalThis.__COMPAT_LEVEL__ = DEFAULT_COMPAT_LEVEL;
 
     const results = resetResults();
 
@@ -176,6 +230,8 @@ function print_code(code: string, _ast: NODE, type: "pycode"|"jscode") {
 
 function print_code_node(node: any, code: string, type: "pycode"|"jscode") {
     
+    //TODO: réimplémenter différemment ???
+
     const html_bloc = document.createElement("span") as HTMLSpanElement & {"$node": any};
 
     html_bloc.$node = node;
@@ -205,8 +261,9 @@ function print_code_node(node: any, code: string, type: "pycode"|"jscode") {
             continue;
         }
         subparts[offset++] = slice_code(code, cursor, ctype.start);
+
         subparts[offset++] = print_code_node(children[i], code, type);
-        cursor = children[i][type].end;
+        cursor = children[i][type].end;        
     }
     subparts[offset++] = slice_code(code, cursor, node[type].end);
 
@@ -399,8 +456,10 @@ function startTests(test_name: string, merge: boolean) {
 
     let failed = [];
 
+    const configs = __COMPAT_LEVEL__ === "JS" ? ["JS"] : ["JS", "Mix"];
+
     // build merged code
-    tests: for(let i = 0; i < tests.length; ++i) {
+    for(let i = 0; i < tests.length; ++i) {
 
         const subtests = test_suites[tests[i]];
         const substats = subTestsStats[tests[i]];
@@ -413,40 +472,61 @@ function startTests(test_name: string, merge: boolean) {
             results.total_lines       += stats.total;
             results.nb_excluded_lines += stats.excluded;
 
-            const code = subtests[j];
+            for(const config of configs) {
 
-            if( code === "")
-                continue;
-       
-            if( merge ) {
-                const indented_code = code.split('\n').map(e => `    ${e}`).join('\n');
-                fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
-            } else {
-                try {
-                    fullcode = code;
-                    generate(fullcode, results, parser);
-                    execute(results, sbry_print);
-                } catch(e) {
-                    error = e as Error;
+                globalThis.__COMPAT_LEVEL__ = config;
 
-                    failed.push({
-                        code,
-                        error: e,
-                    })
+                //TODO: second exclude...
 
-                    // print last error...
+                let code = subtests[j];
+
+                if( code === "")
+                    continue;
+
+                const codes = code.split("\n");
+                for(let l = 1; l < codes.length; ++l) {
+                    const idx = codes[l].indexOf('#');
+                    if( idx <= 0)
+                        continue;
+                    const config = JSON.parse( codes[l].slice(idx+1).trim());
+                    if( config.COMPAT_LEVEL !== __COMPAT_LEVEL__ )
+                        codes[l] = "#" + codes[l];
+                    else
+                        codes[l] = codes[l].slice(0, idx).trimEnd();
+                }
+
+                code = codes.join('\n');
+        
+                if( merge ) {
+                    const indented_code = code.split('\n').map(e => `    ${e}`).join('\n');
+                    fullcode += `def _${id}():\n${indented_code + "return None"}\n_${id}()\n`;
+                } else {
                     try {
-                        const ast = astnode2tree();
+                        fullcode = code;
+                        generate(fullcode, results, parser);
+                        execute(results, sbry_print);
+                    } catch(e) {
+                        error = e as Error;
+
+                        failed.push({
+                            code,
+                            error: e,
+                        })
+
+                        // print last error...
                         try {
-                            print_js( results.sbry.code, ast );
+                            const ast = astnode2tree();
+                            try {
+                                print_js( results.sbry.code, ast );
+                            } catch(e) { console.warn(e); }
+                            try {
+                                print_python( fullcode, ast );
+                            } catch(e) { console.warn(e); }
+                            try {
+                                print_ast( ast );
+                            } catch(e) { console.warn(e); }
                         } catch(e) { console.warn(e); }
-                        try {
-                            print_python( fullcode, ast );
-                        } catch(e) { console.warn(e); }
-                        try {
-                            print_ast( ast );
-                        } catch(e) { console.warn(e); }
-                    } catch(e) { console.warn(e); }
+                    }
                 }
             }
         }
@@ -537,7 +617,9 @@ async function loadSubTests(test_name: string, exclude = exclude_list) {
 
     subTestsStats[test_name] = [];
 
-    const parts = code.split('#').slice(1);
+    const parts = code.split('\n#');
+
+    parts[0] = parts[0].slice(1);
 
     return parts.map( (t,idx) => {
 

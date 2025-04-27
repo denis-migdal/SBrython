@@ -46,11 +46,12 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
             }
         }
 
+    
         //if( node.children.length === 3)
         //    return r`BigInt(parseInt(${other}, ${node.children[2]}))`;
 
         //TODO: optimize if other is string litteral...
-        w_sns("parseFloat(", other, ")")
+        w_sns("parseFloat(", other, ")");
         return;
     }
 
@@ -63,7 +64,10 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
 });
 
 add_method(klass, "__str__", RET_STR, (call: NODE_ID) => {
-    w_sns("_sb_.float2str(", nextSibling(firstChild(call)), ")");
+    if( __COMPAT_LEVEL__ === "JS") {
+        w_node( nextSibling(firstChild(call)) ); w_str(' .toString()');
+    } else
+        w_sns("_sb_.float2str(", nextSibling(firstChild(call)), ")");
 });
 
 add_method(klass, "__abs__", RET_FLOAT, (call: NODE_ID) => {

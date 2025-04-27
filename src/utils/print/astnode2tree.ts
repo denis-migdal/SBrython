@@ -31,8 +31,8 @@ export default function astnode2tree(id: NODE_ID = 0): NODE {
 
     const info = Types[typeID];
 
-    const inst_name  = info.__qualname__ as string ?? info.__name__ ?? ""
-    const klass_name = info.__class__?.__qualname__ as string ?? info.__class__?.__name__ ?? ""
+    const inst_name  = info?.__qualname__ as string ?? info?.__name__ ?? ""
+    const klass_name = info?.__class__?.__qualname__ as string ?? info?.__class__?.__name__ ?? ""
 
     const result_type = typeID === 0 ? null : `${inst_name}:${klass_name}`;
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf8"/>
+        <title>Compatibilities</title>
+        <meta name="color-scheme" content="dark light">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link   href="/skeleton/slides/index.css"  rel="stylesheet">
+        <script  src="/skeleton/slides/index.js"  type="module"     blocking="render" async></script>
+    </head>
+    <body>
+        <main>
+
+Compatibilities levels (__COMPAT_LEVEL__):
+- JS
+- Mix
+- Python (not implemented - runtime)
+
+<table>
+    <thead>
+        <tr><th>Feature</th><th>Compat flag</th><th>Descr</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>TypeScript output</td><td>?</td><td>(do the type checking ?)</td>
+        </tr><tr>
+            <td>Standard error messages</td><td>?</td><td>Not supported by default (increase runtime size)</td>
+        </tr><tr>
+            <td>Operations on unknown types</td><td>?</td><td>Not supported by default (increase runtime size)</td>
+        </tr><tr>
+            <td>multi-inheritance + //</td><td>?</td><td>Requires sb helper</td>
+        </tr><tr>
+            <td>Operations order</td><td>?</td><td>We might change op order when needed</td>
+        </tr><tr>
+            <td>Function kw args</td><td>?</td><td>Require a JS h4ck</td>
+        </tr><tr>
+            <td>%</td><td>?</td><td>Modulo behave differently with negative numbers</td>
+        </tr><tr>
+            <td>str(float)</td><td>?</td><td>Python has a slightly different format</td>
+        </tr><tr>
+            <td>__op__ direct call</td><td>?</td><td>Not supported by default (increase runtime size)</td>
+        </tr>
+    </tbody>
+</table>
+        </main>
+    </body>
+</html>

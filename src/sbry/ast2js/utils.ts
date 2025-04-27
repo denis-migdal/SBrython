@@ -62,6 +62,10 @@ export function buildJSCode(id: NODE_ID) {
     };
 }
 
+export function hasJSCursor(node: NODE_ID) {
+    return JS_CODE[(node as any)*4 + CODE_LINE] !== 0;
+}
+
 export function set_js_cursor(idx: number) {
     JS_CODE[idx + CODE_LINE] = CURSOR[CODE_LINE];
     JS_CODE[idx + CODE_COL ] = jscode!.length - CURSOR[CODE_COL];
@@ -111,9 +115,14 @@ export function w_str(str: string) {
     jscode += str;
 }
 export function w_node(node: NODE_ID) {
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
-    AST2JS[type(node)!](node);
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
+    if( __DEBUG__ ) {
+        const has = hasJSCursor(node);
+        if( ! has ) set_js_cursor(4*(node as number) + CODE_BEG);
+        AST2JS[type(node)!](node);
+        if( ! has ) set_js_cursor(4*(node as number) + CODE_END);
+    } else {
+        AST2JS[type(node)!](node);
+    }
 }
 
 type W_SNS = [string, NODE_ID, string]
@@ -129,9 +138,14 @@ export function w_sns(...args: W_SNS) { //TODO: alternate
 
         const node = args[i] as NODE_ID;
 
-        if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
-        AST2JS[type(node)!](node);
-        if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
+        if( __DEBUG__ ) {
+            const has = hasJSCursor(node);
+            if( ! has ) set_js_cursor(4*(node as number) + CODE_BEG);
+            AST2JS[type(node)!](node);
+            if( ! has ) set_js_cursor(4*(node as number) + CODE_END);
+        } else {
+            AST2JS[type(node)!](node);
+        }
 
         jscode += args[i+1] as string;
     }

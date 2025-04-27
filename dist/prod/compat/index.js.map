@@ -1,0 +1,1 @@
+{"version":3,"file":"compat/index.js","mappings":"oHAAe,G","sources":["webpack://sbrython/./src/pages/compat/index.md"],"sourcesContent":["export default __webpack_public_path__ + \"compat/index.html\";"],"names":[],"sourceRoot":""}

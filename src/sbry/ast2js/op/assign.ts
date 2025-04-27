@@ -6,7 +6,7 @@ import { AST_OP_ASSIGN_INIT } from "../list";
 
 export default function ast2js(node: NODE_ID) {
     let rchild    = firstChild(node);
-    let lchild    = nextSibling(rchild);   
+    let lchild    = nextSibling(rchild);
 
     if( type(rchild) === AST_OP_ASSIGN_INIT) {
         w_node(rchild);

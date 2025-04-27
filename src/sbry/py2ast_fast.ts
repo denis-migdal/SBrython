@@ -1,8 +1,8 @@
 import Types, { TYPEID_None, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST } from "./py2ast"
-import { Callable, Fct, RETURN_TYPE, WRITE_CALL } from "./types/utils/types";
+import { Callable, Fct, RETURN_TYPE, TYPEID, WRITE_CALL } from "./types/utils/types";
 import { default_call } from "./ast2js/call/";
 import { TYPEID_str, TYPEID_float, TYPEID_int, TYPEID_jsint } from "./types/list";
 import { OP_ASSIGN, OP_BIT_NOT, OP_ID, OP_UNR_MINUS, opid2iopmethod, opid2opmethod, opid2ropmethod, opsymbol2opid, pyop_priorities } from "./structs/operators";
@@ -11,8 +11,8 @@ import builtins, { addSymbol, getSymbol, resetSymbols } from "./types/builtins";
 import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
 import TYPES from "./types/list";
 import { AST_OP_NOT } from "./ast2js/list";
-import { TYPEID_NoneType } from "./types/list";
 import { printNode } from "@SBrython/utils/print/printNode";
+import { w_sns, w_str } from "./ast2js/utils";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -65,9 +65,11 @@ function consumeEmptyLines(): boolean {
 }
 
 function nextSymbol(){
-    const end = code.slice(offset).search(END_OF_SYMBOL);
+    const end = offset + code.slice(offset).search(END_OF_SYMBOL);
 
-    return code.slice(offset, offset += end );
+    curChar = code.charCodeAt(end);
+
+    return code.slice(offset, offset = end );
 }
 
 let CURRENT_PARAM_TYPE!: NODE_TYPE;
@@ -75,6 +77,9 @@ let POSONLY_END       !: NODE_ID;
 
 function nextArg(cur: NODE_ID): boolean {
 
+    if( curChar === CHAR_PARENTHESIS_RIGHT )
+        return false;
+    
     ++offset; // ( or ,
     consumeSpaces();
 
@@ -223,6 +228,8 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         const args = addFirstChild(id);
         setType(args, AST_DEF_ARGS);
 
+        let ret_type = TYPEID_None;
+
         //TODO: if same return + write_call, can be shared (i.e. same type/typeID)
         const SType_fct: Callable = {
             __qualname__: name,
@@ -230,7 +237,7 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
             __call__: {
                 __name__: "__call__",
                 [RETURN_TYPE]: () => {
-                    return TYPEID_None; //TODO...
+                    return ret_type; //TODO...
                 },
                 [WRITE_CALL]: default_call,
             }
@@ -274,11 +281,120 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         curChar = code.charCodeAt(offset);
 
-        setSibling(args, readBody() );
+        const body = readBody();
+        setSibling(args, body);
 
-        //TODO: set RETURN TYPE
+        cur = firstChild(body);
+        while( nextSibling(cur) !== 0) {
+            cur = nextSibling(cur);
+        }
+
+        if( type(cur) === AST_KEY_RETURN && (cur = firstChild(cur)) !== 0)
+            ret_type = resultType(cur);
 
         builtins.length = cur_builtin_idx;
+    },
+    "class": (id) => {
+
+        ++offset; //TODO: consume white spaces at the start of readExpr (?)
+        const name = VALUES[id] = nextSymbol(); // name
+
+        const inherit: NODE_ID[] = []; //TODO...
+
+        if( curChar === CHAR_PARENTHESIS_LEFT) {
+            //TODO read args like call (?)
+            ++offset; // consume (
+            consumeSpaces();
+
+            // @ts-ignore
+            while( curChar !== CHAR_PARENTHESIS_RIGHT ) {
+
+                inherit.push( readToken() );
+
+                // @ts-ignore
+                if( curChar === CHAR_COMMA ) {
+                    ++offset; // consume ,
+                    consumeSpaces();
+                }
+            }
+            ++offset; // consume )
+        }
+
+        ++offset; // ":"
+        
+        const body = readBody();
+
+        let cur = body;
+        for(let i = 0; i < inherit.length; ++i) {
+            setSibling(cur, inherit[i]);
+            cur = inherit[i];
+        }
+
+        setType(id, AST_CLASSDEF);
+        setFirstChild(id, body); // too lazy to duplicate...
+
+        const STypeID = Types.length as TYPE_ID;
+        const SInstID = Types.length+1 as TYPE_ID;
+
+        const SType_klass: Callable = {
+            __qualname__: name,
+            __name__    : name,
+            __call__: {
+                __name__: "__call__",
+                [RETURN_TYPE]: () => SInstID,
+                [WRITE_CALL]: (id: NODE_ID) => {
+                    w_str("new ");
+                    default_call(id);
+                },
+            }
+        }
+
+        const SType_instance = {};
+        for(let i = 0; i < inherit.length; ++i)
+            Object.assign(SType_instance, TYPES[resultType(inherit[i]) + 1]);
+
+        // @ts-ignore
+        SType_instance.__class__ = SType_klass;
+    
+        Types[STypeID] = SType_klass;
+        Types[SInstID] = SType_instance;
+
+
+        //TODO: refactor/fix...
+
+        cur = firstChild(body);
+        let node_type: NODE_TYPE;
+        do {
+
+            node_type = type(cur);
+
+            // not ideal : needs it BEFORE...
+            if( node_type === AST_DEF_FCT) {
+
+                // @ts-ignore
+                SType_instance[VALUES[cur]] = resultType(cur);
+
+                setType(cur, AST_DEF_METH);
+            }
+
+            //TODO: fix...
+            if( node_type === AST_OP_ASSIGN_INIT || node_type === AST_OP_ASSIGN) {
+
+                // @ts-ignore
+                SType_instance[VALUES[nextSibling(firstChild(cur))]] = resultType(cur);
+
+                setType(cur, AST_OP_ASSIGN);
+            }
+
+            cur = nextSibling(cur);
+
+        } while( cur !== 0);
+
+        addSymbol(name, STypeID);
+
+        //TODO: inherit...
+
+        //TODO: SType...
     }
 }
 
@@ -583,6 +699,22 @@ function readToken(): NODE_ID {
 
             consumeSpaces(); // end of py code not exact... (set again later...)
 
+            if( curChar === CHAR_DOT) { // get attr...
+
+                let cur = node;
+
+                node = createASTNode();
+                setType(node, AST_OP_ATTR);
+                setFirstChild(node, cur);
+
+                ++offset;
+
+                const name = VALUES[node] = nextSymbol(); //TODO: continue...
+
+                // @ts-ignore
+                setResultType(node, TYPES[resultType(cur)][name]);
+            }
+
             if( curChar === CHAR_PARENTHESIS_LEFT ) { // CALL
 
                 let cur = node;
@@ -591,10 +723,16 @@ function readToken(): NODE_ID {
                 setType(node, AST_CALL);
                 setFirstChild(node, cur);
 
-                const fctType = VALUES[node] = Types[resultType(cur)];
-                //TODO: return type...
+                if( __DEBUG__ ) copy_py_code_beg(cur, node);
 
-                if( __DEBUG__ ) set_py_code_beg(node);
+                const fctType = VALUES[node] = Types[resultType(cur)];
+
+                if( __DEBUG__ && fctType === undefined) {
+                    console.warn( VALUES[node], resultType(cur), Types[resultType(cur)]);
+                    throw "nok";
+                }
+
+                //TODO: return type...
 
                 ++offset; // (
                 consumeSpaces();

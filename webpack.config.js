@@ -22,9 +22,17 @@ export default async function(...args) {
 
 	const entries = cfg.entry = await cfg.entry();
 
-	const names = [ 'libs/SBrython-prod', 'libs/SBrython-runtime-prod', 'Benchmark'];
-	for(const name in entries)
-		entries[name].layer = `__DEBUG__=${ ! names.includes(name)}`;
+	const production = [ 'libs/SBrython-prod', 'libs/SBrython-runtime-prod', 'Benchmark'];
+
+	for(const name in entries) {
+
+		const layer = {
+			__DEBUG__       : !production.includes(name),
+			__COMPAT_LEVEL__:  production.includes(name) ? "JS" : null
+		};
+
+		entries[name].layer = JSON.stringify(layer);
+	}
 
 	// only require it once.
 	cfg.plugins.push({
@@ -58,8 +66,19 @@ export default async function(...args) {
 
 	cfg.plugins.push(new webpack.DefinePlugin({
 		__DEBUG__: webpack.DefinePlugin.runtimeValue(
-			ctx => ctx.module.layer === '__DEBUG__=true'
-		)
+			ctx => JSON.parse(ctx.module.layer).__DEBUG__
+		),
+		__COMPAT_LEVEL__: webpack.DefinePlugin.runtimeValue(
+			ctx => {
+				
+				const level = JSON.parse(ctx.module.layer).__COMPAT_LEVEL__;
+
+				if( level === null)
+					return "globalThis.__COMPAT_LEVEL__"; // globally defined.
+				
+				return JSON.stringify(level);
+			}
+		),
 	}));
 
 	return cfg;

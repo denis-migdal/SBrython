@@ -106,7 +106,10 @@ addJSBinOps(klass, [OP_BIN_MOD], // %
                         convert_other  : CONVERT_2INT,
                         w_call: (call: NODE_ID, a: NODE_ID, op: any, b: NODE_ID) => {
                             // do not handle -0
-                            w_sns("_sb_.mod_int(", a, ", ", b, ")");
+                            if( __COMPAT_LEVEL__ === "JS")
+                                w_JSBinOp(call, a, op, b);
+                            else
+                                w_sns("_sb_.mod_int(", a, ", ", b, ")");
                         },
                     });
 
