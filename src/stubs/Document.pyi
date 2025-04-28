@@ -14,12 +14,14 @@
 # https://developer.mozilla.org/en-US/docs/Web/API
 # 1006 classes...
 
+class jsint(float):
+    pass
+
 class Undefined:
     pass
 
 undefined: Undefined
 
-# TODO: https://developer.mozilla.org/en-US/docs/Web/API/Event/eventPhase#event.capturing_phase
 class Event:
     # TODO: read-only : Final[bool] (they are all RO)
     bubble: bool
@@ -29,7 +31,7 @@ class Event:
     # currentTarget: EventTarget
     defaultPrevented: bool
     # TODO: enum ?
-    eventPhase: int
+    eventPhase: float
     NONE = 0
     CAPTURING_PHASE = 1
     AT_TARGET = 2
@@ -71,16 +73,16 @@ class Node(EventTarget):
     nextSibling: Node|None
     nodeName: str
     # TODO: enum ?
-    nodeType: int
-    ELEMENT_NODE = 0
-    ATTRIBUTE_NODE = 1
-    TEXT_NODE = 3
-    CDATA_SECTION_NODE = 4
-    PROCESSING_INSTRUCTION_NODE = 7
-    COMMENT_NODE = 8
-    DOCUMENT_NODE = 9
-    DOCUMENT_TYPE_NODE = 10
-    DOCUMENT_FRAGMENT_NODE = 11
+    nodeType: jsint
+    ELEMENT_NODE: jsint = 0
+    ATTRIBUTE_NODE: jsint = 1
+    TEXT_NODE: jsint = 3
+    CDATA_SECTION_NODE: jsint = 4
+    PROCESSING_INSTRUCTION_NODE: jsint = 7
+    COMMENT_NODE: jsint = 8
+    DOCUMENT_NODE: jsint = 9
+    DOCUMENT_TYPE_NODE: jsint = 10
+    DOCUMENT_FRAGMENT_NODE: jsint = 11
     # RW:
     nodeValue: str|None
     # TODO: Circular types + RO
@@ -92,13 +94,13 @@ class Node(EventTarget):
 
     def appendChild(self, child: Node) -> Node: ...
     def cloneNode(self, deep: bool = False) -> Node: ...
-    def compareDocumentPosition(self, otherNode: Node) -> int: ...
-    DOCUMENT_POSITION_DISCONNECTED = 1
-    DOCUMENT_POSITION_PRECEDING = 2
-    DOCUMENT_POSITION_FOLLOWING = 4
-    DOCUMENT_POSITION_CONTAINS = 8
-    DOCUMENT_POSITION_CONTAINED_BY = 16
-    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 32
+    def compareDocumentPosition(self, otherNode: Node) -> jsint: ...
+    DOCUMENT_POSITION_DISCONNECTED: jsint = 1
+    DOCUMENT_POSITION_PRECEDING: jsint = 2
+    DOCUMENT_POSITION_FOLLOWING: jsint = 4
+    DOCUMENT_POSITION_CONTAINS: jsint = 8
+    DOCUMENT_POSITION_CONTAINED_BY: jsint = 16
+    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: jsint = 32
     def contains(self, otherNode: Node|None) -> bool: ...
     # TODO: options
     # https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
@@ -116,7 +118,12 @@ class Node(EventTarget):
     def replaceChild(self, newChild: Node, oldChild: Node) -> Node: ...
 
 # TODO
-class HTMLSlotElement:
+
+# TODO extends (Element) [out of order too...]
+class HTMLElement:
+    pass
+
+class HTMLSlotElement(HTMLElement):
     pass
 
 class NamedNodeMap:
@@ -138,7 +145,14 @@ class DOMRect:
     pass
 
 class Attr(Node):
-    pass
+    # RO
+    localName: str
+    name: str
+    namespaceURI: str
+    # ownerElement: Element # circular ?
+    prefix: str|None
+    value: str
+
 
 # https://developer.mozilla.org/en-US/docs/Web/API/Element
 # no aria (too much)
@@ -146,16 +160,16 @@ class Element(Node):
     # RO
     assignedSlot: HTMLSlotElement|None
     attributes: NamedNodeMap
-    childElementCount: int
+    childElementCount: jsint
     children: HTMLCollection
     classList: DOMTokenList
     # RW
     className: str
     # RO
-    clientHeight: int
-    clientLeft: int
-    clientTop: int
-    clientWidth: int
+    clientHeight: jsint
+    clientLeft: jsint
+    clientTop: jsint
+    clientWidth: jsint
     currentCSSZoom: float
     firstElementChild: Element|None
     id: str
@@ -172,10 +186,10 @@ class Element(Node):
     # RW
     role: str|None
     # RW
-    scrollHeight: int
-    scrollLeft: int
-    scrollTop: int
-    scrollWidth: int
+    scrollHeight: jsint
+    scrollLeft: jsint
+    scrollTop: jsint
+    scrollWidth: jsint
     # RO
     shadowRoot: ShadowRoot|None
     slot: str
@@ -198,16 +212,16 @@ class Element(Node):
     def getAttributeNS(self, namespace: str, attributeName: str) -> str|None: ...
     def getBoundingClientRect(self) -> DOMRect: ...
     #TODO getClientRects
-    #TODO getElementsByClassName
-    # getElementsByTagName
-    # getElementsByTagNameNS
+    def getElementsByClassName(self, names: str) -> HTMLCollection: ...
+    def getElementsByTagName(self, tagName: str) -> HTMLCollection: ...
+    def getElementsByTagNameNS(self, namespaceURI: str, localName: str) -> HTMLCollection: ...
     # TODO: options
     def getHTML(self) -> str: ...
     def hasAttribute(self, name: str) -> bool: ...
     def hasAttribute(self, namespace: str, localName: str) -> bool: ...
     def hasAttributes(self) -> bool: ...
     # TODO: pointerId ?
-    def hasPointerCapture(self, pointerId: int) -> bool: ...
+    def hasPointerCapture(self, pointerId: jsint) -> bool: ...
     # TODO: more restrictive position str
     def insertAdjacentElement(self, position: str, element: Element) -> Element|None: ...
     def insertAdjacentHTML(self, position: str, text: str) -> Undefined: ...
@@ -217,8 +231,8 @@ class Element(Node):
     #TODO:
     def prepend(self, param1: Node) -> Undefined: ...
     def querySelector(self, selectors: str) -> Element|None: ...
-    # TODO: querySelectorAll
-    def releasePointerCapture(self, pointerId: int) -> Undefined: ...
+    def querySelectorAll(self, selectors: str) -> NodeList: ...
+    def releasePointerCapture(self, pointerId: jsint) -> Undefined: ...
     def remove(self) -> Undefined: ...
     def removeAttribute(self, attrName: str) -> Undefined: ...
     def removeAttributeNode(self, attributeNode: Attr) -> Node: ...
@@ -228,19 +242,19 @@ class Element(Node):
     # requestFullScreen (limited)
     # requestPointerLock (limited)
     # TODO: 2 possibilites :
-    def scroll(self, x: int, y: int) -> Undefined: ...
+    def scroll(self, x: jsint, y: jsint) -> Undefined: ...
     # TODO: 2 possibilites :
-    def scrollBy(self, x: int, y: int) -> Undefined: ...
+    def scrollBy(self, x: jsint, y: jsint) -> Undefined: ...
     # TODO: options
     def scrollIntoView() -> Undefined: ...
     # TODO: 2 possibilites :
-    def scrollTo(self, x: int, y: int) -> Undefined: ...
+    def scrollTo(self, x: jsint, y: jsint) -> Undefined: ...
     def setAttribute(self, name: str, value: str|None) -> Undefined: ...
     def setAttributeNode(self, attribute: Attr) -> Attr|None: ...
     def setAttributeNodeNS(self, attributeNode: Attr) -> Attr|None: ...
     def setAttributeNS(self, namespace: str, name: str, value: str|None) -> Undefined: ...
     def setHTMLUnsafe(self, html: str) -> Undefined: ...
-    def setPointerCapture(self, pointerId: int) -> Undefined: ...
+    def setPointerCapture(self, pointerId: jsint) -> Undefined: ...
     def toggleAttribute(self, name: str, toggle: bool = False) -> bool: ...
 
 
@@ -248,5 +262,11 @@ class Element(Node):
 # also lot of methods...
 class Document(Node):
     def querySelector[T: Element](self, selectors: str, /) -> T|None: ...
+
+# TODO (inherit EventTarget)
+# https://developer.mozilla.org/en-US/docs/Web/API/Window
+# 49 props + 34 methods
+
+# TODO: other API...
 
 document: Document
