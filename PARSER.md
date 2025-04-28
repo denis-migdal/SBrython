@@ -38,13 +38,25 @@ Current test
 from JS import document
 
 a = document.querySelector("body")
-a.remove();
+
+def handler():
+    print("click")
+
+a.addEventListener("click", handler)
 
 Minor Steps
 ===========
 
 - studs
     - complete little by little...
+        - from typing import TypedDict
+        - type NameInfo = TypedDict('NameInfo', {'name': str, 'first-letter': str}) # type in python 3.12
+        + NotRequired*
+        - @overload
+        - generics (can be multi-generic) => create subclass ? (copy all ?)
+            ~> ou T context ?
+                ~> ReturnType refactor...
+                ~> type : more metadata ? [GENERICS] : {"T": id} ???
 
 - clean JS output
     - parseFloat -> Number.NaN

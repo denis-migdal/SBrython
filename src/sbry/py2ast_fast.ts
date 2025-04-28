@@ -890,6 +890,12 @@ function readExpr(colon_is_end = true) { //TODO...
         const type = nextSymbol();
         const typeID = getSymbol(type) + 1 as TYPE_ID;
 
+        // @ts-ignore
+        while(curChar === 124) { // |
+            ++offset;
+            nextSymbol();
+        }
+
         setResultType(value, typeID);
         addSymbol(VALUES[value], typeID); //TODO...
 
