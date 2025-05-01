@@ -39,6 +39,12 @@ Currently, this command accepts several options:
 - `--verbose`: print informations.
 - `--help`: print the commande usage.
 
+💡 If `-` is given instead of a file, `sbryc` read the content of the standard input and write the generated code in the standard output, e.g.:
+```shell
+$ echo "a = 1+1" | ./tools/sbryc - --compat PERF
+var a = 1n+1n
+```
+
 ### Using stubs files
 
 SBrython provides stubs files in the `./stubs/` directory.

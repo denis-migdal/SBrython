@@ -35,9 +35,12 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 Yet another todolist
 ====================
 
+- AoT/JIT doc
+- prod/test/dev doc (test doesn't remove asserts)
+
 - restaure "Mix" tests (avoid regression...)
     - requires runtime.
-    - __SB__ (global for now - ES6 later)
+    - __SB__ (global for now - ES6 later) => ES6 when working on import...
     + add to sbryc + doc.
 - rename compat modes
 - restaure disabled unit tests.

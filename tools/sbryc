@@ -92,6 +92,16 @@ async function convertFile(src: string, dst: string) {
 
 const {_: SRC_DIRS, outDir: DST_DIR, verbose:DEBUG, watch} = flags;
 
+if( SRC_DIRS.length === 1 && SRC_DIRS[0] === "-") {
+
+    const input = await new Response(Deno.stdin.readable).text(); // h4ck
+    const js_code = sbry.ast2js( sbry.py2ast( input ) );
+
+    console.log(js_code);
+
+    Deno.exit(0);
+}
+
 for(let SRC_DIR of SRC_DIRS) {
 
     const isDir = await exists(SRC_DIR, { isDirectory: true }); // true
