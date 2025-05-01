@@ -20,6 +20,8 @@ SBrython also offers several options to tweak the generation of JavaScript/TypeS
 
 TODO: intro + in browser + API
 
+#### CLI
+
 The `sbryc` command converts python files into JavaScript, TypeScript, or WASM files. Its usage is rather simple:
 ```shell
 ./tools/sbryc foo.py

@@ -1,9 +1,4 @@
-# 1. AoT commands/tools + docs...
-# 2. Generate TS + JS/mix + module type...
-# 3. Example of Python/TS pipelines (?)
-# @inlineKlass(Number)
-#
-# 4. Solve Circular type def.
+# 1. Solve Circular type def.
 #   Somehow lazy parse (types) on demand ???
 #       -> only for classes/classesType (fct/methods no circularity ?)
 #       -> import : fixer ID, class X : search ID if exists. (only top level import)
@@ -14,9 +9,13 @@
 #   - 2. ignore : from __future__ import annotations at top of the file.
 #   - 3. pre-creer le symbole...
 #       -> SBrython exported {"package": [...]} -> top level body add/search
-# 5. Callable (+ refactor functions type)
-# 6. TypedDict + NotRequired
-# 7. Final (for TS)
+# 2. Callable (+ refactor functions type)
+# 3. TypedDict + NotRequired
+# 4. Final (for TS)
+#
+# 5. Generate TS + JS/mix + module type...
+# 6. @inlineKlass(Number)
+#
 
 # TODO special : other than window + not found -> search in window
 # TODO: constructors too...
