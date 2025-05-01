@@ -10,24 +10,28 @@ SBrython enables to execute Python codes in the Browser by efficiently convertin
 
 SBrython perfectly integrates with existing Python and Web development tools, and enables you to easily interact with existing JavaScript/TypeScript codes/libraries, as well as with the browser APIs.
 
-SBrython also offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs:
+[TODO: code example.]
+
+### Conversion
+
+SBrython offers several options to tweak the generation of JS/TS/WASM to better match your needs:
 - `compat`: compatibility level with the Python standard:
-   - `NONE`: generate clean and fastest JS/TS code, doesn't require a runtime library (_default_).
+   - `NONE`: generate clean and fastest JS/TS code, doesn't require a runtime library (***default***).
    - `PERF`: generate unclean and fast JS/TS code, requires a small runtime library.
    - `FULL`: fully compliant with the Python standard (**not implemented yet**).
+   - `BRYTHON`: use [brython](https://github.com/brython-dev/brython), fully python-compliant, slower, JS-Python interactions more incertain, not compatible with the following options.
 - `export`:
-    - `NONE`: can't import/export symbols (_default_).
-    - `ES6`: produce ES6 modules (recommanded for AoT conversion).
+    - `NONE`: can't import/export symbols (***default***).
+    - `ES6`: produce ES6 modules (recommanded for AoT conversions).
     - `SBRY`: produce SBrython modules (recommanded for conversions in the Browser).
     - `GLOBAL` : store exported symbols in `__SBRY_LAST_EXPORTED__`.
 - `mode`: for development purposes.
-   - `dev`: performs some checks, keeps some debug informations (_default_).
+   - `dev`: performs some checks, keeps some debug informations (***default***).
    - `prod`: intended for production code.
    - `test`: like the `prod` mode, but asserts are kept.
+- TODO: JS/TS output
 
 ⚠ SBrython is still in alpha version, lot of features aren't available yet. 
-
-### Conversion
 
 #### Browser
 
@@ -41,7 +45,7 @@ The `sbryc` command converts python files into JS, TS, or WASM files. Its usage 
 ```
 
 Currently, this command accepts several options:
-- `--compat NONE|PERF|FULL`: the level of Python compliance (default: `NONE`).
+- `--compat NONE|PERF|FULL|BRYTHON`: the level of Python compliance (default: `NONE`).
 - `--export NONE|ES6|SBRY|GLOBAL`: produce ES6 modules, or SBrython modules (default: `NONE`).
 - `--mode   dev|prod|test`: (default: `dev`).
 - `--outDir $DST_DIR`: the directory where the generated files are saved.
@@ -54,6 +58,8 @@ Currently, this command accepts several options:
 $ echo "a = 1+1" | ./tools/sbryc - --compat PERF
 var a = 1n+1n
 ```
+
+⚠ `Deno` must be installed (cf [documentation](https://docs.deno.com/runtime/getting_started/installation/)).
 
 ⚠ On Windows, `sbryc` might require WSL.
 

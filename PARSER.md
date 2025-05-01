@@ -36,7 +36,7 @@ Yet another todolist
 ====================
 
 - AoT/JIT doc
-    - browser (+ create)
+    - browser (+ create) [TODO: cache?]
         - script type="text/sbrython" + flags...
         - doc usage (add runtime...)
     - API(SBrython)
@@ -44,7 +44,7 @@ Yet another todolist
         - register (SBRY module)
 
 + editor/benchmark links.
-+ import JS
++ doc "import JS" for browser API.
 - clean readme.md
 
 - restaure disabled unit tests.
@@ -56,7 +56,7 @@ Yet another todolist
 Minor Steps
 ===========
 
-- pass more unit tests
+- pass more unit tests (klasses)
 
 - clean JS output
     - methods...

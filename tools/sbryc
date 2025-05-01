@@ -3,9 +3,14 @@
 import { parseArgs } from "jsr:@std/cli/parse-args";
 import { walk } from "https://deno.land/std@0.170.0/fs/walk.ts";
 import {exists} from "https://deno.land/std/fs/mod.ts"
-import { dirname, basename } from "https://deno.land/std/path/mod.ts";
+import { dirname, basename, fromFileUrl } from "https://deno.land/std/path/mod.ts";
 
 import * as sbry from "../dist/dev/libs/SBrython-dev/"; //TODO..
+
+declare global {
+    var __BRYTHON__: any;
+    var Deno: any;
+}
 
 function isSBryFile(path: string) {
 	return path.endsWith('.py') || path.endsWith('.sbry');
@@ -65,6 +70,8 @@ globalThis.__SBRY_COMPAT__ = flags.compat;
 globalThis.__SBRY_MODE__   = flags.mode;
 globalThis.__SBRY_EXPORT__ = flags.export;
 
+const {_: SRC_DIRS, outDir: DST_DIR, verbose:DEBUG, watch} = flags;
+
 if(flags.help) {
 	console.log('sbryc $SRC_FILES[...]');
 	console.log('\t* --compat NONE|PERF|FULL');
@@ -87,20 +94,76 @@ async function convertFile(src: string, dst: string) {
 	
 	const pycode = await Deno.readTextFile(src);
 	
-    //TODO: filename...
-    const js_code = sbry.ast2js( sbry.py2ast( pycode, src ) );
+    const js_code = convert_code_sbrython(pycode, src);
 	await Deno.writeTextFile(dst, js_code);
+}
+
+function convert_code_sbrython(pycode: string, filename: string) {
+    return sbry.ast2js( sbry.py2ast( pycode, filename ) );
+}
+
+let convert_code = convert_code_sbrython;
+
+function convert_code_brython(pycode: string, filename: string) {
+
+    globalThis.$B = __BRYTHON__;
+
+	let js_ast = __BRYTHON__.py2js(pycode, filename);
+	//TODO: exports...
+	return `// Javascript code generated from Brython AOT
+// https://github.com/denis-migdal/Brython-AOT
+
+(async function(){
+
+__BRYTHON__.imported["${filename}"] = {};
+__BRYTHON__.frames_stack = [];
+
+${js_ast.to_js()}
+
+})();
+}
+`;
+}
+
+if( flags.compat === "BRYTHON" ) {
+    //TODO: load
+
+    const brython_file = "/../brython/www/src/brython.min.js";
+
+    const PARSER_SCRIPT = await Deno.readTextFile( dirname(fromFileUrl(import.meta.url)) + brython_file );
+
+    globalThis.__BRYTHON__ = {};
+    globalThis.global = globalThis;
+    // @ts-ignore
+    globalThis.module = {};
+
+    /*
+    window.location = {
+        href: "http://localhost/",
+        origin: "http://localhost",
+        pathname: "/"
+    };
+    window.document = {
+        getElementsByTagName: () => [{src: "http://localhost/"}],
+        currentScript: () => {src: "http://localhost/"}
+    }; 
+    window.MutationObserver = function() { this.observe = () => {};  }
+    */
+
+    eval(PARSER_SCRIPT);
+
+    console.warn("=== passed === ");
+
+    convert_code = convert_code_brython
 }
 
 /******************/
 // Initial conversion
 
-const {_: SRC_DIRS, outDir: DST_DIR, verbose:DEBUG, watch} = flags;
-
 if( SRC_DIRS.length === 1 && SRC_DIRS[0] === "-") {
 
     const input = await new Response(Deno.stdin.readable).text(); // h4ck
-    const js_code = sbry.ast2js( sbry.py2ast( input, "-" ) );
+    const js_code = convert_code( input, "-" );
 
     console.log(js_code);
 
