@@ -1,0 +1,145 @@
+#!/usr/bin/env -S deno --allow-read --allow-write --unstable-sloppy-imports --ext=ts
+
+import { parseArgs } from "jsr:@std/cli/parse-args";
+import { walk } from "https://deno.land/std@0.170.0/fs/walk.ts";
+import {exists} from "https://deno.land/std/fs/mod.ts"
+import { dirname, basename } from "https://deno.land/std/path/mod.ts";
+
+import * as sbry from "../dist/dev/libs/SBrython-dev/"; //TODO..
+
+function isSBryFile(path: string) {
+	return path.endsWith('.py') || path.endsWith('.sbry');
+}
+
+function getOutputPath(path, srcDir: string, outDir: string) {
+
+    const ext = ".js"; // TODO
+    const base = basename(path)
+    const filename = `${base.slice(0, base.lastIndexOf("."))}${ext}`;
+
+    if( outDir === undefined)
+        return `${dirname(path)}/${filename}`;
+    if( path === srcDir) // srcDir was a file
+        return `${outDir}/${filename}`;
+
+	return `${outDir}/${dirname(path.slice(srcDir.length))}/${filename}`;
+}
+
+async function isDirEmpty(path) {
+
+	for await (const dirEntry of Deno.readDir(path) )
+		return false;
+	return true;
+}
+
+async function removeFile(path) {
+	console.log('Removing file', path);
+	
+	await Deno.remove(path);
+	
+	let pathDir = await dirname(path);
+	while( await isDirEmpty(pathDir) ) {
+			
+		console.log('Removing dir', pathDir);
+		await Deno.remove(pathDir);
+		pathDir = await dirname(pathDir);
+	}
+}
+
+/******************/
+
+const flags = parseArgs(Deno.args, {
+	boolean: ["help", "watch", "verbose"],
+	string: ["outDir"],
+	default: { help: false, watch: false, verbose: false },
+});
+
+if(flags.help) {
+	console.log('sbryc $SRC_FILES[...]');
+	console.log('\t* --outDir $DST_DIR');
+	console.log('\t* --watch');
+	console.log('\t* --verbose');
+	Deno.exit(0);
+}
+
+/* ACTIONS */
+async function convertFile(src: string, dst: string) {
+
+	if(DEBUG) console.log('Converting', src, 'to', dst);
+	
+	const dstdir = await dirname(dst);
+	if( ! await exists(dstdir) )
+		await Deno.mkdir(dstdir, { recursive: true });
+	
+	const pycode = await Deno.readTextFile(src);
+	
+    //TODO: filename...
+    const js_code = sbry.ast2js( sbry.py2ast( pycode ) );
+	await Deno.writeTextFile(dst, js_code);
+}
+
+/******************/
+// Initial conversion
+
+const {_: SRC_DIRS, outDir: DST_DIR, verbose:DEBUG, watch} = flags;
+
+for(let SRC_DIR of SRC_DIRS) {
+
+    const isDir = await exists(SRC_DIR, { isDirectory: true }); // true
+
+    if( ! isDir ) {
+
+        await convertFile( SRC_DIR, getOutputPath(SRC_DIR, SRC_DIR, DST_DIR) );
+        continue;
+    }
+
+    for await (const walkEntry of walk(SRC_DIR) ) {
+    
+        const path = walkEntry.path;
+        
+        if( ! walkEntry.isFile || ! isSBryFile(path) )
+            continue;
+
+        await convertFile( path, getOutputPath(path, SRC_DIR, DST_DIR) );
+    }
+}
+
+/******************/
+// Watch conversion
+
+if( watch ) {
+
+	if( DEBUG ) console.log("** now listening for changes **");
+
+    for(let SRC_DIR of SRC_DIRS) {
+        const watcher = Deno.watchFs(SRC_DIR, {recursive: true});
+        for await (const event of watcher) {
+
+	        //if( DEBUG ) console.log(event.kind, event.paths);
+            
+            const paths = event.paths.filter( path => isSBryFile(path) );
+            if(paths.length === 0)
+                continue;
+            
+            // this is move file ?
+            if(   (event.kind === "rename" || event.kind === "modify")
+                && event.paths.length === 2 ) {
+
+                const [srcfile, dstfile] = event.paths;
+                if( isSBryFile(srcfile) )
+                    await removeFile( getOutputPath(srcfile, SRC_DIR, DST_DIR) );
+                if( dstfile.startsWith(SRC_DIR) && isSBryFile( dstfile ) )
+                    await convertFile(dstfile, getOutputPath(dstfile, SRC_DIR, DST_DIR) );
+                
+                continue;
+            }
+            if( event.kind === "modify" )
+                for(let path of paths)
+                    await convertFile(path, getOutputPath(path, SRC_DIR, DST_DIR) )
+
+            if( event.kind === "remove" )
+                for(let path of paths)
+                    await removeFile( getOutputPath(path, SRC_DIR, DST_DIR) );
+        }
+    }
+}

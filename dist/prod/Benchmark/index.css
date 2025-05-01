@@ -26,7 +26,6 @@ body {
     gap: 10px;
 
     & > div {
-
         min-height: 0;
         min-width: 0;
         /*flex: 1 1 0px;*/
@@ -52,10 +51,12 @@ body {
         }
 
         & > textarea {
+            box-sizing: border-box;
+
             width: 100%;
             padding: 15px;
 
-            height: calc(100% - 3.5rem);
+            height: calc(100% - 2rem);
             overflow-y: auto;
         }
     }

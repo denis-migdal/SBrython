@@ -1,10 +1,40 @@
 <div align="center">
-  <h1>SBrython</h1>
+  <h1>SBrython (Alpha version)</h1>
 
-  <p>[Project description</p>
+  <p>Write your own Websites and WebApps in Python.</p>
 </div>
 
-## SimplerBrython
+## SBrython
+
+SBrython enables to execute Python codes in the Browser, by efficiently converting them into JavaScript, TypeScript, or WASM.
+
+SBrython perfectly integrates with existing Python and Web development tools, and offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs :
+- TODO: AOT/JIT
+- TODO: production/dev mode
+- TODO: output options
+- TODO: compliance levels
+
+⚠ SBrython is still in alpha version, lot of features aren't available yet.
+
+### Conversion
+
+TODO: intro + in browser + API
+
+The `sbryc` command converts python files into JavaScript, TypeScript, or WASM files. Its usage is rather simple:
+```shell
+./tools/sbryc foo.py
+```
+
+Currently, this command accepts several options:
+- `--outDir $DST_DIR` : the directory where the produced files will be saved.
+- `--watch` : launch `sbryc` in watch mode. The produced files are updated when the Python source files are modified.
+- `--verbose` : print informations.
+- `--help` : print the commande usage.
+
+## Notes:
+
+sbryc requires WSL on Windows
+
 
 https://sbrython.migdal.ovh/Editor/?test=brython&merge=true
 https://sbrython.migdal.ovh/Editor/?parser=true

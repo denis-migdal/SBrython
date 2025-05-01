@@ -1,8 +1,14 @@
-# 1. AoT commands/tools
-# 2. Generate TS
+# 1. AoT commands/tools + docs...
+# 2. Generate TS + JS/mix + module type...
 # 3. Example of Python/TS pipelines (?)
+# @inlineKlass(Number)
+#
 # 4. Solve Circular type def.
-#   Somehow lazy parse on demand ???
+#   Somehow lazy parse (types) on demand ???
+#       -> only for classes/classesType (fct/methods no circularity ?)
+#       -> import : fixer ID, class X : search ID if exists. (only top level import)
+#           -> structure to store...
+#       -> ...
 #   - 1. import system + several files + circular imports... (detect and resolve) [now = better ?]
 #       import JS.document (etc.) ??
 #   - 2. ignore : from __future__ import annotations at top of the file.
@@ -587,7 +593,6 @@ class Window(EventTarget):
     def stop(self) -> Undefined: ...
     # TODO: generic
     def structuredClone(self, value, /): ...
-    
 
 
 window: Window
