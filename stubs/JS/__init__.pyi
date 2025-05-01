@@ -1,30 +1,22 @@
-# 1. Solve Circular type def.
-#   Somehow lazy parse (types) on demand ???
-#       -> only for classes/classesType (fct/methods no circularity ?)
-#       -> import : fixer ID, class X : search ID if exists. (only top level import)
-#           -> structure to store...
-#       -> ...
-#   - 1. import system + several files + circular imports... (detect and resolve) [now = better ?]
-#       import JS.document (etc.) ??
-#   - 2. ignore : from __future__ import annotations at top of the file.
-#   - 3. pre-creer le symbole...
-#       -> SBrython exported {"package": [...]} -> top level body add/search
-# 2. Callable (+ refactor functions type)
-# 3. TypedDict + NotRequired
-# 4. Final (for TS)
+# How to use stubs files ?
+# from __future__ import annotations at top of the file ?
 #
-# 5. Generate TS + JS/mix + module type...
-# 6. @inlineKlass(Number)
-#
-
-# TODO special : other than window + not found -> search in window
-# TODO: constructors too...
-# Missing features
-#   static attribute/methods...
-#   + async/iterators...
-
-# https://developer.mozilla.org/en-US/docs/Web/API
-# 1006 classes...
+# Missing:
+# - Final[T]
+# - Callable[] (requires fct type refactor...)
+# - TypedDict + NotRequired
+#        - from typing import TypedDict
+#        - type NameInfo = TypedDict('NameInfo', {'name': str, 'first-letter': str})
+# - circular type hints
+# - static attributes/methods
+# - async + iterators
+# - some API (mainly in Window)
+# - split into separate files
+# - special stubs parser
+# - better import system.
+# - @overload
+# - add constructors + special methods (__getattr__ etc)
+# https://developer.mozilla.org/en-US/docs/Web/API (1006 classes)
 
 class Undefined:
     pass
@@ -36,8 +28,7 @@ class Event:
     bubble: bool
     cancelable: bool
     composed: bool
-    #TODO: Require circular type decl.
-    # currentTarget: EventTarget
+    currentTarget: EventTarget
     defaultPrevented: bool
     # TODO: enum ?
     eventPhase: float
@@ -46,13 +37,11 @@ class Event:
     AT_TARGET = 2.
     BUBBLING_PHASE = 3.
     isTrusted: bool
-    #TODO: Require circular type decl.
-    # target: EventTarget
+    target: EventTarget
     timeStamp: float
     type: str
 
-    #TODO: Require circular type decl.
-    # def composedPath(self) -> EventTarget : ...
+    def composedPath(self) -> EventTarget : ...
     def preventDefault() -> Undefined: ...
     def stopImmediatePropagation() -> Undefined: ...
     def stopPropagation() -> Undefined: ...
@@ -68,14 +57,13 @@ class EventTarget:
 
     def dispatchEvent(event: Event) -> bool: ...
 
-# TODO
 class NodeList:
     length: float
     # entries
     # values
     # keys
     # forEach
-    #def item(self, index:float, /) -> None: ...
+    def item(self, index: float, /) -> Node: ...
 
 class Node(EventTarget):
     # TODO: RO
@@ -99,9 +87,9 @@ class Node(EventTarget):
     DOCUMENT_FRAGMENT_NODE = 11.
     # RW:
     nodeValue: str|None
-    # TODO: Circular types + RO
-    # ownerDocument: Document|None
-    # parentElement: Element|None
+    # RO
+    ownerDocument: Document|None
+    parentElement: Element|None
     parentNode: Node|None
     previousSibling: Node|None
     textContent: str|None
@@ -141,7 +129,7 @@ class CSSStyleDeclaration:
     cssFloat: str
     cssText: str
     length: float
-    #parentRule: CSSRule
+    parentRule: CSSRule
     
     def getPropertyPriority(self, property: str, /) -> str: ...
     def getPropertyValue(self, property: str, /) -> str: ...
@@ -149,67 +137,21 @@ class CSSStyleDeclaration:
     def removeProperty(self, property: str, /) -> str: ...
     def setProperty(self, propertyName: str, value: str, priority: str = "") -> Undefined : ...
 
-# TODO extends (Element) [out of order too...]
-class HTMLElement:
-
-    accessKeyLabel: str
-    autofocus: bool
-    contentEditable: str
-    dataset: DOMStringMap
-    dir: str
-    draggable: bool
-    enterKeyHint: str
-    hidden: bool
-    inert: bool
-    innerText: str
-    inputMode: str
-    isContentEditable: bool
-    lang: str
-    nonce: float
-    offsetHeight: float
-    offsetLeft: float
-    offsetParent: float
-    offsetTop: float
-    offsetWidth: float
-    outerText: str
-    popover: str
-    spellcheck: bool
-    style: CSSStyleDeclaration|None
-    tabIndex: float
-    title: str
-    translate: bool
-
-    # attachInternals
-    def blur(self) -> Undefined: ...
-    def click(self) -> Undefined: ...
-    def focus(self) -> Undefined: ...
-    def hidePopover(self) -> Undefined: ...
-    # TODO: options
-    def showPopover(self) -> Undefined: ...
-    # TODO:
-    def togglePopover(self, force=False, /) -> Undefined: ...
-
-
-
-
-class HTMLSlotElement(HTMLElement):
-    pass
-
 class NamedNodeMap:
     # RO
     length: float
-    # def getNamedItem(self, name: str, /) -> Attr|None: ...
-    # def getNamedItemNS(self, namespace: str, localName: str, /) -> Attr|None: ...
-    # def item(self, index: float, /) -> Attr|None: ...
-    # def removeNamedItem(self, attrName: str, /) -> Attr: ...
-    # def removeNamedItemNS(self, namespace: str, localName: str, /) -> Attr: ...
-    # def setNamedItem(self, attr: Attr, /) -> Attr|None: ...
-    # def setNamedItemNS(self, attr: Attr, /) -> Attr|None: ...
+    def getNamedItem(self, name: str, /) -> Attr|None: ...
+    def getNamedItemNS(self, namespace: str, localName: str, /) -> Attr|None: ...
+    def item(self, index: float, /) -> Attr|None: ...
+    def removeNamedItem(self, attrName: str, /) -> Attr: ...
+    def removeNamedItemNS(self, namespace: str, localName: str, /) -> Attr: ...
+    def setNamedItem(self, attr: Attr, /) -> Attr|None: ...
+    def setNamedItemNS(self, attr: Attr, /) -> Attr|None: ...
 
 class HTMLCollection:
     length: float
-    # def item(self, index: float, /) -> Element|None: ...
-    # def namedItem(self, key: str, /) -> Element|None: ...
+    def item(self, index: float, /) -> Element|None: ...
+    def namedItem(self, key: str, /) -> Element|None: ...
 
 class DOMTokenList:
     length: float
@@ -255,7 +197,7 @@ class CSSImportRule(CSSRule):
     href: str
     layerName: str|None
     # media : MediaList
-    # styleSheet: CSSStyleSheet
+    styleSheet: CSSStyleSheet
     supportsText: str|None
 
 class CSSStyleSheet(StyleSheet):
@@ -278,29 +220,30 @@ class StyleSheetList:
 class DocumentFragment(Node):
     childElementCount: float
     children: HTMLCollection
-    #firstElementChild: Element|None
+    firstElementChild: Element|None
     lastElementChild: Element|None
     
     def append(self, param1: Node, /) -> Undefined: ...
-    #def getElementById(self, id: str, /) -> Element|None: ... + generic
+    # + make generic
+    def getElementById(self, id: str, /) -> Element|None: ...
     def prepend(self, param1: Node, /) -> Undefined: ...
-    #def querySelector[T: Element](self, selectors: str, /) -> T|None:: ...
+    def querySelector[T: Element](self, selectors: str, /) -> T|None: ...
     def querySelectorAll(self, selectors: str, /) -> NodeList: ...
     def replaceChildren(self, param1: Node, /) -> Undefined: ...
 
 
 class ShadowRoot(DocumentFragment):
-    # RO + circular...
-    # activeElement: Element|None
+    # RO...
+    activeElement: Element|None
     # adoptedStyleSheets (array)
     clonable: bool
     delegatesFocus: bool
     # fullscreenElement (limited)
-    # host: Element
+    host: Element
     innerHTML: str|None
     # TODO: enum ?
     mode: str
-    # pointerLockElement: Element|None
+    pointerLockElement: Element|None
     serializable: bool
     # TODO: enum ?
     slotAssignment: str
@@ -331,7 +274,7 @@ class Attr(Node):
     localName: str
     name: str
     namespaceURI: str
-    # ownerElement: Element # circular ?
+    ownerElement: Element
     prefix: str|None
     value: str
 
@@ -439,6 +382,49 @@ class Element(Node):
     def setPointerCapture(self, pointerId: float, /) -> Undefined: ...
     def toggleAttribute(self, name: str, toggle: bool = False, /) -> bool: ...
 
+
+class HTMLElement(Element):
+
+    accessKeyLabel: str
+    autofocus: bool
+    contentEditable: str
+    dataset: DOMStringMap
+    dir: str
+    draggable: bool
+    enterKeyHint: str
+    hidden: bool
+    inert: bool
+    innerText: str
+    inputMode: str
+    isContentEditable: bool
+    lang: str
+    nonce: float
+    offsetHeight: float
+    offsetLeft: float
+    offsetParent: float
+    offsetTop: float
+    offsetWidth: float
+    outerText: str
+    popover: str
+    spellcheck: bool
+    style: CSSStyleDeclaration|None
+    tabIndex: float
+    title: str
+    translate: bool
+
+    # attachInternals
+    def blur(self) -> Undefined: ...
+    def click(self) -> Undefined: ...
+    def focus(self) -> Undefined: ...
+    def hidePopover(self) -> Undefined: ...
+    # TODO: options
+    def showPopover(self) -> Undefined: ...
+    # TODO:
+    def togglePopover(self, force=False, /) -> Undefined: ...
+
+class HTMLSlotElement(HTMLElement):
+    pass
+
 class HTMLBodyElement(HTMLElement):
     pass
 
@@ -518,7 +504,7 @@ class Window(EventTarget):
     crossOriginIsolated: bool
     # crypto
     # customElements
-    # document: Document
+    document: Document
     frameElement: HTMLElement|None
     # frames
     # history
@@ -688,11 +674,5 @@ class Document(Node):
     # TODO: options + promise
     # def requestStorageAccess(self): 
     def writeln(self, line: str, /) -> Undefined: ...
-
-# TODO (inherit EventTarget)
-# https://developer.mozilla.org/en-US/docs/Web/API/Window
-# 49 props + 34 methods
-
-# TODO: other API...
 
 document: Document

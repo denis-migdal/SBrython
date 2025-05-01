@@ -47,25 +47,19 @@ a.addEventListener("click", handler)
 Minor Steps
 ===========
 
-- studs
-    - complete little by little...
-        - from typing import TypedDict
-        - type NameInfo = TypedDict('NameInfo', {'name': str, 'first-letter': str}) # type in python 3.12
-        + NotRequired*
-        - @overload
-        - generics (can be multi-generic) => create subclass ? (copy all ?)
-            ~> ou T context ?
-                ~> ReturnType refactor...
-                ~> type : more metadata ? [GENERICS] : {"T": id} ???
-    + maths.pi...
 
-- clean JS output
+- clean JS output (ES6...)
+    - begin/end...
     - parseFloat -> Number.NaN
     - int vs float...
     - classes...
     - kw fcts
     - print...
     - extra ","...
+
+- @inlineKlass(Number)
+- Generate TS + JS/mix + module type...
+- error message : show code pos...
 
 - re-established previous unit tests
 
@@ -87,10 +81,10 @@ Minor Steps
     - https://black.readthedocs.io/en/latest/
     - https://black.vercel.app/?version=stable
     - https://pypi.org/project/python-minifier/
+
 Another todo
 ============
 
-X. AoT watch tool... (cf Brython-AOT)
 X. output format : "ES6"+"TypeScript" (export top level fct...) [do not test for now ?]
 
 X. assertion failed message (more details...)

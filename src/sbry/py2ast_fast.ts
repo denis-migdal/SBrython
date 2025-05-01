@@ -1,5 +1,5 @@
 import Types, { TYPEID_None, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR, AST_KEY_IMPORT } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, TYPEID, WRITE_CALL } from "./types/utils/types";
@@ -12,7 +12,7 @@ import { AST_OP_ASSIGN_INIT } from "./ast2js/list";
 import TYPES from "./types/list";
 import { AST_OP_NOT } from "./ast2js/list";
 import { printNode } from "@SBrython/utils/print/printNode";
-import { w_sns, w_str } from "./ast2js/utils";
+import { w_str } from "./ast2js/utils";
 
 const END_OF_SYMBOL = /[^\w]/;
 const CHAR_NL    = 10;
@@ -352,7 +352,7 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         consumeSpaces();
         const imported_name = nextSymbol(); //TODO: many
 
-        if(module === "JS") {
+        if(module === "JS" ) {
             addSymbol(imported_name, JS[imported_name] ); //TODO...
             setType(id, AST_KEY_PASS); //TODO...
         } else {
@@ -970,13 +970,13 @@ function readExpr(colon_is_end = true) { //TODO...
 }
 
 // @ts-ignore
-import JS_stubs  from "!!raw-loader!../stubs/Document.pyi";
-import buildAST from "@SBrython/utils/generate/AST";
-
+import JS_stubs  from "!!raw-loader!../stubs/__init__.pyi";
 
 export function py2ast(_code: string, filename: string): AST {
 
-    if( filename !== "JS") { //TODO...
+    //TODO: better handle imports...
+    let import_offset = 0;
+    while( _code.slice(import_offset, import_offset+5) === "from ") {
 
         const start = builtins.length;
 
@@ -984,6 +984,8 @@ export function py2ast(_code: string, filename: string): AST {
 
         for(let i = start; i < builtins.length; ++i)
             JS[builtins[i][0]] = builtins[i][1]; //TODO: array (?)
+
+        import_offset = _code.indexOf("\n", import_offset) + 1;
     }
 
     resetSymbols();
@@ -1145,6 +1147,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
     if( __DEBUG__ && pyop_name === undefined) {
         printNode(left);
         printNode(right);
+        console.warn("at line", CURSOR[0])
         throw new Error(`Unknown operator ${op}!`);
     }
 

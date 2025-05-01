@@ -33,6 +33,12 @@ Currently, this command accepts several options:
 - `--verbose` : print informations.
 - `--help` : print the commande usage.
 
+### Using stubs files
+
+SBrython provides stubs files in the `./stubs/` directory.
+
+Addind this folder to the `PYTHONPATH` will allow you to use Python autocompletion features.
+
 ## Notes:
 
 sbryc requires WSL on Windows
