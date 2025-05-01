@@ -6,9 +6,9 @@
 
 ## SBrython
 
-SBrython enables to execute Python codes in the Browser, by efficiently converting them into JavaScript, TypeScript, or WASM.
+SBrython enables to execute Python codes in the Browser, by efficiently converting them into JavaScript, TypeScript, or WASM, while perfectly integrating with existing Python and Web development tools.
 
-SBrython perfectly integrates with existing Python and Web development tools, and offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs :
+SBrython also offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs :
 - TODO: AOT/JIT
 - TODO: production/dev mode
 - TODO: output options
