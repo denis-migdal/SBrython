@@ -59,7 +59,7 @@ LIST[53 ] = require("./2bigint").default;
 LIST[54 ] = require("./2number").default;
 LIST[55 ] = require("./comment").default;
 
-const _id2name = ! __DEBUG__ ? [] : [
+const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
 	"SYMBOL",
 	"STRUCT_TUPLE",
 	"STRUCT_LIST",

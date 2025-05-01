@@ -11,7 +11,7 @@ require("./float");
 require("./bool");
 require("./str");
 
-const _id2name = ! __DEBUG__ ? [] : [
+const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
 	"unknown",
 	"NoneType",
 	"None",

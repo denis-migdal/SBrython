@@ -9,10 +9,18 @@ export {_sb_, _r_};
 
 export class SBrython {
 
+    #registered: Record<string, Record<string, any>> = {};
+
+    register(name: string, exported: Record<string, any>) {
+        this.#registered[name] = exported;
+    }
+
+    //TODO...
+    // executeModule -> ObjectURL + get exports if possible...
+    // jscode  = `//# sourceURL=${filename}\n`;
+
+    // for AST...
     #registered_AST: Record<string, AST> = {};
-    #exported: Record<string, Record<string, any>> = {
-        browser: globalThis
-    };
 
     //TODO: runAST() ?
     //TODO: runPythonCode() ?
@@ -26,18 +34,18 @@ export class SBrython {
         this.#registered_AST[ast.filename] = ast;
 
         //console.log(jscode);
-        return new Function("__SB__", jscode);
+        return new Function("__SBRY__", jscode); //TODO...
     }
 
     runJSCode(jscode: string, ast: AST) {
-        this.#exported[ast.filename] = this.buildModule(jscode, ast)(this);
+        this.#registered[ast.filename] = this.buildModule(jscode, ast)(this);
     }
 
     getModules() {
-        return this.#exported;
+        return this.#registered;
     }
     getModule(name: string) {
-        return this.#exported[name];
+        return this.#registered[name];
     }
 
     getASTFor(filename: string) {
@@ -49,11 +57,12 @@ export class SBrython {
     }
 
     get _r_() {
-        return __COMPAT_LEVEL__ === "JS" ? null : _r_;
+        return __SBRY_COMPAT__ === "NONE" ? null : _r_;
     }
     get _sb_() {
-        //TODO...
-        return __COMPAT_LEVEL__ === "JS" ? {assert: _sb_.assert} : _sb_;
+        return __SBRY_COMPAT__ === "NONE" ? null : _sb_;
     }
 }
 
+// give options here ? factory ?
+export default globalThis.__SBRY__ = new SBrython();

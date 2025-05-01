@@ -41,7 +41,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
     let cur    = addFirstChild(dst);
 
     Body(cur, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(cur, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(cur, node.body);
 
     for(let i = 0; i < nbChildren ; ++i){
         cur = addSibling(cur);

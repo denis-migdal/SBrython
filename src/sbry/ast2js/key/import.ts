@@ -20,7 +20,7 @@ export default function ast2js(node: NODE_ID) {
     const value = VALUES[node];
     
     if(value === null)
-        w_str("__SB__.getModules()");
+        w_str("__SBRY__.getModules()");
     else
-        w_str(`__SB__.getModule("${value}")`);
+        w_str(`__SBRY__.getModule("${value}")`);
 }

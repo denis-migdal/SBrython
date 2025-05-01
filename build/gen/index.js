@@ -36,7 +36,7 @@ async function generateIndex(path, prefix, keys, add, index_exports) {
     }
 
 
-    result += "\nconst _id2name = ! __DEBUG__ ? [] : [\n";
+    result += "\nconst _id2name = __SBRY_MODE__ !== 'dev' ? [] : [\n";
 
     for(let key of keys)
         result += `\t"${key.slice(prefix.length)}",\n`;

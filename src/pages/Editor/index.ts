@@ -32,9 +32,9 @@ globalThis.assert = function assert(cond: boolean, msg = "Assertion failed") {
 
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
-const merge     = ! __DEBUG__;
+const merge     = __SBRY_MODE__ === "test"; // Benchmark
 const parser    = search.get("parser") === "false" ? false : true;
-const DEFAULT_COMPAT_LEVEL = search.get("compat_level") ?? "JS";
+const DEFAULT_COMPAT = (search.get("compat") ?? "NONE") as typeof __SBRY_COMPAT__;
 
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
@@ -106,7 +106,7 @@ select.addEventListener('change', () => {
         if( idx <= 0)
             continue;
         const config = JSON.parse( codes[l].slice(idx+1).trim());
-        if( config.COMPAT_LEVEL !== DEFAULT_COMPAT_LEVEL )
+        if( config.COMPAT !== DEFAULT_COMPAT )
             codes[l] = "#" + codes[l];
         else
             codes[l] = codes[l].slice(0, idx).trimEnd();
@@ -140,7 +140,7 @@ for(let i = 0; i < brython_tests.length; ++i) {
 
 function oneTimeExec(fullcode: string) {
 
-    globalThis.__COMPAT_LEVEL__ = DEFAULT_COMPAT_LEVEL;
+    globalThis.__SBRY_COMPAT__ = DEFAULT_COMPAT;
 
     const results = resetResults();
 
@@ -170,7 +170,7 @@ function oneTimeExec(fullcode: string) {
      bry_output.textContent += generate_report(results, "bry" , "sbry");
     sbry_output.textContent += generate_report(results, "sbry", "bry");
  
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
 
         const ast = astnode2tree();
         try {
@@ -462,7 +462,9 @@ function startTests(test_name: string, merge: boolean) {
 
     let failed = [];
 
-    const configs = __COMPAT_LEVEL__ === "JS" ? ["JS"] : ["JS"]; //, "Mix"];
+    const configs: typeof __SBRY_COMPAT__[] = __SBRY_COMPAT__ === "NONE"
+        ? ["NONE"]
+        : ["NONE", "PERF"]; //, "FULL"];
 
     // build merged code
     for(let i = 0; i < tests.length; ++i) {
@@ -480,7 +482,7 @@ function startTests(test_name: string, merge: boolean) {
 
             for(const config of configs) {
 
-                globalThis.__COMPAT_LEVEL__ = config;
+                globalThis.__SBRY_COMPAT__ = config;
 
                 //TODO: second exclude...
 
@@ -495,7 +497,7 @@ function startTests(test_name: string, merge: boolean) {
                     if( idx <= 0)
                         continue;
                     const config = JSON.parse( codes[l].slice(idx+1).trim());
-                    if( config.COMPAT_LEVEL !== __COMPAT_LEVEL__ )
+                    if( config.COMPAT !== __SBRY_COMPAT__ )
                         codes[l] = "#" + codes[l];
                     else
                         codes[l] = codes[l].slice(0, idx).trimEnd();

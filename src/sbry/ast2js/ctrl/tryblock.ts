@@ -9,7 +9,7 @@ export default function ast2js(node: NODE_ID) {
     BB();
     w_NL();
 
-        w_str("const _err_ = _sb_.get_py_exception(_raw_err_, __SB__)");
+        w_str("const _err_ = _sb_.get_py_exception(_raw_err_, __SBRY__)");
 
         cur = nextSibling(cur);
         if( cur !== 0)

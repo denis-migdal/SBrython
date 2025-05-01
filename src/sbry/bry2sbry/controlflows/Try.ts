@@ -13,12 +13,12 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     // try body
     Body(cur, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(cur, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(cur, node.body);
 
     for(let i = 1; i < nbChildren; ++i) {
         cur = addSibling(cur);
         ExceptHandler(cur, node.handlers[i-1], context);
-        if(__DEBUG__) set_py_code_from_list(cur, node.handlers[i-1]);
+        if(__SBRY_MODE__ === "dev") set_py_code_from_list(cur, node.handlers[i-1]);
     }
     //TODO: finally ?
 }

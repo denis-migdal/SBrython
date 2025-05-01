@@ -13,7 +13,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     coffset = addSibling(coffset);
     Body(coffset, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(coffset, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(coffset, node.body);
 
     let ifblock_cur = dst;
 
@@ -30,7 +30,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
             // body
             const id = addFirstChild(ifblock_cur);
             Body(id, cur.orelse, context );
-            if(__DEBUG__) set_py_code_from_list(ifblock_cur, cur.orelse);
+            if(__SBRY_MODE__ === "dev") set_py_code_from_list(ifblock_cur, cur.orelse);
             
             break;
         }
@@ -46,6 +46,6 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
         const id = addSibling(first);
         Body(id, cur.body, context);
-        if(__DEBUG__) set_py_code_from_list(id, cur.body);
+        if(__SBRY_MODE__ === "dev") set_py_code_from_list(id, cur.body);
     }
 }

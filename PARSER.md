@@ -36,15 +36,22 @@ Yet another todolist
 ====================
 
 - AoT/JIT doc
-- prod/test/dev doc (test doesn't remove asserts)
+    - browser (+ create)
+        - script type="text/sbrython" + flags...
+        - doc usage (add runtime...)
+    - API(SBrython)
+        - fct (execute + convert + convert&execute) + option (internal functions.)
+        - register (SBRY module)
 
-- restaure "Mix" tests (avoid regression...)
-    - requires runtime.
-    - __SB__ (global for now - ES6 later) => ES6 when working on import...
-    + add to sbryc + doc.
-- rename compat modes + in editor too... -> make it enum/const
++ editor/benchmark links.
++ import JS
+- clean readme.md
+
 - restaure disabled unit tests.
 - class unit tests.
+
+-> current_context => {} allows recursive py2ast calls... + idem ast2js...
+    -> not yet.
 
 Minor Steps
 ===========

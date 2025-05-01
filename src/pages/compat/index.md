@@ -11,10 +11,10 @@
     <body>
         <main>
 
-Compatibilities levels (__COMPAT_LEVEL__):
-- JS
-- Mix
-- Python (not implemented - runtime)
+Compatibilities levels (__SBRY_COMPAT__):
+- NONE
+- PERF
+- FULL (not implemented - runtime)
 
 <table>
     <thead>

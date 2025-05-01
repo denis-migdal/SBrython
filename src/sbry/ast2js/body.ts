@@ -15,6 +15,6 @@ export default function ast2js(node: NODE_ID) {
 
     BE();
 
-    if(__DEBUG__ && first !== 0 && node !== 0)
+    if(__SBRY_MODE__ === "dev" && first !== 0 && node !== 0)
         w_NL();
 }

@@ -56,7 +56,7 @@ function generate(dst: NODE_ID, node: any, context: Context) {
     const last_type   = node.body[node.body.length-1].constructor.$name;
     if( last_type !== "Return" && last_type !== "Raise" ) {
 
-        if( __DEBUG__ ) {
+        if( __SBRY_MODE__ === "dev" ) {
             const fake_node = {
                 constructor: {
                     $name: "Return"
@@ -74,7 +74,7 @@ function generate(dst: NODE_ID, node: any, context: Context) {
 
     const body = addSibling(coffset);
     Body(body, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(body, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(body, node.body);
 }
 
 export default function convert(dst: NODE_ID, node: any, context: Context) {

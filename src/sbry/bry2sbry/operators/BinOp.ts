@@ -10,7 +10,7 @@ import { Fct, RETURN_TYPE } from "@SBrython/sbry/types/utils/types";
 export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-    if( __DEBUG__ && op === undefined) {
+    if( __SBRY_MODE__ === "dev" && op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
     }
@@ -39,7 +39,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         if( method !== undefined)
             type   = method[RETURN_TYPE](ltype!);
 
-        if( __DEBUG__ && type === TYPEID_NotImplementedType) {
+        if( __SBRY_MODE__ === "dev" && type === TYPEID_NotImplementedType) {
             throw new Error(`${Types[rtype].__class__?.__name__} ${op} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
         }
 

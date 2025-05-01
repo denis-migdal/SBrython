@@ -7,7 +7,7 @@ import { type Context, convert_node } from "@SBrython/sbry/bry2sbry/utils";
 export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
-    if( __DEBUG__ && op === undefined) {
+    if( __SBRY_MODE__ === "dev" && op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
     }

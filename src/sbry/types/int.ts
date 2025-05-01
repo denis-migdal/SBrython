@@ -11,7 +11,7 @@ import { WRITE_CALL } from "./utils/types";
 import { OP_BIN_ADD, OP_BIN_DIV, OP_BIN_FDIV, OP_BIN_MOD, OP_BIN_MUL, OP_BIN_POW, OP_BIN_SUB, OP_BIT_AND, OP_BIT_LSHIFT, OP_BIT_NOT, OP_BIT_OR, OP_BIT_RSHIFT, OP_BIT_XOR, OP_UNR_MINUS } from "../structs/operators";
 import { addJSCmpOps, JSCmpOps_LIST } from "../structs/operators/compare";
 
-const JSType = __COMPAT_LEVEL__ === "JS" ? "Number" : "BigInt";
+const JSType = __SBRY_COMPAT__ === "NONE" ? "Number" : "BigInt";
 
 const klass = initBuiltinClass(TYPEID_int, TYPEID_type_int_, "int", JSType);
 
@@ -30,7 +30,7 @@ add_method(klass, "__call__", RET_INT, (node: NODE_ID) => {
         return;
     }
     if( other_type === TYPEID_float ) {
-        if( __COMPAT_LEVEL__ === "JS") {
+        if( __SBRY_COMPAT__ === "NONE") {
             w_sns("Math.trunc(", other, ")");
         } else {
             w_sns("BigInt(Math.trunc(", other, "))");
@@ -51,7 +51,7 @@ add_method(klass, "__call__", RET_INT, (node: NODE_ID) => {
     }
 
     const otype = TYPES[other_type];
-    if( __DEBUG__ && (otype === undefined || otype.__int__ === undefined) )
+    if( __SBRY_MODE__ === "dev" && (otype === undefined || otype.__int__ === undefined) )
         throw new Error(`${otype?.__name__}.__int__ not defined`);
 
     otype.__int__![WRITE_CALL](node);
@@ -112,7 +112,7 @@ addJSBinOps(klass, [OP_BIN_MOD], // %
                         convert_other  : CONVERT_2INT,
                         w_call: (call: NODE_ID, a: NODE_ID, op: any, b: NODE_ID) => {
                             // do not handle -0
-                            if( __COMPAT_LEVEL__ === "JS")
+                            if( __SBRY_COMPAT__ === "NONE")
                                 w_JSBinOp(call, a, op, b);
                             else
                                 w_sns("_sb_.mod_int(", a, ", ", b, ")");

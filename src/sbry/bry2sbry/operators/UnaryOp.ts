@@ -16,7 +16,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     let op = bname2pyname[node.op.constructor.$name as keyof typeof bname2pyname];
 
-    if( __DEBUG__ && op === undefined) {
+    if( __SBRY_MODE__ === "dev" && op === undefined) {
         console.warn("OP", node.op.constructor.$name);
         throw new Error("not implemented");
     }
@@ -34,7 +34,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
     if( method !== undefined )
         type = method[RETURN_TYPE]();
 
-    if( __DEBUG__ && type === TYPEID_NotImplementedType) {
+    if( __SBRY_MODE__ === "dev" && type === TYPEID_NotImplementedType) {
         console.warn(Types[resultType(coffset)].__name__);
         throw new Error(`${op} ${Types[resultType(coffset)].__name__} NOT IMPLEMENTED!`);
     }

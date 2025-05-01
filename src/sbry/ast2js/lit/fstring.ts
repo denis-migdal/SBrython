@@ -13,9 +13,9 @@ export default function ast2js(node: NODE_ID) {
         if( resultType(cur) === TYPEID_str) {
 
             // we write the children directly...
-            if(__DEBUG__) set_js_cursor( (cur as any as number)*4 + CODE_BEG);
+            if(__SBRY_MODE__ === "dev") set_js_cursor( (cur as any as number)*4 + CODE_BEG);
             w_node(VALUES[cur]);
-            if(__DEBUG__) set_js_cursor( (cur as any as number)*4 + + CODE_END);
+            if(__SBRY_MODE__ === "dev") set_js_cursor( (cur as any as number)*4 + + CODE_END);
         } else if( type(cur) === AST_LIT_FSTRING_FVAL) {
             w_node(cur);
         } else {

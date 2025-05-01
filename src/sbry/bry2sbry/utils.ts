@@ -11,7 +11,7 @@ export function convert_node(id: NODE_ID, brython_node: any, context: Context) {
 
     const convert = BRY2SBRY[name as keyof typeof BRY2SBRY];
 
-    if( __DEBUG__ && convert === undefined) {
+    if( __SBRY_MODE__ === "dev" && convert === undefined) {
         console.warn("Module not registered:", name);
         console.warn(`at ${brython_node.lineno}:${brython_node.col_offset}`);
         console.log( brython_node );
@@ -19,7 +19,7 @@ export function convert_node(id: NODE_ID, brython_node: any, context: Context) {
     }
 
     convert(id, brython_node, context);
-    if( __DEBUG__ ) set_py_code(id, brython_node);
+    if( __SBRY_MODE__ === "dev" ) set_py_code(id, brython_node);
 
 }
 

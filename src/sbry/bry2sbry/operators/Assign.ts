@@ -21,7 +21,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context): fals
     if( annotation !== undefined)
         result_type = context.local_symbols[annotation]; //?
 
-    if( __DEBUG__ && result_type !== null && result_type !== rtype )
+    if( __SBRY_MODE__ === "dev" && result_type !== null && result_type !== rtype )
         console.warn("Wrong result_type");
 
     if( result_type === null ) {

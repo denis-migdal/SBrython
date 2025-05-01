@@ -1,9 +1,7 @@
-function assert(cond: boolean) {
-    //TODO: if __DEBUG__
-    if( cond )
-        return;
+function assert(cond: boolean, msg: string = 'Assertion failed') {
 
-    throw new Error('Assertion failed');
+    if( ! cond )
+        throw new Error(msg);
 }
 
 

@@ -7,7 +7,7 @@ import { TYPEID_jsint } from "@SBrython/sbry/types/list";
 
 function write_arg(node: NODE_ID) {
 
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
+    if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(node as number) + CODE_BEG);
 
     w_str( VALUES[node] ); // arg name
 
@@ -20,14 +20,14 @@ function write_arg(node: NODE_ID) {
         w_str(" = ");
         w_node(defval);
     }
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
+    if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(node as number) + CODE_END);
 
     w_str(", ");
 }
 
 function write_posarg(node: NODE_ID) {
 
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_BEG);
+    if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(node as number) + CODE_BEG);
 
     w_str(`_${VALUES[node]}`); // arg name
 
@@ -40,7 +40,7 @@ function write_posarg(node: NODE_ID) {
         w_str(" = ");
         w_node(defval);
     }
-    if( __DEBUG__ ) set_js_cursor(4*(node as number) + CODE_END);
+    if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(node as number) + CODE_END);
 
     w_str(", ");
 }
@@ -65,14 +65,14 @@ export default function ast2js(node: NODE_ID) {
 
     if( type(cur) === AST_DEF_ARG_VARARGS ) {
         
-        if( __DEBUG__ ) set_js_cursor(4*(cur as number) + CODE_BEG);
+        if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(cur as number) + CODE_BEG);
         w_str(`...${VALUES[node]}`);
-        if( __DEBUG__ ) set_js_cursor(4*(cur as number) + CODE_END);
+        if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(cur as number) + CODE_END);
 
         cur = nextSibling(cur);
     }
 
-    if( __COMPAT_LEVEL__ === "JS" )
+    if( __SBRY_COMPAT__ === "NONE" )
         return;
 
     //TODO: if has varargs...
@@ -96,10 +96,10 @@ export default function ast2js(node: NODE_ID) {
 
         if( cur !== 0 ) { // kwargs...
             // @ts-ignore
-            if( __DEBUG__ ) set_js_cursor(4*(cur as number) + CODE_BEG);
+            if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(cur as number) + CODE_BEG);
             w_str(`...${VALUES[cur]} `);
             // @ts-ignore
-            if( __DEBUG__ ) set_js_cursor(4*(cur as number) + CODE_END);
+            if( __SBRY_MODE__ === "dev" ) set_js_cursor(4*(cur as number) + CODE_END);
         }
 
         w_str("} = _sb_.getKW() ");

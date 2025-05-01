@@ -24,7 +24,7 @@ add_method(klass, "__call__", RET_STR, (node) => {
     }
 
     const otype = TYPES[other_type].__class__;
-    if( __DEBUG__ && (otype === undefined || otype.__str__ === undefined) )
+    if( __SBRY_MODE__ === "dev" && (otype === undefined || otype.__str__ === undefined) )
         throw new Error(`${otype?.__name__}.__str__ not defined`);
 
     // @ts-ignore

@@ -29,7 +29,7 @@ function find_and_write_call(node: NODE_ID, left:NODE_ID, op: string, right: NOD
             type   = method[RETURN_TYPE](ltype!);
         
         if( type === TYPEID_NotImplementedType) {
-            if( __DEBUG__ && op !== '__eq__' && op !== '__ne__' )
+            if( __SBRY_MODE__ === "dev" && op !== '__eq__' && op !== '__ne__' )
                 throw new Error(`${ltype} ${op} ${rtype} not implemented!`);
 
             const jsop = op === '__eq__' ? '===' : '!==';

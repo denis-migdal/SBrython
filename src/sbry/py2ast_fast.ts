@@ -53,15 +53,15 @@ function consumeEmptyLines(): boolean {
         //TODO: if # => consume...
 
         if(curChar !== CHAR_NL) {
-            if(__DEBUG__) CURSOR[1] = offset;
+            if(__SBRY_MODE__ === "dev") CURSOR[1] = offset;
             return true;
         }
 
-        if(__DEBUG__) ++CURSOR[0];
+        if(__SBRY_MODE__ === "dev") ++CURSOR[0];
         ++offset;
     }
 
-    if(__DEBUG__) CURSOR[1] = offset;
+    if(__SBRY_MODE__ === "dev") CURSOR[1] = offset;
 
     return false;
 }
@@ -479,17 +479,17 @@ function consumeIndentedLines() {
 
         // we have a non-empty line.
         if(curChar !== CHAR_NL) {
-            if(__DEBUG__) CURSOR[1] = offset;
+            if(__SBRY_MODE__ === "dev") CURSOR[1] = offset;
             CURRENT_INDENTATION = offset - beg;
             return;
         }
 
         // empty line, consume next line.
-        if(__DEBUG__) ++CURSOR[0];
+        if(__SBRY_MODE__ === "dev") ++CURSOR[0];
         beg = ++offset;
     }
 
-    if(__DEBUG__) CURSOR[1] = offset;
+    if(__SBRY_MODE__ === "dev") CURSOR[1] = offset;
 
     CURRENT_INDENTATION = 0;
 }
@@ -499,7 +499,7 @@ function readComment() {
     const node = createASTNode();
     setType(node, AST_COMMENT);
 
-    if( __DEBUG__ ) set_py_code_beg(node);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_beg(node);
 
     const beg = offset + 1;
     
@@ -507,7 +507,7 @@ function readComment() {
         curChar = code.charCodeAt(++offset);
     } while(curChar !== CHAR_NL);
 
-    if( __DEBUG__ ) set_py_code_end(node);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_end(node);
     VALUES[node] = code.slice(beg, offset);
 
     return node;
@@ -528,7 +528,7 @@ function readBody(){
 
     const id = createASTNode();
 
-    if( __DEBUG__ ) set_py_code_beg(id);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_beg(id);
 
     setType(id, AST_BODY);
 
@@ -546,7 +546,7 @@ function readBody(){
 
     offset -= CURRENT_INDENTATION + 1;
 
-    if( __DEBUG__ ) set_py_code_end(id);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_end(id);
 
     return id;
 }
@@ -565,8 +565,7 @@ function readToken(): NODE_ID {
 
         const call = createASTNode();
 
-        if( __DEBUG__ )
-            set_py_code_beg(call);
+        if( __SBRY_MODE__ === "dev" ) set_py_code_beg(call);
 
         const op = OP_UNR_MINUS; //opsymbol2uopid[code[offset++] as keyof typeof opsymbol2uopid];
         ++offset;
@@ -577,8 +576,7 @@ function readToken(): NODE_ID {
 
         const call = createASTNode();
 
-        if( __DEBUG__ )
-            set_py_code_beg(call);
+        if( __SBRY_MODE__ === "dev" ) set_py_code_beg(call);
 
         const op = OP_BIT_NOT; //opsymbol2uopid[code[offset++] as keyof typeof opsymbol2uopid];
         ++offset;
@@ -603,7 +601,7 @@ function readToken(): NODE_ID {
 
     let node = createASTNode();
 
-    if( __DEBUG__ ) set_py_code_beg(node);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_beg(node);
 
     if( curChar === CHAR_QUOTE || curChar === CHAR_SINGLE_QUOTE) { // consume str
 
@@ -756,7 +754,7 @@ function readToken(): NODE_ID {
 
             //TODO: search in local -> True/False/None in context ?
 
-            if( __DEBUG__ ) set_py_code_end(node);
+            if( __SBRY_MODE__ === "dev" ) set_py_code_end(node);
 
             setType(node, AST_SYMBOL);
 
@@ -770,7 +768,7 @@ function readToken(): NODE_ID {
 
                 //TODO: better way for inlineKlasses
                 if( token === "int")
-                    VALUES[node] = "Number";
+                    VALUES[node] = __SBRY_COMPAT__ === "NONE" ? "Number" : "BigInt";
                 if( token === "float")
                     VALUES[node] = "Number";
                 if( token === "str")
@@ -803,11 +801,11 @@ function readToken(): NODE_ID {
                 setType(node, AST_CALL);
                 setFirstChild(node, cur);
 
-                if( __DEBUG__ ) copy_py_code_beg(cur, node);
+                if( __SBRY_MODE__ === "dev" ) copy_py_code_beg(cur, node);
 
                 const fctType = VALUES[node] = Types[resultType(cur)];
 
-                if( __DEBUG__ && fctType === undefined) {
+                if( __SBRY_MODE__ === "dev" && fctType === undefined) {
                     console.warn( VALUES[node], resultType(cur), Types[resultType(cur)]);
                     throw "nok";
                 }
@@ -851,7 +849,7 @@ function readToken(): NODE_ID {
         }
     }
 
-    if( __DEBUG__ ) set_py_code_end(node);
+    if( __SBRY_MODE__ === "dev" ) set_py_code_end(node);
 
     consumeSpaces();
     return node;
@@ -1012,7 +1010,7 @@ export function py2ast(_code: string, filename: string): AST {
     dop_reset();
     offset = 0;
 
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         CURSOR[0] = 0;
         CURSOR[1] = 0;
     }
@@ -1039,13 +1037,13 @@ function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
 
     setType(call, AST_CALL);
 
-    if( __DEBUG__ ) copy_py_code_end(a, call);
+    if( __SBRY_MODE__ === "dev" ) copy_py_code_end(a, call);
 
     const opnode = createASTNode();
     setType(opnode, AST_OP_OP);
     setFirstChild(call, opnode);
 
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         // I guess ?
         const dst_off = 4*(opnode as number);
         const src_beg = 4*(call  as number);
@@ -1059,7 +1057,7 @@ function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
 
     let pyop_name = opid2opmethod[op];
 
-    if( __DEBUG__ && pyop_name === undefined)
+    if( __SBRY_MODE__ === "dev" && pyop_name === undefined)
         throw new Error(`Unknown operator ${op}!`);
 
     const atype = resultType(a);
@@ -1067,14 +1065,14 @@ function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
     let method   = Types[atype].__class__![pyop_name] as Fct;
     let ret_type = TYPEID_NotImplementedType;
 
-    if( __DEBUG__ && method === undefined) {
+    if( __SBRY_MODE__ === "dev" && method === undefined) {
         printNode(a);
         throw new Error(`${pyop_name} ${Types[atype].__class__?.__name__} NOT IMPLEMENTED!`);
     }
 
     ret_type = method[RETURN_TYPE](atype); //TODO: change...
 
-    if( __DEBUG__ && ret_type === TYPEID_NotImplementedType) {
+    if( __SBRY_MODE__ === "dev" && ret_type === TYPEID_NotImplementedType) {
         printNode(a);
         throw new Error(`${pyop_name} ${Types[atype].__class__?.__name__} NOT IMPLEMENTED!`);
     }
@@ -1089,7 +1087,7 @@ function createCallUopNode(call: NODE_ID, op: OP_ID, a: NODE_ID) {
 
 function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_ID) {
 
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         copy_py_code_beg(left , call);
         copy_py_code_end(right, call);
     }
@@ -1143,7 +1141,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
     setType(opnode, AST_OP_OP);
     setFirstChild(call, opnode);
 
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         // I guess ?
         const dst_off = 4*(opnode as number);
         const src_beg = 4*(left  as number);
@@ -1157,7 +1155,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
     let pyop_name = opid2opmethod[op];
 
-    if( __DEBUG__ && pyop_name === undefined) {
+    if( __SBRY_MODE__ === "dev" && pyop_name === undefined) {
         printNode(left);
         printNode(right);
         console.warn("at line", CURSOR[0])
@@ -1184,7 +1182,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
         method = Types[rtype].__class__![pyop_name] as Fct;
 
-        if( __DEBUG__ && method === undefined) {
+        if( __SBRY_MODE__ === "dev" && method === undefined) {
             printNode(left);
             printNode(right);
             throw new Error(`${Types[rtype].__class__?.__name__} ${pyop_name} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
@@ -1192,7 +1190,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
         ret_type = method[RETURN_TYPE](ltype!);
 
-        if( __DEBUG__ && ret_type === TYPEID_NotImplementedType) {
+        if( __SBRY_MODE__ === "dev" && ret_type === TYPEID_NotImplementedType) {
             printNode(left);
             printNode(right);
             throw new Error(`${Types[rtype].__class__?.__name__} ${pyop_name} ${Types[ltype].__class__?.__name__} NOT IMPLEMENTED!`);
@@ -1210,7 +1208,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
 
 // py code
 
-const CURSOR = __DEBUG__ ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
+const CURSOR = __SBRY_MODE__ === "dev" ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
 export function set_py_code_beg(id: NODE_ID) {
 

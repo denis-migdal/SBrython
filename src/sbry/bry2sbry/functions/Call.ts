@@ -18,7 +18,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
         fct = Types[type][name] as Type;
 
-        if( __DEBUG__ && fct === undefined ) {
+        if( __SBRY_MODE__ === "dev" && fct === undefined ) {
             console.warn(node);
             throw new Error(`Method ${name} not defined`);
         }
@@ -26,7 +26,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
         const name = node.func.id;
         const fct_type = context.local_symbols[name]!;
         
-        if( __DEBUG__ && fct_type === undefined ) {
+        if( __SBRY_MODE__ === "dev" && fct_type === undefined ) {
             console.warn(node);
             console.warn(context.local_symbols);
             throw new Error(`Function ${name} not defined`);
@@ -50,7 +50,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
     for(let i = 0; i < node.keywords.length; ++i) {
         cur = addSibling(cur);
         keyword(cur, node.keywords[i], context );
-        if(__DEBUG__) set_py_code(cur, node.keywords[i]);
+        if(__SBRY_MODE__ === "dev") set_py_code(cur, node.keywords[i]);
     }
 
     VALUES[dst] = fct;

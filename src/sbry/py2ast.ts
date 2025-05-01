@@ -50,7 +50,7 @@ export function convert_ast(ast: any) {
 
     const id = createASTNode();
     Body(id, ast.body, new Context() );
-    if(__DEBUG__) set_py_code_from_list(id, ast.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(id, ast.body);
 
     return ASTNODES;
 

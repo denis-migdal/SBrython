@@ -11,7 +11,7 @@ export const CONVERT_2INT      = Number2Int;
 
 export function Int2Number(a: NODE_ID, target = TYPEID_float) {
 
-    if( __COMPAT_LEVEL__ === "JS" )
+    if( __SBRY_COMPAT__ === "NONE" )
         return a;
 
     if( resultType(a) !== TYPEID_int) // already a number
@@ -56,9 +56,9 @@ export function Int2Number(a: NODE_ID, target = TYPEID_float) {
 
 export function Number2Int(a: NODE_ID) {
 
-    if( __COMPAT_LEVEL__ === "JS" )
+    if( __SBRY_COMPAT__ === "NONE" )
         return a;
-    
+
     if( resultType(a) === TYPEID_int)
         return a;
 

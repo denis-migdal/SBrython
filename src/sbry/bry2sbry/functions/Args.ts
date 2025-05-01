@@ -125,7 +125,7 @@ export function convert_args(dst: NODE_ID, node: any, SType_fct: Callable, conte
 
     VALUES[dst] = SType_fct;
     
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         if( total_args !== 0) {
 
             set_py_from_beg_end(dst, first, cur);
@@ -170,5 +170,5 @@ export function convert_arg(dst: NODE_ID, node: any, defval: any, type: NODE_TYP
     VALUES[dst] = name;
     context.local_symbols[name] = result_type;
 
-    if( __DEBUG__) set_py_code(dst, node);
+    if( __SBRY_MODE__ === "dev") set_py_code(dst, node);
 }

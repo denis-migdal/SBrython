@@ -9,7 +9,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const coffset = addFirstChild(dst);
     Body(coffset, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(coffset, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(coffset, node.body);
 
     if( node.type !== undefined ) {
         const cur = addSibling(coffset);

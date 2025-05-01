@@ -1,9 +1,9 @@
 // must NOT depends on list.
-import AST2JS from "./list"; // required for correct type deduction...
+import AST2JS, { AST_CLASSDEF, AST_DEF_FCT, AST_OP_ASSIGN_INIT, AST_SYMBOL } from "./list"; // required for correct type deduction...
 
-import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, JS_CODE, NODE_ID, type } from "../dop";
+import { ARRAY_TYPE, CODE_BEG, CODE_BEG_COL, CODE_BEG_LINE, CODE_COL, CODE_END, CODE_END_COL, CODE_END_LINE, CODE_LINE, firstChild, JS_CODE, nextSibling, NODE_ID, type, VALUES } from "../dop";
 
-export const CURSOR = __DEBUG__ ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
+export const CURSOR = __SBRY_MODE__ === "dev" ? new ARRAY_TYPE(2) : null as unknown as InstanceType<typeof ARRAY_TYPE>;
 
 export let jscode: string;
 
@@ -11,39 +11,59 @@ import type { AST } from "@SBrython/sbry/py2ast";
 
 export function ast2js(ast: AST) {
 
-    new_jscode(ast.filename);
+    new_jscode();
 
     w_node(0);
 
-    // TODO: better export strategy (?)
-    //jscode += `\nconst __exported__ = {};\n`;
+    const exported = [];
+    let cur = firstChild(0);
 
-    //console.warn(jscode);
+    let node_type;
+    while( cur !== 0) {
 
-    /**
-    const lines = ast.body.children;
-    const exported = new Array(lines.length);
-    let offset = 0;
-    for(let i = 0; i < lines.length; ++i) {
-        if( lines[i].type === "functions.def")
-        exported[i] = lines[i].value;
+        node_type = type(cur);
+
+        if( node_type === AST_CLASSDEF || node_type === AST_DEF_FCT)
+            exported.push( VALUES[cur]);
+        if( node_type === AST_OP_ASSIGN_INIT ) {
+            const child = firstChild(cur);
+            if( type(child) === AST_SYMBOL)
+                exported.push( VALUES[child] );
+        }
+
+        cur = nextSibling(cur);
     }
-    exported.length = offset;
 
-    jscode += `\nconst __exported__ = {${exported.join(', ')}};\n`;
-    /**/
+    if( __SBRY_EXPORT__ === "GLOBAL" )
+        jscode += `\nglobalThis.__SBRY_LAST_EXPORTED__ = {${exported.join(', ')}};\n`;
+    if( __SBRY_EXPORT__ === "SBRY")
+        jscode += `\n__SBRY__.register("${ast.filename}", {${exported.join(', ')}});\n`;
+    if( __SBRY_EXPORT__ === "ES6" )
+        jscode += `\nexport {${exported.join(', ')}};\n`;
 
 	return jscode;
 }
 
-function new_jscode(filename: string) {
+function new_jscode() {
 
-    //jscode  = `//# sourceURL=${filename}\n`;
-    //jscode += `const {_r_, _sb_} = __SB__;\n`;
     jscode = "";
 
-    if(__DEBUG__) {
-        CURSOR[CODE_LINE] = 1;
+    let nbLines = 1;
+
+    if( __SBRY_COMPAT__ !== "NONE") {
+        if( __SBRY_EXPORT__ === "ES6" ) {
+            jscode += `import __SBRY__ from "@SBrython";\n`;
+            ++nbLines;
+        }
+
+        if( __SBRY_EXPORT__ !== "NONE") {
+            jscode += `const {_r_, _sb_} = __SBRY__;\n`;
+            ++nbLines;
+        }
+    }
+
+    if(__SBRY_MODE__ === "dev") {
+        CURSOR[CODE_LINE] = nbLines;
         CURSOR[CODE_COL] = jscode.length;
     }
 }
@@ -78,7 +98,7 @@ let indent = "    ";
 let cur_indent_level = -1;
 //let cur_indent = "";
 
-const indents = __DEBUG__ ? [
+const indents = __SBRY_MODE__ === "dev" ? [
     "",
     indent,
     indent+=indent,
@@ -96,7 +116,7 @@ export function w_NL() {
 
     jscode += "\n";
 
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         ++CURSOR[CODE_LINE];
         CURSOR[CODE_COL] = jscode.length;
 
@@ -116,7 +136,7 @@ export function w_str(str: string) {
     jscode += str;
 }
 export function w_node(node: NODE_ID) {
-    if( __DEBUG__ ) {
+    if( __SBRY_MODE__ === "dev" ) {
         const has = hasJSCursor(node);
         if( ! has ) set_js_cursor(4*(node as number) + CODE_BEG);
         AST2JS[type(node)!](node);
@@ -139,7 +159,7 @@ export function w_sns(...args: W_SNS) { //TODO: alternate
 
         const node = args[i] as NODE_ID;
 
-        if( __DEBUG__ ) {
+        if( __SBRY_MODE__ === "dev" ) {
             const has = hasJSCursor(node);
             if( ! has ) set_js_cursor(4*(node as number) + CODE_BEG);
             AST2JS[type(node)!](node);

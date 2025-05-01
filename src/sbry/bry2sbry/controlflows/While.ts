@@ -12,6 +12,6 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
 
     const body = addSibling(coffset);
     Body(body, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(body, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(body, node.body);
 
 }

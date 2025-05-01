@@ -19,7 +19,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context): fals
     
         const body = addSibling(coffset);
         Body(body, node.body, context);
-        if(__DEBUG__) set_py_code_from_list(body, node.body);
+        if(__SBRY_MODE__ === "dev") set_py_code_from_list(body, node.body);
     
         VALUES[dst] = target;
 
@@ -35,7 +35,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context): fals
 
     let cur    = addFirstChild(dst);
     Body(cur, node.body, context);
-    if(__DEBUG__) set_py_code_from_list(cur, node.body);
+    if(__SBRY_MODE__ === "dev") set_py_code_from_list(cur, node.body);
 
     const nbChildren = args.length;
     for(let i = 1; i < nbChildren ; ++i) {

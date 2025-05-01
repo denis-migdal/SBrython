@@ -13,7 +13,7 @@ export default function convert(dst: NODE_ID, node: any, context: Context) {
     for(let i = 0; i < nb_ops; ++i) {
 
         const op = bname2pyname[nops[i].constructor.$name as keyof typeof bname2pyname];
-        if( __DEBUG__ && op === undefined)
+        if( __SBRY_MODE__ === "dev" && op === undefined)
             throw new Error(`${nops[i].constructor.$name} not implemented!`);
         
         ops[i] = op;

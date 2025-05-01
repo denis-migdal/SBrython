@@ -53,7 +53,7 @@ export default function convert(dst: NODE_ID, node: any, _context: Context): fal
         }
     }
 
-    if( __DEBUG__ && qname !== "int" && vtype !== "number" )
+    if( __SBRY_MODE__ === "dev" && qname !== "int" && vtype !== "number" )
         throw new Error(`Unknown type ${vtype}:${qname}`);
 
     setType      (dst, AST_LIT_INT);

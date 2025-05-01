@@ -27,9 +27,13 @@ export default async function(...args) {
 	for(const name in entries) {
 
 		const layer = {
-			__DEBUG__       : !production.includes(name),
-			__COMPAT_LEVEL__:  production.includes(name) ? "JS" : null
+			MODE  : production.includes(name) ? "prod" : "dev",
+			COMPAT: production.includes(name) ? "NONE" : null,
+			EXPORT: production.includes(name) ? "NONE" : null,
 		};
+
+		if( name === 'Benchmark')
+			layer.MODE = "test";
 
 		entries[name].layer = JSON.stringify(layer);
 	}
@@ -65,16 +69,35 @@ export default async function(...args) {
 	cfg.experiments.layers = true;
 
 	cfg.plugins.push(new webpack.DefinePlugin({
-		__DEBUG__: webpack.DefinePlugin.runtimeValue(
-			ctx => JSON.parse(ctx.module.layer).__DEBUG__
-		),
-		__COMPAT_LEVEL__: webpack.DefinePlugin.runtimeValue(
+		__SBRY_EXPORT__: webpack.DefinePlugin.runtimeValue(
 			ctx => {
-				
-				const level = JSON.parse(ctx.module.layer).__COMPAT_LEVEL__;
+
+				const level = JSON.parse(ctx.module.layer).EXPORT;
 
 				if( level === null)
-					return "globalThis.__COMPAT_LEVEL__"; // globally defined.
+					return "globalThis.__SBRY_EXPORT__"; // globally defined.
+				
+				return JSON.stringify(level);
+			}
+		),
+		__SBRY_MODE__: webpack.DefinePlugin.runtimeValue(
+			ctx => {
+
+				const level = JSON.parse(ctx.module.layer).MODE;
+
+				if( level === null)
+					return "globalThis.__SBRY_MODE__"; // globally defined.
+				
+				return JSON.stringify(level);
+			}
+		),
+		__SBRY_COMPAT__: webpack.DefinePlugin.runtimeValue(
+			ctx => {
+				
+				const level = JSON.parse(ctx.module.layer).COMPAT;
+
+				if( level === null)
+					return "globalThis.__SBRY_COMPAT__"; // globally defined.
 				
 				return JSON.stringify(level);
 			}

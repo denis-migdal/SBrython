@@ -7,6 +7,6 @@ export default function ast2js(node: NODE_ID) {
     const value = VALUES[node];
 
     w_str(value);
-    if( __COMPAT_LEVEL__ !== "JS" && resultType(node) === TYPEID_int )
+    if( __SBRY_COMPAT__ !== "NONE" && resultType(node) === TYPEID_int )
         w_str("n");
 }

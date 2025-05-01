@@ -50,21 +50,26 @@ async function removeFile(path) {
 
 const flags = parseArgs(Deno.args, {
 	boolean: ["help", "watch", "verbose"],
-	string: ["outDir", "compat"],
+	string: ["outDir", "compat", "mode", "export"],
 	default: {
         help: false,
         watch: false,
         verbose: false,
-        compat: "NONE"
+        compat: "NONE",
+        mode: "dev",
+        export: "NONE"
     },
 });
 
-if( flags.compat === "NONE")
-    globalThis.__COMPAT_LEVEL__ = "JS";
+globalThis.__SBRY_COMPAT__ = flags.compat;
+globalThis.__SBRY_MODE__   = flags.mode;
+globalThis.__SBRY_EXPORT__ = flags.export;
 
 if(flags.help) {
 	console.log('sbryc $SRC_FILES[...]');
 	console.log('\t* --compat NONE|PERF|FULL');
+	console.log('\t* --export NONE|ES6|SBRY|GLOBAL');
+	console.log('\t* --mode   dev|prod|test');
 	console.log('\t* --outDir $DST_DIR');
 	console.log('\t* --watch');
 	console.log('\t* --verbose');
@@ -83,7 +88,7 @@ async function convertFile(src: string, dst: string) {
 	const pycode = await Deno.readTextFile(src);
 	
     //TODO: filename...
-    const js_code = sbry.ast2js( sbry.py2ast( pycode ) );
+    const js_code = sbry.ast2js( sbry.py2ast( pycode, src ) );
 	await Deno.writeTextFile(dst, js_code);
 }
 
@@ -95,7 +100,7 @@ const {_: SRC_DIRS, outDir: DST_DIR, verbose:DEBUG, watch} = flags;
 if( SRC_DIRS.length === 1 && SRC_DIRS[0] === "-") {
 
     const input = await new Response(Deno.stdin.readable).text(); // h4ck
-    const js_code = sbry.ast2js( sbry.py2ast( input ) );
+    const js_code = sbry.ast2js( sbry.py2ast( input, "-" ) );
 
     console.log(js_code);
 

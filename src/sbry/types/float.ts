@@ -60,7 +60,7 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
     }
 
     const otype = TYPES[other_type];
-    if( __DEBUG__ && (otype === undefined || otype.__int__ === undefined) )
+    if( __SBRY_MODE__ === "dev" && (otype === undefined || otype.__int__ === undefined) )
         throw new Error(`${otype?.__name__}.__int__ not defined`);
 
     // @ts-ignore
@@ -68,7 +68,7 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
 });
 
 add_method(klass, "__str__", RET_STR, (call: NODE_ID) => {
-    if( __COMPAT_LEVEL__ === "JS") {
+    if( __SBRY_COMPAT__ === "NONE") {
         w_node( nextSibling(firstChild(call)) ); w_str(' .toString()');
     } else
         w_sns("_sb_.float2str(", nextSibling(firstChild(call)), ")");
