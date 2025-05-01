@@ -33,9 +33,9 @@ The `sbryc` command converts python files into JS, TS, or WASM files. Its usage 
 ```
 
 Currently, this command accepts several options:
-- `--compat NONE|PERF|FULL`: select the level of Python compliance.
-- `--outDir $DST_DIR`: the directory where the produced files will be saved.
-- `--watch`: launch `sbryc` in watch mode. The produced files are updated when the Python source files are modified.
+- `--compat NONE|PERF|FULL`: the level of Python compliance.
+- `--outDir $DST_DIR`: the directory where the generated files are saved.
+- `--watch`: the generated files are updated when the Python source files are modified.
 - `--verbose`: print informations.
 - `--help`: print the commande usage.
 
