@@ -11,7 +11,7 @@ SBrython enables to execute Python codes in the Browser, by efficiently converti
 SBrython perfectly integrates with existing Python and Web development tools. SBrython enables you to easily interact with existing JavaScript/TypeScript codes/libraries, as well as with the browser APIs.
 
 SBrython also offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs :
-- `compat`: the level of compatibilities you want with the Python standard:
+- `compat`: compatibility level with the Python standard:
    - `NONE`: generate clean and fastest JS/TS code, doesn't require a runtime library.
    - `PERF`: generate unclean and fast JS/TS code, requires a small runtime library.
    - `FULL`: fully compliant with the Python standard.
@@ -27,7 +27,7 @@ TODO: intro + in browser + API
 
 #### CLI
 
-The `sbryc` command converts python files into JavaScript, TypeScript, or WASM files. Its usage is rather simple:
+The `sbryc` command converts python files into JS, TS, or WASM files. Its usage is rather simple:
 ```shell
 ./tools/sbryc foo.py
 ```
