@@ -42,7 +42,7 @@ Yet another todolist
     - requires runtime.
     - __SB__ (global for now - ES6 later) => ES6 when working on import...
     + add to sbryc + doc.
-- rename compat modes
+- rename compat modes + in editor too...
 - restaure disabled unit tests.
 - class unit tests.
 

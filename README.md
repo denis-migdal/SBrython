@@ -45,19 +45,16 @@ $ echo "a = 1+1" | ./tools/sbryc - --compat PERF
 var a = 1n+1n
 ```
 
-### Using stubs files
+⚠ On Windows, `sbryc` might require WSL.
 
-SBrython provides stubs files in the `./stubs/` directory.
+### Autocompletion
 
-Addind this folder to the `PYTHONPATH` will allow you to use Python autocompletion features.
+SBrython stubs files are located in the `./stubs/` directory. Addind this folder to your `PYTHONPATH` will enable autocompletion features in your editor.
 
 ## Notes:
 
-sbryc requires WSL on Windows
-
-
 https://sbrython.migdal.ovh/Editor/?test=brython&merge=true
-https://sbrython.migdal.ovh/Editor/?parser=true
+https://sbrython.migdal.ovh/Editor/
 (disable privacy.reduceTimerPrecision on FF for better precision)
 
 ### Roadmap
