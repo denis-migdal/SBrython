@@ -40,8 +40,12 @@ add_method(klass, "__call__", RET_FLOAT, (node: NODE_ID) => {
                 w_str("Number.POSITIVE_INFINITY");
                 return;
             }
-            if( other_value === "-inf"|| other_value === "-infinity") {
+            if( other_value === "-inf" || other_value === "-infinity") {
                 w_str("Number.NEGATIVE_INFINITY");
+                return;
+            }
+            if( other_value === "nan" || other_value === "NaN" ){
+                w_str("Number.NaN");
                 return;
             }
         }

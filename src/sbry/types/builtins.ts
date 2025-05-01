@@ -15,7 +15,7 @@ const builtins: [string, TYPE_ID][] = [
     genOpFct("abs", RET_INT),
     genFct("print", RET_None, (call: NODE_ID) => {
 
-        w_str("__SB__.print(");
+        w_str("console.log(");
         let cur = nextSibling(firstChild(call));
         while(cur !== 0) {
             w_node(cur);

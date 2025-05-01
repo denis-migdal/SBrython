@@ -72,6 +72,9 @@ export default function ast2js(node: NODE_ID) {
         cur = nextSibling(cur);
     }
 
+    if( __COMPAT_LEVEL__ === "JS" )
+        return;
+
     //TODO: if has varargs...
     if( type(cur) === 0 || start !== 0 ) {
 

@@ -6,13 +6,18 @@
 
 ## SBrython
 
-SBrython enables to execute Python codes in the Browser, by efficiently converting them into JavaScript, TypeScript, or WASM, while perfectly integrating with existing Python and Web development tools.
+SBrython enables to execute Python codes in the Browser, by efficiently converting them into JavaScript, TypeScript, or WASM.
+
+SBrython perfectly integrates with existing Python and Web development tools. SBrython enables you to easily interact with existing JavaScript/TypeScript codes/libraries, as well as with the browser APIs.
 
 SBrython also offers several options to tweak the generation of JavaScript/TypeScript/WASM to better match your needs :
+- `compat`: the level of compatibilities you want with the Python standard:
+   - `NONE`: generate clean and fastest JS/TS code, doesn't require a runtime library.
+   - `PERF`: generate unclean and fast JS/TS code, requires a small runtime library.
+   - `FULL`: fully compliant with the Python standard.
+- TODO: output options
 - TODO: AOT/JIT
 - TODO: production/dev mode
-- TODO: output options
-- TODO: compliance levels
 
 ⚠ SBrython is still in alpha version, lot of features aren't available yet.
 
@@ -28,10 +33,11 @@ The `sbryc` command converts python files into JavaScript, TypeScript, or WASM f
 ```
 
 Currently, this command accepts several options:
-- `--outDir $DST_DIR` : the directory where the produced files will be saved.
-- `--watch` : launch `sbryc` in watch mode. The produced files are updated when the Python source files are modified.
-- `--verbose` : print informations.
-- `--help` : print the commande usage.
+- `--compat NONE|PERF|FULL`: select the level of Python compliance.
+- `--outDir $DST_DIR`: the directory where the produced files will be saved.
+- `--watch`: launch `sbryc` in watch mode. The produced files are updated when the Python source files are modified.
+- `--verbose`: print informations.
+- `--help`: print the commande usage.
 
 ### Using stubs files
 

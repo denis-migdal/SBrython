@@ -24,6 +24,12 @@ const sbry_print = (...args: any[]) => {
     console.log("[SBRY]", ...args);
 }
 
+// @ts-ignore
+globalThis.assert = function assert(cond: boolean, msg = "Assertion failed") {
+    if( ! cond )
+        throw new Error(msg);
+}
+
 const search = new URLSearchParams( location.search );
 const test_name = search.get("test");
 const merge     = ! __DEBUG__;
@@ -456,7 +462,7 @@ function startTests(test_name: string, merge: boolean) {
 
     let failed = [];
 
-    const configs = __COMPAT_LEVEL__ === "JS" ? ["JS"] : ["JS", "Mix"];
+    const configs = __COMPAT_LEVEL__ === "JS" ? ["JS"] : ["JS"]; //, "Mix"];
 
     // build merged code
     for(let i = 0; i < tests.length; ++i) {

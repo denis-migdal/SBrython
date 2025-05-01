@@ -16,7 +16,7 @@ export function ast2js(ast: AST) {
     w_node(0);
 
     // TODO: better export strategy (?)
-    jscode += `\nconst __exported__ = {};\n`;
+    //jscode += `\nconst __exported__ = {};\n`;
 
     //console.warn(jscode);
 
@@ -38,11 +38,12 @@ export function ast2js(ast: AST) {
 
 function new_jscode(filename: string) {
 
-    jscode  = `//# sourceURL=${filename}\n`;
-    jscode += `const {_r_, _sb_} = __SB__;\n`;
+    //jscode  = `//# sourceURL=${filename}\n`;
+    //jscode += `const {_r_, _sb_} = __SB__;\n`;
+    jscode = "";
 
     if(__DEBUG__) {
-        CURSOR[CODE_LINE] = 3;
+        CURSOR[CODE_LINE] = 1;
         CURSOR[CODE_COL] = jscode.length;
     }
 }

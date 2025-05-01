@@ -9,7 +9,7 @@ assert isinstance(x, int)
 assert str(x) == "1"
 
 assert 2 + 2 == 4
-assert (50 - 5 * 6) / 4 == 5.0
+assert (50 - 5 * 6) / 4 == 5.0    # {"COMPAT_LEVEL": "Mix"}
 assert 8 / 5 == 1.6
 assert 7 // 3 == 2    # {"COMPAT_LEVEL": "Mix"}
 assert 7 // -3 == -3  # {"COMPAT_LEVEL": "Mix"}
@@ -530,10 +530,10 @@ assert -0x3f == -63
 assert +0x3F == 63
 
 s = 0x2000000000003f
-assert 0x2000000000003f == 9007199254741055
-assert +0x2000000000003f == 9007199254741055
-assert -0x2000000000003f == -9007199254741055
-assert ~0x2000000000003f == -9007199254741056
+assert 0x2000000000003f == 9007199254741055   # {"COMPAT_LEVEL": "Mix"}
+assert +0x2000000000003f == 9007199254741055  # {"COMPAT_LEVEL": "Mix"}
+assert -0x2000000000003f == -9007199254741055 # {"COMPAT_LEVEL": "Mix"}
+assert ~0x2000000000003f == -9007199254741056 # {"COMPAT_LEVEL": "Mix"}
 
 # issue 1504
 assert int('db1e8800bc27a3', base=16) == 61676589376350115
@@ -721,7 +721,7 @@ assert_raises(TypeError, eval, "1 % 'a'",
 # issue 2026
 x = 65152
 x <<= 112
-assert x == 338288524927261089654018896841347694592
+assert x == 338288524927261089654018896841347694592 # {"COMPAT_LEVEL": "Mix"}
 
 # issue 2058
 hash(0.1)

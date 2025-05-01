@@ -50,12 +50,21 @@ async function removeFile(path) {
 
 const flags = parseArgs(Deno.args, {
 	boolean: ["help", "watch", "verbose"],
-	string: ["outDir"],
-	default: { help: false, watch: false, verbose: false },
+	string: ["outDir", "compat"],
+	default: {
+        help: false,
+        watch: false,
+        verbose: false,
+        compat: "NONE"
+    },
 });
+
+if( flags.compat === "NONE")
+    globalThis.__COMPAT_LEVEL__ = "JS";
 
 if(flags.help) {
 	console.log('sbryc $SRC_FILES[...]');
+	console.log('\t* --compat NONE|PERF|FULL');
 	console.log('\t* --outDir $DST_DIR');
 	console.log('\t* --watch');
 	console.log('\t* --verbose');

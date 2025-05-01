@@ -32,32 +32,34 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 
 36K -> 11K
 
-Current test
-============
+Yet another todolist
+====================
 
-from JS import document
-
-a = document.querySelector("body")
-
-def handler():
-    print("click")
-
-a.addEventListener("click", handler)
+- restaure "Mix" tests (avoid regression...)
+    - requires runtime.
+    - __SB__ (global for now - ES6 later)
+    + add to sbryc + doc.
+- rename compat modes
+- restaure disabled unit tests.
+- class unit tests.
 
 Minor Steps
 ===========
 
+- pass more unit tests
 
-- clean JS output (ES6...)
-    - begin/end...
-    - parseFloat -> Number.NaN
-    - int vs float...
-    - classes...
-    - kw fcts
-    - print...
+- clean JS output
+    - methods...
     - extra ","...
+    - exceptions...
 
-- @inlineKlass(Number)
+- @inlineKlass(Number) [try with lists...]
+    -> JS.eval() -> how to get its type ???... OU @inline decorator ?
+    -> load
+    -> @decorator
+    -> f-string
+
+- == for type...
 - Generate TS + JS/mix + module type...
 - error message : show code pos...
 

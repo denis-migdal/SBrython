@@ -3,5 +3,5 @@ import { firstChild, NODE_ID } from "@SBrython/sbry/dop";
 
 export default function ast2js(node: NODE_ID) {
 
-    return w_sns("_sb_.assert(", firstChild(node), ")");
+    return w_sns("assert(", firstChild(node), ")");
 }

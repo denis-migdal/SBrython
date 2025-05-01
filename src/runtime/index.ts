@@ -7,15 +7,6 @@ export {_sb_, _r_};
 
 // classe ?
 
-// @ts-ignore
-globalThis.int   = BigInt;
-// @ts-ignore
-globalThis.float = Number;
-// @ts-ignore
-globalThis.bool  = Boolean;
-// @ts-ignore
-globalThis.str   = String;
-
 export class SBrython {
 
     #registered_AST: Record<string, AST> = {};
@@ -35,7 +26,7 @@ export class SBrython {
         this.#registered_AST[ast.filename] = ast;
 
         //console.log(jscode);
-        return new Function("__SB__", `${jscode}\nreturn __exported__;`);
+        return new Function("__SB__", jscode);
     }
 
     runJSCode(jscode: string, ast: AST) {

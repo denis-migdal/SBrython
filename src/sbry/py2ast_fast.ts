@@ -766,6 +766,19 @@ function readToken(): NODE_ID {
 
             consumeSpaces(); // end of py code not exact... (set again later...)
 
+            if( curChar !== CHAR_DOT && curChar !== CHAR_BRACKET_LEFT ) {
+
+                //TODO: better way for inlineKlasses
+                if( token === "int")
+                    VALUES[node] = "Number";
+                if( token === "float")
+                    VALUES[node] = "Number";
+                if( token === "str")
+                    VALUES[node] = "String";
+                if( token === "bool")
+                    VALUES[node] = "Boolean";
+            }
+
             if( curChar === CHAR_DOT) { // get attr...
 
                 let cur = node;
@@ -970,7 +983,7 @@ function readExpr(colon_is_end = true) { //TODO...
 }
 
 // @ts-ignore
-import JS_stubs  from "!!raw-loader!../stubs/__init__.pyi";
+import JS_stubs  from "!!raw-loader!../../stubs/JS/__init__.pyi";
 
 export function py2ast(_code: string, filename: string): AST {
 

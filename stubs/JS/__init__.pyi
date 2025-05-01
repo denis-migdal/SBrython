@@ -2,6 +2,7 @@
 # from __future__ import annotations at top of the file ?
 #
 # Missing:
+# - docstrings
 # - Final[T]
 # - Callable[] (requires fct type refactor...)
 # - TypedDict + NotRequired
