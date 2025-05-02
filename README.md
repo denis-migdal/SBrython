@@ -8,9 +8,21 @@
 
 SBrython enables to execute Python codes in the Browser by efficiently converting them into JavaScript, TypeScript, or WASM. The conversion can either be made on the browser, or ahead of time.
 
-SBrython perfectly integrates with existing Python and Web development tools, and enables you to easily interact with existing JavaScript/TypeScript codes/libraries, as well as with the browser APIs.
+SBrython perfectly integrates with existing Python and Web development tools, and enables you to easily interact with existing JavaScript/TypeScript codes/libraries, as well as with the browser APIs:
 
-[TODO: code example.]
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="module" src="SBrython.js" defer></script>
+        <script type="text/sbrython">
+            from JS import document
+
+            document.querySelector("body")
+        </script>
+    </head>
+</html>
+```
 
 ### Conversion
 
@@ -19,7 +31,7 @@ SBrython offers several options to tweak the generation of JS/TS/WASM to better 
    - `NONE`: generate clean and fastest JS/TS code, doesn't require a runtime library (***default***).
    - `PERF`: generate unclean and fast JS/TS code, requires a small runtime library.
    - `FULL`: fully compliant with the Python standard (**not implemented yet**).
-   - `BRYTHON`: use [brython](https://github.com/brython-dev/brython), fully python-compliant, slower, JS-Python interactions more incertain, not compatible with the following options.
+   - `BRYTHON`: use [brython](https://github.com/brython-dev/brython), fully python-compliant, slower, JS-Python interactions more incertains, currently not compatible with other options.
 - `export`:
     - `NONE`: can't import/export symbols (***default***).
     - `ES6`: produce ES6 modules (recommanded for AoT conversions).
@@ -35,7 +47,11 @@ SBrython offers several options to tweak the generation of JS/TS/WASM to better 
 
 #### Browser
 
+[TODO]
+
 #### API
+
+[TODO]
 
 #### CLI
 

@@ -108,21 +108,17 @@ function convert_code_brython(pycode: string, filename: string) {
 
     globalThis.$B = __BRYTHON__;
 
-	let js_ast = __BRYTHON__.py2js(pycode, filename);
-	//TODO: exports...
-	return `// Javascript code generated from Brython AOT
-// https://github.com/denis-migdal/Brython-AOT
+    __BRYTHON__.debug = 0; //TODO...
 
-(async function(){
-
-__BRYTHON__.imported["${filename}"] = {};
+	let js_ast = __BRYTHON__.py2js(pycode);
+	return `__BRYTHON__.imported["exec"] = {};
 __BRYTHON__.frames_stack = [];
 
 ${js_ast.to_js()}
-
-})();
-}
 `;
+	//TODO: imports+exports...
+    /* pyobj2jsobj() */
+
 }
 
 if( flags.compat === "BRYTHON" ) {
@@ -152,7 +148,7 @@ if( flags.compat === "BRYTHON" ) {
 
     eval(PARSER_SCRIPT);
 
-    console.warn("=== passed === ");
+    __BRYTHON__.imported["JS"] = __BRYTHON__.jsobj2pyobj( globalThis );
 
     convert_code = convert_code_brython
 }

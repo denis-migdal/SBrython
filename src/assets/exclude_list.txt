@@ -221,9 +221,6 @@
 # classes.inherit list
 *
 
-# classes.*
-*
-
 # basic test suite.string methods
 *
 

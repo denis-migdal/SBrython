@@ -35,28 +35,91 @@ Executed in    :  3.751s [x 11.12]  56.040ms
 Yet another todolist
 ====================
 
+- classes
+    - my own unit test
+    - methods : in COMPAT=NONE : no static
+    - attr : static only
+    - COMPAT=NONE : __init__ is constructor.
+    - COMPAT=PERF (how exactly ?)
+        - __call__
+        - __new__  : factory...
+        - __init__ : called by constructor ssi this.constructor === Klass ?
+
+    https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+    + cf settings.json
+    -> Callable & new Fct complex type... + new ReturnType
+        -> /!\ I do NOT typecheck... only type deduce.
+            -> for function only ret type required (ret type can be complex)
+                -> generics ? (call funct does it)
+                    ~> str to find complex one ?
+            -> union ~> id => { shared_props (todo) + [SUB][id1, id2, id3] } - type guard to exclude -> |None...
+            -> TypedDict ? ~> like a class
+            -> overload -> like union
+        -> still need typeIDs (might have several types with same name)
+        -> (?)
+
+
+    -> then list/dict/tuple methods ? + TypedDict ?
+
+    -> typehint features
+        -> Protocol
+        -> Callable
+        -> |
+        -> Generics
+        -> Any
+        -> Never
+        -> Self
+        -> Literal[]
+        -> ClassVar
+        -> Final
+        -> ReadOnly / TypedDict
+        -> 
+        -> @dataclass + @staticmethod + @classmethod
+        -> TypeIs (type guard) / TypeGuard
+        -> assert_type / cast / assert_never / 
+        -> @overload
+        -> @override
+        -> @type_check_only
+        -> TYPE_CHECKING
+
+    -> *args: P.args, **kwargs: P.kwargs
+    -> kargs : not required (ok)
+    -> args : tuple
+        -> all required + can have other if defaults (?)
+    https://docs.python.org/3/library/typing.html
+
+    PEP764 (https://discuss.python.org/t/pep-764-inlined-typed-dictionaries/78779/20)
+
+
+    => stats: ClassVar[dict[str, int]] = {} # class variable
+    => damage: int = 10                     # instance variable
+==
+
 - AoT/JIT doc
-    - browser (+ create) [TODO: cache?]
-        - script type="text/sbrython" + flags...
-        - doc usage (add runtime...)
     - API(SBrython)
         - fct (execute + convert + convert&execute) + option (internal functions.)
         - register (SBRY module)
+    - browser (+ create) [TODO: cache?]
+        - script type="text/sbrython" + flags...
+            - use SBrython API
+        - doc usage (add runtime...)
 
 + editor/benchmark links.
 + doc "import JS" for browser API.
-- clean readme.md
++ clean readme.md
 
 - restaure disabled unit tests.
-- class unit tests.
-
--> current_context => {} allows recursive py2ast calls... + idem ast2js...
-    -> not yet.
 
 Minor Steps
 ===========
 
 - pass more unit tests (klasses)
+
+- __debug__ true/false...
+- docstring (remove).
+
+-> current_context => {} allows recursive py2ast calls... + idem ast2js...
+    -> not yet.
 
 - clean JS output
     - methods...
@@ -103,9 +166,7 @@ X. assertion failed message (more details...)
     -> "JS" : assert (global not sb...)
 
 X. Benchmark several versions...
-X. CLI tools - AoT (cf AoT Brython)
 X. CLI tools - unit tests (+ perf measure)
-X. Output mode : ES6 module, commonjs (module.exports) module, variable...
 X. Language mode : JS, TS, WASM
 
 Major Steps

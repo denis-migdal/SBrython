@@ -8,6 +8,8 @@ export default function generateBrython(_ast: any, src:string, results: SubResul
 
     const ast = _ast.bry;
 
+    $B.debug = 0;
+
     const beg = performance.now();
 
     const filename = "_";

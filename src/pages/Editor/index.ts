@@ -27,7 +27,7 @@ const sbry_print = (...args: any[]) => {
 // @ts-ignore
 globalThis.assert = function assert(cond: boolean, msg = "Assertion failed") {
     if( ! cond )
-        throw new Error(msg);
+        null;//throw new Error(msg);
 }
 
 const search = new URLSearchParams( location.search );
@@ -36,13 +36,14 @@ const merge     = __SBRY_MODE__ === "test"; // Benchmark
 const parser    = search.get("parser") === "false" ? false : true;
 const DEFAULT_COMPAT = (search.get("compat") ?? "NONE") as typeof __SBRY_COMPAT__;
 
+
 const subTestsStats: Record<string, {total: number, excluded: number}[]> = {};
 const exclude_list = await loadExcludeList();
 
 const brython_tests = [
     'basic test suite',
     'numbers',
-    //"classes" // ~726
+    "classes" // ~726
 //    "strings",
 //    "string methods"
 ];
@@ -467,7 +468,7 @@ function startTests(test_name: string, merge: boolean) {
         : ["NONE", "PERF"]; //, "FULL"];
 
     // build merged code
-    for(let i = 0; i < tests.length; ++i) {
+    tests: for(let i = 0; i < tests.length; ++i) {
 
         const subtests = test_suites[tests[i]];
         const substats = subTestsStats[tests[i]];

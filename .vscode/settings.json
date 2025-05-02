@@ -3,5 +3,7 @@
     "liveServer.settings.root": "/dist/dev/",
     "python.analysis.extraPaths": [
         "./stubs"
-    ]
+    ],
+    "python.analysis.languageServerMode": "full",
+    "python.analysis.typeCheckingMode": "strict"
 }

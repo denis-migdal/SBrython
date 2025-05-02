@@ -10,6 +10,8 @@ export default function buildAST(code: string, results: Results, use_parser: boo
         sbry: null
     }
 
+    $B.imported["JS"] = $B.jsobj2pyobj( globalThis );
+
     const beg = performance.now();
 
     const parser = new $B.Parser(code, "_", 'file');
