@@ -130,6 +130,17 @@ function nextArg(cur: NODE_ID): boolean {
     return true;
 }
 
+//TODO...
+function readGeneric() {
+    addSymbol(nextSymbol(), parseTypeHint() );
+
+    if( curChar === CHAR_EQ) {
+        ++offset;
+        consumeSpaces();
+        nextSymbol(); // ignore
+    }
+}
+
 function readArg(id: NODE_ID) {
 
     VALUES[id] = nextSymbol(); // name
@@ -241,13 +252,9 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         const name = VALUES[id] = nextSymbol(); // name
 
-        let genericName = "";
-        let genericType = "";
         if( curChar === CHAR_BRACKET_LEFT) {
             ++offset;
-            genericName = nextSymbol();
-            addSymbol(genericName, parseTypeHint() );
-
+            readGeneric();
             ++offset; // ]
         }
 
@@ -318,6 +325,10 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         if( curChar === CHAR_SPACE && code.charCodeAt(++offset) === CHAR_DOT ) {
             offset += 3; // ...
+
+            while( (curChar = code.charCodeAt(offset)) !== CHAR_NL)
+                ++offset
+
         } else {
 
             const body = readBody();
@@ -356,6 +367,7 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         } else if( module === "typing" ) {
             // ignore
         } else {
+            console.warn("Line", CURSOR[0]);
             throw new Error("Not implemented !");
         }
         //TODO: parse studs...
@@ -364,6 +376,13 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         ++offset; //TODO: consume white spaces at the start of readExpr (?)
         const name = VALUES[id] = nextSymbol(); // name
+
+        if( curChar === CHAR_BRACKET_LEFT ) {
+            ++offset;
+            readGeneric();
+            ++offset; //]
+            consumeSpaces();
+        }
 
         const inherit: NODE_ID[] = []; //TODO...
 
@@ -375,7 +394,16 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
             // @ts-ignore
             while( curChar !== CHAR_PARENTHESIS_RIGHT ) {
 
-                inherit.push( readToken() );
+                const base = readToken();
+
+                // @ts-ignore
+                if( curChar === CHAR_EQ ) { // special h4ck
+                    ++offset;
+                    nextSymbol(); // ignore
+                    consumeSpaces();
+                } else {
+                    inherit.push( base );
+                }
 
                 // @ts-ignore
                 if( curChar === CHAR_COMMA ) {
@@ -572,10 +600,10 @@ function parseTypeHint(): TYPE_ID {
     consumeSpaces();
     const type = nextSymbol();
 
-    if( type === "Final" || type=== "ClassVar" || type=== "NotRequired" ) {
+    if( type === "Final" || type=== "ClassVar" || type=== "NotRequired" || curChar === CHAR_BRACKET_LEFT) {
         ++offset; // [
         const typeID = parseTypeHint();
-        ++offset; // [
+        ++offset; // ]
         consumeSpaces();
 
         return typeID;
@@ -664,6 +692,9 @@ function readToken(): NODE_ID {
                     
                     if( __SBRY_MODE__ === "dev" && offset >= code.length)
                         throw new Error("NOK");
+
+                    if( __SBRY_MODE__ === "dev" && curChar === CHAR_NL)
+                        ++CURSOR[0];
 
                     if( curChar !== end ) {
                         count = 0;
@@ -1217,6 +1248,7 @@ function createCallOpNode(call: NODE_ID, left: NODE_ID, op: OP_ID, right: NODE_I
         printNode(left);
         printNode(right);
         console.warn("at line", CURSOR[0])
+        console.warn(code.slice(offset-15, offset+15) );
         throw new Error(`Unknown operator ${op}!`);
     }
 

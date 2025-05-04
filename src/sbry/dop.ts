@@ -1,6 +1,6 @@
 export const ARRAY_TYPE   = Float64Array;
 const ELEM_SIZE = 8;
-const MAX_NB_ASTNODES = 105 /**/ * 20 /**/; // when merged
+const MAX_NB_ASTNODES = 205 /**/ * 20 /**/; // when merged
 
 export const CODE_LINE = 0;
 export const CODE_COL  = 1;
