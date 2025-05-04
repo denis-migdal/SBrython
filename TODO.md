@@ -54,28 +54,51 @@ Below :
 Yet another todolist
 ====================
 
+Priorities:
+2. parseType()
+3. ReadOnly[] (quick & dirty)
+4. ClassVar[]
+5. async/await ? Coroutine is Promise + special await rule... [async def]
+6. dict & TypedDict (e.g. option) ~> a klass (?)
+7. Callable (e.g. addEventListener) -> create addHoc type for now.
+    -> CallableClass [GENERIC]().
+8. Classes... (+ complete stubs) (__new__ to annotate constructor ?)
+
+A() => type(A).__call__() -> calls __new__ & __init__
+    -> operators always call klass fct...
+    -> stubs use __new__ ?
+
 1. Classes
     a. own unit test
     b. methods (COMPAT=NONE : no static) : /!\ Handle Self !
-    c. @classmethod / @staticmethod (which one ?)
-    d. attr (ClassVar[]) = static, else instance (PERF: getter/setter)
+    c. @classmethod / @staticmethod (which one ?) [better class method?] (staticmethod for utilitary)
+    d. attr (ClassVar[]) = static, else instance (PERF: getter/setter /!\ JS data vs Py op)
     e. __init__ is constructor + super.__init__() call (PERF: cstr call __init__)
 
-X. Typehints
+X. Typehints (update stubs)
     - Callable[]
+    - async/await
+    - docstrings
+    - ReadOnly[T]
     - TypedDict ? ~> like a class (for options)
-    - Generics (require ReturnType refactor)
-    - overload -> like union
+    - Final[T]
     - union ~> id => { shared_props (todo) + [SUB][id1, id2, id3] }
         -> type guard to exclude -> |None... + if throw.../return/break/continue
         -> union to union (e.g. fct call with overloads)
+    - overload -> like union
+    - circular refs : how to ID lazy assign/reassign them ? - only for stubs ?
+        -> separate AST tree build & typededuce (2 different steps)
+        -> FULL doesn't care about type checking
+        -> but how to do typehint (need parse/typeid...)
+    - Generics (require ReturnType refactor)
     -> ... value
-    -> async/await
 
 X. Objs
     - list/dict/tuple methods ? + TypedDict ?
     - complex/bytes (from/to bytes)
+    - set + set operation
     - iterators/generators/decorators/descriptors
+    - __format__ (used for fstring)
 
 X. Unit tests
     - restaure disabled unit tests.
@@ -113,7 +136,7 @@ X. Refactors
     -> JS.eval (how to inline ?)
     -> == for type()
     -> error message : show code pos... + more explicit
-    -> Generate TS/JS
+    -> Generate declaration files
     -> CLI tools - unit tests (+ perf measure) ~> produce several lib vers.
     -> Formatted code parser (flag)
         - https://peps.python.org/pep-0008/
@@ -238,7 +261,7 @@ PARSING (missing)
 - try/raise
 - for range
 - ternary operator
-- fstring
+- fstring (+ "value:format")
 
 Possible improvements:
 =====================
@@ -332,7 +355,7 @@ Possible student projects
 - [ ] Type
     - [ ] Better type deduction: if type === => change local type in body.
     - [ ] Deduce for in target type...
-    - [ ] Generate TS code mode
+    - [ ] Generate declaration files
     - [ ] fetch JS API types from TS. (.d.ts ???)
 - [ ] CPython/PEP compliant
     - [ ] debug = true

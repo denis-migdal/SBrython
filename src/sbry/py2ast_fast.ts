@@ -611,13 +611,44 @@ function readToken(): NODE_ID {
         setResultType(node, TYPEID_str);
 
         const beg = offset;
-        do {
-            curChar = code.charCodeAt(++offset);
-        } while( curChar !== end);
 
-        ++offset;
+        if( code.charCodeAt(++offset) ===  end) {
 
-        VALUES[node] = code.slice(beg, offset);
+            if( code.charCodeAt(++offset) !==  end ) {
+                // empty str.
+                VALUES[node] = "";
+            } else { 
+                //TODO: multi-str.
+
+                let count = 0;
+
+                while(true) {
+                    curChar = code.charCodeAt(++offset);
+                    
+                    if( __SBRY_MODE__ === "dev" && offset >= code.length)
+                        throw new Error("NOK");
+
+                    if( curChar !== end ) {
+                        count = 0;
+                        continue;
+                    }
+                    
+                    if( ++count === 3)
+                        break;
+                        
+                }
+
+                ++offset;
+                VALUES[node] = "`" + code.slice(beg+3, offset-3) + "`";
+            }
+        } else {
+            do {
+                curChar = code.charCodeAt(++offset);
+            } while( curChar !== end);
+
+           ++offset;
+            VALUES[node] = code.slice(beg, offset);
+        }
 
     } else if(curChar >= CHAR_DIGIT_0 && curChar <= CHAR_DIGIT_9 ) { // consume number
 

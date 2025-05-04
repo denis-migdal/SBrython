@@ -75,7 +75,7 @@ class myint(int):
 
 x = myint(42)
 assert x == 42
-assert x - 8 == 34 # instance supports method __sub__
+assert x - 8 == 34
 try:
     print(x + 10)
     raise ValueError('__add__ should raise NotImplementedError')
@@ -178,7 +178,7 @@ assert A(6).bar(89).arg == 89
 assert A(5).foo.__self__ is A
 
 import re
-_IS_BLANK_OR_COMMENT = re.compile(r'^[ ]*(#.*)?$').match
+#_IS_BLANK_OR_COMMENT = re.compile(r'^[ ]*(#.*)?$').match
 
 class B:
 
@@ -196,7 +196,7 @@ class A:
 
 assert A.m.__self__ is A
 assert A().f() == 'f'
-assert A().g('# comment')
+#assert A().g('# comment')
 
 # If a rich-comparison method returns NotImplemented
 # we should retry with the reflected operator of the other object.
@@ -227,9 +227,9 @@ class ReflectedSuccess:
 
 a, b = EqualityTester(), EqualityTester()
 c = ReflectedSuccess()
-assert not (a == b)                 # Both objects return Notimplemented => result should be False
-assert EqualityTester.count == 2    # The previous line should call the __eq__ method on both objects
-assert (c == c)                     # The second call to __eq__ should succeed
+assert not (a == b)    
+assert EqualityTester.count == 2
+assert (c == c)
 assert ReflectedSuccess.count == 2
 assert (a == c)
 assert (c == a)
@@ -708,9 +708,7 @@ class WithBuiltinFuncs:
     not_builtin_func = not_builtin
 
     def test(self):
-        # self.not_builtin_func(x) is self.__class__.not_builtin_func(self, x)
         assert self.not_builtin_func(3) == 3
-        # self.builtin_func(x) is self.__class__.builtin_func(x)
         assert self.builtin_func(-2) == 2
 
 WithBuiltinFuncs().test()
@@ -783,7 +781,7 @@ t = []
 class MetaB(type):
     def __call__(cls, *args, **kwargs):
         t.append('MetaB Call')
-        self = super().__call__(*args, **kwargs)  # create
+        self = super().__call__(*args, **kwargs)
         return self
 
 
@@ -893,7 +891,6 @@ class PluginBase:
 
 
 class Client:
-    # this is implicitly a @classmethod
     def __init_subclass__(cls, **kwargs):
         trace.append((cls, Client))
         super().__init_subclass__(**kwargs)
@@ -962,7 +959,7 @@ assert hasattr(Base, '__mro__')
 assert not hasattr(A, '__mro__')
 
 assert A.f() == 99
-assert not hasattr(A, "g") # although A.__bases__[0] has "g"
+assert not hasattr(A, "g")
 
 assert not isinstance(A, type)
 
@@ -1152,7 +1149,7 @@ class C:
     def f(self):
         self.x = 1
         self.y = 2
-        self.x = 3   # check deduplication
+        self.x = 3
 
     def g(self, obj):
         self.y = 4

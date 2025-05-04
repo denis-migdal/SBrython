@@ -41,7 +41,7 @@ SBrython offers several options to tweak the generation of JS/TS/WASM to better 
    - `dev`: performs some checks, keeps some debug informations (***default***).
    - `prod`: intended for production code.
    - `test`: like the `prod` mode, but asserts are kept.
-- TODO: JS/TS output
+- TODO: declarations files (.pyi/.d.ts/.d.bry.js)
 
 ⚠ SBrython is still in alpha version, lot of features aren't available yet. 
 

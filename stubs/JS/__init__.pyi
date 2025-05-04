@@ -1,8 +1,4 @@
-# How to use stubs files ?
-# from __future__ import annotations at top of the file ?
-#
 # Missing:
-# - docstrings
 # - Final[T]
 # - Callable[] (requires fct type refactor...)
 # - TypedDict + NotRequired
@@ -499,6 +495,12 @@ class Location:
     def toString(self) -> Undefined: ...
 
 class Window(EventTarget):
+    """
+    The Window interface represents a window containing a DOM document; the document property points to the DOM document loaded in that window.
+
+    See https://developer.mozilla.org/en-US/docs/Web/API/Window
+    """
+
     # caches
     closed: bool
     # cookieStore
