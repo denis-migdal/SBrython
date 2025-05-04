@@ -345,6 +345,8 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         if(module === "JS" ) {
             addSymbol(imported_name, JS[imported_name] ); //TODO...
             setType(id, AST_KEY_PASS); //TODO...
+        } else if( module === "typing" ) {
+            // ignore
         } else {
             throw new Error("Not implemented !");
         }
@@ -548,11 +550,21 @@ function consumeSpaces() {
         curChar = code.charCodeAt(++offset);
 }
 
-function parseTypeHint() {
+function parseTypeHint(): TYPE_ID {
 
     ++offset;
     consumeSpaces();
     const type = nextSymbol();
+
+    if( type === "Final" || type=== "ClassVar" ) {
+        ++offset; // [
+        const typeID = parseTypeHint();
+        ++offset; // [
+        consumeSpaces();
+
+        return typeID;
+    }
+
     const typeID = getSymbol(type) + 1 as TYPE_ID;
 
     // @ts-ignore

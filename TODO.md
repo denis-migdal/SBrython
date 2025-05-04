@@ -55,8 +55,6 @@ Yet another todolist
 ====================
 
 Priorities:
-3. ReadOnly[] (quick & dirty)
-4. ClassVar[]
 5. async/await ? Coroutine is Promise + special await rule... [async def]
 6. dict & TypedDict (e.g. option) ~> a klass (?)
 7. Callable (e.g. addEventListener) -> create addHoc type for now.
@@ -75,12 +73,11 @@ A() => type(A).__call__() -> calls __new__ & __init__
     e. __init__ is constructor + super.__init__() call (PERF: cstr call __init__)
 
 X. Typehints (update stubs)
+    - @property (better than Final[T])
     - Callable[]
     - async/await
-    - docstrings
     - ReadOnly[T]
     - TypedDict ? ~> like a class (for options)
-    - Final[T]
     - union ~> id => { shared_props (todo) + [SUB][id1, id2, id3] }
         -> type guard to exclude -> |None... + if throw.../return/break/continue
         -> union to union (e.g. fct call with overloads)

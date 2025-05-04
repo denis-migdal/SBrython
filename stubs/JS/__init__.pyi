@@ -1,19 +1,22 @@
 # Missing:
-# - ReadOnly[T]
+# - async
 # - Callable[] (requires fct type refactor...)
 # - TypedDict + NotRequired
 #        - from typing import TypedDict
 #        - type NameInfo = TypedDict('NameInfo', {'name': str, 'first-letter': str})
-# - circular type hints
-# - static attributes/methods
-# - async + iterators
-# - some API (mainly in Window)
-# - split into separate files
-# - special stubs parser
-# - better import system.
-# - @overload
+# - static methods
 # - add constructors + special methods (__getattr__ etc)
+# - @overload
+# - iterators
+# - some API (mainly in Window)
+# - special stubs parser
+# - circular type hints
+#   - split into separate files
+#   - better import system.
 # https://developer.mozilla.org/en-US/docs/Web/API (1006 classes)
+
+from typing import Final
+from typing import ClassVar
 
 class Undefined:
     pass
@@ -31,27 +34,26 @@ class Event:
 
     See https://developer.mozilla.org/en-US/docs/Web/API/Event
     """
-    # TODO: read-only : Final[bool] (they are all RO)
-    bubble: bool
+    bubble: Final[bool]
     """
     The bubbles read-only property of the Event interface indicates whether the event bubbles up through the DOM tree or not.
     
     See https://developer.mozilla.org/en-US/docs/Web/API/Event/bubbles
     """
-    cancelable: bool
-    composed: bool
-    currentTarget: EventTarget
-    defaultPrevented: bool
+    cancelable: Final[bool]
+    composed: Final[bool]
+    currentTarget: Final[EventTarget]
+    defaultPrevented: Final[bool]
     # TODO: enum ?
-    eventPhase: float
-    NONE = 0.
-    CAPTURING_PHASE = 1.
-    AT_TARGET = 2.
-    BUBBLING_PHASE = 3.
-    isTrusted: bool
-    target: EventTarget
-    timeStamp: float
-    type: str
+    eventPhase: Final[float]
+    NONE: ClassVar[float] = 0.
+    CAPTURING_PHASE: ClassVar[float] = 1.
+    AT_TARGET: ClassVar[float] = 2.
+    BUBBLING_PHASE: ClassVar[float] = 3.
+    isTrusted: Final[bool]
+    target: Final[EventTarget]
+    timeStamp: Final[float]
+    type: Final[str]
 
     def composedPath(self) -> EventTarget : ...
     def preventDefault(self) -> Undefined: ...
@@ -70,7 +72,7 @@ class EventTarget:
     def dispatchEvent(self, event: Event, /) -> bool: ...
 
 class NodeList:
-    length: float
+    length: Final[float]
     # entries
     # values
     # keys
@@ -78,43 +80,39 @@ class NodeList:
     def item(self, index: float, /) -> Node: ...
 
 class Node(EventTarget):
-    # TODO: RO
-    baseURI: str
-    childNodes: NodeList
-    firstChild: Node|None
-    isConnected: bool
-    lastChild: Node|None
-    nextSibling: Node|None
-    nodeName: str
-    # TODO: enum ?
-    nodeType: float
-    ELEMENT_NODE = 0.
-    ATTRIBUTE_NODE = 1.
-    TEXT_NODE = 3.
-    CDATA_SECTION_NODE = 4.
-    PROCESSING_INSTRUCTION_NODE = 7.
-    COMMENT_NODE = 8.
-    DOCUMENT_NODE = 9.
-    DOCUMENT_TYPE_NODE = 10.
-    DOCUMENT_FRAGMENT_NODE = 11.
-    # RW:
+    baseURI: Final[str]
+    childNodes: Final[NodeList]
+    firstChild: Final[Node|None]
+    isConnected: Final[bool]
+    lastChild: Final[Node|None]
+    nextSibling: Final[Node|None]
+    nodeName: Final[str]
+    nodeType: Final[float]
+    ELEMENT_NODE: ClassVar[float] = 0.
+    ATTRIBUTE_NODE: ClassVar[float] = 1.
+    TEXT_NODE: ClassVar[float] = 3.
+    CDATA_SECTION_NODE: ClassVar[float] = 4.
+    PROCESSING_INSTRUCTION_NODE: ClassVar[float] = 7.
+    COMMENT_NODE: ClassVar[float] = 8.
+    DOCUMENT_NODE: ClassVar[float] = 9.
+    DOCUMENT_TYPE_NODE: ClassVar[float] = 10.
+    DOCUMENT_FRAGMENT_NODE: ClassVar[float] = 11.
     nodeValue: str|None
-    # RO
-    ownerDocument: Document|None
-    parentElement: Element|None
-    parentNode: Node|None
-    previousSibling: Node|None
-    textContent: str|None
+    ownerDocument: Final[Document|None]
+    parentElement: Final[Element|None]
+    parentNode: Final[Node|None]
+    previousSibling: Final[Node|None]
+    textContent: Final[str|None]
 
     def appendChild(self, child: Node) -> Node: ...
     def cloneNode(self, deep: bool = False) -> Node: ...
     def compareDocumentPosition(self, otherNode: Node) -> float: ...
-    DOCUMENT_POSITION_DISCONNECTED = 1.
-    DOCUMENT_POSITION_PRECEDING = 2.
-    DOCUMENT_POSITION_FOLLOWING = 4.
-    DOCUMENT_POSITION_CONTAINS = 8.
-    DOCUMENT_POSITION_CONTAINED_BY = 16.
-    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 32.
+    DOCUMENT_POSITION_DISCONNECTED: ClassVar[float] = 1.
+    DOCUMENT_POSITION_PRECEDING: ClassVar[float] = 2.
+    DOCUMENT_POSITION_FOLLOWING: ClassVar[float] = 4.
+    DOCUMENT_POSITION_CONTAINS: ClassVar[float] = 8.
+    DOCUMENT_POSITION_CONTAINED_BY: ClassVar[float] = 16.
+    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: ClassVar[float] = 32.
     def contains(self, otherNode: Node|None) -> bool: ...
     # TODO: options
     # https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
@@ -138,10 +136,10 @@ class DOMStringMap:
     pass
 
 class CSSStyleDeclaration:
-    cssFloat: str
-    cssText: str
-    length: float
-    parentRule: CSSRule
+    cssFloat: Final[str]
+    cssText: Final[str]
+    length: Final[float]
+    parentRule: Final[CSSRule]
     
     def getPropertyPriority(self, property: str, /) -> str: ...
     def getPropertyValue(self, property: str, /) -> str: ...
@@ -150,8 +148,7 @@ class CSSStyleDeclaration:
     def setProperty(self, propertyName: str, value: str, priority: str = "") -> Undefined : ...
 
 class NamedNodeMap:
-    # RO
-    length: float
+    length: Final[float]
     def getNamedItem(self, name: str, /) -> Attr|None: ...
     def getNamedItemNS(self, namespace: str, localName: str, /) -> Attr|None: ...
     def item(self, index: float, /) -> Attr|None: ...
@@ -161,13 +158,13 @@ class NamedNodeMap:
     def setNamedItemNS(self, attr: Attr, /) -> Attr|None: ...
 
 class HTMLCollection:
-    length: float
+    length: Final[float]
     def item(self, index: float, /) -> Element|None: ...
     def namedItem(self, key: str, /) -> Element|None: ...
 
 class DOMTokenList:
-    length: float
-    value: str
+    length: Final[float]
+    value: Final[str]
 
     def add(self, token1: str, /) -> Undefined: ...
     def contains(self, token: str, /) -> bool: ...
@@ -183,39 +180,33 @@ class DOMTokenList:
     # values
 
 class StyleSheet:
-    # RW
     disabled: bool
-    # RO
-    href: str
+    href: Final[str]
     # media: MediaList
-    ownerNode: Node
-    parentStyleSheet: StyleSheet
-    title: str
-    type: str
+    ownerNode: Final[Node]
+    parentStyleSheet: Final[StyleSheet]
+    title: Final[str]
+    type: Final[str]
 
 class CSSRule:
-    # RO
-    cssText: str
-    parentRule: CSSRule|None
-    parentStyleSheet: StyleSheet
+    cssText: Final[str]
+    parentRule: Final[CSSRule|None]
+    parentStyleSheet: Final[StyleSheet]
 
 class CSSRuleList:
-    # RO
-    length: float
+    length: Final[float]
     def item(self, index: float, /) -> CSSRule|None: ...
 
 class CSSImportRule(CSSRule):
-    # RO
-    href: str
-    layerName: str|None
+    href: Final[str]
+    layerName: Final[str|None]
     # media : MediaList
-    styleSheet: CSSStyleSheet
-    supportsText: str|None
+    styleSheet: Final[CSSStyleSheet]
+    supportsText: Final[str|None]
 
 class CSSStyleSheet(StyleSheet):
-    # RO
-    cssRules: CSSRuleList
-    ownerRule: CSSImportRule|None
+    cssRules: Final[CSSRuleList]
+    ownerRule: Final[CSSImportRule|None]
 
     def deleteRule(self, index: float, /) -> Undefined: ...
     def insertRule(self, rule: str, index: float = 0., /) -> float: ...
@@ -224,16 +215,15 @@ class CSSStyleSheet(StyleSheet):
 
 
 class StyleSheetList:
-    # RO
-    length: float
+    length: Final[float]
     def item(self, index: float, /) -> CSSStyleSheet|None: ...
 
 
 class DocumentFragment(Node):
-    childElementCount: float
-    children: HTMLCollection
-    firstElementChild: Element|None
-    lastElementChild: Element|None
+    childElementCount: Final[float]
+    children: Final[HTMLCollection]
+    firstElementChild: Final[Element|None]
+    lastElementChild: Final[Element|None]
     
     def append(self, param1: Node, /) -> Undefined: ...
     # + make generic
@@ -245,21 +235,20 @@ class DocumentFragment(Node):
 
 
 class ShadowRoot(DocumentFragment):
-    # RO...
-    activeElement: Element|None
+    activeElement: Final[Element|None]
     # adoptedStyleSheets (array)
-    clonable: bool
-    delegatesFocus: bool
+    clonable: Final[bool]
+    delegatesFocus: Final[bool]
     # fullscreenElement (limited)
-    host: Element
-    innerHTML: str|None
+    host: Final[Element]
+    innerHTML: Final[str|None]
     # TODO: enum ?
-    mode: str
-    pointerLockElement: Element|None
-    serializable: bool
+    mode: Final[str]
+    pointerLockElement: Final[Element|None]
+    serializable: Final[bool]
     # TODO: enum ?
-    slotAssignment: str
-    styleSheets: StyleSheetList
+    slotAssignment: Final[str]
+    styleSheets: Final[StyleSheetList]
 
     # getAnimations
     #TODO: opts
@@ -267,7 +256,6 @@ class ShadowRoot(DocumentFragment):
     def setHTMLUnsafe(self, html: str, /) -> Undefined: ...
 
 class DOMRect:
-    # RW
     height: float
     width: float
     x: float
@@ -275,62 +263,53 @@ class DOMRect:
     # TODO: static
     # fromRect()
 
-    # RO
-    top: float
-    bottom: float
-    left: float
-    right: float
+    top: Final[float]
+    bottom: Final[float]
+    left: Final[float]
+    right: Final[float]
 
 class Attr(Node):
-    # RO
-    localName: str
-    name: str
-    namespaceURI: str
-    ownerElement: Element
-    prefix: str|None
-    value: str
+    localName: Final[str]
+    name: Final[str]
+    namespaceURI: Final[str]
+    ownerElement: Final[Element]
+    prefix: Final[str|None]
+    value: Final[str]
 
 
 # https://developer.mozilla.org/en-US/docs/Web/API/Element
 # no aria (too much)
 class Element(Node):
-    # RO
-    assignedSlot: HTMLSlotElement|None
-    attributes: NamedNodeMap
-    childElementCount: float
-    children: HTMLCollection
-    classList: DOMTokenList
-    # RW
+    assignedSlot: Final[HTMLSlotElement|None]
+    attributes: Final[NamedNodeMap]
+    childElementCount: Final[float]
+    children: Final[HTMLCollection]
+    classList: Final[DOMTokenList]
     className: str
-    # RO
-    clientHeight: float
-    clientLeft: float
-    clientTop: float
-    clientWidth: float
-    currentCSSZoom: float
-    firstElementChild: Element|None
-    id: str
-    # RW
+    clientHeight: Final[float]
+    clientLeft: Final[float]
+    clientTop: Final[float]
+    clientWidth: Final[float]
+    currentCSSZoom: Final[float]
+    firstElementChild: Final[Element|None]
+    id: Final[str]
     innerHTML: str
-    lastElementChild: Element|None
-    localName: str
-    namespaceURI: str|None
-    nextElementSibling: Element|None
-    outerHTML: str
-    part: DOMTokenList
-    prefix: str|None
-    previousElementSibling: Element|None
-    # RW
+    lastElementChild: Final[Element|None]
+    localName: Final[str]
+    namespaceURI: Final[str|None]
+    nextElementSibling: Final[Element|None]
+    outerHTML: Final[str]
+    part: Final[DOMTokenList]
+    prefix: Final[str|None]
+    previousElementSibling: Final[Element|None]
     role: str|None
-    # RW
     scrollHeight: float
     scrollLeft: float
     scrollTop: float
     scrollWidth: float
-    # RO
-    shadowRoot: ShadowRoot|None
-    slot: str
-    tagName: str
+    shadowRoot: Final[ShadowRoot|None]
+    slot: Final[str]
+    tagName: Final[str]
 
     #TODO: *args
     def after(self, node1: Node, /) -> Undefined: ...
@@ -397,32 +376,32 @@ class Element(Node):
 
 class HTMLElement(Element):
 
-    accessKeyLabel: str
-    autofocus: bool
-    contentEditable: str
-    dataset: DOMStringMap
-    dir: str
-    draggable: bool
-    enterKeyHint: str
-    hidden: bool
-    inert: bool
-    innerText: str
-    inputMode: str
-    isContentEditable: bool
-    lang: str
-    nonce: float
-    offsetHeight: float
-    offsetLeft: float
-    offsetParent: float
-    offsetTop: float
-    offsetWidth: float
-    outerText: str
-    popover: str
-    spellcheck: bool
-    style: CSSStyleDeclaration|None
-    tabIndex: float
-    title: str
-    translate: bool
+    accessKeyLabel: Final[str]
+    autofocus: Final[bool]
+    contentEditable: Final[str]
+    dataset: Final[DOMStringMap]
+    dir: Final[str]
+    draggable: Final[bool]
+    enterKeyHint: Final[str]
+    hidden: Final[bool]
+    inert: Final[bool]
+    innerText: Final[str]
+    inputMode: Final[str]
+    isContentEditable: Final[bool]
+    lang: Final[str]
+    nonce: Final[float]
+    offsetHeight: Final[float]
+    offsetLeft: Final[float]
+    offsetParent: Final[float]
+    offsetTop: Final[float]
+    offsetWidth: Final[float]
+    outerText: Final[str]
+    popover: Final[str]
+    spellcheck: Final[bool]
+    style: Final[CSSStyleDeclaration|None]
+    tabIndex: Final[float]
+    title: Final[str]
+    translate: Final[bool]
 
     # attachInternals
     def blur(self) -> Undefined: ...
@@ -445,24 +424,24 @@ class HTMLHeadElement(HTMLElement):
 
 class HTMLScriptElement:
     # async ?
-    crossOrigin: str
-    defer: bool
-    fetchPriority: str
-    integrity: str
-    nomodule: bool
-    referrerPolicy: str
-    str: str
-    text: str
-    type: str
+    crossOrigin: Final[str]
+    defer: Final[bool]
+    fetchPriority: Final[str]
+    integrity: Final[str]
+    nomodule: Final[bool]
+    referrerPolicy: Final[str]
+    str: Final[str]
+    text: Final[str]
+    type: Final[str]
     # static support
 
 class DOMStringList:
-    length: float
+    length: Final[float]
     def contains(self, string: str, /) -> bool: ...
     def item(self, index: float, /) -> str|None: ...
 
 class URLSearchParams:
-    size: float
+    size: Final[float]
 
     def append(self, name: str, value: str, /) -> Undefined: ...
     def delete(self, name: str, value: str|Undefined = undefined, /) -> Undefined: ...
@@ -475,17 +454,17 @@ class URLSearchParams:
     def toString(self) -> str: ...
 
 class URL:
-    hash: str
-    host: str
-    hostname: str
-    href: str
-    origin: str
-    pathname: str
-    port: str
-    protocol: str
-    search: str
-    searchParams: URLSearchParams
-    username: str
+    hash: Final[str]
+    host: Final[str]
+    hostname: Final[str]
+    href: Final[str]
+    origin: Final[str]
+    pathname: Final[str]
+    port: Final[str]
+    protocol: Final[str]
+    search: Final[str]
+    searchParams: Final[URLSearchParams]
+    username: Final[str]
 
     # static
     # canParse + createObjectURL + parse + revokeObjectURL
@@ -493,16 +472,16 @@ class URL:
     def toString(self) -> str: ...
 
 class Location:
-    ancestorOrigins: DOMStringList
-    hash: str
-    host: str
-    hostname: str
-    href: str
-    origin: str
-    pathname: str
-    port: str
-    protocol: str
-    search: str
+    ancestorOrigins: Final[DOMStringList]
+    hash: Final[str]
+    host: Final[str]
+    hostname: Final[str]
+    href: Final[str]
+    origin: Final[str]
+    pathname: Final[str]
+    port: Final[str]
+    protocol: Final[str]
+    search: Final[str]
 
     def assign(self, url: str|URL, /) -> Undefined: ...
     def reload(self) -> Undefined: ...
@@ -517,50 +496,50 @@ class Window(EventTarget):
     """
 
     # caches
-    closed: bool
+    closed: Final[bool]
     # cookieStore
-    crossOriginIsolated: bool
+    crossOriginIsolated: Final[bool]
     # crypto
     # customElements
-    document: Document
-    frameElement: HTMLElement|None
+    document: Final[Document]
+    frameElement: Final[HTMLElement|None]
     # frames
     # history
     # indexedDB
-    innerHeight: float
-    innerWidth: float
-    isSecureContext: bool
-    length: float
+    innerHeight: Final[float]
+    innerWidth: Final[float]
+    isSecureContext: Final[bool]
+    length: Final[float]
     # localStorage
-    location: Location
+    location: Final[Location]
     # locationBar
     # menubar
-    name: str
+    name: Final[str]
     # navigator
     # opener
-    origin: str
-    originAgentCluster: bool
-    outerHeight: float
-    outerWidth: float
-    parent: Window
+    origin: Final[str]
+    originAgentCluster: Final[bool]
+    outerHeight: Final[float]
+    outerWidth: Final[float]
+    parent: Final[Window]
     # performance
     # personalbar
     # screen
-    screenLeft: float
-    screenTop: float
-    screenX: float
-    screenY: float
+    screenLeft: Final[float]
+    screenTop: Final[float]
+    screenX: Final[float]
+    screenY: Final[float]
     # scrollbars
-    scrollX: float
-    scrollY: float
-    self: Window
+    scrollX: Final[float]
+    scrollY: Final[float]
+    self: Final[Window]
     # sessionStorage
     # speechSynthesis
     # statusbar
     # toolbar
-    top: Window
+    top: Final[Window]
     # visualViewport
-    window: Window
+    window: Final[Window]
 
     def alert(self, message: str = "", /) -> Undefined: ...
     def atob(self, encodedData: str, /) -> str: ...
@@ -601,9 +580,9 @@ class Window(EventTarget):
 window: Window
 
 class DocumentType(Node):
-    name: str
-    publicId: str
-    systemId: str
+    name: Final[str]
+    publicId: Final[str]
+    systemId: Final[str]
 
     def after(self, param1: Node, /) -> Undefined: ...
     def before(self, param1: Node, /) -> Undefined: ...
@@ -613,45 +592,45 @@ class DocumentType(Node):
 # https://developer.mozilla.org/en-US/docs/Web/API/Document/
 # also lot of methods...
 class Document(Node):
-    activeElement: Element|None
-    adoptedStyleSheets: CSSStyleSheet
-    body: HTMLBodyElement
-    characterSet: str
-    childElementCount: float
-    children: HTMLCollection
-    compatMode: str
-    contentType: str
-    cookie: str
-    currentScript: HTMLScriptElement|None
-    defaultView: Window|None
-    designMode: str
-    dir: str
-    doctype: DocumentType
-    documentElement: Element
-    documentURI: str
-    embeds: HTMLCollection
-    firstElementChild: HTMLElement|None
+    activeElement: Final[Element|None]
+    adoptedStyleSheets: Final[CSSStyleSheet]
+    body: Final[HTMLBodyElement]
+    characterSet: Final[str]
+    childElementCount: Final[float]
+    children: Final[HTMLCollection]
+    compatMode: Final[str]
+    contentType: Final[str]
+    cookie: Final[str]
+    currentScript: Final[HTMLScriptElement|None]
+    defaultView: Final[Window|None]
+    designMode: Final[str]
+    dir: Final[str]
+    doctype: Final[DocumentType]
+    documentElement: Final[Element]
+    documentURI: Final[str]
+    embeds: Final[HTMLCollection]
+    firstElementChild: Final[HTMLElement|None]
     #fonts: FontFaceSet
-    forms: HTMLCollection
+    forms: Final[HTMLCollection]
     #fragmentDirective: FragmentDirective
-    head: HTMLHeadElement
-    hidden: bool
-    images: HTMLCollection
+    head: Final[HTMLHeadElement]
+    hidden: Final[bool]
+    images: Final[HTMLCollection]
     #implementation: DOMImplementation
-    lastElementChild: Element|None
-    lastModified: str
-    links: HTMLCollection
-    location: Location
-    plugins: HTMLCollection
-    readyState: str
-    referrer: str
-    scripts: HTMLCollection
-    scrollingElement: Element
-    styleSheets: StyleSheetList
+    lastElementChild: Final[Element|None]
+    lastModified: Final[str]
+    links: Final[HTMLCollection]
+    location: Final[Location]
+    plugins: Final[HTMLCollection]
+    readyState: Final[str]
+    referrer: Final[str]
+    scripts: Final[HTMLCollection]
+    scrollingElement: Final[Element]
+    styleSheets: Final[StyleSheetList]
     # timeline
-    title: str
-    URL: str
-    visibilityState: str
+    title: Final[str]
+    URL: Final[str]
+    visibilityState: Final[str]
 
     # static parseHTMLUnsafe
     def adoptNode(self, externalNode: Node, /) -> Node: ...
