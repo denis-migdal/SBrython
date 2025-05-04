@@ -14,8 +14,10 @@ export const TYPEID_type_bool_         =12;
 export const TYPEID_bool               =13;
 export const TYPEID_type_str_          =14;
 export const TYPEID_str                =15;
+export const TYPEID_type_TypedDict_    =14;
+export const TYPEID_TypedDict          =15;
 
-const TYPES = new Array(16);
+const TYPES = new Array(18);
 for(let i = 0; i < 16; ++i)
     TYPES[i] = Object.create(null);
 

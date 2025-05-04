@@ -9,6 +9,7 @@ require("./int");
 require("./jsint");
 require("./float");
 require("./bool");
+require("./TypedDict");
 require("./str");
 
 const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
@@ -26,7 +27,9 @@ const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
 	"float",
 	"type_bool_",
 	"bool",
+	"type_TypedDict_",
 	"type_str_",
+	"TypedDict",
 	"str",
 ];
 export const id2name = _id2name;

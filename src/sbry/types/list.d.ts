@@ -21,5 +21,7 @@ export declare const TYPEID_type_float_       : BRAND<10 , "TYPE_ID">;
 export declare const TYPEID_float             : BRAND<11 , "TYPE_ID">;
 export declare const TYPEID_type_bool_        : BRAND<12 , "TYPE_ID">;
 export declare const TYPEID_bool              : BRAND<13 , "TYPE_ID">;
+export declare const TYPEID_type_TypedDict_   : BRAND<14 , "TYPE_ID">;
 export declare const TYPEID_type_str_         : BRAND<14 , "TYPE_ID">;
+export declare const TYPEID_TypedDict         : BRAND<15 , "TYPE_ID">;
 export declare const TYPEID_str               : BRAND<15 , "TYPE_ID">;

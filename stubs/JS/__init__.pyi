@@ -1,21 +1,23 @@
 # Missing:
-# - async
+#
+# - some API (mainly in Window)
+# - docstring + options + generics (when possible)
+# - https://developer.mozilla.org/en-US/docs/Web/API (1006 classes)
+#
 # - Callable[] (requires fct type refactor...)
-# - TypedDict + NotRequired
-#        - from typing import TypedDict
-#        - type NameInfo = TypedDict('NameInfo', {'name': str, 'first-letter': str})
+# - NotRequired[]
 # - static methods
 # - add constructors + special methods (__getattr__ etc)
 # - @overload
 # - iterators
-# - some API (mainly in Window)
+#
 # - special stubs parser
 # - circular type hints
 #   - split into separate files
 #   - better import system.
-# https://developer.mozilla.org/en-US/docs/Web/API (1006 classes)
 
 from typing import Final
+from typing import TypedDict
 from typing import ClassVar
 
 class Undefined:
@@ -79,6 +81,15 @@ class NodeList:
     # forEach
     def item(self, index: float, /) -> Node: ...
 
+class GetRootNodeOptions(TypedDict):
+    """
+    An object that sets options for getting the root node.
+    """
+    composed: bool
+    """
+    A boolean value that indicates whether the shadow root should be returned (false, the default), or a root node beyond shadow root (true).
+    """
+
 class Node(EventTarget):
     baseURI: Final[str]
     childNodes: Final[NodeList]
@@ -114,9 +125,7 @@ class Node(EventTarget):
     DOCUMENT_POSITION_CONTAINED_BY: ClassVar[float] = 16.
     DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: ClassVar[float] = 32.
     def contains(self, otherNode: Node|None) -> bool: ...
-    # TODO: options
-    # https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
-    def getRootNode(self) -> Node: ...
+    def getRootNode(self, options: GetRootNodeOptions|None = None) -> Node: ...
     def hasChildNodes(self) -> bool: ...
     def insertBefore(self, newNode: Node, referenceNode: Node|None) -> Node: ...
     def isDefaultNamespace(self, namespaceURI: str|None) -> bool: ...

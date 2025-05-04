@@ -572,7 +572,7 @@ function parseTypeHint(): TYPE_ID {
     consumeSpaces();
     const type = nextSymbol();
 
-    if( type === "Final" || type=== "ClassVar" ) {
+    if( type === "Final" || type=== "ClassVar" || type=== "NotRequired" ) {
         ++offset; // [
         const typeID = parseTypeHint();
         ++offset; // [
@@ -1042,7 +1042,7 @@ function readExpr(colon_is_end = true) { //TODO...
 import JS_stubs  from "!!raw-loader!../../stubs/JS/__init__.pyi";
 
 export function py2ast(_code: string, filename: string): AST {
-
+    
     //TODO: better handle imports...
     let import_offset = 0;
     while( _code.slice(import_offset, import_offset+5) === "from ") {

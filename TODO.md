@@ -55,9 +55,12 @@ Yet another todolist
 ====================
 
 Priorities:
-6. dict & TypedDict (e.g. option) ~> a klass (?)
+X. Complete stubs
+
 7. Callable (e.g. addEventListener) -> create addHoc type for now.
     -> CallableClass [GENERIC]().
+    -> Callable[[Any, Any], Awaitable[Any]]
+
 8. Classes... (+ complete stubs) (__new__ to annotate constructor ?)
 9. await ? Coroutine is ~Promise + async def return type
 
@@ -77,7 +80,7 @@ X. Typehints (update stubs)
     - Callable[]
     - async/await
     - ReadOnly[T]
-    - TypedDict ? ~> like a class (for options)
+    - TypedDict -> toJS : do not print klass.
     - union ~> id => { shared_props (todo) + [SUB][id1, id2, id3] }
         -> type guard to exclude -> |None... + if throw.../return/break/continue
         -> union to union (e.g. fct call with overloads)
