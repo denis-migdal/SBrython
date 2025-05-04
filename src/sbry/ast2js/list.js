@@ -42,7 +42,9 @@ export const AST_LIT_FALSE          = last_id++;
 export const AST_LIT_NONE           = last_id++;
 // Function def
 export const AST_DEF_FCT            = last_id++;
+export const AST_DEF_ASYNC_FCT      = last_id++;
 export const AST_DEF_METH           = last_id++;
+export const AST_DEF_ASYNC_METH     = last_id++;
 export const AST_DEF_ARGS           = last_id++;
 export const AST_DEF_ARG_POSONLY    = last_id++;
 export const AST_DEF_ARG_POS        = last_id++;

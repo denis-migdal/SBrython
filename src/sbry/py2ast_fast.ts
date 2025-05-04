@@ -1,5 +1,5 @@
 import Types, { TYPEID_None, TYPEID_NotImplementedType } from "@SBrython/sbry/types/list";
-import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR } from "./ast2js/list";
+import { AST_BODY, AST_LIT_TRUE, AST_LIT_FALSE, AST_KEY_ASSERT, AST_CTRL_WHILE, AST_KEY_BREAK, AST_KEY_CONTINUE, AST_KEY_PASS, AST_CTRL_IF, AST_DEF_FCT, AST_DEF_ARGS, AST_KEY_RETURN, AST_LIT_FLOAT, AST_LIT_NONE, AST_LIT_STR, AST_LIT_INT, AST_CTRL_ELSE, AST_CTRL_ELIF, AST_STRUCT_LIST, AST_CTRL_FOR, AST_DEF_ARG_POSONLY, AST_DEF_ARG_VARARGS, AST_DEF_ARG_KWONLY, AST_DEF_ARG_KWARGS, AST_CALL, AST_DEF_ARG_POS, AST_OP_OP, AST_OP_ASSIGN, AST_SYMBOL, AST_OP_ASSIGN_AUG, AST_CLASSDEF, AST_DEF_METH, AST_OP_ATTR, AST_DEF_ASYNC_FCT, AST_DEF_ASYNC_METH } from "./ast2js/list";
 import dop_reset, { addFirstChild, addSibling, ARRAY_TYPE, ASTNODES, CODE_BEG_COL, CODE_BEG_LINE, CODE_END_COL, CODE_END_LINE, createASTNode, firstChild, nextSibling, NODE_ID, NODE_TYPE, PY_CODE, resultType, setFirstChild, setResultType, setSibling, setType, type, TYPE_ID, VALUES } from "./dop"
 import { AST } from "./py2ast"
 import { Callable, Fct, RETURN_TYPE, TYPEID, WRITE_CALL } from "./types/utils/types";
@@ -225,7 +225,15 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         setFirstChild(id, readBody() );
     },
-    //TODO: elif/else
+    "async": (id) => {
+        
+        offset += 4; // consume space + def
+
+        KNOWN_SYMBOLS["def"](id);
+
+        setType(id, AST_DEF_ASYNC_FCT);
+        // TODO: setResultType(id, STypeID);
+    },
     "def": (id) => {
 
         setType(id, AST_DEF_FCT);
@@ -433,6 +441,14 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
                 SType_instance[VALUES[cur]] = resultType(cur);
 
                 setType(cur, AST_DEF_METH);
+            }
+            // not ideal : needs it BEFORE...
+            if( node_type === AST_DEF_ASYNC_FCT) {
+
+                // @ts-ignore
+                SType_instance[VALUES[cur]] = resultType(cur);
+
+                setType(cur, AST_DEF_ASYNC_METH);
             }
 
             //TODO: fix...

@@ -55,11 +55,11 @@ Yet another todolist
 ====================
 
 Priorities:
-5. async/await ? Coroutine is Promise + special await rule... [async def]
 6. dict & TypedDict (e.g. option) ~> a klass (?)
 7. Callable (e.g. addEventListener) -> create addHoc type for now.
     -> CallableClass [GENERIC]().
 8. Classes... (+ complete stubs) (__new__ to annotate constructor ?)
+9. await ? Coroutine is ~Promise + async def return type
 
 A() => type(A).__call__() -> calls __new__ & __init__
     -> operators always call klass fct...

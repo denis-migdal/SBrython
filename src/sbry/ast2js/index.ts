@@ -35,29 +35,31 @@ LIST[29 ] = require("./lit/true").default;
 LIST[30 ] = require("./lit/false").default;
 LIST[31 ] = require("./lit/none").default;
 LIST[32 ] = require("./def/fct").default;
-LIST[33 ] = require("./def/meth").default;
-LIST[34 ] = require("./def/args").default;
-LIST[35 ] = require("./def/arg_posonly").default;
-LIST[36 ] = require("./def/arg_pos").default;
-LIST[37 ] = require("./def/arg_varargs").default;
-LIST[38 ] = require("./def/arg_kwonly").default;
-LIST[39 ] = require("./def/arg_kwargs").default;
-LIST[40 ] = require("./call/index").default;
-LIST[41 ] = require("./call/arg_kw").default;
-LIST[42 ] = require("./ctrl/while").default;
-LIST[43 ] = require("./ctrl/tryblock").default;
-LIST[44 ] = require("./ctrl/tryblock_catch").default;
-LIST[45 ] = require("./ctrl/ternary").default;
-LIST[46 ] = require("./ctrl/if").default;
-LIST[47 ] = require("./ctrl/elif").default;
-LIST[48 ] = require("./ctrl/else").default;
-LIST[49 ] = require("./ctrl/for_range").default;
-LIST[50 ] = require("./ctrl/for").default;
-LIST[51 ] = require("./classdef").default;
-LIST[52 ] = require("./body").default;
-LIST[53 ] = require("./2bigint").default;
-LIST[54 ] = require("./2number").default;
-LIST[55 ] = require("./comment").default;
+LIST[33 ] = require("./def/async_fct").default;
+LIST[34 ] = require("./def/meth").default;
+LIST[35 ] = require("./def/async_meth").default;
+LIST[36 ] = require("./def/args").default;
+LIST[37 ] = require("./def/arg_posonly").default;
+LIST[38 ] = require("./def/arg_pos").default;
+LIST[39 ] = require("./def/arg_varargs").default;
+LIST[40 ] = require("./def/arg_kwonly").default;
+LIST[41 ] = require("./def/arg_kwargs").default;
+LIST[42 ] = require("./call/index").default;
+LIST[43 ] = require("./call/arg_kw").default;
+LIST[44 ] = require("./ctrl/while").default;
+LIST[45 ] = require("./ctrl/tryblock").default;
+LIST[46 ] = require("./ctrl/tryblock_catch").default;
+LIST[47 ] = require("./ctrl/ternary").default;
+LIST[48 ] = require("./ctrl/if").default;
+LIST[49 ] = require("./ctrl/elif").default;
+LIST[50 ] = require("./ctrl/else").default;
+LIST[51 ] = require("./ctrl/for_range").default;
+LIST[52 ] = require("./ctrl/for").default;
+LIST[53 ] = require("./classdef").default;
+LIST[54 ] = require("./body").default;
+LIST[55 ] = require("./2bigint").default;
+LIST[56 ] = require("./2number").default;
+LIST[57 ] = require("./comment").default;
 
 const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
 	"SYMBOL",
@@ -93,7 +95,9 @@ const _id2name = __SBRY_MODE__ !== 'dev' ? [] : [
 	"LIT_FALSE",
 	"LIT_NONE",
 	"DEF_FCT",
+	"DEF_ASYNC_FCT",
 	"DEF_METH",
+	"DEF_ASYNC_METH",
 	"DEF_ARGS",
 	"DEF_ARG_POSONLY",
 	"DEF_ARG_POS",
