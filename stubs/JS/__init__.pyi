@@ -1,5 +1,5 @@
 # Missing:
-# - Final[T]
+# - ReadOnly[T]
 # - Callable[] (requires fct type refactor...)
 # - TypedDict + NotRequired
 #        - from typing import TypedDict
@@ -19,10 +19,25 @@ class Undefined:
     pass
 
 undefined: Undefined
+"""
+The undefined global property represents the primitive value undefined. It is one of JavaScript's primitive types.
+
+See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined
+"""
 
 class Event:
+    """
+    The Event interface represents an event which takes place on an EventTarget.
+
+    See https://developer.mozilla.org/en-US/docs/Web/API/Event
+    """
     # TODO: read-only : Final[bool] (they are all RO)
     bubble: bool
+    """
+    The bubbles read-only property of the Event interface indicates whether the event bubbles up through the DOM tree or not.
+    
+    See https://developer.mozilla.org/en-US/docs/Web/API/Event/bubbles
+    """
     cancelable: bool
     composed: bool
     currentTarget: EventTarget

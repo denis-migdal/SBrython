@@ -238,8 +238,8 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
         if( curChar === CHAR_BRACKET_LEFT) {
             ++offset;
             genericName = nextSymbol();
-            offset += 2; // ": "
-            genericType = nextSymbol();
+            addSymbol(genericName, parseTypeHint() );
+
             ++offset; // ]
         }
 
@@ -299,19 +299,9 @@ const KNOWN_SYMBOLS: Record<string, (parent: NODE_ID)=>void> = {
 
         consumeSpaces();
         if( curChar === CHAR_MINUS ) {
-            offset += 2; // ->
-            consumeSpaces();
-            let ret_name = nextSymbol();
-            if( ret_name === genericName)
-                ret_name = genericType;
-            ret_type = getSymbol( ret_name ) + 1 as TYPE_ID;
+            ++offset;
 
-            // @ts-ignore
-            while(curChar === 124) { // |
-                ++offset;
-                nextSymbol();
-            }
-            consumeSpaces();
+            ret_type = parseTypeHint();
         }
 
         ++offset; // :
@@ -556,6 +546,25 @@ function consumeSpaces() {
     curChar = code.charCodeAt(offset);
     while(curChar === CHAR_SPACE)
         curChar = code.charCodeAt(++offset);
+}
+
+function parseTypeHint() {
+
+    ++offset;
+    consumeSpaces();
+    const type = nextSymbol();
+    const typeID = getSymbol(type) + 1 as TYPE_ID;
+
+    // @ts-ignore
+    while(curChar === 124) { // |
+        ++offset;
+        nextSymbol(); // ignore for now -> later union
+    }
+
+    consumeSpaces();
+
+    return typeID;
+
 }
 
 function readToken(): NODE_ID {
@@ -927,21 +936,11 @@ function readExpr(colon_is_end = true) { //TODO...
     let value = readToken();
 
     if( ! colon_is_end && curChar === CHAR_COLON) {
-        ++offset;
-        consumeSpaces();
-        const type = nextSymbol();
-        const typeID = getSymbol(type) + 1 as TYPE_ID;
 
-        // @ts-ignore
-        while(curChar === 124) { // |
-            ++offset;
-            nextSymbol();
-        }
+        const typeID = parseTypeHint();
 
         setResultType(value, typeID);
-        addSymbol(VALUES[value], typeID); //TODO...
-
-        consumeSpaces();
+        addSymbol(VALUES[value], typeID);
     }
 
     if( isEndOfExpr() )

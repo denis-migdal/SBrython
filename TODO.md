@@ -55,7 +55,6 @@ Yet another todolist
 ====================
 
 Priorities:
-2. parseType()
 3. ReadOnly[] (quick & dirty)
 4. ClassVar[]
 5. async/await ? Coroutine is Promise + special await rule... [async def]
